@@ -469,33 +469,38 @@ body {
 }
 
 .bloom-footer::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url('/img/footer-petals.jpg');
-  background-size: cover;
-  background-position: center top;
-  background-repeat: no-repeat;
-  z-index: 0;
-  opacity: 0.07;
-  filter: saturate(0.7) brightness(0.55);
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background-image: url('/img/footer-petals.jpg') !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+  z-index: 0 !important;
+  opacity: 0.12 !important;
+  filter: saturate(1.1) brightness(0.7) !important;
 }
 
 .bloom-footer::after {
-  content: '';
-  position: absolute;
-  inset: 0;
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
   background: linear-gradient(
     to bottom,
-    rgba(26, 10, 46, 0.96) 0%,
-    rgba(13,  5, 23, 0.98) 100%
-  );
-  z-index: 1;
+    rgba(26, 10, 46, 0.93) 0%,
+    rgba(13,  5, 23, 0.96) 100%
+  ) !important;
+  z-index: 1 !important;
 }
 
 .bloom-footer > * {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.bloom-footer .container {
   position: relative;
-  z-index: 2;
+  z-index: 3;
 }
 
 @media (max-width: 768px) {
