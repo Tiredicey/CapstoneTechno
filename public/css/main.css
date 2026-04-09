@@ -431,16 +431,16 @@ body {
 }
 
 .newsletter-section::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url('/img/footer-petals.jpg');
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
-  z-index: 0;
-  opacity: 0.20;
-  filter: saturate(1.2) brightness(0.85);
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background-image: url('/img/footer-petals.jpg') !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+  z-index: 0 !important;
+  opacity: 0.25 !important;
+  filter: saturate(1.2) brightness(0.85) !important;
 }
 
 .newsletter-section::after {
