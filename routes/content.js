@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import db from '../database/Database.js';
 import { authenticate, requireAdmin } from '../middleware/auth.js';
+import { SocketManager } from '../sockets/SocketManager.js';
 
 const router = Router();
 
@@ -17,10 +18,8 @@ function rowsToObject(rows) {
 
 router.get('/', (req, res) => {
   try {
-    const rows = db.all(`SELECT * FROM site_content ORDER BY key ASC`);
-    res.json(rowsToObject(rows));
+    res.json(rowsToObject(db.all(`SELECT * FROM site_content ORDER BY key ASC`)));
   } catch (err) {
-    console.error('[CONTENT GET]', err);
     res.status(500).json({ error: 'Failed to fetch content' });
   }
 });
@@ -37,9 +36,10 @@ router.put('/', authenticate, requireAdmin, (req, res) => {
       else if (typeof value === 'number') { type = 'number'; strVal = String(value); }
       db.run(upsert, [key, strVal, type]);
     }
-    res.json(rowsToObject(db.all(`SELECT * FROM site_content ORDER BY key ASC`)));
+    const result = rowsToObject(db.all(`SELECT * FROM site_content ORDER BY key ASC`));
+    SocketManager.emitContentUpdate({ content: result });
+    res.json(result);
   } catch (err) {
-    console.error('[CONTENT PUT]', err);
     res.status(500).json({ error: 'Failed to save content' });
   }
 });
