@@ -27,7 +27,7 @@ It has a customer-facing storefront, an admin panel, and live updates between th
 | Fix something | [→ Common Issues](#-common-issues) |
 ```
 ```
----
+
 
 
 ## ✅ Quick Start
