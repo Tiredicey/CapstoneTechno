@@ -14,7 +14,7 @@ It has a customer-facing storefront, an admin panel, and live updates between th
 **You do not need to read this all at once.**
 
 ---
-```
+
 ## 🗂 Quick Index
 
 | I want to... | Go to |
@@ -26,9 +26,9 @@ It has a customer-facing storefront, an admin panel, and live updates between th
 | See the tech used | [→ Stack](#-tech-stack) |
 | Fix something | [→ Common Issues](#-common-issues) |
 
-```
 
 
+---
 
 ## ✅ Quick Start
 
