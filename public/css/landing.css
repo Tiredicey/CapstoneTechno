@@ -13,6 +13,38 @@
   position: absolute;
   inset: 0;
   z-index: 0;
+  background-image: url('../img/hero-flowers.jpg');
+  background-size: cover;
+  background-position: center right;
+  background-repeat: no-repeat;
+}
+
+.hero-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    rgba(26, 10, 46, 0.97) 0%,
+    rgba(26, 10, 46, 0.92) 35%,
+    rgba(26, 10, 46, 0.75) 55%,
+    rgba(26, 10, 46, 0.25) 75%,
+    rgba(26, 10, 46, 0.05) 100%
+  );
+  z-index: 1;
+}
+
+.hero-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 60% 80% at 70% 50%,
+    rgba(139, 31, 110, 0.18) 0%,
+    transparent 70%
+  );
+  z-index: 2;
+  mix-blend-mode: screen;
 }
 
 .hero-orb {
@@ -26,20 +58,22 @@
 .hero-orb-1 {
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, var(--bloom-primary), transparent);
+  background: radial-gradient(circle, rgba(139,31,110,0.25), transparent);
   top: -200px;
   right: -100px;
   animation-duration: 12s;
+  mix-blend-mode: screen;
 }
 
 .hero-orb-2 {
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, var(--bloom-lavender), transparent);
+  background: radial-gradient(circle, rgba(124,58,237,0.2), transparent);
   bottom: -100px;
   left: -100px;
   animation-duration: 16s;
   animation-delay: -5s;
+  mix-blend-mode: screen;
 }
 
 .hero-orb-3 {
@@ -166,6 +200,75 @@
     transform: translateY(-35px) translateX(6px) rotate(270deg);
     opacity: 0.8;
   }
+}
+
+
+.petal-float {
+  position: absolute;
+  pointer-events: none;
+  z-index: 3;
+  font-size: 1.6rem;
+  animation: petalAntiGrav ease-in-out infinite;
+  filter: drop-shadow(0 4px 12px rgba(232,67,147,0.4));
+  will-change: transform, opacity;
+}
+
+.petal-float:nth-child(1)  { top:72%; left:52%; animation-duration:9s;  animation-delay:0s;   font-size:1.2rem; }
+.petal-float:nth-child(2)  { top:60%; left:58%; animation-duration:12s; animation-delay:-3s;  font-size:1.8rem; }
+.petal-float:nth-child(3)  { top:78%; left:65%; animation-duration:10s; animation-delay:-6s;  font-size:1rem;   }
+.petal-float:nth-child(4)  { top:45%; left:55%; animation-duration:14s; animation-delay:-1s;  font-size:2rem;   }
+.petal-float:nth-child(5)  { top:85%; left:72%; animation-duration:11s; animation-delay:-4s;  font-size:1.4rem; }
+.petal-float:nth-child(6)  { top:55%; left:80%; animation-duration:13s; animation-delay:-7s;  font-size:1.1rem; }
+.petal-float:nth-child(7)  { top:90%; left:60%; animation-duration:8s;  animation-delay:-2s;  font-size:0.9rem; }
+.petal-float:nth-child(8)  { top:40%; left:68%; animation-duration:16s; animation-delay:-9s;  font-size:1.6rem; }
+
+@keyframes petalAntiGrav {
+  0% {
+    transform: translateY(0px) translateX(0px) rotate(0deg) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.85;
+  }
+  30% {
+    transform: translateY(-60px) translateX(18px) rotate(45deg) scale(1.1);
+    opacity: 0.9;
+  }
+  55% {
+    transform: translateY(-120px) translateX(-12px) rotate(120deg) scale(0.95);
+    opacity: 0.7;
+  }
+  80% {
+    transform: translateY(-180px) translateX(22px) rotate(200deg) scale(1.05);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(-240px) translateX(-8px) rotate(270deg) scale(0.8);
+    opacity: 0;
+  }
+}
+
+
+.hero-flower-glow {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 55%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 80% 70% at 80% 55%,
+    rgba(232, 67, 147, 0.07) 0%,
+    rgba(139, 31, 110, 0.05) 40%,
+    transparent 70%
+  );
+  animation: glowPulse 6s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50%       { opacity: 1;   transform: scale(1.03); }
 }
 
 .hero-content {
