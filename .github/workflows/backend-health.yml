@@ -3,14 +3,16 @@ on:
   schedule:
     - cron: '0 */6 * * *'
   workflow_dispatch:
+
 jobs:
   health:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          if[ -z "${{ vars.BACKEND_URL }}" ]; then exit 0; fi
+          if [ -z "${{ vars.BACKEND_URL }}" ]; then exit 0; fi
           echo "BACKEND=${{ vars.BACKEND_URL }}" >> $GITHUB_ENV
+      
       - if: env.BACKEND != ''
         run: |
           HTTP=$(curl -s -o /tmp/health.json -w "%{http_code}" "$BACKEND/health" --max-time 15 --retry 2 --retry-delay 3)
-          if[ "$HTTP" = "200" ]; then exit 0; else exit 1; fi
+          if [ "$HTTP" = "200" ]; then exit 0; else exit 1; fi
