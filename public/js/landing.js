@@ -23,6 +23,22 @@ function showToast(msg, type) {
   }, 3500);
 }
 
+function spawnPetals() {
+  const hero = document.querySelector('.hero-bg');
+  if (!hero) return;
+  const petals = ['🌸', '🌹', '🌺', '🪷', '✿', '❀', '✦'];
+  for (let i = 0; i < 8; i++) {
+    const p = document.createElement('div');
+    p.className = 'petal-float';
+    p.textContent = petals[i % petals.length];
+    hero.appendChild(p);
+  }
+ 
+  const glow = document.createElement('div');
+  glow.className = 'hero-flower-glow';
+  hero.appendChild(glow);
+}
+
 function spawnParticles() {
   const field = document.getElementById('particles');
   if (!field) return;
@@ -265,6 +281,7 @@ function initLandingSocket() {
 
 document.addEventListener('DOMContentLoaded', function () {
   spawnParticles();
+  spawnPetals();
   loadFeatured();
   loadBanners();
   loadSiteContent();
