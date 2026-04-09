@@ -373,6 +373,4 @@ See `LICENSE` file.
 *One step at a time is still progress.*
 
 </div>
-```
 
----
