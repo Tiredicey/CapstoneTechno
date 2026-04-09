@@ -10,7 +10,7 @@ let currentSort = 'rating';
 let currentTag = '';
 
 function fmt(n) {
-  return '\u20B1' + Number(n || 0).toFixed(2);
+  return '₱' + Number(n || 0).toFixed(2);
 }
 
 function showToast(msg, type) {
@@ -29,16 +29,21 @@ function showToast(msg, type) {
 
 window.showToast = showToast;
 
+function resolveImage(raw) {
+  if (!raw) return '';
+  var imgs = raw;
+  if (typeof imgs === 'string') { try { imgs = JSON.parse(imgs); } catch (e) { return raw; } }
+  if (!Array.isArray(imgs) || !imgs.length) return '';
+  var img = imgs.flat(Infinity)[0];
+  if (typeof img !== 'string') return '';
+  var clean = img.replace(/[\[\]"\\]/g, '/');
+  var parts = clean.split('/');
+  var filename = parts[parts.length - 1];
+  return filename && filename !== 'null' ? '/uploads/products/' + filename : '';
+}
+
 function renderProductCard(p) {
-  var parsedImgs = p.images ||[];
-  if (typeof parsedImgs === 'string') { try { parsedImgs = JSON.parse(parsedImgs); } catch(e){} }
-  var image = Array.isArray(parsedImgs) && parsedImgs.length ? parsedImgs.flat(Infinity)[0] : '';
-  if (typeof image === 'string') {
-    var cleanStr = image.replace(/[\[\]"\\]/g, '/');
-    var parts = cleanStr.split('/');
-    var filename = parts[parts.length - 1];
-    image = filename && filename !== 'null' ? '/uploads/products/' + filename : '';
-  }
+  var image = resolveImage(p.images);
   var price = p.base_price || p.basePrice || 0;
   var stars = Array.from({ length: 5 }, function (_, i) {
     return '<span style="color:' + (i < Math.round(p.rating || 0) ? '#FFD700' : 'rgba(255,255,255,0.2)') + ';">★</span>';
@@ -46,7 +51,7 @@ function renderProductCard(p) {
   return '<div class="product-card" data-id="' + p.id + '" style="cursor:pointer;position:relative;">' +
     '<button class="product-wishlist" style="position:absolute;top:12px;right:12px;background:rgba(0,0,0,0.4);border:none;color:white;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;z-index:2;">♡</button>' +
     '<div style="height:200px;border-radius:12px;overflow:hidden;background:rgba(139,31,110,0.15);display:flex;align-items:center;justify-content:center;margin-bottom:12px;">' +
-    (image ? '<img src="' + image + '" style="width:100%;height:100%;object-fit:cover;" alt="' + p.name + '">' : '<span style="font-size:3rem;">🌸</span>') +
+    (image ? '<img src="' + image + '" style="width:100%;height:100%;object-fit:cover;" alt="' + p.name + '" loading="lazy">' : '<span style="font-size:3rem;">🌸</span>') +
     '</div>' +
     '<div style="font-weight:600;margin-bottom:4px;font-size:0.95rem;">' + p.name + '</div>' +
     '<div style="font-size:0.78rem;color:rgba(255,255,255,0.4);margin-bottom:8px;">' + (p.category || '') + '</div>' +
@@ -69,15 +74,12 @@ async function loadProducts(append) {
   if (currentCat !== 'all') params.set('category', currentCat);
   if (currentSearch) params.set('search', currentSearch);
   if (currentTag) params.set('tags', currentTag);
-
   try {
     var data = await Api.get('/products?' + params.toString());
     var products = data.products || data;
     if (!Array.isArray(products)) products = [];
-
     if (currentSort === 'price_asc') products.sort(function (a, b) { return (a.base_price || 0) - (b.base_price || 0); });
     else if (currentSort === 'price_desc') products.sort(function (a, b) { return (b.base_price || 0) - (a.base_price || 0); });
-
     if (!append) grid.innerHTML = '';
     if (!products.length && !append) {
       grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:rgba(255,255,255,0.4);">No arrangements found.</div>';
@@ -148,24 +150,12 @@ async function openProductModal(id) {
       return '<span style="color:' + (i < Math.round(p.rating || 0) ? '#FFD700' : 'rgba(255,255,255,0.2)') + ';">★</span>';
     }).join('');
     var price = p.base_price || p.basePrice || 0;
-      var modalImg = '';
-      var pImgs = p.images ||[];
-      if (typeof pImgs === 'string') { try { pImgs = JSON.parse(pImgs); } catch(e){} }
-      if (Array.isArray(pImgs) && pImgs.length) {
-        modalImg = pImgs.flat(Infinity)[0];
-        if (typeof modalImg === 'string') {
-          var cleanStr = modalImg.replace(/[\[\]"\\]/g, '/');
-          var mParts = cleanStr.split('/');
-          var mFilename = mParts[mParts.length - 1];
-          modalImg = mFilename && mFilename !== 'null' ? '/uploads/products/' + mFilename : '';
-        }
-      }
-
-      body.innerHTML =
-        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">' +
-        '<div style="border-radius:16px;overflow:hidden;background:rgba(139,31,110,0.15);height:280px;display:flex;align-items:center;justify-content:center;font-size:5rem;">' +
-        (modalImg ? '<img src="' + modalImg + '" style="width:100%;height:100%;object-fit:cover;" alt="' + p.name + '">' : '🌸') +
-        '</div>' +
+    var modalImg = resolveImage(p.images);
+    body.innerHTML =
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">' +
+      '<div style="border-radius:16px;overflow:hidden;background:rgba(139,31,110,0.15);height:280px;display:flex;align-items:center;justify-content:center;font-size:5rem;">' +
+      (modalImg ? '<img src="' + modalImg + '" style="width:100%;height:100%;object-fit:cover;" alt="' + p.name + '">' : '🌸') +
+      '</div>' +
       '<div style="display:flex;flex-direction:column;gap:12px;">' +
       '<div style="font-size:0.75rem;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;">' + (p.category || '') + '</div>' +
       '<div style="font-size:2rem;font-weight:700;color:#FFD700;">' + fmt(price) + '</div>' +
@@ -311,10 +301,16 @@ if (urlParams.get('id')) openProductModal(urlParams.get('id'));
 loadProducts();
 loadRecs();
 
-if (typeof io !== 'undefined') {
-  var socket = io();
-  socket.on('catalog_update', function() {
-    loadProducts(); 
+Store.on('catalog_update', function (data) {
+  if (data && data.action === 'deleted') {
+    var card = document.querySelector('.product-card[data-id="' + data.id + '"]');
+    if (card) card.remove();
+  } else {
+    loadProducts();
     loadRecs();
-  });
-}
+  }
+});
+
+Store.on('promo_update', function () {
+  showToast('New promotions available! 🎉', 'info');
+});
