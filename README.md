@@ -1,4 +1,4 @@
-```markdown
+
 # 🌸 Bloom — Flower Shop Platform
 
 > A full-stack flower shop with real-time admin → storefront sync.
@@ -25,7 +25,7 @@ It has a customer-facing storefront, an admin panel, and live updates between th
 | Know what's connected to what | [→ How It Works](#-how-it-works) |
 | See the tech used | [→ Stack](#-tech-stack) |
 | Fix something | [→ Common Issues](#-common-issues) |
-```
+
 ```
 
 
