@@ -2,7 +2,11 @@
   'use strict';
   if (window.Api) return;
 
-  var BASE = '/api';
+  var BASE = (
+    (window.BLOOM_CONFIG && window.BLOOM_CONFIG.API_URL) ||
+    window.__BLOOM_API_URL ||
+    '/api'
+  ).replace(/\/+$/, '');
 
   function getHeaders(extra) {
     var h = Object.assign({ 'Content-Type': 'application/json' }, extra || {});
@@ -17,14 +21,15 @@
     return h;
   }
 
+  function buildUrl(rawPath) {
+    var clean = rawPath.replace(/^\/api\//, '/').replace(/^\//, '');
+    return BASE + '/' + clean;
+  }
+
   async function request(method, path, body, opts) {
     opts = opts || {};
-    var fullPath = path.startsWith('/api/') ? path.replace('/api/', '/') : path;
-    var url = BASE + (fullPath.startsWith('/') ? fullPath : '/' + fullPath);
-    var options = {
-      method: method,
-      headers: getHeaders(opts.headers || {})
-    };
+    var url = buildUrl(path);
+    var options = { method: method, headers: getHeaders(opts.headers || {}) };
     if (body !== undefined && body !== null) {
       options.body = JSON.stringify(body);
     }
@@ -32,14 +37,13 @@
     try {
       res = await fetch(url, options);
     } catch (networkErr) {
-      throw new Error('Network error — check your connection');
+      var hint = BASE.includes('localhost')
+        ? ' — is the local server running?'
+        : ' — backend may be down or BACKEND_URL is misconfigured.';
+      throw new Error('Network error' + hint);
     }
     var data;
-    try {
-      data = await res.json();
-    } catch {
-      data = {};
-    }
+    try { data = await res.json(); } catch { data = {}; }
     if (!res.ok) {
       var msg = (data && (data.error || data.message)) || res.statusText || ('HTTP ' + res.status);
       if (res.status === 401) {
@@ -51,7 +55,7 @@
       }
       var err = new Error(msg);
       err.status = res.status;
-      err.data = data;
+      err.data   = data;
       throw err;
     }
     return data;
@@ -67,11 +71,9 @@
       var session = window.Store && window.Store.get('sessionId');
       if (session) h['X-Session-Id'] = session;
     } catch {}
-    var fullPath = path.startsWith('/api/') ? path.replace('/api/', '/') : path;
-    var url = BASE + (fullPath.startsWith('/') ? fullPath : '/' + fullPath);
     var res;
     try {
-      res = await fetch(url, { method: 'POST', headers: h, body: formData });
+      res = await fetch(buildUrl(path), { method: 'POST', headers: h, body: formData });
     } catch {
       throw new Error('Upload network error');
     }
@@ -82,15 +84,22 @@
     return res.json();
   }
 
+  function getSocketUrl() {
+    return (window.BLOOM_CONFIG && window.BLOOM_CONFIG.SOCKET_URL) ||
+      BASE.replace(/\/api$/, '') ||
+      window.location.origin;
+  }
+
   window.Api = {
-    get:    function (path, opts)       { return request('GET',    path, null, opts); },
-    post:   function (path, body, opts) { return request('POST',   path, body, opts); },
-    put:    function (path, body, opts) { return request('PUT',    path, body, opts); },
-    patch:  function (path, body, opts) { return request('PATCH',  path, body, opts); },
-    delete: function (path, opts)       { return request('DELETE', path, null, opts); },
-    upload: upload
+    get:          function (path, opts)       { return request('GET',    path, null, opts); },
+    post:         function (path, body, opts) { return request('POST',   path, body, opts); },
+    put:          function (path, body, opts) { return request('PUT',    path, body, opts); },
+    patch:        function (path, body, opts) { return request('PATCH',  path, body, opts); },
+    delete:       function (path, opts)       { return request('DELETE', path, null, opts); },
+    upload:       upload,
+    getSocketUrl: getSocketUrl,
+    baseUrl:      BASE
   };
 
   window.__BloomApi = window.Api;
-
 })();
