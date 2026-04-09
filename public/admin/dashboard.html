@@ -821,5 +821,127 @@
 <script src="/js/core/Store.js"></script>
 <script src="/js/core/Api.js"></script>
 <script src="/js/admin.js"></script>
+<script>
+(function() {
+  const token = () => localStorage.getItem('bloom_token');
+
+  function authHeaders() {
+    return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token()}` };
+  }
+
+  function renderAdminFaqs(faqs) {
+    const list = document.getElementById('faqList');
+    if (!list) return;
+    if (!faqs.length) {
+      list.innerHTML = '<div style="color:rgba(255,255,255,0.3);text-align:center;padding:40px;">No FAQs yet. Add your first one!</div>';
+      return;
+    }
+    list.innerHTML = faqs.map(f => `
+      <div class="faq-item">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+          <div style="flex:1;">
+            <div class="faq-question">${f.question}</div>
+            <div class="faq-answer" style="margin-top:6px;">${f.answer}</div>
+            <div style="margin-top:8px;display:flex;gap:8px;align-items:center;">
+              <span style="font-size:0.7rem;padding:2px 10px;border-radius:100px;background:rgba(124,58,237,0.2);color:#a78bfa;">${f.category || 'general'}</span>
+              <span style="font-size:0.7rem;color:rgba(255,255,255,0.25);">${f.active ? '● Active' : '○ Hidden'}</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;flex-shrink:0;">
+            <button class="btn btn-ghost btn-sm" onclick="editFaq('${f.id}','${encodeURIComponent(f.question)}','${encodeURIComponent(f.answer)}','${f.category}')">Edit</button>
+            <button class="btn btn-sm" style="background:rgba(255,107,107,0.15);border:1px solid rgba(255,107,107,0.3);color:#ff6b6b;" onclick="deleteFaq('${f.id}')">Delete</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function loadAdminFaqs() {
+    const list = document.getElementById('faqList');
+    if (!list) return;
+    list.innerHTML = '<div style="color:rgba(255,255,255,0.2);text-align:center;padding:40px;">Loading...</div>';
+    fetch('/api/faq', { headers: authHeaders() })
+      .then(r => r.json())
+      .then(data => renderAdminFaqs(Array.isArray(data) ? data : []))
+      .catch(() => {
+        list.innerHTML = '<div style="color:#ff6b6b;text-align:center;padding:40px;">Failed to load FAQs.</div>';
+      });
+  }
+
+  window.editFaq = function(id, q, a, cat) {
+    document.getElementById('faqEditId').value = id;
+    document.getElementById('faqQuestion').value = decodeURIComponent(q);
+    document.getElementById('faqAnswer').value = decodeURIComponent(a);
+    document.getElementById('faqCategory').value = cat || 'general';
+    document.getElementById('faqModalTitle').textContent = 'Edit FAQ';
+    document.getElementById('addFaqModal').classList.add('active');
+  };
+
+  window.deleteFaq = function(id) {
+    if (!confirm('Delete this FAQ? This cannot be undone.')) return;
+    fetch(`/api/faq/${id}`, { method: 'DELETE', headers: authHeaders() })
+      .then(r => r.json())
+      .then(() => loadAdminFaqs())
+      .catch(() => alert('Failed to delete FAQ.'));
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const openBtn = document.getElementById('openAddFaq');
+    const closeBtn = document.getElementById('closeAddFaq');
+    const cancelBtn = document.getElementById('cancelFaq');
+    const saveBtn = document.getElementById('saveFaq');
+    const modal = document.getElementById('addFaqModal');
+    const navItems = document.querySelectorAll('.admin-nav-item');
+
+    navItems.forEach(item => {
+      item.addEventListener('click', () => {
+        if (item.dataset.panel === 'faq') setTimeout(loadAdminFaqs, 50);
+      });
+    });
+
+    openBtn?.addEventListener('click', () => {
+      document.getElementById('faqEditId').value = '';
+      document.getElementById('faqQuestion').value = '';
+      document.getElementById('faqAnswer').value = '';
+      document.getElementById('faqCategory').value = 'general';
+      document.getElementById('faqModalTitle').textContent = 'Add FAQ';
+      modal?.classList.add('active');
+    });
+
+    closeBtn?.addEventListener('click', () => modal?.classList.remove('active'));
+    cancelBtn?.addEventListener('click', () => modal?.classList.remove('active'));
+
+    saveBtn?.addEventListener('click', () => {
+      const id = document.getElementById('faqEditId').value;
+      const question = document.getElementById('faqQuestion').value.trim();
+      const answer = document.getElementById('faqAnswer').value.trim();
+      const category = document.getElementById('faqCategory').value;
+      if (!question || !answer) { alert('Question and answer are required.'); return; }
+
+      const method = id ? 'PUT' : 'POST';
+      const url = id ? `/api/faq/${id}` : '/api/faq';
+
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving…';
+
+      fetch(url, {
+        method,
+        headers: authHeaders(),
+        body: JSON.stringify({ question, answer, category })
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data.error) { alert(data.error); return; }
+          modal?.classList.remove('active');
+          loadAdminFaqs();
+        })
+        .catch(() => alert('Failed to save FAQ.'))
+        .finally(() => { saveBtn.disabled = false; saveBtn.textContent = 'Save FAQ'; });
+    });
+
+    if (document.querySelector('[data-panel="faq"].active')) loadAdminFaqs();
+  });
+})();
+</script>
 </body>
 </html>
