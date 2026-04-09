@@ -1,0 +1,79 @@
+name: 🌸 Deploy Frontend to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'public/**'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages:    write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Prepare Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 💉 Inject backend URL into env-config.js
+        run: |
+          BACKEND="${{ vars.BACKEND_URL }}"
+          if [ -z "$BACKEND" ]; then
+            BACKEND="https://your-backend.up.railway.app"
+          fi
+          mkdir -p public
+          cat > public/env-config.js << EOF
+          window.BLOOM_CONFIG = {
+            API_URL:    "${BACKEND}/api",
+            SOCKET_URL: "${BACKEND}",
+            VERSION:    "${{ github.sha }}",
+            DEPLOYED:   "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          };
+          EOF
+
+      - name: 🔍 Verify required HTML files exist
+        run: |
+          REQUIRED="index.html catalog.html cart.html checkout.html \
+                    customize.html support.html tracking.html \
+                    profile.html confirmation.html admin.html"
+          for f in $REQUIRED; do
+            if [ ! -f "public/$f" ]; then
+              echo "Missing: public/$f"
+            fi
+          done
+
+      - name: ⚙️ Configure GitHub Pages
+        uses: actions/configure-pages@v4
+
+      - name: 📦 Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './public'
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 🚀 Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: 🌸 Print deployment summary
+        run: |
+          echo "URL: ${{ steps.deployment.outputs.page_url }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Backend: ${{ vars.BACKEND_URL }}"
