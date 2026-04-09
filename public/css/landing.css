@@ -13,22 +13,34 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  background-image: url('../img/hero-flowers.jpg');
-  background-size: cover;
-  background-position: center right;
-  background-repeat: no-repeat;
+  background-color: var(--bloom-dark);
 }
+
+
+.hero-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('../img/hero-flowers.jpg');
+  background-size: 58% auto;
+  background-position: right center;
+  background-repeat: no-repeat;
+  z-index: 0;
+}
+
 
 .hero-bg::before {
   content: '';
   position: absolute;
   inset: 0;
   background: linear-gradient(
-    105deg,
-    rgba(26, 10, 46, 0.97) 0%,
-    rgba(26, 10, 46, 0.92) 35%,
-    rgba(26, 10, 46, 0.75) 55%,
-    rgba(26, 10, 46, 0.25) 75%,
+    to right,
+    rgba(26, 10, 46, 1.0)  0%,
+    rgba(26, 10, 46, 1.0)  30%,
+    rgba(26, 10, 46, 0.95) 42%,
+    rgba(26, 10, 46, 0.80) 52%,
+    rgba(26, 10, 46, 0.40) 65%,
+    rgba(26, 10, 46, 0.10) 80%,
     rgba(26, 10, 46, 0.05) 100%
   );
   z-index: 1;
