@@ -56,9 +56,15 @@ function spawnParticles() {
 }
 
 function renderProductCard(p) {
-  const image = Array.isArray(p.images) && p.images.length ? p.images[0] : '';
-  const price = p.base_price || p.basePrice || 0;
-  const rating = p.rating || 0;
+  const image = p.image_url || p.imageUrl ||
+                (Array.isArray(p.images) && p.images.length ? p.images[0] : '') ||
+                (Array.isArray(p.image) && p.image.length ? p.image[0] : '') || '';
+  const price = p.price || p.base_price || p.basePrice ||
+                p.base_Price || p.unit_price || 0;
+  const rating = p.rating || p.average_rating || p.avgRating || 0;
+  const category = p.category || p.category_name ||
+                   p.categoryName || p.type || '';
+  const name = p.name || p.product_name || p.title || 'Unnamed';
   const stars = Array.from({ length: 5 }, function (_, i) {
     return '<span style="color:' + (i < Math.round(rating) ? '#FFD700' : 'rgba(255,255,255,0.2)') + ';">★</span>';
   }).join('');
@@ -67,8 +73,8 @@ function renderProductCard(p) {
     '<div style="height:200px;border-radius:12px;overflow:hidden;background:rgba(139,31,110,0.15);display:flex;align-items:center;justify-content:center;margin-bottom:12px;">' +
     (image ? '<img src="' + image + '" style="width:100%;height:100%;object-fit:cover;" alt="' + p.name + '" loading="lazy">' : '<span style="font-size:3rem;">🌸</span>') +
     '</div>' +
-    '<div style="font-weight:600;margin-bottom:4px;font-size:0.95rem;">' + p.name + '</div>' +
-    '<div style="font-size:0.78rem;color:rgba(255,255,255,0.4);margin-bottom:8px;">' + (p.category || '') + '</div>' +
+    '<div style="font-weight:600;margin-bottom:4px;font-size:0.95rem;">' + name + '</div>' +
+    '<div style="font-size:0.78rem;color:rgba(255,255,255,0.4);margin-bottom:8px;">' + category + '</div>' +
     '<div style="display:flex;gap:2px;margin-bottom:10px;" aria-label="' + rating + ' out of 5 stars">' + stars + '</div>' +
     '<div style="display:flex;justify-content:space-between;align-items:center;">' +
     '<div style="font-weight:700;color:#FFD700;font-size:1rem;">₱' + Number(price).toFixed(2) + '</div>' +
