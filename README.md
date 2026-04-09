@@ -32,7 +32,11 @@ It has a customer-facing storefront, an admin panel, and live updates between th
 
 > Three steps. That's it.
 
+```
+
 **1. Install**
+
+
 ```bash
 npm install
 ```
