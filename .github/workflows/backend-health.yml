@@ -1,0 +1,43 @@
+name: 🔍 Backend Health Check
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  health:
+    name: Ping Backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check BACKEND_URL is configured
+        run: |
+          if [ -z "${{ vars.BACKEND_URL }}" ]; then
+            echo "BACKEND_URL not set — skipping."
+            exit 0
+          fi
+          echo "BACKEND=${{ vars.BACKEND_URL }}" >> $GITHUB_ENV
+
+      - name: Ping /health endpoint
+        if: env.BACKEND != ''
+        run: |
+          HTTP=$(curl -s -o /tmp/health.json -w "%{http_code}" \
+                 "$BACKEND/health" --max-time 15 --retry 2 --retry-delay 3)
+          cat /tmp/health.json || true
+          if [ "$HTTP" = "200" ]; then
+            echo "✅ Backend is healthy"
+          else
+            echo "❌ Backend returned HTTP $HTTP"
+            exit 1
+          fi
+
+      - name: Ping /api/products endpoint
+        if: env.BACKEND != ''
+        run: |
+          HTTP=$(curl -s -o /dev/null -w "%{http_code}" \
+                 "$BACKEND/api/products?limit=1" --max-time 15)
+          if [ "$HTTP" = "200" ]; then
+            echo "✅ Products API responding"
+          else
+            echo "⚠️  Products API returned HTTP $HTTP"
+          fi
