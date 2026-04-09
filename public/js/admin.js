@@ -1,7 +1,28 @@
 const STATUS_ORDER = ['new','processing','quality_check','packed','shipped','out_for_delivery','delivered'];
+const Api = window.Api || window.__BloomApi;
+const Store = window.Store || window.__BloomStore;
 let socket = null;
-let allOrdersCache = [];
-let allProductsCache = [];
+let allOrdersCache =[];
+let allProductsCache =[];
+
+function safeDate(d) {
+  if (!d) return '—';
+  let ts = typeof d === 'number' && d < 1e12 ? d * 1000 : d;
+  return new Date(ts).toLocaleDateString();
+}
+
+function resolveImage(raw) {
+  if (!raw) return null;
+  let imgs = raw;
+  if (typeof imgs === 'string') { try { imgs = JSON.parse(imgs); } catch(e) { return raw; } }
+  if (typeof imgs === 'string') { try { imgs = JSON.parse(imgs); } catch(e) {} }
+  let src = Array.isArray(imgs) ? imgs.flat(Infinity)[0] : imgs;
+  if (typeof src !== 'string' || !src) return null;
+  let clean = src.replace(/[\[\]"\\]/g, '/');
+  let parts = clean.split('/');
+  let filename = parts[parts.length - 1];
+  return filename && filename !== 'null' ? '/uploads/products/' + filename : null;
+}
 
 function fmt(n) {
   return `₱${Number(n||0).toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
@@ -179,7 +200,7 @@ function renderOrderTable(orders, search='') {
   const filtered = search
     ? orders.filter(o=>{
         const rec=parseRecipient(o);
-        return (rec.firstName||'').toLowerCase().includes(search)
+        return (rec.firstName||rec.name||'').toLowerCase().includes(search)
           || (o.qr_code||o.id||'').toLowerCase().includes(search);
       })
     : orders;
@@ -191,8 +212,10 @@ function renderOrderTable(orders, search='') {
 
 function parseRecipient(o) {
   if (!o.recipient) return {};
-  if (typeof o.recipient==='object') return o.recipient;
-  try { return JSON.parse(o.recipient); } catch { return {}; }
+  let rec = o.recipient;
+  if (typeof rec === 'string') { try { rec = JSON.parse(rec); } catch {} }
+  if (typeof rec === 'string') { try { rec = JSON.parse(rec); } catch {} }
+  return typeof rec === 'object' && rec ? rec : {};
 }
 
 function emptyRow(cols, msg) {
@@ -210,12 +233,12 @@ function orderRow(o, extended=false) {
   const next = STATUS_ORDER[STATUS_ORDER.indexOf(o.status)+1];
   const rec = parseRecipient(o);
   const total = o.pricing?.finalTotal??0;
-  const date = extended ? `<td style="font-size:0.78rem;color:rgba(255,255,255,0.5);">${new Date((o.created_at||0)*1000).toLocaleDateString()}</td>` : '';
+  const date = extended ? `<td style="font-size:0.78rem;color:rgba(255,255,255,0.5);">${safeDate(o.created_at)}</td>` : '';
   const payment = extended ? `<td><span class="pill ${o.payment_status==='paid'?'pill-green':'pill-yellow'}">${o.payment_status||'pending'}</span></td>` : '';
   return `<tr>
     <td><span class="order-id">${o.qr_code||(o.id||'').slice(0,8)}</span></td>
     ${date}
-    <td style="font-size:0.83rem;">${rec.firstName||'Guest'} ${rec.lastName||''}</td>
+    <td style="font-size:0.83rem;">${rec.firstName||rec.name||'Guest'} ${rec.lastName||''}</td>
     <td style="font-size:0.82rem;color:rgba(255,255,255,0.6);">${o.items?.length||0} item(s)</td>
     <td class="price-cell">${fmt(total)}</td>
     <td><span class="pill ${statusClass(o.status)}">${(o.status||'').replace(/_/g,' ').toUpperCase()}</span></td>
@@ -268,7 +291,7 @@ async function openOrderDetail(id) {
       <div class="order-detail-grid">
         <div class="detail-section">
           <div class="detail-label">RECIPIENT</div>
-          <div style="font-weight:600;">${rec.firstName||''} ${rec.lastName||''}</div>
+          <div style="font-weight:600;">${rec.firstName||rec.name||'Guest'} ${rec.lastName||''}</div>
           <div class="detail-sub">${rec.address||''}${rec.city?', '+rec.city:''}${rec.zip?' '+rec.zip:''}</div>
           <div class="detail-sub">${rec.phone||''}</div>
         </div>
@@ -330,7 +353,7 @@ async function loadQueue() {
             const rec=parseRecipient(o);
             return `<div class="kanban-card" data-id="${o.id}">
               <div class="kanban-id">${o.qr_code||(o.id||'').slice(0,8)}</div>
-              <div class="kanban-name">${rec.firstName||'Guest'} ${rec.lastName||''}</div>
+              <div class="kanban-name">${rec.firstName||rec.name||'Guest'} ${rec.lastName||''}</div>
               <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
                 <span style="font-size:0.72rem;color:rgba(255,255,255,0.4);">${o.delivery_date||'?'}</span>
                 <span style="font-size:0.8rem;font-weight:700;color:#FFD700;">${fmt(o.pricing?.finalTotal)}</span>
@@ -357,25 +380,13 @@ async function loadAdminProducts() {
     if (!tbody) return;
 
    
-   const getImg = (imgs) => {
-      let parsed = imgs;
-      if (typeof imgs === 'string') { try { parsed = JSON.parse(imgs); } catch(e) {} }
-      let src = Array.isArray(parsed) ? parsed.flat(Infinity)[0] : parsed;
-      if (typeof src !== 'string' || !src) return null;
-      src = src.replace(/[\[\]"]/g, ''); // Strip bad arrays/quotes
-      let parts = src.split(/[\\/]/); // Break apart the absolute C:\ path
-      let filename = parts[parts.length - 1]; // Grab just the filename
-      if (!filename || filename === 'null') return null;
-      return '/uploads/products/' + filename; // Force correct relative path
-    };
-
-    tbody.innerHTML = products.length
+   tbody.innerHTML = products.length
       ? products.map(p=>`
         <tr>
           <td>
             <div class="product-thumb">
-              ${getImg(p.images)
-                ?`<img src="${getImg(p.images)}" alt="${p.name}" style="width:44px;height:44px;object-fit:cover;border-radius:8px;">`
+              ${resolveImage(p.images)
+                ?`<img src="${resolveImage(p.images)}" alt="${p.name}" style="width:44px;height:44px;object-fit:cover;border-radius:8px;">`
                 :'<span style="font-size:1.5rem;">🌸</span>'}
             </div>
           </td>
@@ -437,9 +448,12 @@ function openEditProduct(id) {
   document.getElementById('pmTags').value=Array.isArray(p.tags)?p.tags.join(', '):(p.tags||'');
   const preview = document.getElementById('pmImagePreview');
   if (preview) {
-    preview.innerHTML = Array.isArray(p.images)
-      ? p.images.map(src=>`<img src="${src}" style="height:60px;border-radius:6px;object-fit:cover;" alt="">`).join('')
-      : '';
+    let imgs = p.images;
+    if (typeof imgs === 'string') { try { imgs = JSON.parse(imgs); } catch(e) {} }
+    if (typeof imgs === 'string') { try { imgs = JSON.parse(imgs); } catch(e) {} }
+    let arr = Array.isArray(imgs) ? imgs.flat(Infinity) : (imgs ? [imgs] :[]);
+    preview.innerHTML = arr.map(src => resolveImage(src)).filter(Boolean)
+      .map(src => `<img src="${src}" style="height:60px;border-radius:6px;object-fit:cover;" alt="">`).join('');
   }
   document.getElementById('productModal').classList.add('active');
 }
@@ -481,10 +495,9 @@ async function saveProduct() {
   } else if (id) {
     let existing = allProductsCache.find(x => String(x.id) === String(id))?.images ||[];
     if (typeof existing === 'string') { try { existing = JSON.parse(existing); } catch(e){} }
+    if (typeof existing === 'string') { try { existing = JSON.parse(existing); } catch(e){} }
     const flatExisting = Array.isArray(existing) ? existing.flat(Infinity) : [existing];
-    
-    
-    formData.append('images', JSON.stringify(flatExisting.map(img => typeof img === 'string' ? img.replace(/[\[\]"]/g, '') : img)));
+    formData.append('images', JSON.stringify(flatExisting.map(img => typeof img === 'string' ? img.replace(/[\[\]"\\]/g, '/') : img)));
   }
 
   const btn = document.getElementById('saveProduct');
@@ -494,29 +507,7 @@ async function saveProduct() {
     const url = id ? `/api/products/${id}` : '/api/products';
     const method = id ? 'PUT' : 'POST';
    
-   
-    let token = '';
-    try { token = window.Store ? window.Store.get('token') : Store.get('token'); } catch(e) {}
-    if (!token) token = localStorage.getItem('bloom_token') || localStorage.getItem('token') || '';
-
-    const resp = await fetch(url, {
-      method,
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'x-access-token': token,
-        'bloom-token': token
-      },
-      body: formData
-    });
-
-    let resultText = '';
-    try { resultText = await resp.text(); } catch(e){}
-    let result = {};
-    try { result = resultText ? JSON.parse(resultText) : {}; } catch(e){ result = { message: resultText || 'Unexpected API response' }; }
-
-    if (!resp.ok) {
-      throw new Error(result.message || result.error || 'Failed to save product');
-    }
+    await Api.upload(url, formData, method);
 
     showToast(id ? 'Product updated ✓' : 'Product created 🌸', 'success');
     document.getElementById('productModal').classList.remove('active');
@@ -821,7 +812,7 @@ async function loadUsers() {
           <td style="font-size:0.82rem;color:rgba(255,255,255,0.6);">${u.email||'—'}</td>
           <td><span class="pill ${u.role==='admin'?'pill-pink':'pill-blue'}">${u.role||'customer'}</span></td>
           <td style="font-weight:600;color:#FFD700;">${u.loyalty_points||0}</td>
-          <td style="font-size:0.78rem;color:rgba(255,255,255,0.4);">${u.created_at?new Date(u.created_at*1000).toLocaleDateString():'—'}</td>
+          <td style="font-size:0.78rem;color:rgba(255,255,255,0.4);">${safeDate(u.created_at)}</td>
           <td>
             <div class="action-btns">
               <button class="btn btn-ghost btn-sm view-user" data-id="${u.id}">View</button>
@@ -863,7 +854,7 @@ function openUserDetail(id, users) {
     </div>
     <div class="detail-section" style="margin-top:16px;">
       <div class="detail-label">ACCOUNT</div>
-      <div style="font-size:0.85rem;">Joined: ${u.created_at?new Date(u.created_at*1000).toLocaleDateString():'—'}</div>
+      <div style="font-size:0.85rem;">Joined: ${safeDate(u.created_at)}</div>
       <div style="font-size:0.85rem;">Orders: ${u.order_count||0}</div>
       <div style="font-size:0.85rem;">Total Spent: ${fmt(u.total_spent||0)}</div>
     </div>`;
@@ -883,7 +874,7 @@ async function loadReviews() {
           <td style="font-size:0.83rem;">${r.user_name||'Anonymous'}</td>
           <td style="white-space:nowrap;">${stars(r.rating)}</td>
           <td style="font-size:0.82rem;color:rgba(255,255,255,0.6);max-width:260px;">${(r.comment||'—').slice(0,100)}${r.comment?.length>100?'…':''}</td>
-          <td style="font-size:0.78rem;color:rgba(255,255,255,0.35);">${r.created_at?new Date(r.created_at*1000).toLocaleDateString():'—'}</td>
+          <td style="font-size:0.78rem;color:rgba(255,255,255,0.35);">${safeDate(r.created_at)}</td>
           <td>
             <button class="btn btn-sm delete-review" data-id="${r.id}" style="background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.25);">Delete</button>
           </td>
@@ -915,7 +906,7 @@ async function loadPromos() {
           <td style="font-weight:700;">${p.discount_type==='percent'||p.type==='percent'?p.value+'%':fmt(p.value)}</td>
           <td>${p.min_order_amount?fmt(p.min_order_amount):'—'}</td>
           <td>${p.used_count||0} / ${p.max_uses||'∞'}</td>
-          <td style="font-size:0.78rem;color:rgba(255,255,255,0.4);">${p.expires_at?new Date(p.expires_at*1000).toLocaleDateString():'Never'}</td>
+          <td style="font-size:0.78rem;color:rgba(255,255,255,0.4);">${p.expires_at?safeDate(p.expires_at):'Never'}</td>
           <td><span class="pill ${p.is_active?'pill-green':'pill-red'}">${p.is_active?'Active':'Inactive'}</span></td>
           <td>
             <div class="action-btns">
@@ -1048,19 +1039,9 @@ async function saveBanner() {
   const btn=document.getElementById('saveBanner');
   btn.disabled=true; btn.textContent='Saving...';
   try {
-    const token = (typeof window !== 'undefined' && window.Store ? window.Store.get('token') : null) || localStorage.getItem('bloom_token') || localStorage.getItem('token') || '';
     const url = id ? `/api/banners/${id}` : '/api/banners';
-    const resp = await fetch(url, {
-      method: id ? 'PUT' : 'POST',
-      headers: { 'Authorization': `Bearer ${token}` },
-      body: formData
-    });
     
-    if (!resp.ok) {
-      let errText = await resp.text();
-      try { const e = JSON.parse(errText); errText = e.error || e.message; } catch(e){}
-      throw new Error(errText || 'Failed to save banner');
-    }
+    await Api.upload(url, formData, id ? 'PUT' : 'POST');
     
     showToast(id ? 'Banner updated ✓' : 'Banner created ✓', 'success');
     document.getElementById('bannerModal').classList.remove('active');
@@ -1242,12 +1223,13 @@ function bindLogout() {
 }
 
 function initWebSocket() {
-  if (typeof io === 'undefined') return;
+  if (typeof io === 'undefined' && !(window.Store && window.Store.getSocket)) return;
   try {
-    socket = io();
+    socket = (window.Store && window.Store.getSocket()) || (typeof io !== 'undefined' ? io(Api.getSocketUrl()) : null);
+    if (!socket) return;
     
-    
-    socket.emit('join_admin');
+    let token = localStorage.getItem('bloom_token');
+    if (token) socket.emit('join_admin', token);
 
     socket.on('new_order', msg => {
       try {
