@@ -1,18 +1,18 @@
 import { Router } from 'express';
 import { authenticate, requireAdmin } from '../middleware/auth.js';
+import { SocketManager } from '../sockets/SocketManager.js';
 import db from '../database/Database.js';
 import { v4 as uuid } from 'uuid';
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { SocketManager } from '../sockets/SocketManager.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const router    = Router();
+const router = Router();
 
 const storage = multer.diskStorage({
   destination: path.join(__dirname, '..', 'uploads', 'products'),
-  filename:    (req, file, cb) => cb(null, `${uuid()}${path.extname(file.originalname)}`)
+  filename: (req, file, cb) => cb(null, `${uuid()}${path.extname(file.originalname)}`)
 });
 const upload = multer({
   storage,
@@ -32,11 +32,11 @@ router.use(authenticate, requireAdmin);
 
 router.get('/stats', (req, res) => {
   try {
-    const revenue    = db.get(`SELECT COALESCE(SUM(json_extract(pricing,'$.finalTotal')),0) as total, COUNT(*) as orders FROM orders WHERE status != 'cancelled'`);
-    const today      = db.get(`SELECT COUNT(*) as c FROM orders WHERE date(created_at,'unixepoch') = date('now')`);
-    const pending    = db.get(`SELECT COUNT(*) as c FROM orders WHERE status IN ('new','processing')`);
-    const users      = db.get(`SELECT COUNT(*) as c FROM users WHERE role = 'customer'`);
-    const products   = db.get(`SELECT COUNT(*) as c FROM products WHERE is_active = 1`);
+    const revenue = db.get(`SELECT COALESCE(SUM(json_extract(pricing,'$.finalTotal')),0) as total, COUNT(*) as orders FROM orders WHERE status != 'cancelled'`);
+    const today = db.get(`SELECT COUNT(*) as c FROM orders WHERE date(created_at,'unixepoch') = date('now')`);
+    const pending = db.get(`SELECT COUNT(*) as c FROM orders WHERE status IN ('new','processing')`);
+    const users = db.get(`SELECT COUNT(*) as c FROM users WHERE role = 'customer'`);
+    const products = db.get(`SELECT COUNT(*) as c FROM products WHERE is_active = 1`);
     const topProducts = db.all(`
       SELECT p.id, p.name, p.category, p.rating, p.base_price,
              COUNT(DISTINCT o.id) as order_count
@@ -54,11 +54,10 @@ router.get('/stats', (req, res) => {
       GROUP BY p.category
     `);
     const recentEvents = db.all(`SELECT event_type, COUNT(*) as count FROM analytics_events GROUP BY event_type ORDER BY count DESC LIMIT 8`);
-    const nps  = db.get(`SELECT AVG(nps_score) as nps FROM support_tickets WHERE nps_score IS NOT NULL`);
+    const nps = db.get(`SELECT AVG(nps_score) as nps FROM support_tickets WHERE nps_score IS NOT NULL`);
     const csat = db.get(`SELECT AVG(csat_score) as csat FROM support_tickets WHERE csat_score IS NOT NULL`);
     res.json({ revenue, today, pending, users: users?.c || 0, products: products?.c || 0, topProducts, salesByCategory, recentEvents, nps: nps?.nps || null, csat: csat?.csat || null });
   } catch (err) {
-    console.error('[ADMIN STATS]', err);
     res.status(500).json({ error: 'Failed to fetch stats' });
   }
 });
@@ -66,17 +65,16 @@ router.get('/stats', (req, res) => {
 router.get('/users', (req, res) => {
   try {
     const { search, role, limit, offset } = req.query;
-    let q      = `SELECT id, name, email, role, avatar, phone, loyalty_points, created_at FROM users WHERE 1=1`;
+    let q = `SELECT id, name, email, role, avatar, phone, loyalty_points, created_at FROM users WHERE 1=1`;
     const params = [];
     if (search) { q += ` AND (name LIKE ? OR email LIKE ?)`; params.push(`%${search}%`, `%${search}%`); }
-    if (role)   { q += ` AND role = ?`; params.push(role); }
+    if (role) { q += ` AND role = ?`; params.push(role); }
     q += ` ORDER BY created_at DESC LIMIT ? OFFSET ?`;
     params.push(Number(limit) || 50, Number(offset) || 0);
     const users = db.all(q, params);
     const total = db.get(`SELECT COUNT(*) as c FROM users`);
     res.json({ users, total: total?.c || 0 });
   } catch (err) {
-    console.error('[ADMIN USERS]', err);
     res.status(500).json({ error: 'Failed to fetch users' });
   }
 });
@@ -84,9 +82,10 @@ router.get('/users', (req, res) => {
 router.put('/users/:id/role', (req, res) => {
   try {
     const { role } = req.body;
-    if (!['admin','customer'].includes(role)) return res.status(400).json({ error: 'Invalid role' });
+    if (!['admin', 'customer'].includes(role)) return res.status(400).json({ error: 'Invalid role' });
     if (req.params.id === req.user.id) return res.status(400).json({ error: 'Cannot change your own role' });
     db.run(`UPDATE users SET role = ? WHERE id = ?`, [role, req.params.id]);
+    SocketManager.emitToUser(req.params.id, 'user_updated', { role });
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Failed to update role' });
@@ -101,7 +100,7 @@ router.put('/users/:id', (req, res) => {
       return res.status(400).json({ error: 'Cannot change your own role' });
     }
     const { role, name, phone } = req.body;
-    if (role && !['admin','customer'].includes(role)) return res.status(400).json({ error: 'Invalid role' });
+    if (role && !['admin', 'customer'].includes(role)) return res.status(400).json({ error: 'Invalid role' });
     db.run(
       `UPDATE users SET
         role  = COALESCE(?, role),
@@ -111,6 +110,7 @@ router.put('/users/:id', (req, res) => {
       [role || null, name || null, phone || null, req.params.id]
     );
     const user = db.get(`SELECT id, name, email, role, phone, loyalty_points, created_at FROM users WHERE id = ?`, [req.params.id]);
+    SocketManager.emitToUser(req.params.id, 'user_updated', { role: user.role, name: user.name, phone: user.phone });
     res.json(user);
   } catch (err) {
     res.status(500).json({ error: 'Failed to update user' });
@@ -120,6 +120,7 @@ router.put('/users/:id', (req, res) => {
 router.delete('/users/:id', (req, res) => {
   try {
     if (req.params.id === req.user.id) return res.status(400).json({ error: 'Cannot delete yourself' });
+    SocketManager.emitToUser(req.params.id, 'account_deleted', { reason: 'Account removed by admin' });
     db.run(`DELETE FROM users WHERE id = ?`, [req.params.id]);
     res.json({ success: true });
   } catch (err) {
@@ -129,8 +130,7 @@ router.delete('/users/:id', (req, res) => {
 
 router.get('/faqs', (req, res) => {
   try {
-    const faqs = db.all(`SELECT * FROM faqs ORDER BY sort_order ASC`);
-    res.json(faqs);
+    res.json(db.all(`SELECT * FROM faqs ORDER BY sort_order ASC`));
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch FAQs' });
   }
@@ -145,7 +145,9 @@ router.post('/faqs', (req, res) => {
       `INSERT INTO faqs (id, question, answer, category, sort_order, active) VALUES (?, ?, ?, ?, ?, 1)`,
       [id, question, answer, category || 'general', sort_order || 0]
     );
-    res.status(201).json(db.get(`SELECT * FROM faqs WHERE id = ?`, [id]));
+    const faq = db.get(`SELECT * FROM faqs WHERE id = ?`, [id]);
+    SocketManager.broadcast('faq_update', { action: 'created', faq });
+    res.status(201).json(faq);
   } catch (err) {
     res.status(500).json({ error: 'Failed to create FAQ' });
   }
@@ -159,15 +161,17 @@ router.put('/faqs/:id', (req, res) => {
     db.run(
       `UPDATE faqs SET question=?, answer=?, category=?, sort_order=?, active=? WHERE id=?`,
       [
-        question   ?? existing.question,
-        answer     ?? existing.answer,
-        category   ?? existing.category,
+        question ?? existing.question,
+        answer ?? existing.answer,
+        category ?? existing.category,
         sort_order ?? existing.sort_order,
         active !== undefined ? (active ? 1 : 0) : existing.active,
         req.params.id
       ]
     );
-    res.json(db.get(`SELECT * FROM faqs WHERE id = ?`, [req.params.id]));
+    const faq = db.get(`SELECT * FROM faqs WHERE id = ?`, [req.params.id]);
+    SocketManager.broadcast('faq_update', { action: 'updated', faq });
+    res.json(faq);
   } catch (err) {
     res.status(500).json({ error: 'Failed to update FAQ' });
   }
@@ -176,6 +180,7 @@ router.put('/faqs/:id', (req, res) => {
 router.delete('/faqs/:id', (req, res) => {
   try {
     db.run(`DELETE FROM faqs WHERE id = ?`, [req.params.id]);
+    SocketManager.broadcast('faq_update', { action: 'deleted', id: req.params.id });
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Failed to delete FAQ' });
@@ -185,7 +190,7 @@ router.delete('/faqs/:id', (req, res) => {
 router.get('/content', (req, res) => {
   try {
     const rows = db.all(`SELECT * FROM site_content ORDER BY key ASC`);
-    const obj  = {};
+    const obj = {};
     for (const row of rows) {
       let val = row.value;
       if (row.type === 'boolean') val = val === '1' || val === 'true';
@@ -201,7 +206,7 @@ router.get('/content', (req, res) => {
 router.put('/content', (req, res) => {
   try {
     for (const [key, value] of Object.entries(req.body)) {
-      let type   = 'text';
+      let type = 'text';
       let strVal = String(value ?? '');
       if (typeof value === 'boolean') { type = 'boolean'; strVal = value ? '1' : '0'; }
       else if (typeof value === 'number') { type = 'number'; strVal = String(value); }
@@ -212,6 +217,7 @@ router.put('/content', (req, res) => {
         [key, strVal, type]
       );
     }
+    SocketManager.emitContentUpdate({ keys: Object.keys(req.body) });
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Failed to save content' });
@@ -235,6 +241,7 @@ router.put('/content/:key', (req, res) => {
        ON CONFLICT(key) DO UPDATE SET value=excluded.value, type=COALESCE(excluded.type,type), updated_at=unixepoch()`,
       [req.params.key, value, type || 'text']
     );
+    SocketManager.emitContentUpdate({ keys: [req.params.key] });
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Failed to update content' });
@@ -261,8 +268,7 @@ router.post('/upload/multiple', upload.array('images', 10), (req, res) => {
 
 router.get('/banners', (req, res) => {
   try {
-    const banners = db.all(`SELECT * FROM banners ORDER BY sort_order ASC`);
-    res.json(banners);
+    res.json(db.all(`SELECT * FROM banners ORDER BY sort_order ASC`));
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch banners' });
   }
@@ -279,8 +285,9 @@ router.post('/banners', upload.single('image'), (req, res) => {
        VALUES (?, ?, ?, ?, ?, ?, ?, 1)`,
       [id, title || '', subtitle || '', image_url, finalLink, finalLink, sort_order || 0]
     );
-    SocketManager.broadcast('catalog_update', {});
-    res.status(201).json(db.get(`SELECT * FROM banners WHERE id = ?`, [id]));
+    const banner = db.get(`SELECT * FROM banners WHERE id = ?`, [id]);
+    SocketManager.emitBannerUpdate({ action: 'created', banner });
+    res.status(201).json(banner);
   } catch (err) {
     res.status(500).json({ error: 'Failed to create banner' });
   }
@@ -291,23 +298,24 @@ router.put('/banners/:id', upload.single('image'), (req, res) => {
     const existing = db.get(`SELECT * FROM banners WHERE id = ?`, [req.params.id]);
     if (!existing) return res.status(404).json({ error: 'Banner not found' });
     const { title, subtitle, link_url, link, sort_order, active } = req.body;
-    const image_url  = req.file ? `/uploads/products/${req.file.filename}` : (req.body.image_url || existing.image_url || '');
-    const finalLink  = link_url || link || existing.link_url || existing.link || '';
+    const image_url = req.file ? `/uploads/products/${req.file.filename}` : (req.body.image_url || existing.image_url || '');
+    const finalLink = link_url || link || existing.link_url || existing.link || '';
     db.run(
       `UPDATE banners SET title=?, subtitle=?, image_url=?, link_url=?, link=?, sort_order=?, active=? WHERE id=?`,
       [
-        title      ?? existing.title,
-        subtitle   ?? existing.subtitle,
+        title ?? existing.title,
+        subtitle ?? existing.subtitle,
         image_url,
         finalLink,
         finalLink,
         sort_order !== undefined ? Number(sort_order) : existing.sort_order,
-        active     !== undefined ? (active ? 1 : 0) : existing.active,
+        active !== undefined ? (active ? 1 : 0) : existing.active,
         req.params.id
       ]
     );
-    SocketManager.broadcast('catalog_update', {});
-    res.json(db.get(`SELECT * FROM banners WHERE id = ?`, [req.params.id]));
+    const banner = db.get(`SELECT * FROM banners WHERE id = ?`, [req.params.id]);
+    SocketManager.emitBannerUpdate({ action: 'updated', banner });
+    res.json(banner);
   } catch (err) {
     res.status(500).json({ error: 'Failed to update banner' });
   }
@@ -316,7 +324,7 @@ router.put('/banners/:id', upload.single('image'), (req, res) => {
 router.delete('/banners/:id', (req, res) => {
   try {
     db.run(`DELETE FROM banners WHERE id = ?`, [req.params.id]);
-    SocketManager.broadcast('catalog_update', {});
+    SocketManager.emitBannerUpdate({ action: 'deleted', id: req.params.id });
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Failed to delete banner' });
@@ -325,8 +333,7 @@ router.delete('/banners/:id', (req, res) => {
 
 router.get('/promos', (req, res) => {
   try {
-    const promos = db.all(`SELECT * FROM promo_codes ORDER BY created_at DESC`);
-    res.json(promos);
+    res.json(db.all(`SELECT * FROM promo_codes ORDER BY created_at DESC`));
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch promos' });
   }
@@ -337,21 +344,24 @@ router.post('/promos', (req, res) => {
     const { code, discount_type, type, value, min_order_amount, min_order, max_uses, expires_at } = req.body;
     if (!code) return res.status(400).json({ error: 'code required' });
     const finalType = discount_type || type;
-    if (!finalType || !['percent','fixed','shipping'].includes(finalType)) {
+    if (!finalType || !['percent', 'fixed', 'shipping'].includes(finalType)) {
       return res.status(400).json({ error: 'type must be percent, fixed, or shipping' });
     }
     if (value === undefined) return res.status(400).json({ error: 'value required' });
-    const existing = db.get(`SELECT id FROM promo_codes WHERE code = ?`, [code.toUpperCase()]);
-    if (existing) return res.status(409).json({ error: 'Code already exists' });
-    const id     = uuid();
+    if (db.get(`SELECT id FROM promo_codes WHERE code = ?`, [code.toUpperCase()])) {
+      return res.status(409).json({ error: 'Code already exists' });
+    }
+    const id = uuid();
     const minOrd = Number(min_order_amount || min_order) || 0;
     db.run(
       `INSERT INTO promo_codes
-        (id, code, discount_type, type, value, min_order_amount, min_order, max_uses, is_active)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)`,
-      [id, code.toUpperCase(), finalType, finalType, Number(value), minOrd, minOrd, Number(max_uses) || 1000]
+        (id, code, discount_type, type, value, min_order_amount, min_order, max_uses, is_active, expires_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?)`,
+      [id, code.toUpperCase(), finalType, finalType, Number(value), minOrd, minOrd, Number(max_uses) || 1000, expires_at || null]
     );
-    res.status(201).json(db.get(`SELECT * FROM promo_codes WHERE id = ?`, [id]));
+    const promo = db.get(`SELECT * FROM promo_codes WHERE id = ?`, [id]);
+    SocketManager.emitPromoUpdate({ action: 'created', promo });
+    res.status(201).json(promo);
   } catch (err) {
     res.status(500).json({ error: 'Failed to create promo' });
   }
@@ -364,20 +374,20 @@ router.put('/promos/:id', (req, res) => {
     const { value, min_order_amount, min_order, max_uses, is_active, expires_at } = req.body;
     const minOrd = min_order_amount !== undefined ? Number(min_order_amount) : (min_order !== undefined ? Number(min_order) : existing.min_order_amount);
     db.run(
-      `UPDATE promo_codes
-       SET value=?, min_order_amount=?, min_order=?, max_uses=?, is_active=?, expires_at=?
-       WHERE id=?`,
+      `UPDATE promo_codes SET value=?, min_order_amount=?, min_order=?, max_uses=?, is_active=?, expires_at=? WHERE id=?`,
       [
-        value      !== undefined ? Number(value)    : existing.value,
+        value !== undefined ? Number(value) : existing.value,
         minOrd,
         minOrd,
-        max_uses   !== undefined ? Number(max_uses) : existing.max_uses,
-        is_active  !== undefined ? (is_active ? 1 : 0) : existing.is_active,
+        max_uses !== undefined ? Number(max_uses) : existing.max_uses,
+        is_active !== undefined ? (is_active ? 1 : 0) : existing.is_active,
         expires_at !== undefined ? expires_at : existing.expires_at,
         req.params.id
       ]
     );
-    res.json(db.get(`SELECT * FROM promo_codes WHERE id = ?`, [req.params.id]));
+    const promo = db.get(`SELECT * FROM promo_codes WHERE id = ?`, [req.params.id]);
+    SocketManager.emitPromoUpdate({ action: 'updated', promo });
+    res.json(promo);
   } catch (err) {
     res.status(500).json({ error: 'Failed to update promo' });
   }
@@ -386,6 +396,7 @@ router.put('/promos/:id', (req, res) => {
 router.delete('/promos/:id', (req, res) => {
   try {
     db.run(`DELETE FROM promo_codes WHERE id = ?`, [req.params.id]);
+    SocketManager.emitPromoUpdate({ action: 'deleted', id: req.params.id });
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Failed to delete promo' });
@@ -395,10 +406,10 @@ router.delete('/promos/:id', (req, res) => {
 router.get('/orders', (req, res) => {
   try {
     const { status, limit, offset, search } = req.query;
-    let q      = `SELECT o.*, u.name as customer_name, u.email as customer_email
-                  FROM orders o
-                  LEFT JOIN users u ON o.user_id = u.id
-                  WHERE 1=1`;
+    let q = `SELECT o.*, u.name as customer_name, u.email as customer_email
+             FROM orders o
+             LEFT JOIN users u ON o.user_id = u.id
+             WHERE 1=1`;
     const params = [];
     if (status) { q += ` AND o.status = ?`; params.push(status); }
     if (search) { q += ` AND (o.id LIKE ? OR o.qr_code LIKE ? OR u.name LIKE ?)`; params.push(`%${search}%`, `%${search}%`, `%${search}%`); }
@@ -406,23 +417,22 @@ router.get('/orders', (req, res) => {
     params.push(Number(limit) || 50, Number(offset) || 0);
     const orders = db.all(q, params).map(o => ({
       ...o,
-      items:     tryParse(o.items,     []),
-      pricing:   tryParse(o.pricing,   {}),
+      items: tryParse(o.items, []),
+      pricing: tryParse(o.pricing, {}),
       recipient: tryParse(o.recipient, {})
     }));
     res.json({ orders, total: db.get(`SELECT COUNT(*) as c FROM orders`)?.c || 0 });
   } catch (err) {
-    console.error('[ADMIN ORDERS]', err);
     res.status(500).json({ error: 'Failed to fetch orders' });
   }
 });
 
 router.put('/orders/:id/status', (req, res) => {
   try {
-    const valid = ['new','processing','quality_check','packed','shipped','out_for_delivery','delivered','cancelled'];
+    const valid = ['new', 'processing', 'quality_check', 'packed', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'];
     const { status } = req.body;
     if (!valid.includes(status)) return res.status(400).json({ error: 'Invalid status' });
-    const row   = db.get(`SELECT tracking_steps FROM orders WHERE id = ?`, [req.params.id]);
+    const row = db.get(`SELECT * FROM orders WHERE id = ?`, [req.params.id]);
     if (!row) return res.status(404).json({ error: 'Order not found' });
     const steps = tryParse(row.tracking_steps, []);
     steps.push({ status, timestamp: Date.now() });
@@ -430,7 +440,30 @@ router.put('/orders/:id/status', (req, res) => {
       `UPDATE orders SET status = ?, tracking_steps = ?, updated_at = unixepoch() WHERE id = ?`,
       [status, JSON.stringify(steps), req.params.id]
     );
-    res.json({ success: true, status });
+    SocketManager.emitOrderUpdate(req.params.id, { status, orderId: req.params.id, trackingSteps: steps });
+    if (row.user_id) {
+      const msgs = {
+        shipped: `Your order has been shipped`,
+        delivered: `Your order has been delivered`,
+        out_for_delivery: `Your order is out for delivery`,
+        cancelled: `Your order has been cancelled`
+      };
+      if (msgs[status]) {
+        const notifId = uuid();
+        db.run(
+          `INSERT INTO notifications (id, user_id, type, title, body, message) VALUES (?, ?, ?, ?, ?, ?)`,
+          [notifId, row.user_id, `order_${status}`, `Order ${status.replace(/_/g, ' ')}`, msgs[status], msgs[status]]
+        );
+        SocketManager.emitNotificationToUser(row.user_id, {
+          id: notifId,
+          type: `order_${status}`,
+          title: `Order ${status.replace(/_/g, ' ')}`,
+          body: msgs[status],
+          read: 0
+        });
+      }
+    }
+    res.json({ success: true, status, trackingSteps: steps });
   } catch (err) {
     res.status(500).json({ error: 'Failed to update order' });
   }
@@ -439,16 +472,16 @@ router.put('/orders/:id/status', (req, res) => {
 router.get('/products', (req, res) => {
   try {
     const { search, category, limit, offset } = req.query;
-    let q      = `SELECT * FROM products WHERE 1=1`;
+    let q = `SELECT * FROM products WHERE 1=1`;
     const params = [];
-    if (search)   { q += ` AND (name LIKE ? OR description LIKE ?)`; params.push(`%${search}%`, `%${search}%`); }
+    if (search) { q += ` AND (name LIKE ? OR description LIKE ?)`; params.push(`%${search}%`, `%${search}%`); }
     if (category) { q += ` AND category = ?`; params.push(category); }
     q += ` ORDER BY created_at DESC LIMIT ? OFFSET ?`;
     params.push(Number(limit) || 50, Number(offset) || 0);
     const products = db.all(q, params).map(p => ({
       ...p,
       images: tryParse(p.images, []),
-      tags:   tryParse(p.tags,   [])
+      tags: tryParse(p.tags, [])
     }));
     res.json({ products, total: db.get(`SELECT COUNT(*) as c FROM products`)?.c || 0 });
   } catch (err) {
@@ -461,14 +494,13 @@ router.post('/products', upload.array('images', 5), (req, res) => {
     const { name, category, subcategory, description, base_price, inventory, lead_time_days, customizable, tags } = req.body;
     if (!name || !category || !base_price) return res.status(400).json({ error: 'name, category, base_price required' });
     const cleanImgs = (arr) => arr.map(i => {
-      if(typeof i !== 'string') return i;
-      const name = i.replace(/[\[\]"\\]/g, '/').split('/').pop();
-      return name && name !== 'null' ? `/uploads/products/${name}` : null;
+      if (typeof i !== 'string') return i;
+      const n = i.replace(/[\[\]"\\]/g, '/').split('/').pop();
+      return n && n !== 'null' ? `/uploads/products/${n}` : null;
     }).filter(Boolean);
-
     const images = req.files?.length
       ? JSON.stringify(req.files.map(f => `/uploads/products/${f.filename}`))
-      : JSON.stringify(cleanImgs(Array.isArray(req.body.images) ? req.body.images : (req.body.images ? [req.body.images] :[])));
+      : JSON.stringify(cleanImgs(Array.isArray(req.body.images) ? req.body.images : (req.body.images ? [req.body.images] : [])));
     const parsedTags = typeof tags === 'string' && tags.startsWith('[')
       ? tags
       : JSON.stringify((tags || '').split(',').map(t => t.trim()).filter(Boolean));
@@ -478,13 +510,13 @@ router.post('/products', upload.array('images', 5), (req, res) => {
         (id, name, category, subcategory, description, base_price, images, tags, inventory, lead_time_days, customizable)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [id, name, category, subcategory || '', description || '', Number(base_price), images, parsedTags,
-       Number(inventory) || 0, Number(lead_time_days) || 1, customizable ? 1 : 0]
+        Number(inventory) || 0, Number(lead_time_days) || 1, customizable ? 1 : 0]
     );
     const product = db.get(`SELECT * FROM products WHERE id = ?`, [id]);
-    SocketManager.broadcast('catalog_update', {});
-    res.status(201).json({ ...product, images: tryParse(product.images,[]), tags: tryParse(product.tags,[]) });
+    const parsed = { ...product, images: tryParse(product.images, []), tags: tryParse(product.tags, []) };
+    SocketManager.emitCatalogUpdate({ action: 'created', product: parsed });
+    res.status(201).json(parsed);
   } catch (err) {
-    console.error('[ADMIN CREATE PRODUCT]', err);
     res.status(500).json({ error: 'Failed to create product' });
   }
 });
@@ -514,24 +546,24 @@ router.put('/products/:id', upload.array('images', 5), (req, res) => {
         images=?, tags=?, inventory=?, lead_time_days=?, customizable=?, is_active=?
        WHERE id=?`,
       [
-        name          ?? existing.name,
-        category      ?? existing.category,
-        subcategory   ?? existing.subcategory,
-        description   ?? existing.description,
+        name ?? existing.name,
+        category ?? existing.category,
+        subcategory ?? existing.subcategory,
+        description ?? existing.description,
         Number(base_price ?? existing.base_price),
         images, parsedTags,
-        Number(inventory  ?? existing.inventory),
+        Number(inventory ?? existing.inventory),
         Number(lead_time_days ?? existing.lead_time_days),
         customizable !== undefined ? (customizable ? 1 : 0) : existing.customizable,
-        is_active    !== undefined ? (is_active    ? 1 : 0) : existing.is_active,
+        is_active !== undefined ? (is_active ? 1 : 0) : existing.is_active,
         req.params.id
       ]
     );
     const product = db.get(`SELECT * FROM products WHERE id = ?`, [req.params.id]);
-    SocketManager.broadcast('catalog_update', {});
-    res.json({ ...product, images: tryParse(product.images,[]), tags: tryParse(product.tags,[]) });
+    const parsed = { ...product, images: tryParse(product.images, []), tags: tryParse(product.tags, []) };
+    SocketManager.emitCatalogUpdate({ action: 'updated', product: parsed });
+    res.json(parsed);
   } catch (err) {
-    console.error('[ADMIN UPDATE PRODUCT]', err);
     res.status(500).json({ error: 'Failed to update product' });
   }
 });
@@ -539,7 +571,7 @@ router.put('/products/:id', upload.array('images', 5), (req, res) => {
 router.delete('/products/:id', (req, res) => {
   try {
     db.run(`UPDATE products SET is_active = 0 WHERE id = ?`, [req.params.id]);
-    SocketManager.broadcast('catalog_update', {});
+    SocketManager.emitCatalogUpdate({ action: 'deleted', id: req.params.id });
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Failed to deactivate product' });
@@ -549,7 +581,7 @@ router.delete('/products/:id', (req, res) => {
 router.get('/reviews', (req, res) => {
   try {
     const { rating } = req.query;
-    let q      = `SELECT r.*, p.name as product_name FROM reviews r LEFT JOIN products p ON r.product_id = p.id WHERE 1=1`;
+    let q = `SELECT r.*, p.name as product_name FROM reviews r LEFT JOIN products p ON r.product_id = p.id WHERE 1=1`;
     const params = [];
     if (rating) {
       const r = Number(rating);
@@ -576,12 +608,16 @@ router.post('/notifications/broadcast', (req, res) => {
     const { title, message, type } = req.body;
     if (!title || !message) return res.status(400).json({ error: 'title and message required' });
     const users = db.all(`SELECT id FROM users WHERE role = 'customer'`);
+    const notifType = type || 'info';
     for (const u of users) {
+      const id = uuid();
       db.run(
         `INSERT INTO notifications (id, user_id, type, title, body, message) VALUES (?, ?, ?, ?, ?, ?)`,
-        [uuid(), u.id, type || 'info', title, message, message]
+        [id, u.id, notifType, title, message, message]
       );
+      SocketManager.emitNotificationToUser(u.id, { id, type: notifType, title, body: message, message, read: 0 });
     }
+    SocketManager.io?.to('admin_room').emit('broadcast_sent', { title, message, count: users.length, timestamp: Date.now() });
     res.json({ success: true, count: users.length });
   } catch (err) {
     res.status(500).json({ error: 'Failed to broadcast' });
