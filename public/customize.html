@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customize — Bloom</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/customize.css">
+</head>
+<body>
+<nav class="bloom-nav" id="nav">
+  <a href="/" class="bloom-logo">🌸 Bloom</a>
+  <ul class="bloom-nav-links">
+    <li><a href="/catalog.html">Shop</a></li>
+    <li><a href="/customize.html" style="color:#fff;">Create</a></li>
+    <li><a href="/tracking.html">Track</a></li>
+    <li><a href="/support.html">Support</a></li>
+  </ul>
+  <div class="bloom-nav-actions">
+    <a href="/cart.html" class="btn btn-ghost btn-sm">🛒 Cart <span class="badge" id="cartBadge" style="display:none;">0</span></a>
+    <button class="btn btn-primary btn-sm" id="authBtn">Sign In</button>
+  </div>
+</nav>
+
+<div class="customize-layout">
+  <div class="canvas-panel">
+    <div class="canvas-preview">
+      <div class="price-ticker">
+        <span class="label">Total Price</span>
+        <span class="amount" id="livePrice">₱3,769.42</span>
+      </div>
+      <div id="previewDisplay" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:5rem;">🌹</div>
+      <div class="canvas-rotate">
+        <button class="canvas-btn" id="view2d" title="2D View">◻</button>
+        <button class="canvas-btn" id="view3d" title="3D Rotate">⟳</button>
+        <button class="canvas-btn" id="zoomIn" title="Zoom In">+</button>
+        <button class="canvas-btn" id="zoomOut" title="Zoom Out">−</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="config-panel">
+    <div style="margin-bottom:8px;">
+      <p class="tag tag-primary" style="margin-bottom:10px;">✦ Customization Studio</p>
+      <h1 style="font-family:var(--font-display);font-size:1.8rem;font-weight:900;" id="productTitle">Design Your Bloom</h1>
+    </div>
+
+    <div class="config-section open" id="sec-flowers">
+      <div class="config-section-header">
+        <h4>🌸 Flower Selection</h4>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="config-body">
+        <p style="font-size:0.8rem;color:rgba(255,255,255,0.45);margin-bottom:14px;">Choose your primary bloom type</p>
+        <div class="option-pills" id="flowerPills">
+          <button class="option-pill selected" data-flower="rose">🌹 Rose</button>
+          <button class="option-pill" data-flower="tulip">🌷 Tulip</button>
+          <button class="option-pill" data-flower="lily">🌸 Lily</button>
+          <button class="option-pill" data-flower="orchid">🪷 Orchid</button>
+          <button class="option-pill" data-flower="sunflower">🌻 Sunflower</button>
+          <button class="option-pill" data-flower="peony">✿ Peony</button>
+        </div>
+        <div class="range-slider" style="margin-top:18px;">
+          <div style="display:flex;justify-content:space-between;font-size:0.78rem;color:rgba(255,255,255,0.5);margin-bottom:8px;">
+            <span>Bloom Count</span><span id="bloomCountLabel">12 stems</span>
+          </div>
+          <input type="range" min="6" max="36" value="12" step="3" id="bloomCount">
+        </div>
+      </div>
+    </div>
+
+    <div class="config-section" id="sec-color">
+      <div class="config-section-header">
+        <h4>🎨 Color Palette</h4>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="config-body">
+        <div class="swatch-grid" id="colorSwatches">
+          <div class="swatch selected" data-color="crimson" style="background:#DC143C;" title="Crimson"></div>
+          <div class="swatch" data-color="blush" style="background:#FFB6C1;" title="Blush"></div>
+          <div class="swatch" data-color="white" style="background:#F8F8FF;border:2px solid rgba(255,255,255,0.3);" title="White"></div>
+          <div class="swatch" data-color="lavender" style="background:#967BB6;" title="Lavender"></div>
+          <div class="swatch" data-color="peach" style="background:#FFDAB9;" title="Peach"></div>
+          <div class="swatch" data-color="yellow" style="background:#FFD700;" title="Sunburst"></div>
+          <div class="swatch" data-color="coral" style="background:#FF6B6B;" title="Coral"></div>
+          <div class="swatch" data-color="burgundy" style="background:#800020;" title="Burgundy"></div>
+          <div class="swatch" data-color="teal" style="background:#008080;" title="Teal"></div>
+        </div>
+        <p style="font-size:0.75rem;color:rgba(255,255,255,0.35);margin-top:12px;">Hover for color name. Click to select.</p>
+      </div>
+    </div>
+
+    <div class="config-section" id="sec-wrapping">
+      <div class="config-section-header">
+        <h4>🎀 Wrapping & Style</h4>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="config-body">
+        <div class="toggle-row">
+          <div class="toggle-info"><span class="toggle-label">Premium Kraft Wrap</span><span class="toggle-desc">Recycled, textured paper with foil accent</span></div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="toggle-price">+₱464</span>
+            <label class="toggle-switch"><input type="checkbox" data-config="wrapping_premium" data-delta="8"><span class="toggle-track"></span></label>
+          </div>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info"><span class="toggle-label">Luxury Silk Wrap</span><span class="toggle-desc">Hand-dyed silk with wax seal closure</span></div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="toggle-price">+₱870</span>
+            <label class="toggle-switch"><input type="checkbox" data-config="wrapping_luxury" data-delta="15"><span class="toggle-track"></span></label>
+          </div>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info"><span class="toggle-label">Satin Ribbon</span><span class="toggle-desc">Hand-tied satin ribbon in your color</span></div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="toggle-price">+₱174</span>
+            <label class="toggle-switch"><input type="checkbox" data-config="ribbon_satin" data-delta="3"><span class="toggle-track"></span></label>
+          </div>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info"><span class="toggle-label">Velvet Ribbon</span><span class="toggle-desc">Deep velvet in seasonal tones</span></div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="toggle-price">+₱348</span>
+            <label class="toggle-switch"><input type="checkbox" data-config="ribbon_velvet" data-delta="6"><span class="toggle-track"></span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="config-section" id="sec-extras">
+      <div class="config-section-header">
+        <h4>✨ Extras & Personalization</h4>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="config-body">
+        <div class="toggle-row">
+          <div class="toggle-info"><span class="toggle-label">Gift Box</span><span class="toggle-desc">Rigid keepsake box with magnetic closure</span></div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="toggle-price">+₱580</span>
+            <label class="toggle-switch"><input type="checkbox" data-config="giftBox" data-delta="10"><span class="toggle-track"></span></label>
+          </div>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info"><span class="toggle-label">Engraving</span><span class="toggle-desc">Laser-engraved vase, card, or box</span></div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="toggle-price">+₱696</span>
+            <label class="toggle-switch"><input type="checkbox" data-config="engraving" data-delta="12"><span class="toggle-track"></span></label>
+          </div>
+        </div>
+        <div id="engravingText" style="display:none;margin-top:12px;">
+          <input type="text" class="form-input" placeholder="Engraving message (max 40 chars)" maxlength="40" id="engravingInput">
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info"><span class="toggle-label">Greeting Card</span><span class="toggle-desc">Custom printed card with your message</span></div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="toggle-price">Free</span>
+            <label class="toggle-switch"><input type="checkbox" data-config="greetingCard" data-delta="0"><span class="toggle-track"></span></label>
+          </div>
+        </div>
+        <div id="cardText" style="display:none;margin-top:12px;">
+          <textarea class="form-input" placeholder="Your message (max 200 chars)" maxlength="200" rows="3" id="cardInput" style="resize:none;"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="config-section" id="sec-corporate">
+      <div class="config-section-header">
+        <h4>🏢 Corporate Branding</h4>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="config-body">
+        <div class="toggle-row">
+          <div class="toggle-info"><span class="toggle-label">Logo Upload</span><span class="toggle-desc">Co-branded packaging with your logo</span></div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="toggle-price">+₱1,160</span>
+            <label class="toggle-switch"><input type="checkbox" data-config="logoUpload" data-delta="20" id="logoToggle"><span class="toggle-track"></span></label>
+          </div>
+        </div>
+        <div id="logoUploadArea" style="display:none;margin-top:14px;">
+          <div class="drag-upload" id="dragUpload">
+            <div style="font-size:2rem;margin-bottom:8px;">📁</div>
+            <div style="font-weight:600;margin-bottom:4px;">Drop your logo here</div>
+            <div style="font-size:0.75rem;">PNG, SVG, JPG · Max 8MB</div>
+            <input type="file" id="logoFile" accept=".png,.jpg,.svg" style="display:none;">
+          </div>
+          <div id="logoPreview" style="display:none;margin-top:10px;text-align:center;">
+            <img id="logoPreviewImg" style="max-height:60px;border-radius:8px;" alt="Logo">
+            <button style="display:block;margin:8px auto 0;font-size:0.75rem;color:#FF6B6B;background:none;border:none;cursor:pointer;" id="removeLogo">Remove</button>
+          </div>
+        </div>
+        <div class="toggle-row" style="margin-top:8px;">
+          <div class="toggle-info"><span class="toggle-label">Custom Design Upload</span><span class="toggle-desc">Full custom wrap design print</span></div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="toggle-price">+₱870</span>
+            <label class="toggle-switch"><input type="checkbox" data-config="customDesign" data-delta="15"><span class="toggle-track"></span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="accessibility-panel">
+      <div style="font-size:0.78rem;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:rgba(0,212,170,0.8);margin-bottom:12px;">♿ Accessibility</div>
+      <div class="a11y-item"><span class="a11y-check">✓</span> Alt-text auto-generated for all images</div>
+      <div class="a11y-item"><span class="a11y-check">✓</span> Screen reader compatible markup</div>
+      <div class="a11y-item"><span class="a11y-check">✓</span> Color-blind palette variants available</div>
+      <div class="a11y-item"><span class="a11y-check">✓</span> Large tap targets on all controls</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <button class="btn btn-primary btn-lg" id="addCustomToCart" style="justify-content:center;">
+        🛒 Add to Cart — <span id="cartPriceBtn">₱3,769.42</span>
+      </button>
+      <button class="btn btn-ghost" id="saveCustomization" style="justify-content:center;">💾 Save Design</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/core/Store.js"></script>
+<script src="/js/core/Api.js"></script>
+<script src="/js/core/Auth.js"></script>
+<script src="/js/customize.js"></script>
+</body>
+</html>

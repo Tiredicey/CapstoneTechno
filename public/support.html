@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Support — Bloom</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/support.css">
+</head>
+<body>
+<nav class="bloom-nav" id="nav">
+  <a href="/" class="bloom-logo">🌸 Bloom</a>
+  <ul class="bloom-nav-links">
+    <li><a href="/catalog.html">Shop</a></li>
+    <li><a href="/customize.html">Create</a></li>
+    <li><a href="/tracking.html">Track</a></li>
+    <li><a href="/support.html" style="color:#fff;">Support</a></li>
+  </ul>
+  <div class="bloom-nav-actions">
+    <a href="/cart.html" class="btn btn-ghost btn-sm" style="position:relative;">🛒 Cart <span class="badge" id="cartBadge" style="display:none;">0</span></a>
+    <button class="btn btn-primary btn-sm" id="authBtn">Sign In</button>
+  </div>
+</nav>
+
+<div class="particle-field" id="particles"></div>
+
+<div class="support-page">
+  <div class="container">
+    <div style="margin-bottom:40px;">
+      <p class="tag tag-lavender" style="margin-bottom:12px;">✦ Omnichannel Support</p>
+      <h1 class="section-title">How Can We <span class="gradient-text">Help You?</span></h1>
+      <p class="section-subtitle">AI chatbot, live agents, ticket system, and self-service — we're always here.</p>
+    </div>
+
+    <div class="support-hub">
+      <div class="support-channel-card" id="openChatBtn">
+        <div class="support-channel-icon">🤖</div>
+        <div class="support-channel-label">AI Chatbot</div>
+        <div class="support-channel-desc">Instant answers 24/7. Handles tracking, refunds, order changes.</div>
+        <div class="tag tag-mint" style="margin-top:12px;">Available Now</div>
+      </div>
+      <div class="support-channel-card" id="openAgentBtn">
+        <div class="support-channel-icon">👤</div>
+        <div class="support-channel-label">Live Agent</div>
+        <div class="support-channel-desc">Speak to a real human for complex issues and escalations.</div>
+        <div class="tag tag-primary" style="margin-top:12px;">~2 min wait</div>
+      </div>
+      <div class="support-channel-card" id="openTicketBtn">
+        <div class="support-channel-icon">🎫</div>
+        <div class="support-channel-label">Submit Ticket</div>
+        <div class="support-channel-desc">Email-style tickets for non-urgent issues. Response within 4 hours.</div>
+        <div class="tag tag-accent" style="margin-top:12px;">4hr Response</div>
+      </div>
+      <div class="support-channel-card" id="openSelfBtn">
+        <div class="support-channel-icon">📖</div>
+        <div class="support-channel-label">Self-Service</div>
+        <div class="support-channel-desc">FAQ, return portal, order modifications — handle it yourself instantly.</div>
+        <div class="tag tag-lavender" style="margin-top:12px;">No Wait</div>
+      </div>
+    </div>
+
+    <div id="chatSection" style="display:none;margin-bottom:48px;">
+      <div class="chat-window">
+        <div class="chat-header">
+          <div class="chat-agent-avatar">🤖</div>
+          <div class="chat-agent-info">
+            <div class="name">Bloom Assistant</div>
+            <div class="status">● Online — responds instantly</div>
+          </div>
+          <button style="margin-left:auto;background:none;border:none;color:rgba(255,255,255,0.4);cursor:pointer;font-size:1.1rem;" id="closeChatBtn">✕</button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+          <div class="chat-bubble bot">Hi! 🌸 I'm the Bloom Assistant. How can I help you today?</div>
+          <div class="chat-bubble bot">You can ask me about your order status, request a refund, change delivery details, or anything else!</div>
+        </div>
+        <div class="chat-input-bar">
+          <input type="text" placeholder="Type your message..." id="chatInput" autocomplete="off">
+          <button class="btn btn-primary btn-sm" id="chatSend">Send</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="ticketSection" style="display:none;margin-bottom:48px;">
+      <div class="glass-card" style="padding:36px;max-width:640px;">
+        <h2 style="font-family:var(--font-display);font-size:1.4rem;font-weight:700;margin-bottom:24px;">Submit a Support Ticket</h2>
+        <div class="form-group">
+          <label class="form-label">Order ID (optional)</label>
+          <input type="text" class="form-input" id="ticketOrderId" placeholder="BLOOM-XXXXXXXX">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Subject</label>
+          <input type="text" class="form-input" id="ticketSubject" placeholder="Brief description of your issue">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Message</label>
+          <textarea class="form-input" id="ticketMessage" rows="5" placeholder="Describe your issue in detail..." style="resize:none;"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Channel</label>
+          <select class="form-input form-select" id="ticketChannel">
+            <option value="email">Email</option>
+            <option value="chat">Chat</option>
+            <option value="phone">Phone Callback</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" id="submitTicket" style="width:100%;justify-content:center;">Submit Ticket →</button>
+      </div>
+    </div>
+
+    <div id="faqSection" style="margin-bottom:48px;">
+      <h2 style="font-family:var(--font-display);font-size:1.4rem;font-weight:700;margin-bottom:24px;">Frequently Asked Questions</h2>
+      <div class="faq-list" id="faqList"></div>
+    </div>
+
+    <div id="csatSection" style="display:none;margin-bottom:48px;">
+      <div class="glass-card" style="padding:36px;max-width:560px;text-align:center;">
+        <h2 style="font-family:var(--font-display);font-size:1.4rem;font-weight:700;margin-bottom:8px;">How did we do?</h2>
+        <p style="color:rgba(255,255,255,0.5);font-size:0.88rem;margin-bottom:28px;">Your feedback helps us improve for every customer.</p>
+        <div style="margin-bottom:24px;">
+          <p style="font-size:0.85rem;font-weight:600;margin-bottom:12px;">Rate your experience</p>
+          <div class="rating-stars" style="justify-content:center;" id="csatStars">
+            <span class="rating-star" data-val="1">★</span>
+            <span class="rating-star" data-val="2">★</span>
+            <span class="rating-star" data-val="3">★</span>
+            <span class="rating-star" data-val="4">★</span>
+            <span class="rating-star" data-val="5">★</span>
+          </div>
+        </div>
+        <div style="margin-bottom:24px;">
+          <p style="font-size:0.85rem;font-weight:600;margin-bottom:12px;">How likely are you to recommend Bloom?</p>
+          <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;" id="npsRow">
+            <script>for(let i=0;i<=10;i++)document.write(`<button class="btn btn-ghost btn-sm nps-btn" data-nps="${i}" style="min-width:36px;padding:6px;">${i}</button>`)</script>
+          </div>
+        </div>
+        <textarea class="form-input" id="csatComment" rows="3" placeholder="Any additional comments? (optional)" style="resize:none;margin-bottom:16px;"></textarea>
+        <button class="btn btn-primary" id="submitCsat" style="width:100%;justify-content:center;">Submit Feedback →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script type="module" src="/js/core/Store.js"></script>
+<script type="module" src="/js/core/Api.js"></script>
+<script type="module" src="/js/core/Auth.js"></script>
+<script type="module" src="/js/support.js"></script>
+</body>
+</html>

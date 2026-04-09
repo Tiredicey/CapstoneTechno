@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Track Order — Bloom</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/tracking.css">
+</head>
+<body>
+<nav class="bloom-nav" id="nav">
+  <a href="/" class="bloom-logo">🌸 Bloom</a>
+  <ul class="bloom-nav-links">
+    <li><a href="/catalog.html">Shop</a></li>
+    <li><a href="/customize.html">Create</a></li>
+    <li><a href="/tracking.html" style="color:#fff;">Track</a></li>
+    <li><a href="/support.html">Support</a></li>
+  </ul>
+  <div class="bloom-nav-actions">
+    <a href="/cart.html" class="btn btn-ghost btn-sm" style="position:relative;">🛒 Cart <span class="badge" id="cartBadge" style="display:none;">0</span></a>
+    <button class="btn btn-primary btn-sm" id="authBtn">Sign In</button>
+  </div>
+</nav>
+
+<div class="particle-field" id="particles"></div>
+
+<div class="tracking-page">
+  <div class="container">
+    <div class="tracking-header">
+      <p class="tag tag-mint" style="margin-bottom:12px;">✦ Live Tracking</p>
+      <h1 class="section-title">Where Are <span class="gradient-text">Your Blooms?</span></h1>
+      <p class="section-subtitle">Real-time updates from our florist bench to your front door.</p>
+    </div>
+
+    <div class="tracking-search-bar">
+      <input type="text" class="form-input" placeholder="Enter order code (BLOOM-XXXXXXXX)" id="trackInput" style="border-radius:var(--bloom-radius-sm);">
+      <button class="btn btn-primary" id="trackBtn">Track →</button>
+    </div>
+
+    <div id="trackingResult" style="display:none;">
+      <div class="grid-2" style="gap:40px;align-items:start;">
+        <div>
+          <div class="map-placeholder" id="mapArea">
+            🗺️
+            <div class="map-ping" id="mapPing"></div>
+          </div>
+
+          <div class="glass-card" style="padding:24px;margin-bottom:24px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+              <h3 style="font-family:var(--font-display);font-size:1.1rem;font-weight:700;">Order Details</h3>
+              <span class="status-pill" id="statusPill">Loading...</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:0.85rem;">
+              <div style="display:flex;justify-content:space-between;"><span style="color:rgba(255,255,255,0.5);">Order ID</span><span id="detailId" style="font-weight:600;">–</span></div>
+              <div style="display:flex;justify-content:space-between;"><span style="color:rgba(255,255,255,0.5);">Estimated Delivery</span><span id="detailEta" style="font-weight:600;color:var(--bloom-mint);">–</span></div>
+              <div style="display:flex;justify-content:space-between;"><span style="color:rgba(255,255,255,0.5);">Recipient</span><span id="detailRecipient" style="font-weight:600;">–</span></div>
+            </div>
+          </div>
+
+          <div class="glass-card" style="padding:24px;">
+            <h3 style="font-family:var(--font-display);font-size:1rem;font-weight:700;margin-bottom:16px;">📸 Delivery Photo</h3>
+            <div id="deliveryPhotoArea" style="height:120px;border-radius:var(--bloom-radius-sm);background:rgba(255,255,255,0.04);border:1px dashed rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:0.85rem;color:rgba(255,255,255,0.3);">
+              Photo will appear upon delivery
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="glass-card" style="padding:28px;">
+            <h3 style="font-family:var(--font-display);font-size:1.1rem;font-weight:700;margin-bottom:24px;">Status Timeline</h3>
+            <div class="tracking-timeline" id="trackingTimeline">
+              <div class="timeline-line"><div class="timeline-fill" id="timelineFill" style="height:0%;"></div></div>
+            </div>
+          </div>
+
+          <div class="glass-card" style="padding:24px;margin-top:20px;" id="issuePanel">
+            <h3 style="font-size:0.95rem;font-weight:700;margin-bottom:12px;">Issue with your order?</h3>
+            <p style="font-size:0.82rem;color:rgba(255,255,255,0.5);margin-bottom:16px;">Our support team responds within minutes.</p>
+            <a href="/support.html" class="btn btn-ghost" style="width:100%;justify-content:center;">Contact Support →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="myOrdersSection" style="display:none;margin-top:48px;">
+      <h2 style="font-family:var(--font-display);font-size:1.4rem;font-weight:700;margin-bottom:24px;">My Recent Orders</h2>
+      <div id="myOrdersList" style="display:flex;flex-direction:column;gap:16px;"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script type="module" src="/js/core/Store.js"></script>
+<script type="module" src="/js/core/Api.js"></script>
+<script type="module" src="/js/core/Auth.js"></script>
+<script type="module" src="/js/tracking.js"></script>
+</body>
+</html>

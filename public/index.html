@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Bloom — Bouquet & Merchandise Customizable Pre-Order Platform">
+  <title>Bloom — Pre-Order Flowers & Gifts</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/landing.css">
+</head>
+<body>
+
+<div class="particle-field" id="particles">
+  <div class="float-circle float-circle-1"></div>
+  <div class="float-circle float-circle-2"></div>
+  <div class="float-circle float-circle-3"></div>
+  <div class="float-circle float-circle-4"></div>
+  <div class="float-circle float-circle-5"></div>
+</div>
+
+<nav class="bloom-nav" id="nav">
+  <a href="/" class="bloom-logo">🌸 Bloom</a>
+  <ul class="bloom-nav-links">
+    <li><a href="/catalog.html">Shop</a></li>
+    <li><a href="/customize.html">Create</a></li>
+    <li><a href="/tracking.html">Track</a></li>
+    <li><a href="/support.html">Support</a></li>
+  </ul>
+  <div class="bloom-nav-actions">
+    <div id="langSwitcher" style="position:relative;">
+      <button class="btn btn-ghost btn-sm" id="langBtn">🌐 EN</button>
+      <div id="langDropdown" style="display:none;position:absolute;top:110%;right:0;background:rgba(45,27,94,0.97);border:1px solid rgba(255,255,255,0.15);border-radius:12px;overflow:hidden;min-width:120px;z-index:100;">
+        <div class="lang-opt" data-lang="fil" style="padding:10px 16px;cursor:pointer;font-size:0.85rem;">🇵🇭 Filipino</div>
+        <div class="lang-opt" data-lang="en" style="padding:10px 16px;cursor:pointer;font-size:0.85rem;">🇺🇸 English</div>
+        <div class="lang-opt" data-lang="es" style="padding:10px 16px;cursor:pointer;font-size:0.85rem;">🇪🇸 Español</div>
+        <div class="lang-opt" data-lang="ja" style="padding:10px 16px;cursor:pointer;font-size:0.85rem;">🇯🇵 日本語</div>
+      </div>
+    </div>
+    <a href="/cart.html" class="btn btn-ghost btn-sm" style="position:relative;">
+      🛒 Cart <span class="badge" id="cartBadge" style="display:none;">0</span>
+    </a>
+    <button class="btn btn-primary btn-sm" id="authBtn">Sign In</button>
+  </div>
+</nav>
+
+<section class="landing-hero">
+  <div class="hero-bg">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+    <div class="hero-orb hero-orb-3"></div>
+  </div>
+  <div class="container" style="position:relative;z-index:1;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;">
+    <div class="hero-content">
+      <div class="hero-badge">✦ Handcrafted · Pre-Order · Delivered with Love</div>
+      <h1 class="hero-headline">
+        Blooms Built<br>
+        <span class="gradient-text">For Your Moment</span>
+      </h1>
+      <p class="hero-sub">Custom bouquets, personalized gifts, and branded arrangements — pre-ordered for any occasion, delivered exactly when you need them.</p>
+      <div class="hero-cta">
+        <a href="/catalog.html" class="btn btn-primary btn-lg">Browse Collection →</a>
+        <button class="btn btn-ghost btn-lg" id="openProfilingBtn">Find Your Style</button>
+      </div>
+      <div class="trust-bar" style="margin-top:32px;">
+        <div class="trust-item">🔒 SSL Secure</div>
+        <div class="trust-item">⭐ 4.9/5 Rating</div>
+        <div class="trust-item">🚚 Free Ship ₱4,350+</div>
+        <div class="trust-item">🌍 Nationwide</div>
+      </div>
+    </div>
+    <div class="hero-floating-cards">
+      <div class="hero-float-1">
+        <div style="font-size:2.5rem;margin-bottom:12px;">🌹</div>
+        <div style="font-weight:700;font-size:0.9rem;margin-bottom:4px;">Crimson Horizon</div>
+        <div style="font-size:0.78rem;color:rgba(255,255,255,0.5);">Just ordered by 3 people</div>
+        <div style="font-size:1.1rem;font-weight:700;color:#FFD700;margin-top:8px;">₱3,769.42</div>
+      </div>
+      <div class="hero-float-2">
+        <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-bottom:8px;">✦ AI PICK FOR YOU</div>
+        <div style="font-weight:600;font-size:0.88rem;">Based on your occasion</div>
+        <div style="font-size:0.78rem;margin-top:6px;color:rgba(255,255,255,0.5);">Wedding · Anniversary</div>
+      </div>
+      <div class="hero-float-3">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span style="font-size:1.2rem;">✅</span>
+          <span style="font-size:0.85rem;font-weight:600;color:#00D4AA;">Order Delivered!</span>
+        </div>
+        <div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Blush Drift — Wed, 2pm</div>
+        <div style="font-size:0.75rem;color:rgba(255,255,255,0.4);margin-top:4px;">Leave a review →</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="stats-strip" style="margin:0;">
+  <div class="container" style="display:flex;gap:48px;padding:40px;">
+    <div class="stat-item"><div class="stat-number" id="statOrders">12,400+</div><div class="stat-label">Orders Fulfilled</div></div>
+    <div class="stat-item"><div class="stat-number" id="statCities">180+</div><div class="stat-label">Cities Reached</div></div>
+    <div class="stat-item"><div class="stat-number" id="statRating">4.9★</div><div class="stat-label">Average Rating</div></div>
+    <div class="stat-item"><div class="stat-number" id="statUptime">99.9%</div><div class="stat-label">Uptime SLA</div></div>
+  </div>
+</div>
+
+<section class="section-pad" id="featuredSection">
+  <div class="container">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:48px;flex-wrap:wrap;gap:16px;">
+      <div>
+        <p class="tag tag-primary" style="margin-bottom:12px;">✦ Collections</p>
+        <h2 class="section-title">Shop by <span class="gradient-text">Occasion</span></h2>
+        <p class="section-subtitle">Every arrangement crafted for the moment it lands in someone's hands.</p>
+      </div>
+      <a href="/catalog.html" class="btn btn-ghost">View All →</a>
+    </div>
+    <div class="category-tabs" id="categoryTabs">
+      <button class="cat-tab active" data-cat="all">All</button>
+      <button class="cat-tab" data-cat="bouquets">💐 Bouquets</button>
+      <button class="cat-tab" data-cat="arrangements">🌸 Arrangements</button>
+      <button class="cat-tab" data-cat="fresh">🌷 Fresh</button>
+      <button class="cat-tab" data-cat="dried">🌿 Dried</button>
+    </div>
+    <div class="products-grid" id="featuredGrid"></div>
+  </div>
+</section>
+
+<section style="padding:80px 40px;background:linear-gradient(135deg,rgba(139,31,110,0.12),rgba(124,58,237,0.08));">
+  <div class="container">
+    <div class="grid-3">
+      <div class="glass-card float-card" style="padding:36px;text-align:center;">
+        <div style="font-size:3rem;margin-bottom:16px;">🎨</div>
+        <h3 style="font-family:var(--font-display);font-size:1.3rem;font-weight:700;margin-bottom:10px;">Drag & Drop Builder</h3>
+        <p style="font-size:0.85rem;color:rgba(255,255,255,0.55);line-height:1.6;">Design your bouquet with our real-time 3D preview and color selector.</p>
+        <a href="/customize.html" class="btn btn-ghost" style="margin-top:20px;width:100%;justify-content:center;">Start Creating</a>
+      </div>
+      <div class="glass-card float-card" style="padding:36px;text-align:center;">
+        <div style="font-size:3rem;margin-bottom:16px;">📅</div>
+        <h3 style="font-family:var(--font-display);font-size:1.3rem;font-weight:700;margin-bottom:10px;">Pre-Order Scheduler</h3>
+        <p style="font-size:0.85rem;color:rgba(255,255,255,0.55);line-height:1.6;">Pick your date, time slot, and set recurring orders so you never forget again.</p>
+        <a href="/catalog.html" class="btn btn-ghost" style="margin-top:20px;width:100%;justify-content:center;">Schedule Now</a>
+      </div>
+      <div class="glass-card float-card" style="padding:36px;text-align:center;">
+        <div style="font-size:3rem;margin-bottom:16px;">📍</div>
+        <h3 style="font-family:var(--font-display);font-size:1.3rem;font-weight:700;margin-bottom:10px;">Live Tracking</h3>
+        <p style="font-size:0.85rem;color:rgba(255,255,255,0.55);line-height:1.6;">Follow your order from florist bench to front door in real time.</p>
+        <a href="/tracking.html" class="btn btn-ghost" style="margin-top:20px;width:100%;justify-content:center;">Track Order</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-pad">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:48px;">
+      <p class="tag tag-mint" style="margin-bottom:12px;">✦ Testimonials</p>
+      <h2 class="section-title">People Who <span class="gradient-text">Actually Cried</span></h2>
+    </div>
+    <div class="grid-3" id="reviewsGrid"></div>
+  </div>
+</section>
+
+<section style="padding:80px 40px;">
+  <div class="container">
+    <div class="glass-card" style="padding:60px;text-align:center;background:linear-gradient(135deg,rgba(232,67,147,0.12),rgba(124,58,237,0.1));">
+      <p class="tag tag-accent" style="margin-bottom:16px;">B2B & Wholesale</p>
+      <h2 class="section-title" style="max-width:600px;margin:0 auto 20px;">Corporate <span class="gradient-text">Partnerships</span></h2>
+      <p style="font-size:1rem;color:rgba(255,255,255,0.6);max-width:500px;margin:0 auto 32px;line-height:1.7;">Corporate gifting, event florists, hotel partners — bulk pricing, co-branded packaging, and dedicated support.</p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+        <a href="/support.html" class="btn btn-primary btn-lg">Partner With Us</a>
+        <a href="/catalog.html" class="btn btn-ghost btn-lg">View Catalog</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer style="padding:48px 40px;border-top:1px solid rgba(255,255,255,0.07);">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:40px;">
+      <div>
+        <div class="bloom-logo" style="margin-bottom:16px;">🌸 Bloom</div>
+        <p style="font-size:0.83rem;color:rgba(255,255,255,0.45);line-height:1.7;max-width:280px;">Handcrafted blooms, personalized gifts, delivered with intention. Pre-order platform for every occasion.</p>
+      </div>
+      <div>
+        <div style="font-size:0.78rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:16px;">Shop</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <a href="/catalog.html" style="color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.85rem;">Fresh Arrangements</a>
+          <a href="/catalog.html?cat=dried" style="color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.85rem;">Dried Bouquets</a>
+          <a href="/customize.html" style="color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.85rem;">Custom Builder</a>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:0.78rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:16px;">Help</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <a href="/tracking.html" style="color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.85rem;">Track Order</a>
+          <a href="/support.html" style="color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.85rem;">Support</a>
+          <a href="/support.html#faq" style="color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.85rem;">FAQ</a>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:0.78rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:16px;">Legal</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <a href="#" style="color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.85rem;">Privacy Policy</a>
+          <a href="#" style="color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.85rem;">Terms of Service</a>
+          <a href="#" style="color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.85rem;">Cookie Preferences</a>
+        </div>
+      </div>
+    </div>
+    <div style="height:1px;background:rgba(255,255,255,0.07);margin:0 0 24px;"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;font-size:0.78rem;color:rgba(255,255,255,0.3);flex-wrap:wrap;gap:12px;">
+      <div>© 2024 Bloom Platform · Philippine Peso (₱) · 99.9% SLA</div>
+      <div style="display:flex;gap:16px;"><span>🔒 SSL</span><span>💳 Secure Pay</span><span>♿ WCAG 2.1</span></div>
+    </div>
+  </div>
+</footer>
+
+<div class="modal-overlay" id="authModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 style="font-family:var(--font-display);font-size:1.6rem;font-weight:700;">Welcome to Bloom</h2>
+      <button class="modal-close" id="closeAuthModal">✕</button>
+    </div>
+    <div id="authTabs" style="display:flex;gap:0;margin-bottom:28px;border:1px solid rgba(255,255,255,0.1);border-radius:8px;overflow:hidden;">
+      <button class="auth-tab active" data-tab="login" style="flex:1;padding:12px;background:rgba(232,67,147,0.15);color:#e879a0;border:none;cursor:pointer;font-weight:600;font-size:0.88rem;">Sign In</button>
+      <button class="auth-tab" data-tab="register" style="flex:1;padding:12px;background:transparent;color:rgba(255,255,255,0.5);border:none;cursor:pointer;font-weight:600;font-size:0.88rem;">Register</button>
+      <button class="auth-tab" data-tab="guest" style="flex:1;padding:12px;background:transparent;color:rgba(255,255,255,0.5);border:none;cursor:pointer;font-weight:600;font-size:0.88rem;">Guest</button>
+    </div>
+    <div id="loginForm">
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" id="loginEmail" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px;" id="loginSubmit">Sign In →</button>
+    </div>
+    <div id="registerForm" style="display:none;">
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input type="text" class="form-input" id="regName" placeholder="Your name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" id="regEmail" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" id="regPassword" placeholder="Min 8 characters">
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px;" id="registerSubmit">Create Account →</button>
+    </div>
+    <div id="guestForm" style="display:none;text-align:center;padding:20px 0;">
+      <div style="font-size:3rem;margin-bottom:16px;">👤</div>
+      <p style="color:rgba(255,255,255,0.6);font-size:0.9rem;margin-bottom:24px;">Continue without an account. Your cart will be saved to this session.</p>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;" id="guestSubmit">Continue as Guest →</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="profilingModal">
+  <div class="modal profiling-modal">
+    <div class="modal-header">
+      <div>
+        <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:700;">What's the Occasion?</h2>
+        <p style="font-size:0.85rem;color:rgba(255,255,255,0.5);margin-top:4px;">We'll tailor your catalog to match.</p>
+      </div>
+      <button class="modal-close" id="closeProfilingModal">✕</button>
+    </div>
+    <div class="occasion-grid">
+      <button class="occasion-btn" data-occ="wedding">💍 Wedding</button>
+      <button class="occasion-btn" data-occ="birthday">🎂 Birthday</button>
+      <button class="occasion-btn" data-occ="corporate">🏢 Corporate</button>
+      <button class="occasion-btn" data-occ="sympathy">🕊 Sympathy</button>
+      <button class="occasion-btn" data-occ="anniversary">❤️ Anniversary</button>
+      <button class="occasion-btn" data-occ="custom">✨ Just Because</button>
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:20px;" id="profilingSubmit">Show Me My Picks →</button>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="/js/core/Store.js"></script>
+<script src="/js/core/Api.js"></script>
+<script src="/js/core/Auth.js"></script>
+<script src="/js/landing.js"></script>
+</body>
+</html>

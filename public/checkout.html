@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout — Bloom</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/checkout.css">
+</head>
+<body>
+<nav class="bloom-nav" id="nav">
+  <a href="/" class="bloom-logo">🌸 Bloom</a>
+  <ul class="bloom-nav-links">
+    <li><a href="/catalog.html">Shop</a></li>
+    <li><a href="/customize.html">Create</a></li>
+    <li><a href="/tracking.html">Track</a></li>
+    <li><a href="/support.html">Support</a></li>
+  </ul>
+  <div class="bloom-nav-actions">
+    <a href="/cart.html" class="btn btn-ghost btn-sm">← Back to Cart</a>
+  </div>
+</nav>
+
+<div class="particle-field" id="particles"></div>
+
+<div class="checkout-layout">
+  <div>
+    <div class="checkout-steps" id="checkoutSteps">
+      <div class="checkout-step active" data-step="1"><span class="step-num">1</span>Recipient</div>
+      <div class="checkout-step" data-step="2"><span class="step-num">2</span>Schedule</div>
+      <div class="checkout-step" data-step="3"><span class="step-num">3</span>Payment</div>
+      <div class="checkout-step" data-step="4"><span class="step-num">✓</span>Confirm</div>
+    </div>
+
+    <div class="checkout-section active" id="step1">
+      <h2 class="checkout-section-title">Who's Receiving This?</h2>
+      <div class="recipient-grid">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input type="text" class="form-input" id="recFirstName" placeholder="Recipient first name" autocomplete="given-name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input type="text" class="form-input" id="recLastName" placeholder="Recipient last name" autocomplete="family-name">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone</label>
+        <input type="tel" class="form-input" id="recPhone" placeholder="+1 (555) 000-0000" autocomplete="tel">
+      </div>
+      <div class="form-group" style="position:relative;">
+        <label class="form-label">Delivery Address</label>
+        <input type="text" class="form-input" id="recAddress" placeholder="Start typing address..." autocomplete="street-address" id="addressInput">
+        <div class="address-suggestions" id="addressSuggestions" style="display:none;"></div>
+      </div>
+      <div class="recipient-grid">
+        <div class="form-group">
+          <label class="form-label">City</label>
+          <input type="text" class="form-input" id="recCity" placeholder="City" autocomplete="address-level2">
+        </div>
+        <div class="form-group">
+          <label class="form-label">ZIP Code</label>
+          <input type="text" class="form-input" id="recZip" placeholder="ZIP" autocomplete="postal-code">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Special Instructions</label>
+        <textarea class="form-input" id="specialInstructions" placeholder="Gate code, leave at door, fragile items, etc." rows="3" style="resize:none;"></textarea>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+        <label class="toggle-switch"><input type="checkbox" id="shipToSelf"><span class="toggle-track"></span></label>
+        <span style="font-size:0.88rem;">Ship to myself instead</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+        <label class="toggle-switch"><input type="checkbox" id="surpriseDelivery"><span class="toggle-track"></span></label>
+        <div>
+          <div style="font-size:0.88rem;font-weight:500;">Surprise Delivery</div>
+          <div style="font-size:0.75rem;color:rgba(255,255,255,0.4);">Recipient won't receive advance notice</div>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-lg" id="step1Next" style="width:100%;justify-content:center;">Continue to Scheduling →</button>
+    </div>
+
+    <div class="checkout-section" id="step2">
+      <h2 class="checkout-section-title">When Should It Arrive?</h2>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <button class="btn btn-ghost btn-sm" id="prevMonth">← </button>
+        <span style="font-weight:600;" id="calendarMonth">December 2024</span>
+        <button class="btn btn-ghost btn-sm" id="nextMonth"> →</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:8px;">
+        <div style="text-align:center;font-size:0.7rem;color:rgba(255,255,255,0.35);padding:8px 0;">Su</div>
+        <div style="text-align:center;font-size:0.7rem;color:rgba(255,255,255,0.35);padding:8px 0;">Mo</div>
+        <div style="text-align:center;font-size:0.7rem;color:rgba(255,255,255,0.35);padding:8px 0;">Tu</div>
+        <div style="text-align:center;font-size:0.7rem;color:rgba(255,255,255,0.35);padding:8px 0;">We</div>
+        <div style="text-align:center;font-size:0.7rem;color:rgba(255,255,255,0.35);padding:8px 0;">Th</div>
+        <div style="text-align:center;font-size:0.7rem;color:rgba(255,255,255,0.35);padding:8px 0;">Fr</div>
+        <div style="text-align:center;font-size:0.7rem;color:rgba(255,255,255,0.35);padding:8px 0;">Sa</div>
+      </div>
+      <div class="date-picker-grid" id="datePicker"></div>
+      <p style="font-size:0.75rem;color:rgba(255,255,255,0.35);margin-top:8px;">⏱ 2-day lead time required. Greyed dates unavailable.</p>
+
+      <h3 style="font-size:1rem;font-weight:700;margin:28px 0 12px;">Delivery Time Slot</h3>
+      <div class="time-slots">
+        <button class="time-slot" data-slot="morning">☀️ Morning<br><span style="font-size:0.75rem;color:rgba(255,255,255,0.45);">9am – 12pm</span></button>
+        <button class="time-slot" data-slot="afternoon">🌤 Afternoon<br><span style="font-size:0.75rem;color:rgba(255,255,255,0.45);">12pm – 4pm</span></button>
+        <button class="time-slot" data-slot="evening">🌙 Evening<br><span style="font-size:0.75rem;color:rgba(255,255,255,0.45);">4pm – 8pm</span></button>
+      </div>
+
+      <div style="margin-top:28px;padding:20px;border-radius:var(--bloom-radius-sm);background:rgba(255,215,0,0.07);border:1px solid rgba(255,215,0,0.18);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <h3 style="font-size:0.95rem;font-weight:700;">🔁 Recurring Order</h3>
+          <label class="toggle-switch"><input type="checkbox" id="recurringToggle"><span class="toggle-track"></span></label>
+        </div>
+        <div id="recurringOptions" style="display:none;">
+          <div class="option-pills">
+            <button class="option-pill selected" data-recur="weekly">Weekly</button>
+            <button class="option-pill" data-recur="biweekly">Bi-weekly</button>
+            <button class="option-pill" data-recur="monthly">Monthly</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:28px;">
+        <button class="btn btn-ghost" id="step2Back" style="flex:1;justify-content:center;">← Back</button>
+        <button class="btn btn-primary" id="step2Next" style="flex:2;justify-content:center;">Continue to Payment →</button>
+      </div>
+    </div>
+
+    <div class="checkout-section" id="step3">
+      <h2 class="checkout-section-title">How Would You Like to Pay?</h2>
+      <div class="payment-methods">
+        <div class="payment-option selected" data-method="card">
+          <span style="font-size:1.5rem;">💳</span>
+          <div>
+            <div class="payment-name">Credit / Debit Card</div>
+            <div class="payment-desc">Visa, Mastercard, Amex, Discover</div>
+          </div>
+          <div class="payment-logos" style="margin-left:auto;">
+            <span style="font-size:1.2rem;">💳</span>
+          </div>
+        </div>
+        <div class="payment-option" data-method="paypal">
+          <span style="font-size:1.5rem;">🅿</span>
+          <div>
+            <div class="payment-name">PayPal</div>
+            <div class="payment-desc">Pay with your PayPal balance or linked card</div>
+          </div>
+        </div>
+        <div class="payment-option" data-method="applepay">
+          <span style="font-size:1.5rem;"></span>
+          <div>
+            <div class="payment-name">Apple Pay</div>
+            <div class="payment-desc">Face ID or Touch ID checkout</div>
+          </div>
+        </div>
+        <div class="payment-option" data-method="googlepay">
+          <span style="font-size:1.5rem;">G</span>
+          <div>
+            <div class="payment-name">Google Pay</div>
+            <div class="payment-desc">Faster checkout with Google Wallet</div>
+          </div>
+        </div>
+        <div class="payment-option" data-method="afterpay">
+          <span style="font-size:1.5rem;">✦</span>
+          <div>
+            <div class="payment-name">Afterpay / Sezzle</div>
+            <div class="payment-desc">Split into 4 interest-free payments</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="cardFields" style="margin-top:24px;">
+        <div class="form-group">
+          <label class="form-label">Card Number</label>
+          <input type="text" class="form-input" placeholder="4242 4242 4242 4242" id="cardNumber" maxlength="19">
+        </div>
+        <div class="recipient-grid">
+          <div class="form-group">
+            <label class="form-label">Expiry</label>
+            <input type="text" class="form-input" placeholder="MM/YY" id="cardExpiry" maxlength="5">
+          </div>
+          <div class="form-group">
+            <label class="form-label">CVC</label>
+            <input type="text" class="form-input" placeholder="•••" id="cardCvc" maxlength="4">
+          </div>
+        </div>
+      </div>
+
+      <div class="pci-badge">🔒 PCI DSS Compliant · 256-bit SSL · Your card data is never stored</div>
+
+      <div style="display:flex;gap:12px;margin-top:28px;">
+        <button class="btn btn-ghost" id="step3Back" style="flex:1;justify-content:center;">← Back</button>
+        <button class="btn btn-primary btn-lg" id="placeOrder" style="flex:2;justify-content:center;">Place Order 🌸</button>
+      </div>
+    </div>
+
+    <div class="checkout-section" id="step4">
+      <div class="confirmation-screen glass-card">
+        <canvas class="confetti-burst" id="confettiCanvas"></canvas>
+        <div class="confirmation-icon">🌸</div>
+        <h2 style="font-family:var(--font-display);font-size:2rem;font-weight:900;margin-bottom:12px;">Order Confirmed!</h2>
+        <p style="color:rgba(255,255,255,0.6);margin-bottom:8px;">Your blooms are being prepared with care.</p>
+        <p style="font-size:0.85rem;color:rgba(255,255,255,0.4);">A confirmation has been sent to your email & SMS.</p>
+        <div class="qr-code-display" id="qrDisplay">BLOOM-XXXXXXXX</div>
+        <p style="font-size:0.78rem;color:rgba(255,255,255,0.35);margin-bottom:24px;">Your order code — use this to track anytime</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+          <a href="/tracking.html" class="btn btn-primary">Track My Order →</a>
+          <a href="/catalog.html" class="btn btn-ghost">Continue Shopping</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-panel" id="checkoutSummaryPanel">
+    <h2 class="summary-title">Order Summary</h2>
+    <div id="checkoutItems" style="margin-bottom:20px;display:flex;flex-direction:column;gap:12px;"></div>
+    <div class="divider" style="margin:16px 0;"></div>
+    <div class="summary-row"><span class="summary-label">Subtotal</span><span class="summary-value" id="coSubtotal">$0.00</span></div>
+    <div class="summary-row"><span class="summary-label">Customization</span><span class="summary-value" id="coCustom">$0.00</span></div>
+    <div class="summary-row"><span class="summary-label">Shipping</span><span class="summary-value" id="coShipping">$9.99</span></div>
+    <div class="summary-row" id="coPromoRow" style="display:none;"><span class="summary-label">Promo</span><span class="summary-value summary-discount" id="coPromo">−$0.00</span></div>
+    <div class="summary-row"><span class="summary-label">Tax</span><span class="summary-value" id="coTax">$0.00</span></div>
+    <div class="divider" style="margin:16px 0;"></div>
+    <div class="summary-row">
+      <span style="font-weight:700;font-size:1rem;">Total</span>
+      <span class="summary-value summary-total" id="coTotal">$0.00</span>
+    </div>
+    <div style="margin-top:16px;padding:12px;border-radius:var(--bloom-radius-sm);background:rgba(0,212,170,0.08);border:1px solid rgba(0,212,170,0.15);font-size:0.78rem;color:rgba(0,212,170,0.8);">
+      ⭐ You'll earn <strong id="pointsEarned">0</strong> loyalty points on this order
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script type="module" src="/js/core/Store.js"></script>
+<script type="module" src="/js/core/Api.js"></script>
+<script type="module" src="/js/core/Auth.js"></script>
+<script type="module" src="/js/checkout.js"></script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Confirmed — Bloom</title>
+<link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+<nav class="bloom-nav" id="nav">
+<a href="/" class="bloom-logo">🌸 Bloom</a>
+<ul class="bloom-nav-links">
+<li><a href="/catalog.html">Shop</a></li>
+<li><a href="/customize.html">Create</a></li>
+<li><a href="/tracking.html">Track</a></li>
+<li><a href="/support.html">Support</a></li>
+</ul>
+<div class="bloom-nav-actions">
+<a href="/profile.html" class="btn btn-ghost btn-sm" id="authBtn">Account</a>
+</div>
+</nav>
+<div class="particle-field" id="particles"></div>
+<div class="container" style="padding:120px 20px;text-align:center;max-width:600px;">
+<div class="glass-card" style="padding:60px;">
+<div style="font-size:4rem;margin-bottom:20px;">🎉</div>
+<h1 style="font-family:var(--font-display);font-size:2rem;font-weight:900;margin-bottom:12px;">Order Confirmed!</h1>
+<p style="color:rgba(255,255,255,0.6);margin-bottom:24px;">Thank you for your pre-order. Your blooms are in good hands.</p>
+<div style="font-size:1.5rem;font-weight:700;color:var(--bloom-secondary);margin-bottom:8px;letter-spacing:1px;" id="confOrderId">Loading...</div>
+<p style="font-size:0.85rem;color:rgba(255,255,255,0.4);margin-bottom:32px;">Please save this order code to track your delivery.</p>
+
+<div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+  <a href="/tracking.html" class="btn btn-primary" id="trackLink">Track Order →</a>
+  <a href="/catalog.html" class="btn btn-ghost">Continue Shopping</a>
+</div>
+</div>
+</div>
+<script type="module" src="/js/core/Store.js"></script>
+<script type="module" src="/js/core/Api.js"></script>
+<script type="module" src="/js/core/Auth.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+const urlParams = new URLSearchParams(window.location.search);
+const id = urlParams.get('id');
+if (id) {
+document.getElementById('confOrderId').textContent = id;
+document.getElementById('trackLink').href = `/tracking.html?id=${id}`;
+} else {
+document.getElementById('confOrderId').textContent = 'Order Placed successfully';
+}
+});
+</script>
+</body>
+</html>

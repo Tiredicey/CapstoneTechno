@@ -1,0 +1,117 @@
+@import './vars.css';
+
+.tracking-page { padding: 100px 40px 80px; min-height: 100vh; }
+
+.tracking-header { margin-bottom: 48px; }
+
+.tracking-search-bar {
+  display: flex;
+  gap: 12px;
+  max-width: 500px;
+  margin-bottom: 48px;
+}
+
+.tracking-timeline { position: relative; padding: 20px 0; }
+
+.timeline-line {
+  position: absolute;
+  left: 28px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(255,255,255,0.08);
+}
+
+.timeline-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  background: linear-gradient(180deg, var(--bloom-secondary), var(--bloom-mint));
+  transition: height 0.8s ease;
+}
+
+.timeline-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 28px;
+  padding: 20px 0;
+  position: relative;
+}
+
+.timeline-node {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  border: 3px solid rgba(255,255,255,0.08);
+  background: rgba(26,10,46,0.9);
+  position: relative;
+  z-index: 1;
+  transition: all 0.4s;
+}
+
+.timeline-step.complete .timeline-node {
+  border-color: var(--bloom-mint);
+  background: rgba(0,212,170,0.15);
+  box-shadow: 0 0 20px rgba(0,212,170,0.3);
+}
+
+.timeline-step.active .timeline-node {
+  border-color: var(--bloom-secondary);
+  background: rgba(232,67,147,0.15);
+  box-shadow: 0 0 20px rgba(232,67,147,0.4);
+  animation: pulsNode 2s ease-in-out infinite;
+}
+
+@keyframes pulsNode {
+  0%, 100% { box-shadow: 0 0 20px rgba(232,67,147,0.4); }
+  50% { box-shadow: 0 0 40px rgba(232,67,147,0.7); }
+}
+
+.timeline-content { flex: 1; padding-top: 12px; }
+.timeline-label { font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
+.timeline-time { font-size: 0.8rem; color: rgba(255,255,255,0.4); }
+
+.map-placeholder {
+  height: 240px;
+  border-radius: var(--bloom-radius);
+  background: linear-gradient(135deg, rgba(45,27,94,0.6), rgba(26,10,46,0.8));
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.map-ping {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--bloom-secondary);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.map-ping::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px solid var(--bloom-secondary);
+  animation: mapPing 2s ease-out infinite;
+}
+
+@keyframes mapPing {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(2.5); opacity: 0; }
+}

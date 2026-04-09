@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --bloom-primary:      #8B1F6E;
+  --bloom-secondary:    #E84393;
+  --bloom-accent:       #FFD700;
+  --bloom-coral:        #FF6B6B;
+  --bloom-mint:         #00D4AA;
+  --bloom-lavender:     #7C3AED;
+  --bloom-sky:          #38BDF8;
+  --bloom-cream:        #FFF8F3;
+  --bloom-warm:         #FEF3C7;
+  --bloom-dark:         #1A0A2E;
+  --bloom-dark2:        #2D1B5E;
+  --bloom-mid:          #4C2080;
+
+  --bloom-glass:        rgba(255,255,255,0.08);
+  --bloom-glass-border: rgba(255,255,255,0.14);
+
+  --bloom-shadow-sm:    0 4px 20px  rgba(139,31,110,0.15);
+  --bloom-shadow-md:    0 8px 40px  rgba(139,31,110,0.25);
+  --bloom-shadow-lg:    0 20px 80px rgba(139,31,110,0.35);
+  --bloom-shadow-float: 0 30px 100px rgba(139,31,110,0.4);
+
+  --bloom-radius:    20px;
+  --bloom-radius-sm: 12px;
+  --bloom-radius-lg: 32px;
+  --bloom-radius-xl: 48px;
+
+  --bloom-transition: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'Inter', system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bloom-dark);
+  color: #fff;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
