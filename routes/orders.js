@@ -6,10 +6,14 @@ import { ProductModel } from '../models/ProductModel.js';
 import { SocketManager } from '../sockets/SocketManager.js';
 import { authenticate, optionalAuth, requireAdmin } from '../middleware/auth.js';
 import { Database } from '../database/Database.js';
+import { v4 as uuid } from 'uuid';
 
 const router = Router();
 
-const VALID_STATUSES = ['new', 'processing', 'quality_check', 'packed', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'];
+const VALID_STATUSES = [
+  'new', 'processing', 'quality_check', 'packed',
+  'shipped', 'out_for_delivery', 'delivered', 'cancelled'
+];
 
 router.post('/', optionalAuth, (req, res) => {
   try {
@@ -22,19 +26,13 @@ router.post('/', optionalAuth, (req, res) => {
       return res.status(400).json({ error: 'recipient, deliveryDate, deliverySlot, paymentMethod required' });
     }
 
-    const userId = req.user?.id || null;
+    const userId    = req.user?.id || null;
     const sessionId = req.headers['x-session-id'] || null;
 
     let cart = null;
-    if (cartId) {
-      cart = Database.get('SELECT * FROM carts WHERE id = ?', [cartId]);
-    }
-    if (!cart && userId) {
-      cart = Database.get('SELECT * FROM carts WHERE user_id = ?', [userId]);
-    }
-    if (!cart && sessionId) {
-      cart = Database.get('SELECT * FROM carts WHERE session_id = ?', [sessionId]);
-    }
+    if (cartId)    cart = Database.get('SELECT * FROM carts WHERE id = ?', [cartId]);
+    if (!cart && userId)    cart = Database.get('SELECT * FROM carts WHERE user_id = ?', [userId]);
+    if (!cart && sessionId) cart = Database.get('SELECT * FROM carts WHERE session_id = ?', [sessionId]);
     if (!cart) return res.status(404).json({ error: 'Cart not found' });
 
     const items = typeof cart.items === 'string' ? JSON.parse(cart.items || '[]') : cart.items;
@@ -49,15 +47,10 @@ router.post('/', optionalAuth, (req, res) => {
     });
 
     const order = OrderModel.create({
-      userId,
-      sessionId,
-      items,
-      recipient,
-      deliveryDate,
-      deliverySlot,
+      userId, sessionId, items, recipient,
+      deliveryDate, deliverySlot,
       recurring: recurring || null,
-      pricing,
-      paymentMethod,
+      pricing, paymentMethod,
       specialInstructions: specialInstructions || null
     });
 
@@ -70,18 +63,15 @@ router.post('/', optionalAuth, (req, res) => {
     if (userId) {
       const points = Math.floor((pricing.finalTotal || 0) * 10);
       Database.run('UPDATE users SET loyalty_points = loyalty_points + ? WHERE id = ?', [points, userId]);
-
-      const notifId = require('uuid').v4 ? require('uuid').v4() : `notif_${Date.now()}`;
       try {
         Database.run(
           'INSERT INTO notifications (id, user_id, type, title, body) VALUES (?, ?, ?, ?, ?)',
-          [notifId, userId, 'order_confirmed', 'Order Confirmed! 🌸', `Your order ${order.qr_code} has been placed.`]
+          [uuid(), userId, 'order_confirmed', 'Order Confirmed! 🌸', `Your order ${order.qr_code} has been placed.`]
         );
       } catch {}
     }
 
     CartModel.clearCart(cart.id);
-
     try { SocketManager.emitNewOrder(order); } catch {}
 
     res.status(201).json(order);
@@ -105,12 +95,12 @@ router.get('/:id/track', (req, res) => {
     const order = OrderModel.getById(req.params.id);
     if (!order) return res.status(404).json({ error: 'Order not found' });
     res.json({
-      id: order.id,
-      status: order.status,
+      id:            order.id,
+      status:        order.status,
       trackingSteps: order.trackingSteps,
       delivery_date: order.delivery_date,
       delivery_slot: order.delivery_slot,
-      qrCode: order.qr_code
+      qrCode:        order.qr_code
     });
   } catch (err) {
     console.error('[TRACK ERROR]', err);
@@ -132,11 +122,7 @@ router.get('/:id', optionalAuth, (req, res) => {
 router.get('/', authenticate, requireAdmin, (req, res) => {
   try {
     const { status, limit, offset } = req.query;
-    res.json(OrderModel.getAll({
-      status,
-      limit: Number(limit) || 50,
-      offset: Number(offset) || 0
-    }));
+    res.json(OrderModel.getAll({ status, limit: Number(limit) || 50, offset: Number(offset) || 0 }));
   } catch (err) {
     console.error('[ORDERS LIST ERROR]', err);
     res.status(500).json({ error: 'Failed to fetch orders' });
@@ -151,18 +137,19 @@ router.put('/:id/status', authenticate, requireAdmin, (req, res) => {
     }
     const order = OrderModel.updateStatus(req.params.id, status);
     if (!order) return res.status(404).json({ error: 'Order not found' });
+
     try { SocketManager.emitOrderUpdate(req.params.id, { status, orderId: req.params.id }); } catch {}
+
     if (order.user_id) {
       const msgs = {
-        shipped: `Your order ${order.qr_code} is on its way! 🚚`,
+        shipped:   `Your order ${order.qr_code} is on its way! 🚚`,
         delivered: `Your order ${order.qr_code} has been delivered! 🌸`
       };
       if (msgs[status]) {
         try {
-          const { v4: uuidv4 } = { v4: () => `notif_${Date.now()}_${Math.random()}` };
           Database.run(
             'INSERT INTO notifications (id, user_id, type, title, body) VALUES (?, ?, ?, ?, ?)',
-            [uuidv4(), order.user_id, `order_${status}`, `Order ${status.replace('_', ' ')}`, msgs[status]]
+            [uuid(), order.user_id, `order_${status}`, `Order ${status.replace('_', ' ')}`, msgs[status]]
           );
         } catch {}
       }
