@@ -14,7 +14,7 @@ It has a customer-facing storefront, an admin panel, and live updates between th
 **You do not need to read this all at once.**
 
 ---
-
+```
 ## 🗂 Quick Index
 
 | I want to... | Go to |
@@ -25,14 +25,15 @@ It has a customer-facing storefront, an admin panel, and live updates between th
 | Know what's connected to what | [→ How It Works](#-how-it-works) |
 | See the tech used | [→ Stack](#-tech-stack) |
 | Fix something | [→ Common Issues](#-common-issues) |
-
+```
 ---
+```
 
 ## ✅ Quick Start
 
 > Three steps. That's it.
 
-```
+
 
 **1. Install**
 
