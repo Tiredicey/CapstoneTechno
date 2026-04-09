@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import db from '../database/Database.js';
 import { authenticate, requireAdmin } from '../middleware/auth.js';
+import { SocketManager } from '../sockets/SocketManager.js';
 import { v4 as uuid } from 'uuid';
 
 const router = Router();
@@ -40,15 +41,23 @@ router.post('/broadcast', authenticate, requireAdmin, (req, res) => {
     const { title, message, type } = req.body;
     if (!title || !message) return res.status(400).json({ error: 'title and message required' });
     const users = db.all(`SELECT id FROM users WHERE role = 'customer'`);
+    const notifType = type || 'info';
     for (const u of users) {
+      const id = uuid();
       db.run(
         `INSERT INTO notifications (id, user_id, type, title, body, message) VALUES (?, ?, ?, ?, ?, ?)`,
-        [uuid(), u.id, type || 'info', title, message, message]
+        [id, u.id, notifType, title, message, message]
       );
+      SocketManager.emitNotificationToUser(u.id, { id, type: notifType, title, body: message, message, read: 0 });
     }
+    SocketManager.io?.to('admin_room').emit('broadcast_sent', {
+      title,
+      message,
+      count: users.length,
+      timestamp: Date.now()
+    });
     res.json({ success: true, count: users.length });
   } catch (err) {
-    console.error('[BROADCAST]', err);
     res.status(500).json({ error: 'Failed to broadcast' });
   }
 });
