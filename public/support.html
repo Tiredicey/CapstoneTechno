@@ -108,9 +108,12 @@
     </div>
 
     <div id="faqSection" style="margin-bottom:48px;">
-      <h2 style="font-family:var(--font-display);font-size:1.4rem;font-weight:700;margin-bottom:24px;">Frequently Asked Questions</h2>
-      <div class="faq-list" id="faqList"></div>
-    </div>
+  <h2 style="font-family:var(--font-display);font-size:1.4rem;font-weight:700;margin-bottom:24px;">Frequently Asked Questions</h2>
+  <div id="faqCategoryTabs" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;"></div>
+  <div class="faq-list" id="faqList">
+    <div style="color:rgba(255,255,255,0.3);text-align:center;padding:40px;">Loading FAQs...</div>
+  </div>
+</div>
 
     <div id="csatSection" style="display:none;margin-bottom:48px;">
       <div class="glass-card" style="padding:36px;max-width:560px;text-align:center;">
@@ -146,5 +149,58 @@
 <script type="module" src="/js/core/Api.js"></script>
 <script type="module" src="/js/core/Auth.js"></script>
 <script type="module" src="/js/support.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+  const faqList = document.getElementById('faqList');
+  const tabWrap = document.getElementById('faqCategoryTabs');
+  if (!faqList) return;
+
+  function renderFaqs(faqs) {
+    if (!faqs.length) {
+      faqList.innerHTML = '<div style="color:rgba(255,255,255,0.3);text-align:center;padding:40px;">No FAQs available yet.</div>';
+      return;
+    }
+    faqList.innerHTML = faqs.map(f => `
+      <div class="faq-item" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:20px;margin-bottom:12px;">
+        <div class="faq-question" style="font-weight:600;margin-bottom:8px;font-size:0.95rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none';this.querySelector('.faq-arrow').textContent=this.nextElementSibling.style.display==='none'?'›':'⌄';">
+          ${f.question}
+          <span class="faq-arrow" style="color:rgba(255,255,255,0.4);font-size:1.2rem;flex-shrink:0;margin-left:12px;">›</span>
+        </div>
+        <div class="faq-answer" style="font-size:0.88rem;color:rgba(255,255,255,0.55);line-height:1.7;display:none;">${f.answer}</div>
+      </div>
+    `).join('');
+  }
+
+  function buildTabs(faqs) {
+    if (!tabWrap) return;
+    const cats = ['all', ...new Set(faqs.map(f => f.category).filter(Boolean))];
+    tabWrap.innerHTML = cats.map(c => `
+      <button onclick="filterFaqs('${c}',this)" style="padding:6px 16px;border-radius:100px;border:1.5px solid rgba(255,255,255,0.15);background:${c==='all'?'linear-gradient(135deg,#8B1F6E,#E84393)':'transparent'};color:${c==='all'?'#fff':'rgba(255,255,255,0.6)'};font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.2s;">${c.charAt(0).toUpperCase()+c.slice(1)}</button>
+    `).join('');
+  }
+
+  let allFaqs = [];
+  window.filterFaqs = function(cat, btn) {
+    document.querySelectorAll('#faqCategoryTabs button').forEach(b => {
+      b.style.background = 'transparent';
+      b.style.color = 'rgba(255,255,255,0.6)';
+    });
+    btn.style.background = 'linear-gradient(135deg,#8B1F6E,#E84393)';
+    btn.style.color = '#fff';
+    renderFaqs(cat === 'all' ? allFaqs : allFaqs.filter(f => f.category === cat));
+  };
+
+  fetch('/api/faq')
+    .then(r => r.json())
+    .then(data => {
+      allFaqs = Array.isArray(data) ? data : (data.faqs || []);
+      buildTabs(allFaqs);
+      renderFaqs(allFaqs);
+    })
+    .catch(() => {
+      faqList.innerHTML = '<div style="color:rgba(255,255,255,0.3);text-align:center;padding:40px;">Could not load FAQs. Please try again later.</div>';
+    });
+});
+</script>
 </body>
 </html>
