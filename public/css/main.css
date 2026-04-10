@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
 @import './vars.css';
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -6,16 +5,17 @@
 html { scroll-behavior: smooth; overflow-x: hidden; }
 
 body {
-  font-family: var(--font-body);
-  background: var(--bloom-dark);
+  font-family: var(--fb);
+  background: var(--bg);
   color: var(--bloom-cream);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  color-scheme: dark;
 }
 
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--bloom-dark); }
-::-webkit-scrollbar-thumb { background: var(--bloom-primary); border-radius: 3px; }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: linear-gradient(var(--p5), var(--pk)); border-radius: 2px; }
 
 .bloom-nav {
   position: fixed;
@@ -38,7 +38,7 @@ body {
 }
 
 .bloom-logo {
-  font-family: var(--font-display);
+  font-family: var(--fd);
   font-size: 1.8rem;
   font-weight: 900;
   background: linear-gradient(135deg, var(--bloom-secondary), var(--bloom-accent));
@@ -57,9 +57,9 @@ body {
 }
 
 .bloom-nav-links a {
-  color: rgba(255,255,255,0.8);
+  color: rgba(255,255,255,0.6);
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 500;
   letter-spacing: 0.3px;
   transition: color 0.2s;
@@ -72,10 +72,10 @@ body {
   bottom: -4px;
   left: 0; right: 0;
   height: 2px;
-  background: var(--bloom-secondary);
+  background: linear-gradient(90deg, var(--p5), var(--pk));
   border-radius: 1px;
   transform: scaleX(0);
-  transition: transform 0.25s var(--bloom-transition);
+  transition: transform 0.25s var(--bloom-spring);
 }
 
 .bloom-nav-links a:hover { color: #fff; }
@@ -100,14 +100,14 @@ body {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--bloom-primary), var(--bloom-secondary));
+  background: linear-gradient(135deg, var(--p5d), var(--p5));
   color: #fff;
-  box-shadow: 0 4px 20px rgba(232,67,147,0.4);
+  box-shadow: 0 4px 20px rgba(230,26,26,.35);
 }
 
 .btn-primary:hover {
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 8px 30px rgba(232,67,147,0.6);
+  box-shadow: 0 8px 30px rgba(230,26,26,.55);
 }
 
 .btn-ghost {
@@ -171,7 +171,7 @@ body {
 }
 
 .section-title {
-  font-family: var(--font-display);
+  font-family: var(--fd);
   font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 900;
   line-height: 1.1;
@@ -202,7 +202,7 @@ body {
   text-transform: uppercase;
 }
 
-.tag-primary  { background: rgba(232,67,147,0.2);  color: var(--bloom-secondary); border: 1px solid rgba(232,67,147,0.3); }
+.tag-primary  { background: rgba(230,26,26,.12); color: var(--p5); border: 1px solid rgba(230,26,26,.28); }
 .tag-mint     { background: rgba(0,212,170,0.15);   color: var(--bloom-mint);      border: 1px solid rgba(0,212,170,0.3); }
 .tag-accent   { background: rgba(255,215,0,0.15);   color: var(--bloom-accent);    border: 1px solid rgba(255,215,0,0.3); }
 .tag-lavender { background: rgba(124,58,237,0.2);   color: #A78BFA;                border: 1px solid rgba(124,58,237,0.3); }
@@ -230,14 +230,14 @@ body {
 .form-input::placeholder { color: rgba(255,255,255,0.35); }
 
 .form-input:focus {
-  border-color: var(--bloom-secondary);
+  border-color: var(--p5);
   background: rgba(255,255,255,0.1);
-  box-shadow: 0 0 0 3px rgba(232,67,147,0.15);
+  box-shadow: 0 0 0 3px rgba(230,26,26,.12);
 }
 
 .form-input.error {
-  border-color: var(--bloom-coral);
-  box-shadow: 0 0 0 3px rgba(255,107,107,0.15);
+  border-color: var(--cr);
+  box-shadow: 0 0 0 3px rgba(230,26,26,.12);
 }
 
 .form-select {
@@ -253,7 +253,7 @@ body {
   top: -8px; right: -8px;
   min-width: 20px;
   height: 20px;
-  background: var(--bloom-secondary);
+  background: var(--p5);
   color: #fff;
   font-size: 0.7rem;
   font-weight: 700;
@@ -290,7 +290,7 @@ body {
 
 .toast-success { background: rgba(0,212,170,0.22);  color: var(--bloom-mint); }
 .toast-error   { background: rgba(255,107,107,0.22); color: var(--bloom-coral); }
-.toast-info    { background: rgba(232,67,147,0.22);  color: var(--bloom-secondary); }
+.toast-info    { background: rgba(230,26,26,.18);  color: var(--p5); }
 .toast-warning { background: rgba(255,215,0,0.22);   color: var(--bloom-accent); }
 
 @keyframes slideInToast {
@@ -301,7 +301,7 @@ body {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(26,10,46,0.85);
+  background: rgba(0,0,0,.75);
   backdrop-filter: blur(8px);
   z-index: 2000;
   display: flex;
@@ -321,7 +321,7 @@ body {
   overflow-y: auto;
   padding: 40px;
   border-radius: var(--bloom-radius-lg);
-  background: linear-gradient(145deg, rgba(45,27,94,0.95), rgba(26,10,46,0.98));
+  background: rgba(11,5,22,.97);
   border: 1px solid var(--bloom-glass-border);
   box-shadow: var(--bloom-shadow-float);
   transform: scale(0.9) translateY(30px);
@@ -351,8 +351,7 @@ body {
   transition: all 0.2s;
 }
 
-.modal-close:hover { background: rgba(255,107,107,0.3); color: var(--bloom-coral); }
-
+.modal-close:hover { background: rgba(230,26,26,.2); color: #fff; }
 .particle-field {
   position: fixed;
   inset: 0;
