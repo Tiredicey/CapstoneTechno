@@ -10,17 +10,17 @@
   --bloom-sky:          #38BDF8;
   --bloom-cream:        #FFF8F3;
   --bloom-warm:         #FEF3C7;
-  --bloom-dark:         #1A0A2E;
-  --bloom-dark2:        #2D1B5E;
+  --bloom-dark:         #0B0516;
+  --bloom-dark2:        #150A28;
   --bloom-mid:          #4C2080;
 
-  --bloom-glass:        rgba(255,255,255,0.08);
-  --bloom-glass-border: rgba(255,255,255,0.14);
+  --bloom-glass:        rgba(255,255,255,.055);
+  --bloom-glass-border: rgba(255,255,255,.09);
 
-  --bloom-shadow-sm:    0 4px 20px  rgba(139,31,110,0.15);
-  --bloom-shadow-md:    0 8px 40px  rgba(139,31,110,0.25);
-  --bloom-shadow-lg:    0 20px 80px rgba(139,31,110,0.35);
-  --bloom-shadow-float: 0 30px 100px rgba(139,31,110,0.4);
+  --bloom-shadow-sm:    0 4px 20px rgba(139,31,110,.15);
+  --bloom-shadow-md:    0 8px 40px rgba(139,31,110,.25);
+  --bloom-shadow-lg:    0 20px 80px rgba(139,31,110,.35);
+  --bloom-shadow-float: 0 30px 100px rgba(139,31,110,.4);
 
   --bloom-radius:    20px;
   --bloom-radius-sm: 12px;
@@ -29,8 +29,7 @@
 
   --bloom-ease:   cubic-bezier(.23,1,.32,1);
   --bloom-spring: cubic-bezier(.34,1.56,.64,1);
-
-  --bloom-transition: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --bloom-transition: cubic-bezier(.34,1.56,.64,1);
 
   --font-display: 'Playfair Display', Georgia, serif;
   --font-body:    'DM Sans', system-ui, sans-serif;
@@ -42,6 +41,7 @@
 
   --p5:  #E61A1A;
   --p5d: #A81010;
+  --p5l: #FF3B3B;
   --pk:  oklch(58% .22 348);
   --pk2: oklch(48% .22 340);
   --pu:  oklch(40% .24 292);
@@ -51,6 +51,8 @@
   --bg:  oklch(11% .06 292);
   --bg2: oklch(15% .07 292);
   --bg3: oklch(19% .08 292);
+  --ink: #0B0516;
+  --paper: #F8F3E8;
   --cr:  oklch(68% .22 27);
 
   --gl:  rgba(255,255,255,.055);
