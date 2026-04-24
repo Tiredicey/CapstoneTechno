@@ -6,6 +6,7 @@ import helmet from 'helmet';
 import compression from 'compression';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import cookieParser from 'cookie-parser';
 import { createHandler } from 'graphql-http/lib/use/express';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { schema } from './graphql/schema.js';
@@ -57,6 +58,7 @@ app.use(compression());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(rateLimiter);
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -102,6 +104,24 @@ app.get('/health', (req, res) => {
 
 app.get('/admin.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
+
+app.get('/sitemap.xml', async (req, res) => {
+  const host = req.protocol + '://' + req.get('host');
+  const staticPages = ['/', '/catalog.html', '/cart.html', '/customize.html', '/support.html'];
+  let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+  staticPages.forEach(p => {
+    xml += '  <url><loc>' + host + p + '</loc><changefreq>weekly</changefreq><priority>' + (p === '/' ? '1.0' : '0.7') + '</priority></url>\n';
+  });
+  try {
+    const db = (await import('./database/Database.js')).default;
+    const products = db.all('SELECT id FROM products WHERE is_active = 1');
+    products.forEach(p => {
+      xml += '  <url><loc>' + host + '/catalog.html?id=' + p.id + '</loc><changefreq>daily</changefreq><priority>0.8</priority></url>\n';
+    });
+  } catch {}
+  xml += '</urlset>';
+  res.set('Content-Type', 'application/xml').send(xml);
 });
 
 app.get('/admin/*', (req, res) => {
