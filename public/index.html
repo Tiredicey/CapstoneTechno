@@ -27,6 +27,8 @@
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Catalog","item":"/catalog.html"}]}
 </script>
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/img/hero-flowers.jpg">
 <style>
 @property --sh { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
 @property --px { syntax: '<number>'; inherits: true; initial-value: 0; }
@@ -1919,6 +1921,19 @@ input:-webkit-autofill:focus {
   });
 })();
 </script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('/sw.js').catch(function () {});
+  });
+}
+var _deferredInstall = null;
+window.addEventListener('beforeinstallprompt', function (e) {
+  e.preventDefault();
+  _deferredInstall = e;
+});
+</script>
 
 </body>
 </html>
+
