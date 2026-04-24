@@ -1,0 +1,20 @@
+{
+  "name": "Bloom — Pre-Order Flowers & Gifts",
+  "short_name": "Bloom",
+  "description": "Handcrafted bouquets, pre-ordered for every moment. Cold-chain fresh, WCAG 2.1 AA accessible.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0B0516",
+  "theme_color": "#E61A1A",
+  "orientation": "portrait-primary",
+  "lang": "en",
+  "categories": ["shopping", "lifestyle"],
+  "icons": [
+    { "src": "/img/hero-flowers.jpg", "sizes": "512x512", "type": "image/jpeg", "purpose": "any" },
+    { "src": "/img/hero-flowers.jpg", "sizes": "192x192", "type": "image/jpeg", "purpose": "maskable" }
+  ],
+  "screenshots": [
+    { "src": "/img/hero-flowers.jpg", "sizes": "1280x720", "type": "image/jpeg", "label": "Bloom landing page" }
+  ],
+  "prefer_related_applications": false
+}
