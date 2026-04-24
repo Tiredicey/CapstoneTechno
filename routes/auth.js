@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { UserModel } from '../models/UserModel.js';
-import { signToken, authenticate } from '../middleware/auth.js';
+import { signToken, authenticate, setTokenCookie, clearTokenCookie } from '../middleware/auth.js';
+import { csrfToken } from '../middleware/csrf.js';
 import { validate } from '../middleware/validate.js';
 import { authLimiter } from '../middleware/rateLimiter.js';
 import db from '../database/Database.js';
@@ -19,6 +20,7 @@ router.post('/register', authLimiter, validate({
     if (existing) return res.status(409).json({ error: 'Email already registered' });
     const user = UserModel.create({ email, password, name, language });
     const token = signToken({ id: user.id, email: user.email, role: user.role });
+    setTokenCookie(res, token);
     const { password_hash, ...safeUser } = user;
     res.status(201).json({ token, user: safeUser });
   } catch (err) {
@@ -36,6 +38,7 @@ router.post('/login', authLimiter, (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
     const token = signToken({ id: user.id, email: user.email, role: user.role });
+    setTokenCookie(res, token);
     const { password_hash, ...safeUser } = user;
     res.json({ token, user: safeUser });
   } catch (err) {
@@ -46,6 +49,15 @@ router.post('/login', authLimiter, (req, res) => {
 
 router.post('/guest', (req, res) => {
   res.json({ sessionId: uuid(), isGuest: true });
+});
+
+router.post('/logout', (req, res) => {
+  clearTokenCookie(res);
+  res.json({ ok: true });
+});
+
+router.get('/csrf-token', csrfToken, (req, res) => {
+  res.json({ csrfToken: req.csrfToken });
 });
 
 router.get('/me', authenticate, (req, res) => {
