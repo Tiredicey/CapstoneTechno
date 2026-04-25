@@ -10,16 +10,19 @@ const indexPath = path.join(publicDir, 'index.html');
 try {
   const indexHtml = fs.readFileSync(indexPath, 'utf-8');
 
-
+  // Extract parts of index.html
+  // Header part up to the closing </nav>
   const navEndIndex = indexHtml.indexOf('</nav>') + 6;
   const headerPart = indexHtml.substring(0, navEndIndex);
 
-
+  // Footer part starting from <footer class="bloom-foot">
   const footerStartIndex = indexHtml.indexOf('<footer class="bloom-foot"');
-
+  // But wait, there is also the bottom-sheet modals, we should probably grab from footer to the end, EXCEPT the hero specific scripts.
+  // Actually, we can grab the footer and everything after it.
   let footerPart = indexHtml.substring(footerStartIndex);
 
-
+  // We should remove the hero-specific initialization from the footer script if possible, but it's fine for now, they have safety checks.
+  // Just inject our content.
 
   const pages = {
     'about.html': `
@@ -79,25 +82,6 @@ try {
             <p style="color: rgba(255,255,255,0.6); margin-bottom: 8px;">BSIT Capstone Development Team</p>
             <p style="color: rgba(255,255,255,0.6); margin-bottom: 8px;">Lipa City, Batangas, Philippines</p>
             <p style="color: rgba(255,255,255,0.6);">Email: capstone.bloom@edu.ph</p>
-          </div>
-        </div>
-      </main>
-    `,
-    'faq.html': `
-      <main class="con sec-pad" style="padding-top: 140px; min-height: 70vh;">
-        <h1 class="sec-title" style="margin-bottom: 24px; color: var(--p5);">Frequently Asked Questions</h1>
-        <div style="margin-top: 40px; display: flex; flex-direction: column; gap: 20px; max-width: 800px;">
-          <div style="padding: 20px; background: var(--gl); border: 1px solid var(--glb); border-radius: 8px;">
-            <h3 style="margin-bottom: 10px;">What is Bloom?</h3>
-            <p style="color: rgba(255,255,255,0.6);">Bloom is a comprehensive floral e-commerce platform developed as a Capstone Project by the BSIT students of STI College Lipa. It serves as a fully functional demonstration of modern web technologies.</p>
-          </div>
-          <div style="padding: 20px; background: var(--gl); border: 1px solid var(--glb); border-radius: 8px;">
-            <h3 style="margin-bottom: 10px;">Are the flowers real?</h3>
-            <p style="color: rgba(255,255,255,0.6);">This platform is currently a technical demonstration. While the ordering system, payment flows, and data management are real and securely processed, no physical flowers will be delivered.</p>
-          </div>
-          <div style="padding: 20px; background: var(--gl); border: 1px solid var(--glb); border-radius: 8px;">
-            <h3 style="margin-bottom: 10px;">How is user data protected?</h3>
-            <p style="color: rgba(255,255,255,0.6);">We employ enterprise-grade security including bcrypt password hashing, HTTP-only JWT cookies, CSRF tokens, and strict Content Security Policies.</p>
           </div>
         </div>
       </main>
