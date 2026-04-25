@@ -204,16 +204,35 @@ window.addEventListener('DOMContentLoaded', () => {
     renderFaqs(cat === 'all' ? allFaqs : allFaqs.filter(f => f.category === cat));
   };
 
-  fetch('/api/faq')
-    .then(r => r.json())
-    .then(data => {
-      allFaqs = Array.isArray(data) ? data : (data.faqs || []);
-      buildTabs(allFaqs);
-      renderFaqs(allFaqs);
-    })
-    .catch(() => {
-      faqList.innerHTML = '<div style="color:rgba(255,255,255,0.3);text-align:center;padding:40px;">Could not load FAQs. Please try again later.</div>';
-    });
+  function loadFaqs() {
+    fetch('/api/faq')
+      .then(r => r.json())
+      .then(data => {
+        allFaqs = Array.isArray(data) ? data : (data.faqs || []);
+        
+        // Preserve active category if any
+        const activeBtn = document.querySelector('#faqCategoryTabs button[style*="linear-gradient"]');
+        const activeCat = activeBtn ? activeBtn.dataset.cat : 'all';
+        
+        buildTabs(allFaqs);
+        
+        const newBtn = document.querySelector(`#faqCategoryTabs button[data-cat="${activeCat}"]`) || document.querySelector('#faqCategoryTabs button[data-cat="all"]');
+        if (newBtn) {
+          filterFaqs(newBtn.dataset.cat, newBtn);
+        } else {
+          renderFaqs(allFaqs);
+        }
+      })
+      .catch(() => {
+        faqList.innerHTML = '<div style="color:rgba(255,255,255,0.3);text-align:center;padding:40px;">Could not load FAQs. Please try again later.</div>';
+      });
+  }
+
+  loadFaqs();
+
+  if (window.Store && window.Store.on) {
+    window.Store.on('faq_update', loadFaqs);
+  }
 });
 </script>
 </body>
