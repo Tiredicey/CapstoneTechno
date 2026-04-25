@@ -617,7 +617,7 @@ input:-webkit-autofill:focus {
 .p-skel { background: var(--gl); border: 1px solid var(--glb); border-radius: var(--r); padding: 20px; position: relative; overflow: hidden; }
 .p-skel-img { height: 180px; border-radius: 14px; background: radial-gradient(circle at 50% 50%, rgba(230,26,26,.18), rgba(11,5,22,.4)); position: relative; overflow: hidden; margin-bottom: 14px; }
 .p-skel-img::before { content: ''; position: absolute; inset: 0; background: conic-gradient(from 0deg, transparent 0%, rgba(230,26,26,.12) 25%, transparent 50%); animation: skelSpin 1.6s linear infinite; }
-.p-skel-img::after { content: 'â€'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: rgba(230,26,26,.45); font-size: 2.2rem; animation: skelBloom 1.8s ease-in-out infinite; }
+.p-skel-img::after { content: '\1F339'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: rgba(230,26,26,.45); font-size: 2.2rem; animation: skelBloom 1.8s ease-in-out infinite; }
 @keyframes skelSpin { to { transform: rotate(360deg); } }
 @keyframes skelBloom { 0%,100% { transform: scale(.85); opacity: .35; } 50% { transform: scale(1.1); opacity: .9; } }
 
@@ -795,7 +795,7 @@ input:-webkit-autofill:focus {
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
       </button>
       <div class="n-srch-panel" id="srchPanel" role="search" aria-hidden="true">
-        <input type="search" class="n-srch-inp" id="srchInp" placeholder="Search bouquets¦" autocomplete="off" aria-label="Search products">
+        <input type="search" class="n-srch-inp" id="srchInp" placeholder="Search bouquets…" autocomplete="off" aria-label="Search products">
         <div id="srchRes" role="listbox" style="margin-top:8px"></div>
       </div>
     </div>
@@ -806,9 +806,9 @@ input:-webkit-autofill:focus {
       </button>
       <ul id="langDd" class="lang-dd" role="listbox" aria-hidden="true">
         <li><button class="lang-opt" role="option" data-lang="en" data-flag="🇺🇸" data-lbl="EN"><span aria-hidden="true">🇺🇸</span> English</button></li>
-        <li><button class="lang-opt" role="option" data-lang="fil" data-flag="ðŸ‡µðŸ‡­" data-lbl="PH"><span aria-hidden="true">ðŸ‡µðŸ‡­</span> Filipino</button></li>
-        <li><button class="lang-opt" role="option" data-lang="es" data-flag="ðŸ‡ªðŸ‡¸" data-lbl="ES"><span aria-hidden="true">ðŸ‡ªðŸ‡¸</span> EspaÃ±ol</button></li>
-        <li><button class="lang-opt" role="option" data-lang="ja" data-flag="ðŸ‡¯ðŸ‡µ" data-lbl="JA"><span aria-hidden="true">ðŸ‡¯ðŸ‡µ</span> æ—¥æœ¬èªž</button></li>
+        <li><button class="lang-opt" role="option" data-lang="fil" data-flag="🇵🇭" data-lbl="PH"><span aria-hidden="true">🇵🇭</span> Filipino</button></li>
+        <li><button class="lang-opt" role="option" data-lang="es" data-flag="🇪🇸" data-lbl="ES"><span aria-hidden="true">🇪🇸</span> Español</button></li>
+        <li><button class="lang-opt" role="option" data-lang="ja" data-flag="🇯🇵" data-lbl="JA"><span aria-hidden="true">🇯🇵</span> 日本語</button></li>
       </ul>
     </div>
     <button class="btn btn-g btn-sm btn-voice-toggle" id="voiceNavBtn" aria-label="Voice navigation" aria-pressed="false" hidden>
@@ -949,11 +949,32 @@ input:-webkit-autofill:focus {
   <div class="con">
     <div class="stats-inner">
       <div class="stat-item">
+        <span class="stat-icon" aria-hidden="true">❄️</span>
+        <div class="stat-num" id="sCold">0–4°C</div>
+        <div class="stat-bar"><div class="stat-bar-fill" data-w="96"></div></div>
+        <div class="stat-lbl">Cold-chain compliance</div>
+        <div class="stat-src"><a href="https://postharvest.ucdavis.edu/" target="_blank" rel="noopener">UC Davis Postharvest</a></div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-icon" aria-hidden="true">📦</span>
+        <div class="stat-num" id="sOrders">2,400+</div>
+        <div class="stat-bar"><div class="stat-bar-fill" data-w="78"></div></div>
+        <div class="stat-lbl">Orders fulfilled</div>
+        <div class="stat-src">Platform data · 2026</div>
+      </div>
+      <div class="stat-item">
         <span class="stat-icon" aria-hidden="true">♿</span>
         <div class="stat-num" id="sWcag">AA</div>
         <div class="stat-bar"><div class="stat-bar-fill" data-w="99"></div></div>
         <div class="stat-lbl">Accessibility conformance</div>
         <div class="stat-src"><a href="https://www.w3.org/TR/WCAG21/" target="_blank" rel="noopener">WCAG 2.1</a> AA target</div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-icon" aria-hidden="true">⭐</span>
+        <div class="stat-num" id="sRating">4.86</div>
+        <div class="stat-bar"><div class="stat-bar-fill" data-w="97"></div></div>
+        <div class="stat-lbl">Average rating</div>
+        <div class="stat-src">487 verified reviews</div>
       </div>
     </div>
   </div>
@@ -1215,7 +1236,7 @@ input:-webkit-autofill:focus {
       </div>
     </div>
     <div class="foot-bottom">
-      <div>Â© <span id="yr">2026</span> Bloom · Handcrafted in the Philippines</div>
+      <div>© <span id="yr">2026</span> Bloom · Handcrafted in the Philippines</div>
       <div class="foot-soc">
         <a href="https://instagram.com/" aria-label="Instagram" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a>
         <a href="https://facebook.com/" aria-label="Facebook" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3Z"/></svg></a>
@@ -1237,7 +1258,7 @@ input:-webkit-autofill:focus {
   </div>
 </section>
 
-<button class="btt" id="btt" aria-label="Back to top">â†‘</button>
+<button class="btt" id="btt" aria-label="Back to top">↑</button>
 </main>
 
 <div class="overlay" id="exitMod" role="dialog" aria-modal="true" aria-labelledby="exitTitle" aria-hidden="true" style="display:none">
@@ -1336,14 +1357,14 @@ input:-webkit-autofill:focus {
       <button class="m-cls" id="closeProf" aria-label="Close dialog">✕</button>
     </div>
     <div class="occ-grid" role="radiogroup" aria-label="Occasion">
-      <button class="occ-btn" data-occ="birthday" role="radio" aria-checked="false"><span class="occ-emj" aria-hidden="true">ðŸŽ‚</span>Birthday</button>
+      <button class="occ-btn" data-occ="birthday" role="radio" aria-checked="false"><span class="occ-emj" aria-hidden="true">🎂</span>Birthday</button>
       <button class="occ-btn" data-occ="anniversary" role="radio" aria-checked="false"><span class="occ-emj" aria-hidden="true">💐</span>Anniversary</button>
-      <button class="occ-btn" data-occ="wedding" role="radio" aria-checked="false"><span class="occ-emj" aria-hidden="true">💐’</span>Wedding</button>
-      <button class="occ-btn" data-occ="sympathy" role="radio" aria-checked="false"><span class="occ-emj" aria-hidden="true">ðŸ•Š</span>Sympathy</button>
-      <button class="occ-btn" data-occ="congrats" role="radio" aria-checked="false"><span class="occ-emj" aria-hidden="true">ðŸŽ“</span>Congrats</button>
-      <button class="occ-btn" data-occ="just-because" role="radio" aria-checked="false"><span class="occ-emj" aria-hidden="true">💐Œ</span>Just because</button>
+      <button class="occ-btn" data-occ="wedding" role="radio" aria-checked="false"><span class="occ-emj" aria-hidden="true">💒</span>Wedding</button>
+      <button class="occ-btn" data-occ="sympathy" role="radio" aria-checked="false"><span class="occ-emj" aria-hidden="true">🕊️</span>Sympathy</button>
+      <button class="occ-btn" data-occ="congrats" role="radio" aria-checked="false"><span class="occ-emj" aria-hidden="true">🎓</span>Congrats</button>
+      <button class="occ-btn" data-occ="just-because" role="radio" aria-checked="false"><span class="occ-emj" aria-hidden="true">🌻</span>Just because</button>
       <button class="occ-btn" data-occ="corporate" role="radio" aria-checked="false"><span class="occ-emj" aria-hidden="true">💼</span>Corporate</button>
-      <button class="occ-btn" data-occ="thanks" role="radio" aria-checked="false"><span class="occ-emj" aria-hidden="true">ðŸ™</span>Thanks</button>
+      <button class="occ-btn" data-occ="thanks" role="radio" aria-checked="false"><span class="occ-emj" aria-hidden="true">🙏</span>Thanks</button>
     </div>
     <div style="display:flex;gap:10px">
       <button class="btn btn-g" style="flex:1;justify-content:center" id="profSkip">Skip</button>
@@ -1473,7 +1494,7 @@ input:-webkit-autofill:focus {
     if (!con) return;
     if (toastCount >= MAX_TOASTS) return;
     toastCount++;
-    var icons = { success: 'âœ“', error: '✕', info: 'â—†' };
+    var icons = { success: '✔', error: '✕', info: '◆' };
     var t = document.createElement('div');
     t.className = 'toast toast-' + type;
     t.setAttribute('role', type === 'error' ? 'alert' : 'status');
@@ -2693,7 +2714,7 @@ input:-webkit-autofill:focus {
           showToast('Video saved locally for this order', 'success');
         }
         bloomTrack('video_message_attached', { productId: productId });
-      } catch (e) { showToast('Could not attach video', 'error'); } finally { attachBtn.disabled = false; attachBtn.textContent = 'Attached âœ“'; }
+      } catch (e) { showToast('Could not attach video', 'error'); } finally { attachBtn.disabled = false; attachBtn.textContent = 'Attached ✔'; }
     });
   }
   window.buildVideoMessageBlock = buildVideoMessageBlock;
