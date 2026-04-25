@@ -2462,7 +2462,7 @@ input:-webkit-autofill:focus {
     qsa('.wl-btn').forEach(function (b) {
       var on = items.some(function (x) { return x.id === b.dataset.id; });
       b.classList.toggle('on', on);
-      b.textContent = on ? 'â™¥' : '♡';
+      b.textContent = on ? '♥' : '♡';
     });
     var body = qs('#wlDrawerBody');
     var empty = qs('#wlEmpty');
@@ -2682,7 +2682,7 @@ input:-webkit-autofill:focus {
       };
       startTime = Date.now();
       rec.start();
-      recBtn.textContent = 'â–  Stop';
+      recBtn.textContent = '■ Stop';
       dot.classList.add('on');
       stopTimer = setTimeout(function () { try { rec.stop(); } catch (e) {} }, 30000);
     });
