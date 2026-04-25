@@ -23,6 +23,7 @@ class DatabaseClass {
     this.seedAdmin();
     this.seedProducts();
     this.seedPromoCodes();
+    this.seedFaqs();
     return this;
   }
 
@@ -294,6 +295,25 @@ class DatabaseClass {
       ['promo_4', 'WELCOME15', 'percent',  'percent',  15,  0,   0,   2000]
     ]);
     console.log('🌸 Promo codes seeded');
+  }
+
+  seedFaqs() {
+    const count = this.db.prepare('SELECT COUNT(*) AS c FROM faqs').get();
+    if (count.c > 0) return;
+    const insert = this.db.prepare(
+      `INSERT INTO faqs (id, question, answer, category, sort_order) VALUES (?, ?, ?, ?, ?)`
+    );
+    const seed = this.db.transaction((rows) => {
+      for (const r of rows) insert.run(...r);
+    });
+    seed([
+      ['faq_1', 'What is Bloom?', 'Bloom is a comprehensive floral e-commerce platform developed as a Capstone Project by the BSIT students of STI College Lipa. It serves as a fully functional demonstration of modern web technologies.', 'general', 1],
+      ['faq_2', 'Are the flowers real?', 'This platform is currently a technical demonstration. While the ordering system, payment flows, and data management are real and securely processed, no physical flowers will be delivered.', 'general', 2],
+      ['faq_3', 'How is user data protected?', 'We employ enterprise-grade security including bcrypt password hashing, HTTP-only JWT cookies, CSRF tokens, and strict Content Security Policies.', 'security', 3],
+      ['faq_4', 'Is this an actual business?', 'No, this is an academic capstone project to demonstrate proficiency in full-stack web development, UX/UI design, and secure database interactions.', 'general', 4],
+      ['faq_5', 'Why the dark theme?', 'We adopted a Persona 5-inspired high-contrast UI to showcase advanced CSS methodologies, utilizing strict WCAG 2.1 AA compliant colors for accessibility.', 'technical', 5]
+    ]);
+    console.log('🌸 FAQs seeded');
   }
 
   get(sql, params = []) {
