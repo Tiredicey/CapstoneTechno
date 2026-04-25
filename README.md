@@ -1,17 +1,15 @@
+# 🌸 Bloom — Floral E-Commerce Capstone Platform
 
-# 🌸 Bloom — Flower Shop Platform
-
-> A full-stack flower shop with real-time admin → storefront sync.
-> Take it one step at a time. Everything here is optional to read in order.
+> A comprehensive, full-stack e-commerce system developed as a Capstone Project by the **BSIT students of STI College Lipa**.
+> Designed with a "Persona 5" inspired high-contrast UI, strict WCAG 2.1 AA accessibility, and enterprise-grade security.
 
 ---
 
 ## 📌 What This Is
 
-A complete e-commerce system built for a flower shop.
-It has a customer-facing storefront, an admin panel, and live updates between them.
+Bloom is a fully functional demonstration of modern web technologies. It features a customer-facing storefront, a comprehensive admin dashboard, and real-time synchronization between the two. **Everything is powered by Admins**—from products and banners to dynamic FAQs and order tracking. 
 
-**You do not need to read this all at once.**
+*Note: This is an academic technical demonstration. No physical flowers are shipped, and logistics are simulated.*
 
 ---
 
@@ -20,363 +18,102 @@ It has a customer-facing storefront, an admin panel, and live updates between th
 | I want to... | Go to |
 |---|---|
 | Just run it locally | [→ Quick Start](#-quick-start) |
-| Deploy it live | [→ Deployment](#-deployment) |
-| Understand the folder layout | [→ Structure](#-project-structure) |
-| Know what's connected to what | [→ How It Works](#-how-it-works) |
-| See the tech used | [→ Stack](#-tech-stack) |
-| Fix something | [→ Common Issues](#-common-issues) |
-
-
+| Understand the Architecture | [→ Architecture & State](#-architecture--state) |
+| See the tech used | [→ Tech Stack & Security](#-tech-stack--security) |
+| Admin Powers | [→ Admin Powers](#-admin-powers) |
 
 ---
 
 ## ✅ Quick Start
 
-> Three steps. That's it.
-
-
-
-**1. Install**
-
-
+**1. Install Dependencies**
 ```bash
 npm install
 ```
 
-**2. Set up your environment**
+**2. Environment Setup**
 ```bash
 cp .env.example .env
 ```
-Then open `.env` and fill in your values.
-Each variable has a comment explaining what it is.
+Fill in your required values in the `.env` file.
 
-**3. Run**
+**3. Start the Server**
 ```bash
 npm start
 ```
-
-or on Windows:
-```
-start.bat
-```
-
-**That's all.** Open `http://localhost:3000` in your browser.
+*The SQLite database will auto-initialize on the first run. The system relies entirely on local assets (no unreliable external CDNs or Unsplash links).*
 
 ---
 
-## 🌐 Deployment
+## 🏛 Architecture & State
 
-> You can skip this section if you're only running locally.
+Bloom utilizes advanced client-side state management mapped to a robust Express/SQLite backend, entirely bypassing heavy frontend frameworks.
 
-### Option A — Tunnel (Fastest, No Setup)
-```bash
-tunnel.bat
-```
-Gives you a public URL instantly. Good for demos.
+### 1. State Management (`Store.js`)
+- **Cross-Tab Sync:** Utilizes `BroadcastChannel` (`bloom_sync`) to instantly sync logins, logouts, cart counts, and theme preferences across all open browser tabs.
+- **Offline Mutations:** Failed non-GET requests are queued into **IndexedDB** (`bloom_offline`). A Service Worker (`sw.js`) Background Sync (`bloom-sync`) automatically replays these mutations when connectivity is restored.
+- **Theming & Localization:** Supports dynamic Dark/Light themes and 4 languages (English, Filipino, Spanish, Japanese) via a custom `I18n.js` engine.
 
-### Option B — Self-Hosted Server
+### 2. Real-Time Sync (`Socket.io`)
+Customers never need to refresh. If an Admin updates a product, changes a hero banner, modifies site content, or edits the FAQ, the server broadcasts the event, and the client `Store` updates the UI instantly.
 
-**1. Copy your `.env` to the server**
-
-**2. Install & build**
-```bash
-npm install
-```
-
-**3. Start with a process manager**
-```bash
-npm install -g pm2
-pm2 start server.js --name bloom
-pm2 save
-```
-
-**4. Set up your reverse proxy (nginx example)**
-```nginx
-server {
-    listen 80;
-    server_name yourdomain.com;
-
-    location / {
-        proxy_pass http://localhost:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-    }
-}
-```
-
-### Option C — GitHub Actions (Auto-Deploy)
-
-The workflow files are already in `.github/workflows/`.
-
-| File | What it does |
-|---|---|
-| `deploy.yml` | Deploys on push to `main` |
-| `backend-health.yml` | Checks the server is alive |
-
-Just add your server secrets to GitHub:
-`Settings → Secrets → Actions`
-
-| Secret Name | What to put |
-|---|---|
-| `SSH_HOST` | Your server IP |
-| `SSH_USER` | Your SSH username |
-| `SSH_KEY` | Your private SSH key |
+### 3. Modal & Accessibility (WCAG 2.1 AA)
+All modals (Auth, Product, FAQ) implement strict focus-trapping, ARIA labeling (`aria-hidden`, `aria-modal`), and Escape-key listeners to ensure full screen-reader and keyboard navigation compliance. UI copy is designed to be non-confrontational and comforting.
 
 ---
 
-## 🔑 Environment Variables
+## 👑 Admin Powers
 
-> Only the ones marked ⚠️ are required to run.
+**Everything in Bloom is handled by Admins.**
+You must be logged in as an Admin to access `/admin.html`. 
 
-```env
-# ⚠️ Required
-PORT=3000
-JWT_SECRET=your_secret_here
-
-# Database (SQLite — no setup needed)
-DB_PATH=./database/bloom.db
-
-# Optional — Email notifications
-SMTP_HOST=
-SMTP_PORT=
-SMTP_USER=
-SMTP_PASS=
-
-# Optional — Public tunnel URL
-PUBLIC_URL=
-```
-
----
-
-## 📁 Project Structure
-
-> You don't need to know all of this. Just the parts you touch.
-
-```
-bloom/
-│
-├── 📂 public/              ← Everything the customer sees
-│   ├── index.html          ← Homepage
-│   ├── catalog.html        ← Shop / browse products
-│   ├── cart.html           ← Cart
-│   ├── checkout.html       ← Checkout
-│   ├── tracking.html       ← Order tracking
-│   │
-│   ├── admin.html          ← Admin panel entry point
-│   ├── admin/              ← Admin sub-pages
-│   │   ├── dashboard.html
-│   │   ├── orders.html
-│   │   └── analytics.html
-│   │
-│   ├── js/
-│   │   ├── core/
-│   │   │   ├── Store.js    ← App state + real-time socket hub
-│   │   │   └── Api.js      ← All HTTP calls go through here
-│   │   │
-│   │   ├── landing.js      ← Homepage logic
-│   │   ├── catalog.js      ← Product browsing
-│   │   ├── cart.js         ← Cart management
-│   │   ├── checkout.js     ← Checkout flow
-│   │   ├── tracking.js     ← Order tracking
-│   │   └── admin.js        ← Admin panel logic
-│   │
-│   └── css/                ← All styles
-│
-├── 📂 routes/              ← API endpoints (backend)
-│   ├── products.js         ← /api/products
-│   ├── orders.js           ← /api/orders
-│   ├── cart.js             ← /api/cart
-│   ├── auth.js             ← /api/auth
-│   ├── admin.js            ← /api/admin
-│   ├── banners.js          ← /api/banners
-│   ├── promos.js           ← /api/promos
-│   └── notifications.js    ← /api/notifications
-│
-├── 📂 sockets/
-│   └── SocketManager.js    ← Real-time sync engine
-│
-├── 📂 services/
-│   ├── PricingEngine.js    ← Discount / promo math
-│   ├── NotificationService.js
-│   ├── RecommendationEngine.js
-│   └── TrackingService.js
-│
-├── 📂 models/              ← Database access
-├── 📂 middleware/          ← Auth, rate limiting, validation
-├── 📂 database/            ← SQLite setup + seed data
-│
-├── server.js               ← Entry point
-└── .env                    ← Your config (never commit this)
-```
-
----
-
-## ⚡ How It Works
-
-> The short version.
-
-```
-Customer browses shop
-        ↓
-Admin makes a change (product / banner / promo / order status)
-        ↓
-Server saves it to the database
-        ↓
-SocketManager broadcasts to connected clients
-        ↓
-Customer's browser updates automatically — no refresh needed
-```
-
-### What updates in real time
-
-| Admin Action | Customer Sees |
-|---|---|
-| Add / edit / delete product | Catalog refreshes |
-| Update order status | Tracking page updates + notification |
-| Create / edit banner | Homepage banner changes |
-| Edit site content | Homepage text updates |
-| Create / edit promo | Cart notified |
-| Broadcast notification | Toast popup appears |
-| Ban / update user role | User session updates |
-
----
-
-## 🛠 Tech Stack
-
-| Layer | Technology |
-|---|---|
-| Backend | Node.js, Express |
-| Database | SQLite (better-sqlite3) |
-| Real-time | Socket.IO |
-| Auth | JWT |
-| API style | REST + GraphQL |
-| Frontend | Vanilla JS (no framework) |
-| File uploads | Multer |
-| Deployment | PM2 + nginx |
-| CI/CD | GitHub Actions |
-
----
-
-## 👤 Roles
-
-| Role | Access |
-|---|---|
-| `customer` | Shop, cart, checkout, order tracking |
-| `admin` | Everything above + full admin panel |
-
-**To make a user admin:**
+To make yourself an admin, run this in your SQLite database:
 ```sql
 UPDATE users SET role = 'admin' WHERE email = 'you@example.com';
 ```
-Run this in your SQLite database after registering.
+
+**Admin Capabilities:**
+- **Storefront Control:** Create, edit, and delete products. Changes push live to customers instantly.
+- **Dynamic Content:** Edit Hero Banners, Promo Codes, and Site Content.
+- **FAQ Management:** The Support page FAQs are fully dynamic. Admins can add, edit, and categorize FAQs directly from the dashboard.
+- **Order Logistics:** Update order statuses to simulate the cold-chain logistics network.
 
 ---
 
-## 🌱 First-Time Data (Seed)
+## 🛡 Tech Stack & Security
 
-To populate the database with sample products:
-```bash
-node database/seed.js
-```
+| Layer | Technology / Implementation |
+|---|---|
+| **Backend** | Node.js, Express.js |
+| **Database** | SQLite3 (`better-sqlite3`) — Local & lightweight |
+| **Real-time** | Socket.IO (Room-based isolation for Admin/Users) |
+| **Frontend** | Vanilla JavaScript, CSS Variables (No external frameworks) |
+| **PWA / Offline** | Service Workers (`sw.js`), IndexedDB, Web App Manifest |
+
+### Security Implementations
+- **Authentication:** `HttpOnly`, `SameSite=Strict` secure cookies for JWTs. Fallback Bearer tokens for API clients.
+- **CSRF Protection:** HMAC-SHA256 signed CSRF tokens generated per-session (1-hour TTL). Automatically attached to all mutating requests (POST/PUT/DELETE) by `Api.js`.
+- **Password Hashing:** `bcrypt` integration for all user credentials.
+- **Rate Limiting:** In-memory backoff tracking using `Retry-After` headers.
+- **Data Sanitization:** Strict parameterized SQL queries to prevent SQL Injection.
 
 ---
 
 ## 🔗 Key URLs
 
-| URL | What's there |
+| URL | Purpose |
 |---|---|
-| `/` | Customer homepage |
-| `/catalog.html` | Shop / browse |
-| `/cart.html` | Cart |
-| `/checkout.html` | Checkout |
-| `/tracking.html` | Order tracking |
-| `/admin.html` | Admin panel |
-| `/api/...` | All backend endpoints |
-| `/health` | Server status check |
-| `/graphql` | GraphQL endpoint |
-
----
-
-## 🩺 Common Issues
-
-> Check here before anything else.
-
-<details>
-<summary>🔴 Server won't start</summary>
-
-- Check that `.env` exists — copy from `.env.example` if not
-- Run `npm install` again
-- Check the terminal — the error message will tell you what's missing
-
-</details>
-
-<details>
-<summary>🔴 Real-time updates not working</summary>
-
-- Make sure `socket.io` is loading on the page (check browser console)
-- Check that `JWT_SECRET` is the same in `.env` as when users registered
-- If behind nginx, make sure WebSocket headers are proxied (see deployment section)
-
-</details>
-
-<details>
-<summary>🔴 Images not showing</summary>
-
-- The `/uploads` folder must exist — it's created automatically on first upload
-- If you moved files manually, check the path starts with `/uploads/products/`
-
-</details>
-
-<details>
-<summary>🔴 Admin panel shows blank / 403</summary>
-
-- You need to be logged in as a user with `role = 'admin'`
-- See the Roles section above to promote your account
-
-</details>
-
-<details>
-<summary>🔴 Database errors on start</summary>
-
-- Delete `database/bloom.db` and restart — it will rebuild itself
-- Then run `node database/seed.js` to get sample data back
-
-</details>
-
----
-
-## 📦 Scripts
-
-```bash
-npm start          # Start the server
-npm run dev        # Start with auto-restart (nodemon)
-node database/seed.js   # Seed sample data
-```
-
----
-
-## 🔒 Security Notes
-
-- Never commit `.env` to GitHub — it's in `.gitignore` already
-- Change `JWT_SECRET` to something long and random before going live
-- Admin routes require a valid admin JWT — they are not publicly accessible
-
----
-
-## 📄 License
-
-See `LICENSE` file.
+| `/` | Customer storefront |
+| `/support.html` | Omnichannel Support & Dynamic Admin FAQ |
+| `/admin.html` | Secure Admin Control Panel |
+| `/about.html` | STI LIPA Capstone Team Details |
 
 ---
 
 <div align="center">
 
-**Built with 🌸 by CapstoneTechno**
+**Built with 🌸 by the STI LIPA BSIT Capstone Team**
 
 *One step at a time is still progress.*
 
 </div>
-
