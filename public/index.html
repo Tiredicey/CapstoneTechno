@@ -1988,7 +1988,7 @@ input:-webkit-autofill:focus {
       '<div class="p5-corner" aria-hidden="true"></div>' +
       badge +
       '<button class="wl-btn" aria-label="Add to wishlist" data-id="' + escapeHtml(p.id) + '">♡</button>' +
-      '<div class="p-img"><img src="' + escapeHtml(img) + '" alt="' + name + '" loading="lazy" decoding="async" width="300" height="180" onerror="this.onerror=null;this.style.display=\'none\';this.parentElement.innerHTML=\'<div class=p-img-ph>â€</div>\'"></div>' +
+      '<div class="p-img"><img src="' + escapeHtml(img) + '" alt="' + name + '" loading="lazy" decoding="async" width="300" height="180" onerror="this.onerror=null;this.style.display=\'none\';this.parentElement.innerHTML=\'<div class=p-img-ph>🌸</div>\'"></div>' +
       '<div class="p-name">' + name + '</div>' +
       '<div class="p-cat">' + escapeHtml(cat) + '</div>' +
       '<div class="p-stars" aria-label="' + (p.rating || 0) + ' out of 5">' + renderStars(p.rating) + '</div>' +
@@ -2627,7 +2627,7 @@ input:-webkit-autofill:focus {
       '<div class="vid-preview"><video id="vmPrev" muted playsinline></video><span class="vid-rec-dot" id="vmDot">REC</span></div>' +
       '<div class="vid-msg-actions">' +
       '<button type="button" class="btn btn-g" id="vmStart">Start camera</button>' +
-      '<button type="button" class="btn btn-p" id="vmRec" disabled>â— Record</button>' +
+      '<button type="button" class="btn btn-p" id="vmRec" disabled>● Record</button>' +
       '<button type="button" class="btn btn-g" id="vmAttach" disabled>Attach to order</button>' +
       '<label class="btn btn-g" style="cursor:pointer"><input type="file" accept="video/*" capture="user" id="vmFile" hidden>Upload from device</label>' +
       '</div></div>';
@@ -2673,7 +2673,7 @@ input:-webkit-autofill:focus {
         prev.src = URL.createObjectURL(blob);
         prev.muted = false;
         prev.controls = true;
-        recBtn.textContent = 'â— Record again';
+        recBtn.textContent = '● Record again';
         attachBtn.disabled = false;
         dot.classList.remove('on');
         if (stream) stream.getTracks().forEach(function (t) { t.stop(); });
