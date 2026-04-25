@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bloom-shell-v3';
+const CACHE_NAME = 'bloom-shell-v4';
 const SHELL_ASSETS = [
   '/',
   '/css/vars.css',
