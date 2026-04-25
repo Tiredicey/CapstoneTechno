@@ -14,16 +14,33 @@
 <meta name="twitter:card" content="summary_large_image">
 <title>Bloom — Pre-Order Flowers & Gifts</title>
 <link rel="canonical" href="/">
+<link rel="alternate" hreflang="en" href="/">
+<link rel="alternate" hreflang="en-PH" href="/?lang=en-PH">
+<link rel="alternate" hreflang="fil-PH" href="/?lang=fil">
+<link rel="alternate" hreflang="es" href="/?lang=es">
+<link rel="alternate" hreflang="ja" href="/?lang=ja">
+<link rel="alternate" hreflang="x-default" href="/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://videos.pexels.com" crossorigin>
 <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="preload" href="/img/hero-flowers.jpg" as="image" fetchpriority="high">
 <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=Barlow+Condensed:ital,wght@0,700;0,900;1,700;1,900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" as="style">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=Barlow+Condensed:ital,wght@0,700;0,900;1,700;1,900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Organization","name":"Bloom","url":"/","logo":"/img/hero-flowers.jpg","description":"Handcrafted bouquets, pre-ordered for every moment. Cold-chain fresh, WCAG 2.1 AA accessible.","sameAs":["https://instagram.com/","https://facebook.com/"]}
+{"@context":"https://schema.org","@type":"Organization","name":"Bloom","url":"/","logo":"/img/hero-flowers.jpg","description":"Handcrafted bouquets, pre-ordered for every moment. Cold-chain fresh, WCAG 2.1 AA accessible. Built by STI LIPA BSIT students.","sameAs":["https://instagram.com/","https://facebook.com/"],"address":{"@type":"PostalAddress","addressCountry":"PH","addressRegion":"Batangas","addressLocality":"Lipa City"},"areaServed":["Metro Manila","Batangas","Cebu"]}
 </script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Catalog","item":"/catalog.html"}]}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Product","name":"Bloom Handcrafted Bouquets","image":"/img/hero-flowers.jpg","description":"Pre-order handcrafted bouquets and floral arrangements with cold-chain freshness, photo proof of delivery, and 1-hour delivery windows across Metro Manila, Batangas, and Cebu.","brand":{"@type":"Brand","name":"Bloom"},"offers":{"@type":"AggregateOffer","priceCurrency":"PHP","lowPrice":"1650","highPrice":"4200","offerCount":"40"},"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.86","reviewCount":"487","bestRating":"5","worstRating":"1"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","name":"Bloom","url":"/","potentialAction":{"@type":"SearchAction","target":"/catalog.html?search={search_term_string}","query-input":"required name=search_term_string"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"LocalBusiness","name":"Bloom Florist","image":"/img/hero-flowers.jpg","priceRange":"₱₱","telephone":"+63","address":{"@type":"PostalAddress","addressCountry":"PH","addressRegion":"Batangas","addressLocality":"Lipa City"},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],"opens":"08:00","closes":"20:00"}],"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.86","reviewCount":"487"}}
 </script>
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/img/hero-flowers.jpg">
@@ -575,11 +592,182 @@ input:-webkit-autofill:focus {
   .foot-grid { grid-template-columns: 1fr; }
   .stat-num { font-size: 1.5rem; }
 }
+
+#bloomBoot { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, oklch(13% .07 292) 0%, var(--bg) 70%); z-index: 100000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px; transition: opacity .6s var(--ease), visibility .6s; }
+#bloomBoot.gone { opacity: 0; visibility: hidden; pointer-events: none; }
+.bloom-flower { position: relative; width: 140px; height: 140px; transform-style: preserve-3d; animation: bloomSpin 8s linear infinite; }
+.bloom-petal { position: absolute; left: 50%; top: 50%; width: 56px; height: 80px; margin: -40px 0 0 -28px; background: linear-gradient(180deg, var(--p5l), var(--p5d)); border-radius: 100% 100% 60% 60% / 70% 70% 60% 60%; transform-origin: 50% 100%; opacity: 0; box-shadow: inset -6px -8px 18px rgba(0,0,0,.32), 0 6px 14px rgba(230,26,26,.35); animation: petalBloom 2.4s var(--p5ease) forwards; }
+.bloom-petal:nth-child(1) { transform: rotate(0deg) translateY(-30px); animation-delay: 0s; }
+.bloom-petal:nth-child(2) { transform: rotate(45deg) translateY(-30px); animation-delay: .12s; }
+.bloom-petal:nth-child(3) { transform: rotate(90deg) translateY(-30px); animation-delay: .24s; }
+.bloom-petal:nth-child(4) { transform: rotate(135deg) translateY(-30px); animation-delay: .36s; }
+.bloom-petal:nth-child(5) { transform: rotate(180deg) translateY(-30px); animation-delay: .48s; }
+.bloom-petal:nth-child(6) { transform: rotate(225deg) translateY(-30px); animation-delay: .6s; }
+.bloom-petal:nth-child(7) { transform: rotate(270deg) translateY(-30px); animation-delay: .72s; }
+.bloom-petal:nth-child(8) { transform: rotate(315deg) translateY(-30px); animation-delay: .84s; }
+.bloom-core { position: absolute; left: 50%; top: 50%; width: 40px; height: 40px; margin: -20px 0 0 -20px; background: radial-gradient(circle, var(--gd), var(--p5)); border-radius: 50%; box-shadow: 0 0 30px rgba(230,26,26,.6), inset 0 0 12px rgba(0,0,0,.3); transform: scale(0); animation: coreBloom 1.6s var(--spring) .9s forwards; }
+@keyframes petalBloom { 0% { opacity: 0; transform: rotate(var(--r,0deg)) translateY(0) scale(.2); } 60% { opacity: 1; transform: rotate(var(--r,0deg)) translateY(-30px) scale(1.08); } 100% { opacity: 1; transform: rotate(var(--r,0deg)) translateY(-30px) scale(1); } }
+@keyframes coreBloom { to { transform: scale(1); } }
+@keyframes bloomSpin { to { transform: rotateZ(360deg); } }
+.bloom-petal:nth-child(1) { --r: 0deg; } .bloom-petal:nth-child(2) { --r: 45deg; } .bloom-petal:nth-child(3) { --r: 90deg; } .bloom-petal:nth-child(4) { --r: 135deg; } .bloom-petal:nth-child(5) { --r: 180deg; } .bloom-petal:nth-child(6) { --r: 225deg; } .bloom-petal:nth-child(7) { --r: 270deg; } .bloom-petal:nth-child(8) { --r: 315deg; }
+.bloom-boot-txt { font-family: var(--fc); font-style: italic; font-weight: 900; letter-spacing: .3em; color: rgba(255,255,255,.55); font-size: .8rem; text-transform: uppercase; animation: bootPulse 2s ease-in-out infinite; }
+@keyframes bootPulse { 0%,100% { opacity: .35; } 50% { opacity: 1; } }
+.bloom-boot-bar { width: 220px; height: 2px; background: rgba(255,255,255,.06); border-radius: 1px; overflow: hidden; }
+.bloom-boot-bar i { display: block; width: 30%; height: 100%; background: linear-gradient(90deg, var(--p5), var(--pk), var(--p5)); animation: bootSlide 1.6s ease-in-out infinite; }
+@keyframes bootSlide { 0% { transform: translateX(-100%); } 100% { transform: translateX(380%); } }
+
+.p-skel { background: var(--gl); border: 1px solid var(--glb); border-radius: var(--r); padding: 20px; position: relative; overflow: hidden; }
+.p-skel-img { height: 180px; border-radius: 14px; background: radial-gradient(circle at 50% 50%, rgba(230,26,26,.18), rgba(11,5,22,.4)); position: relative; overflow: hidden; margin-bottom: 14px; }
+.p-skel-img::before { content: ''; position: absolute; inset: 0; background: conic-gradient(from 0deg, transparent 0%, rgba(230,26,26,.12) 25%, transparent 50%); animation: skelSpin 1.6s linear infinite; }
+.p-skel-img::after { content: '❀'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: rgba(230,26,26,.45); font-size: 2.2rem; animation: skelBloom 1.8s ease-in-out infinite; }
+@keyframes skelSpin { to { transform: rotate(360deg); } }
+@keyframes skelBloom { 0%,100% { transform: scale(.85); opacity: .35; } 50% { transform: scale(1.1); opacity: .9; } }
+
+.delivery-bar { position: sticky; top: 68px; z-index: 990; background: linear-gradient(90deg, oklch(15% .08 292 / .96), oklch(11% .06 292 / .92)); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(230,26,26,.18); padding: 10px 0; transition: transform .3s var(--ease); }
+.delivery-bar.hide { transform: translateY(-100%); }
+.delivery-inner { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: center; }
+.delivery-pill { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; background: rgba(230,26,26,.12); border: 1px solid rgba(230,26,26,.28); border-radius: 100px; font-family: var(--fc); font-style: italic; font-weight: 700; font-size: .72rem; color: var(--p5l); letter-spacing: .12em; text-transform: uppercase; }
+.delivery-pill::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--mn); box-shadow: 0 0 8px var(--mn); animation: ping2 1.6s ease-out infinite; }
+.delivery-fields { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.dlv-fld { display: flex; align-items: center; gap: 8px; background: var(--gl); border: 1px solid var(--glb); border-radius: 10px; padding: 6px 12px; transition: border-color .2s; }
+.dlv-fld:focus-within { border-color: var(--p5); box-shadow: 0 0 0 3px rgba(230,26,26,.12); }
+.dlv-fld svg { width: 14px; height: 14px; color: var(--p5l); flex-shrink: 0; }
+.dlv-fld label { font-size: .68rem; color: rgba(255,255,255,.5); font-weight: 600; letter-spacing: .05em; text-transform: uppercase; }
+.dlv-fld input, .dlv-fld select { background: transparent; border: none; color: #fff; font-size: .82rem; font-weight: 600; outline: none; min-width: 0; padding: 2px 0; cursor: pointer; }
+.dlv-fld select option { background: var(--bg2); color: #fff; }
+.dlv-eta { font-size: .76rem; color: var(--mn); font-weight: 600; }
+.dlv-eta strong { font-family: var(--fc); font-style: italic; font-weight: 900; }
+@media (max-width: 768px) {
+  .delivery-inner { gap: 8px; }
+  .delivery-pill { font-size: .64rem; padding: 4px 10px; }
+  .dlv-fld { padding: 5px 10px; }
+  .dlv-fld label { display: none; }
+}
+
+.subs-sec { background: var(--bg2); position: relative; overflow: hidden; }
+.subs-sec::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--p5), var(--pk), transparent); opacity: .4; }
+.subs-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 56px; align-items: center; }
+.subs-photo { position: relative; border-radius: var(--r); overflow: hidden; aspect-ratio: 4/3; box-shadow: 0 30px 80px rgba(168,16,16,.32); transform: rotate(-1.5deg); }
+.subs-photo img { width: 100%; height: 100%; object-fit: cover; }
+.subs-photo::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, transparent 50%, rgba(230,26,26,.18)); }
+.subs-photo::after { content: 'WEEKLY'; position: absolute; top: 18px; left: 18px; font-family: var(--fc); font-style: italic; font-weight: 900; font-size: .76rem; letter-spacing: .15em; color: #fff; background: var(--p5); padding: 5px 13px; border-radius: 3px; transform: rotate(-3deg); }
+.subs-cards { display: flex; flex-direction: column; gap: 14px; }
+.subs-card { background: var(--gl); border: 1px solid var(--glb); border-radius: var(--r); padding: 22px; cursor: pointer; transition: all .25s var(--ease); position: relative; overflow: hidden; }
+.subs-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(230,26,26,.06), transparent 60%); opacity: 0; transition: opacity .3s; }
+.subs-card:hover { border-color: rgba(230,26,26,.4); transform: translateX(6px); }
+.subs-card:hover::before { opacity: 1; }
+.subs-card.selected { border-color: var(--p5); background: rgba(230,26,26,.1); box-shadow: 0 12px 36px rgba(230,26,26,.22); }
+.subs-card-hd { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 8px; position: relative; }
+.subs-card-name { font-family: var(--fd); font-size: 1.15rem; font-weight: 700; }
+.subs-card-name em { font-family: var(--fc); font-style: italic; color: var(--p5l); font-weight: 900; font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; padding: 2px 8px; background: rgba(230,26,26,.18); border-radius: 3px; margin-left: 8px; vertical-align: middle; }
+.subs-card-price { font-family: var(--fc); font-style: italic; font-weight: 900; font-size: 1.4rem; color: var(--gd); white-space: nowrap; }
+.subs-card-price small { font-size: .65rem; color: rgba(255,255,255,.45); font-weight: 600; letter-spacing: .05em; }
+.subs-card-d { font-size: .82rem; color: rgba(255,255,255,.6); line-height: 1.6; margin-bottom: 12px; position: relative; }
+.subs-card-feats { display: flex; flex-wrap: wrap; gap: 6px; position: relative; }
+.subs-card-feats span { font-size: .7rem; color: rgba(255,255,255,.55); padding: 3px 10px; background: rgba(255,255,255,.05); border-radius: 100px; }
+.subs-cta { display: flex; gap: 10px; margin-top: 8px; }
+.subs-cta .btn { flex: 1; justify-content: center; }
+@media (max-width: 900px) {
+  .subs-grid { grid-template-columns: 1fr; gap: 32px; }
+  .subs-photo { aspect-ratio: 16/9; }
+}
+
+.wl-drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(420px, 100vw); background: rgba(11,5,22,.97); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px); border-left: 1px solid rgba(230,26,26,.22); transform: translateX(100%); transition: transform .42s var(--ease); z-index: 1400; display: flex; flex-direction: column; }
+.wl-drawer.open { transform: none; }
+.wl-drawer-hd { padding: 22px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--glb); }
+.wl-drawer-hd h3 { font-family: var(--fd); font-weight: 900; font-size: 1.2rem; }
+.wl-drawer-hd small { display: block; font-family: var(--fc); font-style: italic; font-size: .68rem; color: var(--p5l); letter-spacing: .15em; text-transform: uppercase; margin-top: 2px; }
+.wl-drawer-cls { width: 36px; height: 36px; border-radius: 50%; background: var(--gl); border: 1px solid var(--glb); color: #fff; display: flex; align-items: center; justify-content: center; transition: all .2s; }
+.wl-drawer-cls:hover { background: rgba(230,26,26,.18); }
+.wl-drawer-body { flex: 1; overflow-y: auto; padding: 16px 20px; }
+.wl-empty { text-align: center; padding: 60px 24px; color: rgba(255,255,255,.4); }
+.wl-empty-ico { font-size: 3rem; color: rgba(230,26,26,.4); margin-bottom: 14px; }
+.wl-row { display: flex; gap: 12px; padding: 12px; border-radius: var(--rs); transition: background .2s; align-items: center; }
+.wl-row:hover { background: var(--gl); }
+.wl-row-img { width: 60px; height: 60px; border-radius: 10px; overflow: hidden; background: var(--gl); flex-shrink: 0; }
+.wl-row-img img { width: 100%; height: 100%; object-fit: cover; }
+.wl-row-body { flex: 1; min-width: 0; }
+.wl-row-name { font-weight: 600; font-size: .88rem; margin-bottom: 2px; }
+.wl-row-price { font-family: var(--fc); font-weight: 900; color: var(--gd); font-size: .92rem; font-style: italic; }
+.wl-row-x { background: var(--gl); border: 1px solid var(--glb); border-radius: 50%; width: 28px; height: 28px; color: rgba(255,255,255,.5); display: flex; align-items: center; justify-content: center; transition: all .2s; flex-shrink: 0; font-size: .8rem; }
+.wl-row-x:hover { background: rgba(230,26,26,.2); color: #fff; }
+.wl-drawer-ft { padding: 18px 24px; border-top: 1px solid var(--glb); }
+
+.voice-fab { position: fixed; bottom: 86px; right: 24px; width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--p5d), var(--p5)); color: #fff; border: 2px solid rgba(255,255,255,.18); box-shadow: 0 12px 36px rgba(230,26,26,.45); z-index: 990; display: flex; align-items: center; justify-content: center; transition: transform .3s var(--spring), box-shadow .3s, opacity .3s, visibility .3s; opacity: 0; visibility: hidden; }
+.voice-fab.show { opacity: 1; visibility: visible; }
+.voice-fab:hover, .voice-fab:focus-visible { transform: translateY(-3px) scale(1.08); box-shadow: 0 18px 50px rgba(230,26,26,.55); }
+.voice-fab.listening { animation: voicePulse 1.2s ease-in-out infinite; background: linear-gradient(135deg, var(--cr), var(--p5)); }
+@keyframes voicePulse { 0%,100% { box-shadow: 0 12px 36px rgba(230,26,26,.45), 0 0 0 0 rgba(230,26,26,.7); } 50% { box-shadow: 0 12px 36px rgba(230,26,26,.6), 0 0 0 18px rgba(230,26,26,0); } }
+.voice-fab svg { width: 22px; height: 22px; }
+.voice-status { position: fixed; bottom: 158px; right: 24px; background: rgba(11,5,22,.96); border: 1px solid rgba(230,26,26,.32); border-radius: 14px; padding: 10px 16px; max-width: 280px; font-size: .82rem; color: #fff; z-index: 991; opacity: 0; transform: translateY(8px); transition: all .3s var(--ease); pointer-events: none; backdrop-filter: blur(20px); }
+.voice-status.show { opacity: 1; transform: none; pointer-events: all; }
+.voice-status small { display: block; font-family: var(--fc); font-style: italic; font-weight: 700; color: var(--p5l); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 3px; }
+@media (max-width: 560px) {
+  .voice-fab { bottom: 74px; right: 14px; width: 48px; height: 48px; }
+  .voice-status { right: 14px; bottom: 132px; }
+}
+
+.vid-msg-block { background: var(--gl); border: 1px dashed var(--glb); border-radius: var(--rs); padding: 16px; margin-top: 16px; }
+.vid-msg-hd { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.vid-msg-hd h4 { font-family: var(--fd); font-weight: 700; font-size: .92rem; }
+.vid-msg-hd small { font-size: .7rem; color: rgba(255,255,255,.45); }
+.vid-preview { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 10px; overflow: hidden; position: relative; margin-bottom: 10px; }
+.vid-preview video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.vid-rec-dot { position: absolute; top: 10px; left: 10px; display: none; align-items: center; gap: 6px; padding: 4px 10px; background: rgba(230,26,26,.92); border-radius: 100px; font-family: var(--fc); font-style: italic; font-weight: 900; font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: #fff; }
+.vid-rec-dot.on { display: inline-flex; }
+.vid-rec-dot::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #fff; animation: vidPulse 1s ease-in-out infinite; }
+@keyframes vidPulse { 50% { opacity: .35; } }
+.vid-msg-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.vid-msg-actions .btn { flex: 1; min-width: 110px; justify-content: center; padding: 8px 12px; font-size: .78rem; }
+
+.err-summary { background: rgba(245,77,77,.08); border: 1px solid rgba(245,77,77,.32); border-left: 4px solid var(--cr); border-radius: var(--rs); padding: 14px 16px; margin-bottom: 16px; display: none; }
+.err-summary.on { display: block; animation: errShake .4s ease-out; }
+.err-summary h4 { font-family: var(--fd); font-weight: 700; font-size: .88rem; color: var(--cr); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+.err-summary ul { list-style: none; padding: 0; margin: 0; }
+.err-summary li { font-size: .8rem; color: rgba(255,255,255,.78); padding: 3px 0; }
+.err-summary li a { color: var(--cr); border-bottom: 1px dotted rgba(245,77,77,.35); }
+.err-summary li a:hover, .err-summary li a:focus-visible { color: #fff; border-bottom-color: #fff; }
+@keyframes errShake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+
+.funnel-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(11,5,22,.94); backdrop-filter: blur(18px); border-top: 1px solid rgba(230,26,26,.2); z-index: 985; padding: 8px 16px; transform: translateY(100%); transition: transform .3s var(--ease); display: none; }
+.funnel-bar.show { transform: none; }
+.funnel-track { display: flex; align-items: center; justify-content: space-between; gap: 12px; max-width: 720px; margin: 0 auto; }
+.funnel-step { display: flex; align-items: center; gap: 6px; font-family: var(--fc); font-style: italic; font-weight: 700; font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.4); transition: color .3s; }
+.funnel-step.done { color: var(--mn); }
+.funnel-step.active { color: var(--p5l); }
+.funnel-step::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 0 currentColor; }
+.funnel-step.active::before { animation: ping 1.4s ease-out infinite; }
+.funnel-conn { flex: 1; height: 2px; background: linear-gradient(90deg, currentColor, transparent); opacity: .3; }
+
+.btn-voice-toggle { position: relative; }
+.btn-voice-toggle.listening::after { content: ''; position: absolute; inset: -3px; border: 2px solid var(--p5); border-radius: var(--rs); animation: voicePulse 1.2s ease-in-out infinite; }
+
+.subs-card-feats span svg { width: 11px; height: 11px; color: var(--mn); display: inline-block; vertical-align: -2px; margin-right: 3px; }
+
+.search-results-virt { max-height: 60vh; overflow-y: auto; }
+.search-results-virt::-webkit-scrollbar { width: 4px; }
+
+@media (max-width: 768px) {
+  .delivery-bar { top: 56px; padding: 8px 0; }
+  .funnel-bar { padding: 6px 10px; }
+  .funnel-step { font-size: .6rem; }
+}
 </style>
 </head>
 <body>
 
+<div id="bloomBoot" role="status" aria-live="polite" aria-label="Bloom is loading">
+  <div class="bloom-flower" aria-hidden="true">
+    <span class="bloom-petal"></span><span class="bloom-petal"></span><span class="bloom-petal"></span><span class="bloom-petal"></span>
+    <span class="bloom-petal"></span><span class="bloom-petal"></span><span class="bloom-petal"></span><span class="bloom-petal"></span>
+    <span class="bloom-core"></span>
+  </div>
+  <div class="bloom-boot-bar" aria-hidden="true"><i></i></div>
+  <div class="bloom-boot-txt">Crafting your bouquet</div>
+</div>
+
 <a href="#main" class="skip">Skip to content</a>
+<a href="#shop" class="skip" style="left: 160px">Skip to shop</a>
 
 <div class="c-ring" id="cRing" aria-hidden="true"></div>
 <div class="c-dot" id="cDot" aria-hidden="true"></div>
@@ -593,6 +781,7 @@ input:-webkit-autofill:focus {
   <ul class="n-links" role="list">
     <li><a href="#shop" data-label="shop">Shop</a></li>
     <li><a href="/catalog.html" data-label="catalog">Catalog</a></li>
+    <li><a href="#subs" data-label="recurring">Subscriptions</a></li>
     <li><a href="#corp" data-label="corp">Corporate</a></li>
     <li><a href="#features" data-label="why">Why Bloom</a></li>
   </ul>
@@ -618,6 +807,13 @@ input:-webkit-autofill:focus {
         <li><button class="lang-opt" role="option" data-lang="ja" data-flag="🇯🇵" data-lbl="JA"><span aria-hidden="true">🇯🇵</span> 日本語</button></li>
       </ul>
     </div>
+    <button class="btn btn-g btn-sm btn-voice-toggle" id="voiceNavBtn" aria-label="Voice navigation" aria-pressed="false" hidden>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 1 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><path d="M12 18v4"/><path d="M8 22h8"/></svg>
+    </button>
+    <button class="btn btn-g btn-sm" id="wlBtnNav" aria-label="Open wishlist" aria-haspopup="dialog" aria-controls="wlDrawer">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <span class="cart-badge" id="wlBadge" style="display:none">0</span>
+    </button>
     <button class="btn btn-g btn-sm" id="themeToggle" aria-label="Toggle theme" data-i18n-aria="theme.toggle">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" id="themeIcon"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
     </button>
@@ -635,11 +831,43 @@ input:-webkit-autofill:focus {
     <ul role="list">
       <li><a href="#shop">Shop</a></li>
       <li><a href="/catalog.html">Catalog</a></li>
+      <li><a href="#subs">Subscriptions</a></li>
       <li><a href="#corp">Corporate</a></li>
       <li><a href="#features">Why Bloom</a></li>
     </ul>
     <div class="mob-acts">
       <button class="btn btn-p" id="authBtnMob" style="justify-content:center">Sign In</button>
+    </div>
+  </div>
+</div>
+
+<div class="delivery-bar" id="dlvBar" role="region" aria-label="Pre-select your delivery">
+  <div class="con">
+    <div class="delivery-inner">
+      <span class="delivery-pill" aria-hidden="true">Plan first · Browse next</span>
+      <div class="delivery-fields">
+        <label class="dlv-fld" for="dlvDate">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          <span><label for="dlvDate">Deliver on</label><br><input type="date" id="dlvDate" aria-label="Delivery date"></span>
+        </label>
+        <label class="dlv-fld" for="dlvLoc">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span><label for="dlvLoc">To</label><br>
+            <select id="dlvLoc" aria-label="Delivery location">
+              <option value="metro-manila">Metro Manila</option>
+              <option value="batangas" selected>Batangas</option>
+              <option value="cebu">Cebu City</option>
+              <option value="laguna">Laguna</option>
+              <option value="cavite">Cavite</option>
+              <option value="rizal">Rizal</option>
+              <option value="bulacan">Bulacan</option>
+              <option value="pampanga">Pampanga</option>
+              <option value="baguio">Baguio</option>
+            </select>
+          </span>
+        </label>
+      </div>
+      <div class="dlv-eta" id="dlvEta" aria-live="polite">Lead time: <strong>48h</strong></div>
     </div>
   </div>
 </div>
@@ -651,8 +879,9 @@ input:-webkit-autofill:focus {
   <style>
     @keyframes ethereal { 0% { filter: hue-rotate(0deg); opacity: 0.8; } 100% { filter: hue-rotate(30deg); opacity: 1; } }
   </style>
-  <video class="hero-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true">
-    <source src="https://videos.pexels.com/video-files/3571264/3571264-uhd_2560_1440_30fps.mp4" type="video/mp4">
+  <video class="hero-video" id="heroVid" autoplay muted loop playsinline preload="metadata" poster="/img/hero-bokeh.jpg" aria-hidden="true">
+    <source src="https://videos.pexels.com/video-files/3571264/3571264-hd_1920_1080_30fps.mp4" type="video/mp4" media="(min-width: 768px)">
+    <source src="https://videos.pexels.com/video-files/3571264/3571264-sd_960_540_30fps.mp4" type="video/mp4">
   </video>
   <div class="hero-photo" id="heroPhoto" aria-hidden="true"></div>
   <canvas id="ptcl" aria-hidden="true"></canvas>
@@ -697,13 +926,13 @@ input:-webkit-autofill:focus {
         </article>
         <article class="h-card hc-2" id="hc2">
           <div class="hc-tag">Today's Pick</div>
-          <img class="h-card-img" src="/img/hero-flowers.jpg" alt="Neon red floral lighting" loading="lazy" decoding="async" width="200" height="110">
+          <img class="h-card-img" src="/img/hero-bokeh.jpg" alt="Neon red floral lighting bokeh" loading="lazy" decoding="async" width="200" height="110">
           <div class="hc-sub">Neon Blossom</div>
           <div class="hc-status">Fresh and waiting</div>
         </article>
         <article class="h-card hc-3" id="hc3">
           <div class="hc-tag">For Teams</div>
-          <img class="h-card-img" src="/img/hero-flowers.jpg" alt="Elegant dark corporate bouquet" loading="lazy" decoding="async" width="210" height="110">
+          <img class="h-card-img" src="/img/corp-flowers.jpg" alt="Elegant dark corporate bouquet" loading="lazy" decoding="async" width="210" height="110">
           <div class="hc-sub">Thoughtful batch orders</div>
           <div class="hc-status">At your schedule</div>
         </article>
@@ -888,7 +1117,7 @@ input:-webkit-autofill:focus {
   <div class="con">
     <div class="corp-grid">
       <div class="corp-photo">
-        <img src="/img/hero-flowers.jpg" alt="Beautifully arranged red flowers for corporate gifting" loading="lazy" decoding="async" width="900" height="675">
+        <img src="/img/corp-flowers.jpg" alt="Sleek matching corporate bouquets in matte black vases" loading="lazy" decoding="async" width="900" height="675">
       </div>
       <div>
         <span class="tag tag-a">For Teams</span>
@@ -901,6 +1130,65 @@ input:-webkit-autofill:focus {
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>A coordinator who listens — email or Viber</li>
         </ul>
         <a href="mailto:corporate@bloom.ph?subject=Corporate%20inquiry" class="btn btn-p btn-lg">Reach out gently →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="p5-sec-div" aria-hidden="true"></div>
+
+<section class="subs-sec sec-pad" id="subs" aria-label="Flower subscriptions">
+  <div class="con">
+    <div class="sec-hd" style="flex-direction:column;align-items:flex-start;text-align:left;margin-bottom:36px">
+      <span class="tag tag-m">Recurring · Pause anytime</span>
+      <h2 class="sec-title" style="max-width:680px">A small bloom that keeps showing up.</h2>
+      <p class="sec-sub" style="max-width:640px">Set it once. We refresh your space — or someone you love — every week, every two weeks, or once a month. Skip a week, swap palettes, or pause forever in one tap. No lock-in.</p>
+    </div>
+    <div class="subs-grid">
+      <div class="subs-photo">
+        <img src="/img/subscription.jpg" alt="A weekly delivery of fresh seasonal flowers being unwrapped on a wooden table" loading="lazy" decoding="async" width="800" height="600">
+      </div>
+      <div class="subs-cards" role="radiogroup" aria-label="Subscription cadence">
+        <button type="button" class="subs-card" data-sub="weekly" data-price="1499" role="radio" aria-checked="false">
+          <div class="subs-card-hd">
+            <div class="subs-card-name">Weekly Bloom <em>Most Loved</em></div>
+            <div class="subs-card-price">₱1,499<small> / box</small></div>
+          </div>
+          <div class="subs-card-d">A fresh seasonal bouquet at your doorstep every 7 days. Florist's pick, swappable palette, evening delivery slot honored.</div>
+          <div class="subs-card-feats">
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>Free vase, week one</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>Skip / pause anytime</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>Cold-chain</span>
+          </div>
+        </button>
+        <button type="button" class="subs-card selected" data-sub="biweekly" data-price="2299" role="radio" aria-checked="true">
+          <div class="subs-card-hd">
+            <div class="subs-card-name">Biweekly Refresh</div>
+            <div class="subs-card-price">₱2,299<small> / box</small></div>
+          </div>
+          <div class="subs-card-d">Larger bouquet every 14 days. Perfect for offices, lobbies, or homes that don't mind missing a week.</div>
+          <div class="subs-card-feats">
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>40% larger</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>Locked rate, 12 weeks</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>Photo proof</span>
+          </div>
+        </button>
+        <button type="button" class="subs-card" data-sub="monthly" data-price="3499" role="radio" aria-checked="false">
+          <div class="subs-card-hd">
+            <div class="subs-card-name">Monthly Statement</div>
+            <div class="subs-card-price">₱3,499<small> / box</small></div>
+          </div>
+          <div class="subs-card-d">A premium statement bouquet once a month — special varieties, hand-tied wraps, with a handwritten note from our florists.</div>
+          <div class="subs-card-feats">
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>Premium varietals</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>Handwritten note</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>Free shipping</span>
+          </div>
+        </button>
+        <div class="subs-cta">
+          <button type="button" class="btn btn-g" id="subsLearn">How it works</button>
+          <button type="button" class="btn btn-p" id="subsStart">Start subscription →</button>
+        </div>
       </div>
     </div>
   </div>
@@ -996,6 +1284,10 @@ input:-webkit-autofill:focus {
       <button class="a-tab" data-ftab="register" role="tab" aria-selected="false">Register</button>
       <button class="a-tab" data-ftab="guest" role="tab" aria-selected="false">Guest</button>
     </div>
+    <div class="err-summary" id="loginErrSum" role="alert" aria-live="assertive">
+      <h4><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Please fix the following:</h4>
+      <ul></ul>
+    </div>
     <div id="loginF">
       <button class="btn btn-g sl-btn" id="gBtn">
         <svg width="16" height="16" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
@@ -1021,6 +1313,10 @@ input:-webkit-autofill:focus {
       <button class="btn btn-p" style="width:100%;justify-content:center;margin-top:6px" id="lSubmit">Sign In →</button>
     </div>
     <div id="registerF" style="display:none">
+      <div class="err-summary" id="regErrSum" role="alert" aria-live="assertive">
+        <h4><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Please fix the following:</h4>
+        <ul></ul>
+      </div>
       <div class="fi">
         <label class="fi-lbl" for="rName">Name</label>
         <div class="fi-wrap"><input type="text" class="fi-inp" id="rName" placeholder="Your name" autocomplete="name" aria-describedby="rNameE" required></div>
@@ -1098,6 +1394,45 @@ input:-webkit-autofill:focus {
       <span class="fe" id="fplEmailE" role="alert"></span>
     </div>
     <button class="btn btn-p" style="width:100%;justify-content:center" id="fplSubmit">Send Reset Link →</button>
+  </div>
+</div>
+
+<div class="wl-drawer" id="wlDrawer" role="dialog" aria-modal="true" aria-labelledby="wlDrawerTitle" aria-hidden="true">
+  <div class="wl-drawer-hd">
+    <div>
+      <h3 id="wlDrawerTitle">Wishlist</h3>
+      <small><span id="wlCount">0</span> saved</small>
+    </div>
+    <button type="button" class="wl-drawer-cls" id="wlDrawerCls" aria-label="Close wishlist">✕</button>
+  </div>
+  <div class="wl-drawer-body" id="wlDrawerBody">
+    <div class="wl-empty" id="wlEmpty">
+      <div class="wl-empty-ico" aria-hidden="true">♡</div>
+      <h4 style="font-family:var(--fd);font-weight:700;font-size:1rem;margin-bottom:6px">Nothing saved yet</h4>
+      <p style="font-size:.84rem;line-height:1.6">Tap the heart on any bouquet to save it. Your wishlist syncs across devices when you sign in.</p>
+    </div>
+  </div>
+  <div class="wl-drawer-ft">
+    <button type="button" class="btn btn-p" id="wlClear" style="width:100%;justify-content:center" hidden>Clear all</button>
+  </div>
+</div>
+
+<button type="button" class="voice-fab" id="voiceFab" aria-label="Voice navigation — press and speak" aria-pressed="false" hidden>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 1 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><path d="M12 18v4"/><path d="M8 22h8"/></svg>
+</button>
+<div class="voice-status" id="voiceStatus" aria-live="polite" role="status"><small>Listening</small><span id="voiceText">Try: "Show bouquets" or "Open cart"</span></div>
+
+<div class="funnel-bar" id="funnelBar" aria-label="Browsing progress" role="status">
+  <div class="funnel-track">
+    <span class="funnel-step active" data-step="hero">Hero</span>
+    <span class="funnel-conn" aria-hidden="true"></span>
+    <span class="funnel-step" data-step="shop">Shop</span>
+    <span class="funnel-conn" aria-hidden="true"></span>
+    <span class="funnel-step" data-step="subs">Subscribe</span>
+    <span class="funnel-conn" aria-hidden="true"></span>
+    <span class="funnel-step" data-step="cart">Cart</span>
+    <span class="funnel-conn" aria-hidden="true"></span>
+    <span class="funnel-step" data-step="checkout">Checkout</span>
   </div>
 </div>
 
@@ -1199,9 +1534,17 @@ input:-webkit-autofill:focus {
   function initParticles() {
     var c = qs('#ptcl');
     if (!c || reducedMotion()) return;
-    var ctx = c.getContext('2d');
+    var ctx = c.getContext('2d', { alpha: true });
     var parts = [];
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var cores = navigator.hardwareConcurrency || 4;
+    var mem = navigator.deviceMemory || 4;
+    var isMobile = window.matchMedia('(max-width: 768px)').matches;
+    var perfTier = (cores >= 8 && mem >= 8) ? 'high' : (cores >= 4 && mem >= 4) ? 'mid' : 'low';
+    var baseCount = isMobile ? 14 : (perfTier === 'high' ? 64 : perfTier === 'mid' ? 38 : 18);
+    var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (connection && (connection.saveData || /2g|slow-2g/.test(connection.effectiveType || ''))) baseCount = Math.min(baseCount, 12);
+    if (window.matchMedia('(prefers-reduced-data: reduce)').matches) baseCount = Math.min(baseCount, 12);
     function size() {
       var hero = qs('#heroSec');
       if (!hero) return;
@@ -1213,24 +1556,31 @@ input:-webkit-autofill:focus {
     }
     size();
     on(window, 'resize', size);
-    for (var i = 0; i < 42; i++) {
-      parts.push({ x: Math.random() * c.width, y: Math.random() * c.height, r: Math.random() * 2.2 + 0.6, vx: (Math.random() - 0.5) * 0.35, vy: -(Math.random() * 0.4 + 0.1), o: Math.random() * 0.6 + 0.2, hue: Math.random() > 0.7 ? 'p5' : 'w' });
+    for (var i = 0; i < baseCount; i++) {
+      parts.push({ x: Math.random() * c.width, y: Math.random() * c.height, r: Math.random() * 2.2 + 0.6, vx: (Math.random() - 0.5) * 0.35, vy: -(Math.random() * 0.4 + 0.1), o: Math.random() * 0.6 + 0.2, hue: Math.random() > 0.7 ? 'p5' : (Math.random() > 0.6 ? 'pk' : 'w') });
     }
+    var raf;
+    var visible = true;
+    var io = new IntersectionObserver(function (es) { es.forEach(function (e) { visible = e.isIntersecting; }); }, { threshold: 0.01 });
+    io.observe(c);
     function frame() {
+      raf = requestAnimationFrame(frame);
+      if (!visible) return;
       ctx.clearRect(0, 0, c.width, c.height);
-      parts.forEach(function (p) {
+      for (var k = 0; k < parts.length; k++) {
+        var p = parts[k];
         p.x += p.vx * dpr; p.y += p.vy * dpr;
         if (p.y < -10) { p.y = c.height + 10; p.x = Math.random() * c.width; }
         if (p.x < -10) p.x = c.width + 10;
         if (p.x > c.width + 10) p.x = -10;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r * dpr, 0, Math.PI * 2);
-        ctx.fillStyle = p.hue === 'p5' ? 'rgba(230,26,26,' + p.o + ')' : 'rgba(255,255,255,' + (p.o * 0.7) + ')';
+        ctx.fillStyle = p.hue === 'p5' ? 'rgba(230,26,26,' + p.o + ')' : (p.hue === 'pk' ? 'rgba(238,90,160,' + p.o + ')' : 'rgba(255,255,255,' + (p.o * 0.7) + ')');
         ctx.fill();
-      });
-      requestAnimationFrame(frame);
+      }
     }
     frame();
+    document.addEventListener('visibilitychange', function () { if (document.hidden) cancelAnimationFrame(raf); else frame(); });
   }
 
   function initHeroParallax() {
@@ -1705,17 +2055,21 @@ input:-webkit-autofill:focus {
     qsa('.wl-btn', grid).forEach(function (b) {
       on(b, 'click', async function (e) {
         e.stopPropagation();
-        var isOn = b.classList.toggle('on');
+        var card = b.closest('.p-card');
+        var nameEl = card && card.querySelector('.p-name');
+        var priceEl = card && card.querySelector('.p-price');
+        var img = card && card.querySelector('.p-img img');
+        var item = { id: b.dataset.id, name: nameEl ? nameEl.textContent.trim() : 'Bouquet', price: priceEl ? Number(String(priceEl.textContent).replace(/[^\d.]/g, '')) : 0, image: img ? img.src : '/img/hero-flowers.jpg' };
+        var added = window.addToWishlist ? window.addToWishlist(item) : true;
         b.classList.add('wl-pop');
-        b.textContent = isOn ? '♥' : '♡';
         setTimeout(function () { b.classList.remove('wl-pop'); }, 420);
         try {
           if (Api) {
-            if (isOn) await Api.post('/wishlist', { productId: b.dataset.id });
+            if (added) await Api.post('/wishlist', { productId: b.dataset.id });
             else await Api.delete('/wishlist/' + encodeURIComponent(b.dataset.id));
           }
-          showToast(isOn ? 'Saved to wishlist' : 'Removed from wishlist', 'success');
-        } catch (err) { showToast('Wishlist unavailable — saved locally', 'info'); }
+          showToast(added ? 'Saved to wishlist' : 'Removed from wishlist', added ? 'success' : 'info');
+        } catch (err) { showToast(added ? 'Saved locally' : 'Removed', 'info'); }
       });
     });
 
@@ -1974,6 +2328,497 @@ input:-webkit-autofill:focus {
     });
   }
 
+  var FUNNEL_ORDER = ['hero', 'shop', 'subs', 'cart', 'checkout'];
+  var funnelState = { hero: false, shop: false, subs: false, cart: false, checkout: false };
+  function bloomTrack(name, payload) {
+    payload = payload || {};
+    try { (window.dataLayer = window.dataLayer || []).push({ event: name, ts: Date.now(), ...payload }); } catch (e) {}
+    try { if (window.clarity && typeof window.clarity === 'function') window.clarity('event', name); } catch (e) {}
+    try { if (window.hj && typeof window.hj === 'function') window.hj('event', name); } catch (e) {}
+    try { if (window.gtag && typeof window.gtag === 'function') window.gtag('event', name, payload); } catch (e) {}
+  }
+  window.bloomTrack = bloomTrack;
+
+  function initFunnelTracking() {
+    var bar = qs('#funnelBar');
+    var sections = [
+      { id: 'heroSec', step: 'hero' },
+      { id: 'shop', step: 'shop' },
+      { id: 'subs', step: 'subs' }
+    ];
+    if (!('IntersectionObserver' in window)) return;
+    var obs = new IntersectionObserver(function (ents) {
+      ents.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        var sec = sections.find(function (s) { return s.id === e.target.id; });
+        if (!sec) return;
+        if (!funnelState[sec.step]) {
+          funnelState[sec.step] = true;
+          bloomTrack('funnel_' + sec.step + '_view');
+        }
+        var idx = FUNNEL_ORDER.indexOf(sec.step);
+        qsa('.funnel-step').forEach(function (el) {
+          var i = FUNNEL_ORDER.indexOf(el.dataset.step);
+          el.classList.toggle('active', i === idx);
+          el.classList.toggle('done', i < idx && funnelState[el.dataset.step]);
+        });
+        if (bar && idx > 0) bar.classList.add('show');
+      });
+    }, { threshold: 0.45 });
+    sections.forEach(function (s) { var el = qs('#' + s.id); if (el) obs.observe(el); });
+    on(document, 'click', function (e) {
+      var add = e.target.closest('.p-add, #qvAdd');
+      if (add) { funnelState.cart = true; bloomTrack('funnel_cart_add'); markFunnel('cart'); }
+      var checkout = e.target.closest('[href*="checkout" i], #checkoutBtn');
+      if (checkout) { funnelState.checkout = true; bloomTrack('funnel_checkout_start'); markFunnel('checkout'); }
+    });
+  }
+  function markFunnel(step) {
+    var idx = FUNNEL_ORDER.indexOf(step);
+    qsa('.funnel-step').forEach(function (el) {
+      var i = FUNNEL_ORDER.indexOf(el.dataset.step);
+      el.classList.toggle('active', i === idx);
+      el.classList.toggle('done', i < idx);
+    });
+  }
+
+  function initBloomBoot() {
+    var boot = qs('#bloomBoot');
+    if (!boot) return;
+    function hide() {
+      boot.classList.add('gone');
+      setTimeout(function () { boot.style.display = 'none'; }, 700);
+    }
+    if (document.readyState === 'complete') setTimeout(hide, 400);
+    else window.addEventListener('load', function () { setTimeout(hide, 400); });
+    setTimeout(hide, 4500);
+  }
+
+  var DELIVERY_LEAD = {
+    'metro-manila': { hours: 48, label: '48h' },
+    'batangas': { hours: 48, label: '48h' },
+    'cebu': { hours: 96, label: '4 days' },
+    'laguna': { hours: 72, label: '3 days' },
+    'cavite': { hours: 72, label: '3 days' },
+    'rizal': { hours: 72, label: '3 days' },
+    'bulacan': { hours: 72, label: '3 days' },
+    'pampanga': { hours: 96, label: '4 days' },
+    'baguio': { hours: 120, label: '5 days' }
+  };
+  function initDelivery() {
+    var dateInp = qs('#dlvDate');
+    var locSel = qs('#dlvLoc');
+    var etaEl = qs('#dlvEta');
+    var bar = qs('#dlvBar');
+    if (!dateInp || !locSel || !etaEl || !bar) return;
+    var saved = {};
+    try { saved = JSON.parse(localStorage.getItem('bloom_delivery') || '{}'); } catch (e) {}
+    var minH = DELIVERY_LEAD[saved.loc || locSel.value]?.hours || 48;
+    var minDate = new Date(Date.now() + minH * 36e5);
+    dateInp.min = minDate.toISOString().slice(0, 10);
+    if (saved.date && new Date(saved.date) >= minDate) dateInp.value = saved.date;
+    else dateInp.value = minDate.toISOString().slice(0, 10);
+    if (saved.loc && DELIVERY_LEAD[saved.loc]) locSel.value = saved.loc;
+    function updateEta() {
+      var info = DELIVERY_LEAD[locSel.value] || DELIVERY_LEAD['metro-manila'];
+      var newMin = new Date(Date.now() + info.hours * 36e5);
+      dateInp.min = newMin.toISOString().slice(0, 10);
+      if (new Date(dateInp.value) < newMin) dateInp.value = newMin.toISOString().slice(0, 10);
+      etaEl.innerHTML = 'Lead time: <strong>' + info.label + '</strong>';
+      try { localStorage.setItem('bloom_delivery', JSON.stringify({ date: dateInp.value, loc: locSel.value })); } catch (e) {}
+      bloomTrack('delivery_set', { location: locSel.value, date: dateInp.value });
+    }
+    on(locSel, 'change', updateEta);
+    on(dateInp, 'change', updateEta);
+    updateEta();
+    var lastY = window.scrollY;
+    on(window, 'scroll', function () {
+      var y = window.scrollY;
+      if (y > 600 && y > lastY) bar.classList.add('hide');
+      else bar.classList.remove('hide');
+      lastY = y;
+    }, { passive: true });
+  }
+
+  function getWishlist() {
+    try { return JSON.parse(localStorage.getItem('bloom_wishlist') || '[]'); } catch (e) { return []; }
+  }
+  function saveWishlist(items) {
+    try { localStorage.setItem('bloom_wishlist', JSON.stringify(items)); } catch (e) {}
+    updateWlUi();
+  }
+  function updateWlUi() {
+    var items = getWishlist();
+    var badge = qs('#wlBadge');
+    var count = qs('#wlCount');
+    var clear = qs('#wlClear');
+    if (badge) { badge.textContent = items.length; badge.style.display = items.length ? 'inline-flex' : 'none'; }
+    if (count) count.textContent = items.length;
+    if (clear) clear.hidden = !items.length;
+    qsa('.wl-btn').forEach(function (b) {
+      var on = items.some(function (x) { return x.id === b.dataset.id; });
+      b.classList.toggle('on', on);
+      b.textContent = on ? '♥' : '♡';
+    });
+    var body = qs('#wlDrawerBody');
+    var empty = qs('#wlEmpty');
+    if (!body) return;
+    qsa('.wl-row', body).forEach(function (r) { r.remove(); });
+    if (!items.length) { if (empty) empty.style.display = ''; return; }
+    if (empty) empty.style.display = 'none';
+    items.forEach(function (it) {
+      var row = document.createElement('div');
+      row.className = 'wl-row';
+      row.innerHTML = '<a class="wl-row-img" href="/catalog.html?id=' + encodeURIComponent(it.id) + '"><img src="' + escapeHtml(it.image || '/img/hero-flowers.jpg') + '" alt=""></a>' +
+        '<div class="wl-row-body"><div class="wl-row-name">' + escapeHtml(it.name || 'Bouquet') + '</div><div class="wl-row-price">' + money(it.price || 0) + '</div></div>' +
+        '<button type="button" class="wl-row-x" aria-label="Remove from wishlist" data-rm="' + escapeHtml(it.id) + '">✕</button>';
+      body.appendChild(row);
+    });
+    qsa('.wl-row-x', body).forEach(function (x) {
+      on(x, 'click', function () {
+        var id = x.dataset.rm;
+        var next = getWishlist().filter(function (i) { return i.id !== id; });
+        saveWishlist(next);
+        bloomTrack('wishlist_remove', { id: id });
+      });
+    });
+  }
+  window.addToWishlist = function (item) {
+    var items = getWishlist();
+    if (items.some(function (i) { return i.id === item.id; })) {
+      saveWishlist(items.filter(function (i) { return i.id !== item.id; }));
+      return false;
+    }
+    items.unshift(item);
+    saveWishlist(items.slice(0, 100));
+    bloomTrack('wishlist_add', { id: item.id });
+    return true;
+  };
+  function initWishlist() {
+    var drawer = qs('#wlDrawer');
+    var openBtn = qs('#wlBtnNav');
+    var clsBtn = qs('#wlDrawerCls');
+    var clear = qs('#wlClear');
+    if (!drawer) return;
+    function openD() { drawer.classList.add('open'); drawer.setAttribute('aria-hidden', 'false'); document.body.classList.add('modal-open'); updateWlUi(); bloomTrack('wishlist_open'); }
+    function closeD() { drawer.classList.remove('open'); drawer.setAttribute('aria-hidden', 'true'); document.body.classList.remove('modal-open'); }
+    on(openBtn, 'click', openD);
+    on(clsBtn, 'click', closeD);
+    on(document, 'keydown', function (e) { if (e.key === 'Escape' && drawer.classList.contains('open')) closeD(); });
+    on(clear, 'click', function () { saveWishlist([]); showToast('Wishlist cleared', 'info'); });
+    updateWlUi();
+    on(document, 'click', function (e) {
+      var b = e.target.closest('.wl-btn');
+      if (!b) return;
+      e.stopPropagation();
+      var card = b.closest('.p-card');
+      var nameEl = card && card.querySelector('.p-name');
+      var priceEl = card && card.querySelector('.p-price');
+      var img = card && card.querySelector('.p-img img');
+      var item = { id: b.dataset.id, name: nameEl ? nameEl.textContent.trim() : 'Bouquet', price: priceEl ? Number(String(priceEl.textContent).replace(/[^\d.]/g, '')) : 0, image: img ? img.src : '/img/hero-flowers.jpg' };
+      var added = window.addToWishlist(item);
+      b.classList.add('wl-pop');
+      setTimeout(function () { b.classList.remove('wl-pop'); }, 420);
+      showToast(added ? 'Saved to wishlist' : 'Removed from wishlist', added ? 'success' : 'info');
+    });
+  }
+
+  function initSubscriptions() {
+    var sec = qs('#subs');
+    if (!sec) return;
+    var cards = qsa('.subs-card', sec);
+    var startBtn = qs('#subsStart');
+    var learnBtn = qs('#subsLearn');
+    cards.forEach(function (c) {
+      on(c, 'click', function () {
+        cards.forEach(function (x) { x.classList.remove('selected'); x.setAttribute('aria-checked', 'false'); });
+        c.classList.add('selected');
+        c.setAttribute('aria-checked', 'true');
+        bloomTrack('subscription_select', { plan: c.dataset.sub, price: c.dataset.price });
+      });
+      on(c, 'keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); c.click(); } });
+    });
+    on(startBtn, 'click', async function () {
+      var sel = qs('.subs-card.selected', sec);
+      if (!sel) { showToast('Pick a cadence first', 'info'); return; }
+      var plan = sel.dataset.sub;
+      var price = sel.dataset.price;
+      bloomTrack('subscription_start', { plan: plan, price: price });
+      try {
+        if (Api && Api.post) {
+          await Api.post('/subscriptions', { plan: plan, price: Number(price) });
+          showToast('Subscription started — see your inbox', 'success');
+          window.location.href = '/checkout.html?subscription=' + encodeURIComponent(plan);
+          return;
+        }
+      } catch (e) {}
+      window.location.href = '/checkout.html?subscription=' + encodeURIComponent(plan) + '&price=' + encodeURIComponent(price);
+    });
+    on(learnBtn, 'click', function () { window.location.href = '/subscriptions.html'; });
+  }
+
+  var VOICE_COMMANDS = [
+    { match: /(open|show|go to)?\s*(shop|store|catalog)/i, action: function () { var t = qs('#shop'); if (t) t.scrollIntoView({ behavior: 'smooth' }); } },
+    { match: /(subscribe|subscription|recurring|weekly|monthly)/i, action: function () { var t = qs('#subs'); if (t) t.scrollIntoView({ behavior: 'smooth' }); } },
+    { match: /(cart|basket)/i, action: function () { window.location.href = '/cart.html'; } },
+    { match: /(checkout|pay)/i, action: function () { window.location.href = '/checkout.html'; } },
+    { match: /(wishlist|favorites|saved)/i, action: function () { var b = qs('#wlBtnNav'); if (b) b.click(); } },
+    { match: /(corporate|teams|business)/i, action: function () { var t = qs('#corp'); if (t) t.scrollIntoView({ behavior: 'smooth' }); } },
+    { match: /(features|why|trust)/i, action: function () { var t = qs('#features'); if (t) t.scrollIntoView({ behavior: 'smooth' }); } },
+    { match: /(top|home|hero|start)/i, action: function () { window.scrollTo({ top: 0, behavior: 'smooth' }); } },
+    { match: /(sign in|login|account)/i, action: function () { var b = qs('#authBtn'); if (b) b.click(); } },
+    { match: /(search)\s+(.+)/i, action: function (m) { var v = m[2].trim(); var t = qs('#srchTog'); if (t) t.click(); var inp = qs('#srchInp'); if (inp) { inp.value = v; inp.dispatchEvent(new Event('input')); } } },
+    { match: /(theme|dark|light|toggle)/i, action: function () { var b = qs('#themeToggle'); if (b) b.click(); } },
+    { match: /(help|commands)/i, action: function () { showToast('Try: shop, subscribe, cart, wishlist, corporate, sign in, search roses', 'info'); } }
+  ];
+  function initVoice() {
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    var fab = qs('#voiceFab');
+    var navBtn = qs('#voiceNavBtn');
+    var status = qs('#voiceStatus');
+    var statusText = qs('#voiceText');
+    if (!SR || !fab || !navBtn) return;
+    fab.hidden = false;
+    fab.classList.add('show');
+    navBtn.hidden = false;
+    var rec = new SR();
+    rec.lang = (document.documentElement.lang || 'en-US');
+    rec.continuous = false;
+    rec.interimResults = true;
+    rec.maxAlternatives = 1;
+    var listening = false;
+    function start() {
+      if (listening) return;
+      try { rec.start(); listening = true; fab.classList.add('listening'); navBtn.classList.add('listening'); navBtn.setAttribute('aria-pressed', 'true'); fab.setAttribute('aria-pressed', 'true'); status.classList.add('show'); if (statusText) statusText.textContent = 'Listening…'; bloomTrack('voice_start'); } catch (e) {}
+    }
+    function stop() {
+      try { rec.stop(); } catch (e) {}
+      listening = false;
+      fab.classList.remove('listening');
+      navBtn.classList.remove('listening');
+      navBtn.setAttribute('aria-pressed', 'false');
+      fab.setAttribute('aria-pressed', 'false');
+      setTimeout(function () { status.classList.remove('show'); }, 1800);
+    }
+    function handle(text) {
+      var matched = false;
+      for (var i = 0; i < VOICE_COMMANDS.length; i++) {
+        var cmd = VOICE_COMMANDS[i];
+        var m = text.match(cmd.match);
+        if (m) { cmd.action(m); bloomTrack('voice_match', { command: text, intent: cmd.match.source }); matched = true; break; }
+      }
+      if (!matched) showToast('Didn\'t catch that — try "shop" or "subscribe"', 'info');
+    }
+    rec.onresult = function (e) {
+      var last = e.results[e.results.length - 1];
+      var transcript = last[0].transcript.trim();
+      if (statusText) statusText.textContent = '"' + transcript + '"';
+      if (last.isFinal) handle(transcript);
+    };
+    rec.onerror = function (e) { showToast('Voice: ' + (e.error || 'error'), 'error'); stop(); };
+    rec.onend = function () { stop(); };
+    on(fab, 'click', function () { listening ? stop() : start(); });
+    on(navBtn, 'click', function () { listening ? stop() : start(); });
+    on(document, 'keydown', function (e) {
+      if ((e.altKey || e.metaKey) && (e.key === 'v' || e.key === 'V')) { e.preventDefault(); listening ? stop() : start(); }
+    });
+  }
+
+  function buildVideoMessageBlock(productId) {
+    var html = '<div class="vid-msg-block">' +
+      '<div class="vid-msg-hd"><h4>Add a video message <small>(up to 30s)</small></h4><small>The recipient sees this with their bouquet</small></div>' +
+      '<div class="vid-preview"><video id="vmPrev" muted playsinline></video><span class="vid-rec-dot" id="vmDot">REC</span></div>' +
+      '<div class="vid-msg-actions">' +
+      '<button type="button" class="btn btn-g" id="vmStart">Start camera</button>' +
+      '<button type="button" class="btn btn-p" id="vmRec" disabled>● Record</button>' +
+      '<button type="button" class="btn btn-g" id="vmAttach" disabled>Attach to order</button>' +
+      '<label class="btn btn-g" style="cursor:pointer"><input type="file" accept="video/*" capture="user" id="vmFile" hidden>Upload from device</label>' +
+      '</div></div>';
+    return html;
+  }
+  function attachVideoMessageHandlers(productId) {
+    var prev = qs('#vmPrev');
+    var startBtn = qs('#vmStart');
+    var recBtn = qs('#vmRec');
+    var attachBtn = qs('#vmAttach');
+    var dot = qs('#vmDot');
+    var fileInp = qs('#vmFile');
+    if (!prev || !startBtn || !recBtn || !attachBtn) return;
+    var stream = null;
+    var rec = null;
+    var chunks = [];
+    var blob = null;
+    var startTime = 0;
+    var stopTimer = null;
+    on(startBtn, 'click', async function () {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: true });
+        prev.srcObject = stream;
+        prev.play();
+        recBtn.disabled = false;
+        startBtn.disabled = true;
+        startBtn.textContent = 'Camera on';
+        bloomTrack('video_message_camera_open');
+      } catch (e) { showToast('Camera unavailable', 'error'); }
+    });
+    on(recBtn, 'click', function () {
+      if (rec && rec.state === 'recording') {
+        rec.stop();
+        return;
+      }
+      chunks = [];
+      var mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus') ? 'video/webm;codecs=vp9,opus' : (MediaRecorder.isTypeSupported('video/webm') ? 'video/webm' : 'video/mp4');
+      try { rec = new MediaRecorder(stream, { mimeType: mime }); } catch (e) { rec = new MediaRecorder(stream); }
+      rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+      rec.onstop = function () {
+        blob = new Blob(chunks, { type: rec.mimeType || 'video/webm' });
+        prev.srcObject = null;
+        prev.src = URL.createObjectURL(blob);
+        prev.muted = false;
+        prev.controls = true;
+        recBtn.textContent = '● Record again';
+        attachBtn.disabled = false;
+        dot.classList.remove('on');
+        if (stream) stream.getTracks().forEach(function (t) { t.stop(); });
+        clearTimeout(stopTimer);
+        bloomTrack('video_message_recorded', { duration: Math.round((Date.now() - startTime) / 1000), size: blob.size });
+      };
+      startTime = Date.now();
+      rec.start();
+      recBtn.textContent = '■ Stop';
+      dot.classList.add('on');
+      stopTimer = setTimeout(function () { try { rec.stop(); } catch (e) {} }, 30000);
+    });
+    on(fileInp, 'change', function () {
+      var f = fileInp.files && fileInp.files[0];
+      if (!f) return;
+      if (f.size > 50 * 1024 * 1024) { showToast('Video must be under 50MB', 'error'); return; }
+      blob = f;
+      prev.srcObject = null;
+      prev.src = URL.createObjectURL(f);
+      prev.controls = true;
+      attachBtn.disabled = false;
+      bloomTrack('video_message_uploaded', { size: f.size });
+    });
+    on(attachBtn, 'click', async function () {
+      if (!blob) return;
+      attachBtn.disabled = true;
+      attachBtn.textContent = 'Attaching…';
+      try {
+        if (Api && Api.upload) {
+          var fd = new FormData();
+          fd.append('video', blob, 'message.webm');
+          fd.append('productId', productId);
+          await Api.upload('/cart/video-message', fd);
+          showToast('Video message attached', 'success');
+        } else {
+          var url = URL.createObjectURL(blob);
+          try { sessionStorage.setItem('bloom_video_msg_' + productId, url); } catch (e) {}
+          showToast('Video saved locally for this order', 'success');
+        }
+        bloomTrack('video_message_attached', { productId: productId });
+      } catch (e) { showToast('Could not attach video', 'error'); } finally { attachBtn.disabled = false; attachBtn.textContent = 'Attached ✓'; }
+    });
+  }
+  window.buildVideoMessageBlock = buildVideoMessageBlock;
+  window.attachVideoMessageHandlers = attachVideoMessageHandlers;
+
+  function summarizeFormErrors(formEl, summaryEl) {
+    var errs = [];
+    qsa('.fe', formEl).forEach(function (e) {
+      var msg = (e.textContent || '').trim();
+      if (!msg) return;
+      var inp = e.previousElementSibling && e.previousElementSibling.querySelector ? e.previousElementSibling.querySelector('input,textarea,select') : null;
+      var label = inp ? (formEl.querySelector('label[for="' + inp.id + '"]')?.textContent || inp.id) : '';
+      errs.push({ id: inp ? inp.id : '', label: label, msg: msg });
+    });
+    var ul = summaryEl.querySelector('ul');
+    if (!ul) return;
+    if (!errs.length) { summaryEl.classList.remove('on'); ul.innerHTML = ''; return; }
+    ul.innerHTML = errs.map(function (e) {
+      var anchor = e.id ? '<a href="#' + e.id + '" data-fid="' + e.id + '">' + escapeHtml(e.label || e.id) + '</a>: ' : '';
+      return '<li>' + anchor + escapeHtml(e.msg) + '</li>';
+    }).join('');
+    summaryEl.classList.add('on');
+    summaryEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    qsa('a[data-fid]', summaryEl).forEach(function (a) {
+      on(a, 'click', function (ev) { ev.preventDefault(); var t = qs('#' + a.dataset.fid); if (t) { t.focus(); t.scrollIntoView({ behavior: 'smooth', block: 'center' }); } });
+    });
+  }
+  window.summarizeFormErrors = summarizeFormErrors;
+
+  function initFormErrSummaries() {
+    var loginBtn = qs('#lSubmit');
+    var regBtn = qs('#rSubmit');
+    var loginSum = qs('#loginErrSum');
+    var regSum = qs('#regErrSum');
+    function patch(btn, formId, sumEl) {
+      if (!btn || !sumEl) return;
+      var origClick = btn.onclick;
+      on(btn, 'click', function () {
+        setTimeout(function () { var f = qs('#' + formId); if (f) summarizeFormErrors(f, sumEl); }, 60);
+      });
+    }
+    patch(loginBtn, 'loginF', loginSum);
+    patch(regBtn, 'registerF', regSum);
+  }
+
+  function initVirtualization() {
+    if (!('IntersectionObserver' in window)) return;
+    var grids = ['pGrid', 'recentGrid'];
+    grids.forEach(function (id) {
+      var grid = qs('#' + id);
+      if (!grid) return;
+      var obs = new IntersectionObserver(function (ents) {
+        ents.forEach(function (e) {
+          var img = e.target.querySelector ? e.target.querySelector('img') : null;
+          if (e.isIntersecting) {
+            e.target.style.contentVisibility = 'visible';
+            if (img && img.dataset.src && !img.src) img.src = img.dataset.src;
+          } else {
+            e.target.style.contentVisibility = 'auto';
+            e.target.style.containIntrinsicSize = '320px';
+          }
+        });
+      }, { rootMargin: '600px 0px', threshold: 0 });
+      var mo = new MutationObserver(function () {
+        qsa('.p-card', grid).forEach(function (c) {
+          if (c._virt) return;
+          c._virt = 1;
+          c.style.contentVisibility = 'auto';
+          c.style.containIntrinsicSize = '320px';
+          obs.observe(c);
+        });
+      });
+      mo.observe(grid, { childList: true });
+    });
+  }
+
+  function initLazyHeroVideo() {
+    var v = qs('#heroVid');
+    if (!v) return;
+    var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (connection && (connection.saveData || /2g|slow-2g/.test(connection.effectiveType || ''))) { v.removeAttribute('autoplay'); v.preload = 'none'; v.src = ''; v.style.display = 'none'; return; }
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (e.isIntersecting) v.play().catch(function () {});
+        else v.pause();
+      });
+    }, { threshold: 0.1 });
+    io.observe(v);
+  }
+
+  function loadHeatmaps() {
+    var clarityId = (document.querySelector('meta[name="clarity-id"]') || {}).content;
+    if (clarityId) {
+      (function (c, l, a, r, i, t, y) { c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments); }; t = l.createElement(r); t.async = 1; t.src = 'https://www.clarity.ms/tag/' + i; y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y); })(window, document, 'clarity', 'script', clarityId);
+    }
+    var hjId = (document.querySelector('meta[name="hotjar-id"]') || {}).content;
+    if (hjId) {
+      (function (h, o, t, j, a, r) { h.hj = h.hj || function () { (h.hj.q = h.hj.q || []).push(arguments); }; h._hjSettings = { hjid: Number(hjId), hjsv: 6 }; a = o.getElementsByTagName('head')[0]; r = o.createElement('script'); r.async = 1; r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv; a.appendChild(r); })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=');
+    }
+  }
+
   function initYear() {
     var y = qs('#yr');
     if (y) y.textContent = new Date().getFullYear();
@@ -1988,6 +2833,7 @@ input:-webkit-autofill:focus {
   });
 
   document.addEventListener('DOMContentLoaded', function () {
+    initBloomBoot();
     initYear();
     initCursor();
     initNav();
@@ -1995,6 +2841,7 @@ input:-webkit-autofill:focus {
     initCountdown();
     initParticles();
     initHeroParallax();
+    initLazyHeroVideo();
     initSearch();
     initLang();
     initAuth();
@@ -2013,6 +2860,14 @@ input:-webkit-autofill:focus {
     initTilt();
     initMagnetic();
     initRipple();
+    initDelivery();
+    initWishlist();
+    initSubscriptions();
+    initVoice();
+    initFunnelTracking();
+    initVirtualization();
+    initFormErrSummaries();
+    loadHeatmaps();
   });
 })();
 </script>
