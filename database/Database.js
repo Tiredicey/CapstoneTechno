@@ -262,16 +262,16 @@ class DatabaseClass {
       for (const r of rows) insert.run(...r);
     });
     seed([
-      ['prod_1',  'Classic Rose Bouquet',  'bouquets',     'A timeless arrangement of red roses',          2799.44, JSON.stringify(['/images/rose-bouquet.jpg']),  JSON.stringify(['roses','classic','romance']),       50, 1],
-      ['prod_2',  'Sunflower Bliss',        'bouquets',     'Bright sunflowers to light up any room',       2239.44, JSON.stringify(['/images/sunflower.jpg']),      JSON.stringify(['sunflowers','cheerful']),           40, 1],
-      ['prod_3',  'Lavender Dreams',        'arrangements', 'Soothing lavender arrangement',                2519.44, JSON.stringify(['/images/lavender.jpg']),       JSON.stringify(['lavender','calming']),              30, 1],
-      ['prod_4',  'Mixed Wildflowers',      'bouquets',     'A wild and beautiful mix of seasonal flowers', 1959.44, JSON.stringify(['/images/wildflowers.jpg']),    JSON.stringify(['wildflowers','seasonal']),          60, 1],
-      ['prod_5',  'Orchid Elegance',        'arrangements', 'Exotic orchids in a luxury vase',              4479.44, JSON.stringify(['/images/orchid.jpg']),         JSON.stringify(['orchids','luxury','exotic']),       20, 1],
-      ['prod_6',  'Crimson Horizon',        'bouquets',     'Bold crimson roses with dark foliage',         3639.44, JSON.stringify(['/images/crimson.jpg']),         JSON.stringify(['roses','bold','romance']),         35, 1],
-      ['prod_7',  'Blush Drift',            'arrangements', 'Soft blush peonies and ranunculus',            3079.44, JSON.stringify(['/images/blush.jpg']),           JSON.stringify(['peonies','soft','wedding']),       25, 1],
-      ['prod_8',  'White Elegance',         'arrangements', 'Pure white lilies and orchids',                3919.44, JSON.stringify(['/images/white.jpg']),           JSON.stringify(['lilies','white','wedding']),       20, 1],
-      ['prod_9',  'Tulip Festival',         'bouquets',     'Vibrant mixed tulips for any occasion',        2407.44, JSON.stringify(['/images/tulips.jpg']),          JSON.stringify(['tulips','colorful','spring']),     45, 1],
-      ['prod_10', 'Garden Peony',           'arrangements', 'Lush garden peonies in full bloom',            3359.44, JSON.stringify(['/images/peony.jpg']),           JSON.stringify(['peonies','garden','anniversary']), 30, 1]
+      ['prod_1',  'Classic Rose Bouquet',  'bouquets',     'A timeless arrangement of red roses',          2799.44, JSON.stringify(['https://picsum.photos/seed/p1/600/400']),  JSON.stringify(['roses','classic','romance']),       50, 1],
+      ['prod_2',  'Sunflower Bliss',        'bouquets',     'Bright sunflowers to light up any room',       2239.44, JSON.stringify(['https://picsum.photos/seed/p2/600/400']),      JSON.stringify(['sunflowers','cheerful']),           40, 1],
+      ['prod_3',  'Lavender Dreams',        'arrangements', 'Soothing lavender arrangement',                2519.44, JSON.stringify(['https://picsum.photos/seed/p3/600/400']),       JSON.stringify(['lavender','calming']),              30, 1],
+      ['prod_4',  'Mixed Wildflowers',      'bouquets',     'A wild and beautiful mix of seasonal flowers', 1959.44, JSON.stringify(['https://picsum.photos/seed/p4/600/400']),    JSON.stringify(['wildflowers','seasonal']),          60, 1],
+      ['prod_5',  'Orchid Elegance',        'arrangements', 'Exotic orchids in a luxury vase',              4479.44, JSON.stringify(['https://picsum.photos/seed/p5/600/400']),         JSON.stringify(['orchids','luxury','exotic']),       20, 1],
+      ['prod_6',  'Crimson Horizon',        'bouquets',     'Bold crimson roses with dark foliage',         3639.44, JSON.stringify(['https://picsum.photos/seed/p6/600/400']),         JSON.stringify(['roses','bold','romance']),         35, 1],
+      ['prod_7',  'Blush Drift',            'arrangements', 'Soft blush peonies and ranunculus',            3079.44, JSON.stringify(['https://picsum.photos/seed/p7/600/400']),           JSON.stringify(['peonies','soft','wedding']),       25, 1],
+      ['prod_8',  'White Elegance',         'arrangements', 'Pure white lilies and orchids',                3919.44, JSON.stringify(['https://picsum.photos/seed/p8/600/400']),           JSON.stringify(['lilies','white','wedding']),       20, 1],
+      ['prod_9',  'Tulip Festival',         'bouquets',     'Vibrant mixed tulips for any occasion',        2407.44, JSON.stringify(['https://picsum.photos/seed/p9/600/400']),          JSON.stringify(['tulips','colorful','spring']),     45, 1],
+      ['prod_10', 'Garden Peony',           'arrangements', 'Lush garden peonies in full bloom',            3359.44, JSON.stringify(['https://picsum.photos/seed/p10/600/400']),           JSON.stringify(['peonies','garden','anniversary']), 30, 1]
     ]);
     console.log('🌸 Products seeded');
   }
