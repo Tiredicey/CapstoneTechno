@@ -2,6 +2,7 @@ import { Router } from 'express';
 import db from '../database/Database.js';
 import { authenticate, requireAdmin } from '../middleware/auth.js';
 import { v4 as uuid } from 'uuid';
+import { SocketManager } from '../sockets/SocketManager.js';
 
 const router = Router();
 
@@ -28,6 +29,7 @@ router.post('/', authenticate, requireAdmin, (req, res) => {
       `INSERT INTO faqs (id, question, answer, category, sort_order, active) VALUES (?, ?, ?, ?, ?, 1)`,
       [id, question, answer, category || 'general', sort_order || 0]
     );
+    SocketManager.broadcast('faq_update', { id, action: 'create' });
     res.status(201).json(db.get(`SELECT * FROM faqs WHERE id = ?`, [id]));
   } catch (err) {
     console.error('[FAQ CREATE]', err);
@@ -51,6 +53,7 @@ router.put('/:id', authenticate, requireAdmin, (req, res) => {
         req.params.id
       ]
     );
+    SocketManager.broadcast('faq_update', { id: req.params.id, action: 'update' });
     res.json(db.get(`SELECT * FROM faqs WHERE id = ?`, [req.params.id]));
   } catch (err) {
     console.error('[FAQ UPDATE]', err);
@@ -63,6 +66,7 @@ router.delete('/:id', authenticate, requireAdmin, (req, res) => {
     const existing = db.get(`SELECT * FROM faqs WHERE id = ?`, [req.params.id]);
     if (!existing) return res.status(404).json({ error: 'FAQ not found' });
     db.run(`DELETE FROM faqs WHERE id = ?`, [req.params.id]);
+    SocketManager.broadcast('faq_update', { id: req.params.id, action: 'delete' });
     res.json({ success: true });
   } catch (err) {
     console.error('[FAQ DELETE]', err);
