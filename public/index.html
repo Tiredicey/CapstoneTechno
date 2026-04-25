@@ -898,15 +898,15 @@ input:-webkit-autofill:focus {
       <div class="hero-left">
         <div class="hero-countdown" id="cdWrap" aria-live="polite" aria-atomic="true"></div>
         <div class="hero-eyebrow">
-          <span class="hero-eyebrow-tag">Pre-Order Open</span>
+          <span class="hero-eyebrow-tag" data-content-key="hero_tag">Pre-order · Cold-chain · 1hr windows</span>
           <span class="hero-eyebrow-sub">Gentle care · Cold-chain fresh · At your pace</span>
         </div>
         <h1 class="hero-hl">
-          A small gesture,<br>
-          <span class="g-txt" id="typer" aria-live="polite">a quiet comfort</span>.<br>
+          <span data-content-key="hero_title_1">A small gesture,</span><br>
+          <span class="g-txt" id="typer" aria-live="polite" data-content-key="hero_title_2">a quiet comfort</span>.<br>
           <em>Whenever you're ready.</em>
         </h1>
-        <p class="hero-sub">You don't need a reason to send flowers. Handcrafted and developed by STI LIPA BSIT students, delivered gently to the door — no rush, no pressure. Just a moment of warmth, whenever it feels right.</p>
+        <p class="hero-sub" data-content-key="hero_subtitle">You don't need a reason to send flowers. Handcrafted and developed by STI LIPA BSIT students, delivered gently to the door — no rush, no pressure. Just a moment of warmth, whenever it feels right.</p>
         <div class="hero-cta">
           <a href="#shop" class="btn btn-p btn-lg">Browse Gently →</a>
           <button class="btn btn-g btn-lg" id="profilingBtn" aria-haspopup="dialog" aria-controls="profMod">Find What Feels Right</button>
@@ -1153,8 +1153,8 @@ input:-webkit-autofill:focus {
       <div class="subs-cards" role="radiogroup" aria-label="Subscription cadence">
         <button type="button" class="subs-card" data-sub="weekly" data-price="1499" role="radio" aria-checked="false">
           <div class="subs-card-hd">
-            <div class="subs-card-name">Weekly Bloom <em>Most Loved</em></div>
-            <div class="subs-card-price">₱1,499<small> / box</small></div>
+            <div class="subs-card-name"><span data-content-key="sub_weekly_name">Weekly Bloom</span> <em>Most Loved</em></div>
+            <div class="subs-card-price"><span data-content-key="sub_weekly_price">₱1,499</span><small> / box</small></div>
           </div>
           <div class="subs-card-d">A fresh seasonal bouquet at your doorstep every 7 days. Florist's pick, swappable palette, evening delivery slot honored.</div>
           <div class="subs-card-feats">
@@ -1165,8 +1165,8 @@ input:-webkit-autofill:focus {
         </button>
         <button type="button" class="subs-card selected" data-sub="biweekly" data-price="2299" role="radio" aria-checked="true">
           <div class="subs-card-hd">
-            <div class="subs-card-name">Biweekly Refresh</div>
-            <div class="subs-card-price">₱2,299<small> / box</small></div>
+            <div class="subs-card-name" data-content-key="sub_biweekly_name">Biweekly Refresh</div>
+            <div class="subs-card-price"><span data-content-key="sub_biweekly_price">₱2,299</span><small> / box</small></div>
           </div>
           <div class="subs-card-d">Larger bouquet every 14 days. Perfect for offices, lobbies, or homes that don't mind missing a week.</div>
           <div class="subs-card-feats">
@@ -1177,8 +1177,8 @@ input:-webkit-autofill:focus {
         </button>
         <button type="button" class="subs-card" data-sub="monthly" data-price="3499" role="radio" aria-checked="false">
           <div class="subs-card-hd">
-            <div class="subs-card-name">Monthly Statement</div>
-            <div class="subs-card-price">₱3,499<small> / box</small></div>
+            <div class="subs-card-name" data-content-key="sub_monthly_name">Monthly Statement</div>
+            <div class="subs-card-price"><span data-content-key="sub_monthly_price">₱3,499</span><small> / box</small></div>
           </div>
           <div class="subs-card-d">A premium statement bouquet once a month — special varieties, hand-tied wraps, with a handwritten note from our florists.</div>
           <div class="subs-card-feats">
@@ -2274,6 +2274,21 @@ input:-webkit-autofill:focus {
     try {
       var c = await Api.get('/content');
       if (!c) return;
+      document.querySelectorAll('[data-content-key]').forEach(el => {
+        var key = el.getAttribute('data-content-key');
+        if (c[key] !== undefined && c[key] !== null && c[key] !== '') {
+           var val = c[key];
+           if (key.includes('price') || key.includes('Threshold')) {
+             val = '₱' + Number(val).toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:2});
+           }
+           if (el.tagName === 'INPUT') el.value = val;
+           else el.textContent = val;
+        }
+      });
+      if (c.bannerActive !== undefined) {
+        var banner = document.getElementById('promoBanner');
+        if (banner) banner.style.display = c.bannerActive ? 'flex' : 'none';
+      }
     } catch (e) {}
   }
 
