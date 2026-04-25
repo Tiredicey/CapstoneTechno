@@ -66,7 +66,53 @@
   --ease:   cubic-bezier(.23,1,.32,1);
   --spring: cubic-bezier(.34,1.56,.64,1);
   --p5ease: cubic-bezier(.17,.67,.32,1.27);
+
+  --surface: var(--bg);
+  --surface2: var(--bg2);
+  --surface3: var(--bg3);
+  --text: #fff;
+  --text-muted: rgba(255,255,255,.6);
+  --text-dim: rgba(255,255,255,.35);
+  --nav-bg: rgba(11,5,22,.88);
+  --card-bg: var(--gl);
+  --card-border: var(--glb);
+  --input-bg: rgba(255,255,255,.06);
+  --input-border: rgba(255,255,255,.12);
+  --shadow-color: rgba(0,0,0,.3);
 }
+
+[data-theme="light"] {
+  --bg:  #FEFCF9;
+  --bg2: #F5F0EB;
+  --bg3: #EDE6DF;
+  --ink: #1A1220;
+  --paper: #FFFFFF;
+  --gl:  rgba(0,0,0,.04);
+  --glb: rgba(0,0,0,.08);
+  --gls: rgba(0,0,0,.02);
+
+  --surface: #FEFCF9;
+  --surface2: #F5F0EB;
+  --surface3: #EDE6DF;
+  --text: #1A1220;
+  --text-muted: rgba(26,18,32,.6);
+  --text-dim: rgba(26,18,32,.35);
+  --nav-bg: rgba(254,252,249,.92);
+  --card-bg: rgba(0,0,0,.03);
+  --card-border: rgba(0,0,0,.08);
+  --input-bg: rgba(0,0,0,.04);
+  --input-border: rgba(0,0,0,.12);
+  --shadow-color: rgba(0,0,0,.08);
+
+  --bloom-glass: rgba(0,0,0,.03);
+  --bloom-glass-border: rgba(0,0,0,.06);
+  --bloom-dark: #FEFCF9;
+  --bloom-dark2: #F5F0EB;
+}
+
+[data-theme="light"] body { color: var(--text); }
+[data-theme="light"] .c-dot { background: var(--ink); }
+[data-theme="light"] .c-ring { border-color: rgba(26,18,32,.3); }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -74,8 +120,26 @@ html { scroll-behavior: smooth; }
 
 body {
   font-family: var(--font-body);
-  background: var(--bloom-dark);
-  color: #fff;
+  background: var(--surface);
+  color: var(--text);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+}
+
+:-webkit-autofill,
+:-webkit-autofill:hover,
+:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--surface) inset !important;
+  -webkit-text-fill-color: var(--text) !important;
+  caret-color: var(--text);
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.section-lazy {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
+}
+
+[dir="rtl"] {
+  direction: rtl;
 }
