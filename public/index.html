@@ -386,10 +386,11 @@ canvas#ptcl { position: absolute; inset: 0; width: 100%; height: 100%; pointer-e
 .fact-src a:hover, .fact-src a:focus-visible { color: var(--p5l); border-bottom-color: var(--p5); }
 
 .corp-sec { background: var(--bg); }
-.corp-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 60px; align-items: center; }
-.corp-photo { border-radius: var(--r); overflow: hidden; aspect-ratio: 4/3; position: relative; background: var(--gl); }
-.corp-photo img { width: 100%; height: 100%; object-fit: cover; }
+.corp-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 60px; align-items: start; }
+.corp-photo { border-radius: var(--r); overflow: hidden; aspect-ratio: 4/3; position: relative; background: var(--gl); min-height: 320px; }
+.corp-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .corp-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, transparent 50%, rgba(230,26,26,.2) 100%); }
+.hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; opacity: .18; filter: blur(1px) saturate(.7); pointer-events: none; }
 .corp-list { list-style: none; display: flex; flex-direction: column; gap: 14px; margin-top: 24px; margin-bottom: 28px; }
 .corp-list li { display: flex; align-items: flex-start; gap: 12px; font-size: .9rem; color: rgba(255,255,255,.72); line-height: 1.6; }
 .corp-list svg { width: 18px; height: 18px; flex-shrink: 0; color: var(--mn); margin-top: 3px; }
@@ -648,7 +649,13 @@ input:-webkit-autofill:focus {
 <main id="main">
 
 <section class="hero" aria-label="Hero" id="heroSec">
-  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="hero-bg" aria-hidden="true" style="background: radial-gradient(circle at 20% 30%, rgba(255,100,100,0.15) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(100,150,255,0.1) 0%, transparent 50%), var(--bg); animation: ethereal 15s ease-in-out infinite alternate;"></div>
+  <style>
+    @keyframes ethereal {
+      0% { filter: hue-rotate(0deg); opacity: 0.8; }
+      100% { filter: hue-rotate(30deg); opacity: 1; }
+    }
+  </style>
   <div class="hero-photo" id="heroPhoto" aria-hidden="true"></div>
   <canvas id="ptcl" aria-hidden="true"></canvas>
   <div class="hero-noise" aria-hidden="true"></div>
@@ -663,44 +670,44 @@ input:-webkit-autofill:focus {
         <div class="hero-countdown" id="cdWrap" aria-live="polite" aria-atomic="true"></div>
         <div class="hero-eyebrow">
           <span class="hero-eyebrow-tag">Pre-Order Open</span>
-          <span class="hero-eyebrow-sub">Handcrafted · Cold-Chain Fresh · WCAG 2.1 AA</span>
+          <span class="hero-eyebrow-sub">Gentle care · Cold-chain fresh · At your pace</span>
         </div>
         <h1 class="hero-hl">
-          Flowers, <em>not</em><br>
-          <span class="g-txt" id="typer" aria-live="polite">Birthdays</span>.<br>
-          Moments delivered.
+          A small gesture,<br>
+          <span class="g-txt" id="typer" aria-live="polite">a quiet comfort</span>.<br>
+          <em>Whenever you're ready.</em>
         </h1>
-        <p class="hero-sub">Bouquets handmade by DA-BPI registered Benguet growers, preserved through UC Davis cold-chain protocol, scheduled to the hour. Built on WCAG 2.1 AA so every recipient, in every language, gets the moment you planned.</p>
+        <p class="hero-sub">You don't need a reason to send flowers. Handcrafted by Benguet growers, delivered gently to the door — no rush, no pressure. Just a moment of warmth, whenever it feels right.</p>
         <div class="hero-cta">
-          <a href="#shop" class="btn btn-p btn-lg">Start Pre-Order →</a>
-          <button class="btn btn-g btn-lg" id="profilingBtn" aria-haspopup="dialog" aria-controls="profMod">Find Your Style</button>
+          <a href="#shop" class="btn btn-p btn-lg">Browse Gently →</a>
+          <button class="btn btn-g btn-lg" id="profilingBtn" aria-haspopup="dialog" aria-controls="profMod">Find What Feels Right</button>
         </div>
         <div class="trust">
-          <span class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Photo proof on delivery</span>
-          <span class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Evening slots available</span>
-          <span class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Free fix if not perfect</span>
+          <span class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Photo confirmation</span>
+          <span class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Flexible delivery windows</span>
+          <span class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> We'll make it right</span>
         </div>
       </div>
 
       <div class="hero-cards" id="heroCards" aria-label="Featured picks preview">
         <article class="h-card hc-1" id="hc1">
           <div class="hc-pulse" aria-hidden="true"></div>
-          <img class="h-card-img" src="https://images.unsplash.com/photo-1509937528035-ad76254b0356?w=440&q=80&auto=format&fit=crop" alt="Hand-tied rose bouquet with silk wrap" loading="lazy" decoding="async" width="220" height="110">
+          <img class="h-card-img" src="https://picsum.photos/seed/hc1/440/240" alt="Gentle rose bouquet with silk wrap" loading="lazy" decoding="async" width="220" height="110">
           <div class="hc-name">Crimson Vow</div>
           <div class="hc-price">₱2,480</div>
-          <div class="hc-meta" id="hcLive">Pre-order lead time: 48h</div>
+          <div class="hc-meta" id="hcLive">Ready within 48 hours</div>
         </article>
         <article class="h-card hc-2" id="hc2">
           <div class="hc-tag">Today's Pick</div>
-          <img class="h-card-img" src="https://images.unsplash.com/photo-1487070183336-b863922373d4?w=420&q=80&auto=format&fit=crop" alt="Pastel wildflower arrangement" loading="lazy" decoding="async" width="200" height="110">
+          <img class="h-card-img" src="https://picsum.photos/seed/hc2/420/240" alt="Soft pastel wildflower arrangement" loading="lazy" decoding="async" width="200" height="110">
           <div class="hc-sub">Sunrise in Baguio</div>
-          <div class="hc-status">Cold-chain ready</div>
+          <div class="hc-status">Fresh and waiting</div>
         </article>
         <article class="h-card hc-3" id="hc3">
-          <div class="hc-tag">Corporate</div>
-          <img class="h-card-img" src="https://images.unsplash.com/photo-1519378058457-4c29a0a2efac?w=420&q=80&auto=format&fit=crop" alt="Branded corporate gift box with flowers" loading="lazy" decoding="async" width="210" height="110">
-          <div class="hc-sub">Batch delivery · 40+ units</div>
-          <div class="hc-status">Scheduled to the hour</div>
+          <div class="hc-tag">For Teams</div>
+          <img class="h-card-img" src="https://picsum.photos/seed/hc3/420/240" alt="Elegant corporate flower arrangement" loading="lazy" decoding="async" width="210" height="110">
+          <div class="hc-sub">Thoughtful batch orders</div>
+          <div class="hc-status">At your schedule</div>
         </article>
       </div>
     </div>
@@ -879,23 +886,23 @@ input:-webkit-autofill:focus {
 
 <div class="p5-sec-div" aria-hidden="true"></div>
 
-<section class="corp-sec sec-pad" id="corp" aria-label="Corporate partnerships">
+<section class="corp-sec sec-pad" id="corp" aria-label="For teams and groups">
   <div class="con">
     <div class="corp-grid">
       <div class="corp-photo">
-        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=900&q=85&auto=format&fit=crop" alt="Branded corporate gift boxes with flowers arranged on a table" loading="lazy" decoding="async" width="900" height="675">
+        <img src="https://picsum.photos/seed/corp1/900/675" alt="Beautifully arranged flowers for corporate gifting" loading="lazy" decoding="async" width="900" height="675">
       </div>
       <div>
-        <span class="tag tag-a">Corporate</span>
-        <h2 class="sec-title" style="margin-bottom:16px">Your team. Their moments.<br>One invoice.</h2>
-        <p class="sec-sub" style="max-width:none;margin-bottom:18px">Bulk orders for launches, conferences, client gifting, team birthdays. Your brand on the wrap, our logistics behind the calendar.</p>
+        <span class="tag tag-a">For Teams</span>
+        <h2 class="sec-title" style="margin-bottom:16px">Care for your people,<br>one delivery at a time.</h2>
+        <p class="sec-sub" style="max-width:none;margin-bottom:18px">Thoughtful arrangements for team milestones, client appreciation, or simply brightening someone's day. We handle the details — you share the warmth.</p>
         <ul class="corp-list">
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Branded silk wraps and printed tags at batch rates from 10 units</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Scheduled recurring delivery (weekly, monthly, quarterly)</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Single invoice, CSV export, PO-compatible billing</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Dedicated coordinator via email + Viber for PH orders</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Custom wraps and personal notes from 10 units</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Flexible scheduling — weekly, monthly, or as-needed</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Simple billing — one invoice, CSV export</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>A coordinator who listens — email or Viber</li>
         </ul>
-        <a href="mailto:corporate@bloom.ph?subject=Corporate%20inquiry" class="btn btn-p btn-lg">Talk to a coordinator →</a>
+        <a href="mailto:corporate@bloom.ph?subject=Corporate%20inquiry" class="btn btn-p btn-lg">Reach out gently →</a>
       </div>
     </div>
   </div>
@@ -1116,24 +1123,24 @@ input:-webkit-autofill:focus {
   function escapeHtml(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); }
   function money(n) { return '₱' + Number(n || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 
-  var FALLBACK_IMG = 'https://images.unsplash.com/photo-1490750967868-88df5691cc48?w=600&q=80&auto=format&fit=crop';
+  var FALLBACK_IMG = 'https://picsum.photos/seed/fb/600/400';
   var FALLBACK_CAT_IMG = {
-    bouquets: 'https://images.unsplash.com/photo-1509937528035-ad76254b0356?w=600&q=80&auto=format&fit=crop',
-    arrangements: 'https://images.unsplash.com/photo-1487070183336-b863922373d4?w=600&q=80&auto=format&fit=crop',
-    fresh: 'https://images.unsplash.com/photo-1455659817273-f96807779a8a?w=600&q=80&auto=format&fit=crop',
-    dried: 'https://images.unsplash.com/photo-1549637642-90187f64f420?w=600&q=80&auto=format&fit=crop',
-    corporate: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80&auto=format&fit=crop'
+    bouquets: 'https://picsum.photos/seed/cat1/600/400',
+    arrangements: 'https://picsum.photos/seed/cat2/600/400',
+    fresh: 'https://picsum.photos/seed/cat3/600/400',
+    dried: 'https://picsum.photos/seed/cat4/600/400',
+    corporate: 'https://picsum.photos/seed/cat5/600/400'
   };
 
   var FALLBACK_PRODUCTS = [
-    { id: 'fb-1', name: 'Crimson Vow', category: 'bouquets', base_price: 2480, rating: 4.9, images: ['https://images.unsplash.com/photo-1509937528035-ad76254b0356?w=600&q=80&auto=format&fit=crop'], badge: 'Signature' },
-    { id: 'fb-2', name: 'Sunrise in Baguio', category: 'arrangements', base_price: 3200, rating: 4.8, images: ['https://images.unsplash.com/photo-1487070183336-b863922373d4?w=600&q=80&auto=format&fit=crop'], badge: 'Bestseller' },
-    { id: 'fb-3', name: 'La Trinidad Garden', category: 'fresh', base_price: 1890, rating: 4.9, images: ['https://images.unsplash.com/photo-1455659817273-f96807779a8a?w=600&q=80&auto=format&fit=crop'] },
-    { id: 'fb-4', name: 'Everlasting Cove', category: 'dried', base_price: 2150, rating: 4.7, images: ['https://images.unsplash.com/photo-1549637642-90187f64f420?w=600&q=80&auto=format&fit=crop'] },
-    { id: 'fb-5', name: 'Midnight Orchid', category: 'bouquets', base_price: 3490, rating: 4.9, images: ['https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=600&q=80&auto=format&fit=crop'], badge: 'Premium' },
-    { id: 'fb-6', name: 'Launch Day Kit', category: 'corporate', base_price: 4200, rating: 4.8, images: ['https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80&auto=format&fit=crop'], badge: 'Corporate' },
-    { id: 'fb-7', name: 'Pampanga Peony', category: 'arrangements', base_price: 2780, rating: 4.8, images: ['https://images.unsplash.com/photo-1558693168-c370615b54e0?w=600&q=80&auto=format&fit=crop'] },
-    { id: 'fb-8', name: 'Saffron & Sage', category: 'dried', base_price: 1650, rating: 4.6, images: ['https://images.unsplash.com/photo-1444717706522-16e2c0b2cf22?w=600&q=80&auto=format&fit=crop'] }
+    { id: 'fb-1', name: 'Crimson Vow', category: 'bouquets', base_price: 2480, rating: 4.9, images: ['https://picsum.photos/seed/p1/600/400'], badge: 'Signature' },
+    { id: 'fb-2', name: 'Sunrise in Baguio', category: 'arrangements', base_price: 3200, rating: 4.8, images: ['https://picsum.photos/seed/p2/600/400'], badge: 'Bestseller' },
+    { id: 'fb-3', name: 'La Trinidad Garden', category: 'fresh', base_price: 1890, rating: 4.9, images: ['https://picsum.photos/seed/p3/600/400'] },
+    { id: 'fb-4', name: 'Everlasting Cove', category: 'dried', base_price: 2150, rating: 4.7, images: ['https://picsum.photos/seed/p4/600/400'] },
+    { id: 'fb-5', name: 'Midnight Orchid', category: 'bouquets', base_price: 3490, rating: 4.9, images: ['https://picsum.photos/seed/p5/600/400'], badge: 'Premium' },
+    { id: 'fb-6', name: 'Thoughtful Kit', category: 'corporate', base_price: 4200, rating: 4.8, images: ['https://picsum.photos/seed/p6/600/400'], badge: 'For Teams' },
+    { id: 'fb-7', name: 'Pampanga Peony', category: 'arrangements', base_price: 2780, rating: 4.8, images: ['https://picsum.photos/seed/p7/600/400'] },
+    { id: 'fb-8', name: 'Saffron & Sage', category: 'dried', base_price: 1650, rating: 4.6, images: ['https://picsum.photos/seed/p8/600/400'] }
   ];
 
   var FEATURED_REVIEWS = [
@@ -1316,7 +1323,7 @@ input:-webkit-autofill:focus {
   function initTyper() {
     var el = qs('#typer');
     if (!el) return;
-    var words = ['Birthdays', 'Anniversaries', 'Weddings', 'Just Because', 'Launch Days', 'Thank Yous'];
+    var words = ['a quiet comfort', 'a gentle reminder', 'a little warmth', 'a soft thought', 'a peaceful moment', 'no pressure at all'];
     var i = 0;
     function swap() {
       el.style.opacity = '0';
@@ -1330,7 +1337,7 @@ input:-webkit-autofill:focus {
       }, 320);
     }
     el.textContent = words[0];
-    if (!reducedMotion()) setInterval(swap, 2800);
+    if (!reducedMotion()) setInterval(swap, 3500); // Slowed down from 2800 for a calmer pace
   }
 
   function initCountdown() {
