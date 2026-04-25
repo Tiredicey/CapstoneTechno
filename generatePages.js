@@ -19,7 +19,7 @@ try {
 
   let footerPart = indexHtml.substring(footerStartIndex);
 
-
+ 
 
   const pages = {
     'about.html': `
