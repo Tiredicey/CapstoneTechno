@@ -676,13 +676,19 @@ async function loadContent() {
     const fields={
       contentHeroBadge:c.heroBadge,
       contentHeroHeadline:c.heroHeadline,
-      contentHeroSub:c.heroSub,
+      contentHeroSub:c.hero_subtitle || c.heroSub,
       contentFreeShip:c.freeShipThreshold,
       contentBanner:c.banner,
       contentCorpHeadline:c.corpHeadline,
       contentFooter:c.footerTagline,
       contentIG:c.instagramUrl,
-      contentFB:c.facebookUrl
+      contentFB:c.facebookUrl,
+      contentSubWeeklyName:c.sub_weekly_name,
+      contentSubWeeklyPrice:c.sub_weekly_price,
+      contentSubBiweeklyName:c.sub_biweekly_name,
+      contentSubBiweeklyPrice:c.sub_biweekly_price,
+      contentSubMonthlyName:c.sub_monthly_name,
+      contentSubMonthlyPrice:c.sub_monthly_price
     };
     Object.entries(fields).forEach(([id,val])=>{
       const el=document.getElementById(id);
@@ -697,14 +703,20 @@ async function saveContent() {
   const payload={
     heroBadge:document.getElementById('contentHeroBadge')?.value.trim(),
     heroHeadline:document.getElementById('contentHeroHeadline')?.value.trim(),
-    heroSub:document.getElementById('contentHeroSub')?.value.trim(),
+    hero_subtitle:document.getElementById('contentHeroSub')?.value.trim(),
     freeShipThreshold:parseFloat(document.getElementById('contentFreeShip')?.value)||4350,
     banner:document.getElementById('contentBanner')?.value.trim(),
     bannerActive:document.getElementById('contentBannerActive')?.checked||false,
     corpHeadline:document.getElementById('contentCorpHeadline')?.value.trim(),
     footerTagline:document.getElementById('contentFooter')?.value.trim(),
     instagramUrl:document.getElementById('contentIG')?.value.trim(),
-    facebookUrl:document.getElementById('contentFB')?.value.trim()
+    facebookUrl:document.getElementById('contentFB')?.value.trim(),
+    sub_weekly_name:document.getElementById('contentSubWeeklyName')?.value.trim(),
+    sub_weekly_price:parseFloat(document.getElementById('contentSubWeeklyPrice')?.value)||1499,
+    sub_biweekly_name:document.getElementById('contentSubBiweeklyName')?.value.trim(),
+    sub_biweekly_price:parseFloat(document.getElementById('contentSubBiweeklyPrice')?.value)||2299,
+    sub_monthly_name:document.getElementById('contentSubMonthlyName')?.value.trim(),
+    sub_monthly_price:parseFloat(document.getElementById('contentSubMonthlyPrice')?.value)||4299
   };
   const btn=document.getElementById('saveContent');
   btn.disabled=true; btn.textContent='Saving...';
