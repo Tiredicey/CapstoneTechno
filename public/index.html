@@ -804,7 +804,7 @@ input:-webkit-autofill:focus {
         <span id="langFlag" aria-hidden="true">🇺🇸</span>
         <span id="langLbl">EN</span>
       </button>
-      <ul id="langDd" class="lang-dd" role="listbox" aria-hidden="true">
+      <ul id="langDd" class="lang-dd" role="listbox" aria-hidden="true" inert>
         <li><button class="lang-opt" role="option" data-lang="en" data-flag="🇺🇸" data-lbl="EN"><span aria-hidden="true">🇺🇸</span> English</button></li>
         <li><button class="lang-opt" role="option" data-lang="fil" data-flag="🇵🇭" data-lbl="PH"><span aria-hidden="true">🇵🇭</span> Filipino</button></li>
         <li><button class="lang-opt" role="option" data-lang="es" data-flag="🇪🇸" data-lbl="ES"><span aria-hidden="true">🇪🇸</span> Español</button></li>
@@ -1769,9 +1769,10 @@ input:-webkit-autofill:focus {
       e.stopPropagation();
       var open = dd.classList.toggle('open');
       dd.setAttribute('aria-hidden', String(!open));
+      if (open) dd.removeAttribute('inert'); else dd.setAttribute('inert', '');
       btn.setAttribute('aria-expanded', String(open));
     });
-    on(document, 'click', function () { dd.classList.remove('open'); dd.setAttribute('aria-hidden', 'true'); btn.setAttribute('aria-expanded', 'false'); });
+    on(document, 'click', function () { dd.classList.remove('open'); dd.setAttribute('aria-hidden', 'true'); dd.setAttribute('inert', ''); btn.setAttribute('aria-expanded', 'false'); });
     qsa('.lang-opt', dd).forEach(function (o) {
       on(o, 'click', function (e) {
         e.stopPropagation();
@@ -1779,6 +1780,7 @@ input:-webkit-autofill:focus {
         lbl.textContent = o.dataset.lbl;
         dd.classList.remove('open');
         dd.setAttribute('aria-hidden', 'true');
+        dd.setAttribute('inert', '');
         btn.setAttribute('aria-expanded', 'false');
         if (Store && Store.setLang) Store.setLang(o.dataset.lang);
         if (window.I18n) I18n.setLang(o.dataset.lang);
