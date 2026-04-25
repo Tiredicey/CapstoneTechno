@@ -9,7 +9,7 @@
     "build": "npm install"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": "20.x"
   },
   "dependencies": {
     "@graphql-tools/schema": "^10.0.31",
