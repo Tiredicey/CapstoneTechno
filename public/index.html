@@ -692,20 +692,20 @@ input:-webkit-autofill:focus {
       <div class="hero-cards" id="heroCards" aria-label="Featured picks preview">
         <article class="h-card hc-1" id="hc1">
           <div class="hc-pulse" aria-hidden="true"></div>
-          <img class="h-card-img" src="/img/hero-flowers.jpg" alt="Gentle rose bouquet with silk wrap" loading="lazy" decoding="async" width="220" height="110">
+          <img class="h-card-img" src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=440&h=240&fit=crop&q=80" alt="Dark red roses bouquet" loading="lazy" decoding="async" width="220" height="110">
           <div class="hc-name">Crimson Vow</div>
           <div class="hc-price">₱2,480</div>
           <div class="hc-meta" id="hcLive">Ready within 48 hours</div>
         </article>
         <article class="h-card hc-2" id="hc2">
           <div class="hc-tag">Today's Pick</div>
-          <img class="h-card-img" src="/img/hero-bokeh.jpg" alt="Soft pastel wildflower arrangement" loading="lazy" decoding="async" width="200" height="110">
-          <div class="hc-sub">Sunrise in Baguio</div>
+          <img class="h-card-img" src="https://images.unsplash.com/photo-1550060594-d192131b0b53?w=420&h=240&fit=crop&q=80" alt="Neon red floral lighting" loading="lazy" decoding="async" width="200" height="110">
+          <div class="hc-sub">Neon Blossom</div>
           <div class="hc-status">Fresh and waiting</div>
         </article>
         <article class="h-card hc-3" id="hc3">
           <div class="hc-tag">For Teams</div>
-          <img class="h-card-img" src="/img/footer-petals.jpg" alt="Elegant corporate flower arrangement" loading="lazy" decoding="async" width="210" height="110">
+          <img class="h-card-img" src="https://images.unsplash.com/photo-1589134707639-550974bc2ebf?w=420&h=240&fit=crop&q=80" alt="Elegant dark corporate bouquet" loading="lazy" decoding="async" width="210" height="110">
           <div class="hc-sub">Thoughtful batch orders</div>
           <div class="hc-status">At your schedule</div>
         </article>
@@ -890,7 +890,7 @@ input:-webkit-autofill:focus {
   <div class="con">
     <div class="corp-grid">
       <div class="corp-photo">
-        <img src="/img/hero-bokeh.jpg" alt="Beautifully arranged flowers for corporate gifting" loading="lazy" decoding="async" width="900" height="675">
+        <img src="https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=900&h=675&fit=crop&q=80" alt="Beautifully arranged red flowers for corporate gifting" loading="lazy" decoding="async" width="900" height="675">
       </div>
       <div>
         <span class="tag tag-a">For Teams</span>
@@ -1123,24 +1123,24 @@ input:-webkit-autofill:focus {
   function escapeHtml(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); }
   function money(n) { return '₱' + Number(n || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 
-  var FALLBACK_IMG = '/img/hero-flowers.jpg';
+  var FALLBACK_IMG = 'https://images.unsplash.com/photo-1508610048659-a06b669e3321?w=600&h=400&fit=crop&q=80';
   var FALLBACK_CAT_IMG = {
-    bouquets: '/img/hero-flowers.jpg',
-    arrangements: '/img/hero-bokeh.jpg',
-    fresh: '/img/footer-petals.jpg',
-    dried: '/img/hero-flowers.jpg',
-    corporate: '/img/hero-bokeh.jpg'
+    bouquets: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&h=400&fit=crop&q=80',
+    arrangements: 'https://images.unsplash.com/photo-1562690868-60bbe7293e94?w=600&h=400&fit=crop&q=80',
+    fresh: 'https://images.unsplash.com/photo-1550060594-d192131b0b53?w=600&h=400&fit=crop&q=80',
+    dried: 'https://images.unsplash.com/photo-1614031679090-5b5cb3c8da85?w=600&h=400&fit=crop&q=80',
+    corporate: 'https://images.unsplash.com/photo-1589134707639-550974bc2ebf?w=600&h=400&fit=crop&q=80'
   };
 
   var FALLBACK_PRODUCTS = [
-    { id: 'fb-1', name: 'Crimson Vow', category: 'bouquets', base_price: 2480, rating: 4.9, images: ['https://images.unsplash.com/photo-1455659817273-f96807779a8a?w=600&h=400&fit=crop&q=80'], badge: 'Signature' },
-    { id: 'fb-2', name: 'Sunrise in Baguio', category: 'arrangements', base_price: 3200, rating: 4.8, images: ['https://images.unsplash.com/photo-1490750967868-88df5691cc48?w=600&h=400&fit=crop&q=80'], badge: 'Bestseller' },
-    { id: 'fb-3', name: 'La Trinidad Garden', category: 'fresh', base_price: 1890, rating: 4.9, images: ['https://images.unsplash.com/photo-1468327768560-75b778cbb551?w=600&h=400&fit=crop&q=80'] },
-    { id: 'fb-4', name: 'Everlasting Cove', category: 'dried', base_price: 2150, rating: 4.7, images: ['https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=600&h=400&fit=crop&q=80'] },
-    { id: 'fb-5', name: 'Midnight Orchid', category: 'bouquets', base_price: 3490, rating: 4.9, images: ['https://images.unsplash.com/photo-1566873535350-a3f5d4a804b7?w=600&h=400&fit=crop&q=80'], badge: 'Premium' },
-    { id: 'fb-6', name: 'Thoughtful Kit', category: 'corporate', base_price: 4200, rating: 4.8, images: ['https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=600&h=400&fit=crop&q=80'], badge: 'For Teams' },
-    { id: 'fb-7', name: 'Pampanga Peony', category: 'arrangements', base_price: 2780, rating: 4.8, images: ['https://images.unsplash.com/photo-1520763185298-1b434c919102?w=600&h=400&fit=crop&q=80'] },
-    { id: 'fb-8', name: 'Saffron & Sage', category: 'dried', base_price: 1650, rating: 4.6, images: ['https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=600&h=400&fit=crop&q=80'] }
+    { id: 'fb-1', name: 'Crimson Vow', category: 'bouquets', base_price: 2480, rating: 4.9, images: ['https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&h=400&fit=crop&q=80'], badge: 'Signature' },
+    { id: 'fb-2', name: 'Neon Blossom', category: 'arrangements', base_price: 3200, rating: 4.8, images: ['https://images.unsplash.com/photo-1550060594-d192131b0b53?w=600&h=400&fit=crop&q=80'], badge: 'Bestseller' },
+    { id: 'fb-3', name: 'Velvet Midnight', category: 'fresh', base_price: 1890, rating: 4.9, images: ['https://images.unsplash.com/photo-1508610048659-a06b669e3321?w=600&h=400&fit=crop&q=80'] },
+    { id: 'fb-4', name: 'Obsidian Rose', category: 'dried', base_price: 2150, rating: 4.7, images: ['https://images.unsplash.com/photo-1589134707639-550974bc2ebf?w=600&h=400&fit=crop&q=80'] },
+    { id: 'fb-5', name: 'Phantom Orchid', category: 'bouquets', base_price: 3490, rating: 4.9, images: ['https://images.unsplash.com/photo-1614031679090-5b5cb3c8da85?w=600&h=400&fit=crop&q=80'], badge: 'Premium' },
+    { id: 'fb-6', name: 'Executive Crimson', category: 'corporate', base_price: 4200, rating: 4.8, images: ['https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=600&h=400&fit=crop&q=80'], badge: 'For Teams' },
+    { id: 'fb-7', name: 'Rebel Spark', category: 'arrangements', base_price: 2780, rating: 4.8, images: ['https://images.unsplash.com/photo-1549414002-3855a80b1e4e?w=600&h=400&fit=crop&q=80'] },
+    { id: 'fb-8', name: 'Shadow Garden', category: 'dried', base_price: 1650, rating: 4.6, images: ['https://images.unsplash.com/photo-1596434452077-8cba9a613271?w=600&h=400&fit=crop&q=80'] }
   ];
 
   var FEATURED_REVIEWS = [
