@@ -5,7 +5,7 @@ function replaceImages(filePath) {
   try {
     let content = fs.readFileSync(filePath, 'utf-8');
     
-    // Replace all Unsplash URLs with the local image asset
+
     const regex = /https:\/\/images\.unsplash\.com\/photo-[a-zA-Z0-9-]+\?[a-zA-Z0-9=&]+/g;
     
     const newContent = content.replace(regex, '/img/hero-flowers.jpg');
