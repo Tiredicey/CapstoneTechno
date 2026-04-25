@@ -2,14 +2,63 @@
   'use strict';
   if (window.__BloomAuth) return;
 
-  function openModal() {
-    var m = document.getElementById('authModal');
-    if (m) m.classList.add('active');
+  var _previousFocus = null;
+
+  function trapFocus(container) {
+    var focusable = container.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),textarea:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])');
+    if (!focusable.length) return;
+    var first = focusable[0];
+    var last = focusable[focusable.length - 1];
+    container._trapHandler = function (e) {
+      if (e.key !== 'Tab') return;
+      if (e.shiftKey) {
+        if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+      } else {
+        if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    };
+    container.addEventListener('keydown', container._trapHandler);
+    first.focus();
   }
 
-  function closeModal() {
-    var m = document.getElementById('authModal');
-    if (m) m.classList.remove('active');
+  function releaseFocus(container) {
+    if (container._trapHandler) {
+      container.removeEventListener('keydown', container._trapHandler);
+      delete container._trapHandler;
+    }
+    if (_previousFocus && _previousFocus.focus) {
+      _previousFocus.focus();
+      _previousFocus = null;
+    }
+  }
+
+  function openModal(modalId) {
+    var id = modalId || 'authMod';
+    var m = document.getElementById(id);
+    if (!m) return;
+    _previousFocus = document.activeElement;
+    m.classList.add('active');
+    m.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+    var inner = m.querySelector('.modal');
+    if (inner) trapFocus(inner);
+    m._escHandler = function (e) { if (e.key === 'Escape') closeModal(id); };
+    document.addEventListener('keydown', m._escHandler);
+  }
+
+  function closeModal(modalId) {
+    var id = modalId || 'authMod';
+    var m = document.getElementById(id);
+    if (!m) return;
+    m.classList.remove('active');
+    m.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+    var inner = m.querySelector('.modal');
+    if (inner) releaseFocus(inner);
+    if (m._escHandler) {
+      document.removeEventListener('keydown', m._escHandler);
+      delete m._escHandler;
+    }
   }
 
   function setAuthBtn(user) {
@@ -22,49 +71,53 @@
       };
     } else {
       btn.textContent = 'Sign In';
-      btn.onclick = openModal;
+      btn.onclick = function () { openModal('authMod'); };
     }
   }
 
   async function checkAuth() {
-    var token = localStorage.getItem('bloom_token');
+    var token = (window.Store && window.Store.get('token')) || localStorage.getItem('bloom_token');
     if (!token) { setAuthBtn(null); return; }
     try {
       var user = await Api.get('/auth/me');
       Store.set('user', user);
       setAuthBtn(user);
     } catch {
-      localStorage.removeItem('bloom_token');
+      Store.set('token', null);
       Store.set('user', null);
       setAuthBtn(null);
     }
   }
 
   function bindAuthTabs() {
-    document.querySelectorAll('.auth-tab').forEach(function (tab) {
+    var tabs = document.querySelectorAll('.a-tab');
+    tabs.forEach(function (tab) {
       tab.addEventListener('click', function () {
-        document.querySelectorAll('.auth-tab').forEach(function (t) {
+        tabs.forEach(function (t) {
           t.classList.remove('active');
-          t.style.background = 'transparent';
-          t.style.color = 'rgba(255,255,255,0.5)';
+          t.setAttribute('aria-selected', 'false');
         });
         tab.classList.add('active');
-        tab.style.background = 'rgba(232,67,147,0.15)';
-        tab.style.color = '#e879a0';
-        var target = tab.dataset.tab;
-        document.getElementById('loginForm').style.display = target === 'login' ? 'block' : 'none';
-        document.getElementById('registerForm').style.display = target === 'register' ? 'block' : 'none';
-        document.getElementById('guestForm').style.display = target === 'guest' ? 'block' : 'none';
+        tab.setAttribute('aria-selected', 'true');
+        var target = tab.dataset.ftab;
+        var loginF = document.getElementById('loginF');
+        var registerF = document.getElementById('registerF');
+        var guestF = document.getElementById('guestF');
+        if (loginF) loginF.style.display = target === 'login' ? 'block' : 'none';
+        if (registerF) registerF.style.display = target === 'register' ? 'block' : 'none';
+        if (guestF) guestF.style.display = target === 'guest' ? 'block' : 'none';
       });
     });
   }
 
   function bindLogin() {
-    var btn = document.getElementById('loginSubmit');
+    var btn = document.getElementById('lSubmit');
     if (!btn) return;
     btn.addEventListener('click', async function () {
-      var email = document.getElementById('loginEmail')?.value.trim();
-      var password = document.getElementById('loginPassword')?.value;
+      var emailEl = document.getElementById('lEmail');
+      var passEl = document.getElementById('lPass');
+      var email = emailEl ? emailEl.value.trim() : '';
+      var password = passEl ? passEl.value : '';
       if (!email || !password) {
         showAuthToast('Please enter email and password', 'error');
         return;
@@ -73,10 +126,10 @@
       btn.textContent = 'Signing in...';
       try {
         var res = await Api.post('/auth/login', { email: email, password: password });
-        localStorage.setItem('bloom_token', res.token);
+        if (res.token) Store.set('token', res.token);
         Store.set('user', res.user);
         setAuthBtn(res.user);
-        closeModal();
+        closeModal('authMod');
         showAuthToast('Welcome back, ' + (res.user.name || 'friend') + '! 🌸', 'success');
       } catch (e) {
         showAuthToast(e.message || 'Login failed', 'error');
@@ -88,12 +141,15 @@
   }
 
   function bindRegister() {
-    var btn = document.getElementById('registerSubmit');
+    var btn = document.getElementById('rSubmit');
     if (!btn) return;
     btn.addEventListener('click', async function () {
-      var name = document.getElementById('regName')?.value.trim();
-      var email = document.getElementById('regEmail')?.value.trim();
-      var password = document.getElementById('regPassword')?.value;
+      var nameEl = document.getElementById('rName');
+      var emailEl = document.getElementById('rEmail');
+      var passEl = document.getElementById('rPass');
+      var name = nameEl ? nameEl.value.trim() : '';
+      var email = emailEl ? emailEl.value.trim() : '';
+      var password = passEl ? passEl.value : '';
       if (!name || !email || !password) {
         showAuthToast('Please fill all fields', 'error');
         return;
@@ -106,10 +162,10 @@
       btn.textContent = 'Creating account...';
       try {
         var res = await Api.post('/auth/register', { name: name, email: email, password: password });
-        localStorage.setItem('bloom_token', res.token);
+        if (res.token) Store.set('token', res.token);
         Store.set('user', res.user);
         setAuthBtn(res.user);
-        closeModal();
+        closeModal('authMod');
         showAuthToast('Welcome to Bloom, ' + (res.user.name || 'friend') + '! 🌸', 'success');
       } catch (e) {
         showAuthToast(e.message || 'Registration failed', 'error');
@@ -121,10 +177,10 @@
   }
 
   function bindGuest() {
-    var btn = document.getElementById('guestSubmit');
+    var btn = document.getElementById('gSubmit');
     if (!btn) return;
     btn.addEventListener('click', function () {
-      closeModal();
+      closeModal('authMod');
       showAuthToast('Continuing as guest 👤', 'info');
     });
   }
@@ -140,27 +196,78 @@
       (type === 'success' ? '#22c55e' : type === 'error' ? '#ef4444' : '#6366f1') +
       ';color:white;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,0.3);';
     document.body.appendChild(t);
-    setTimeout(function () { t.remove(); }, 3500);
+    setTimeout(function () { if (t.parentNode) t.remove(); }, 3500);
+  }
+
+  function bindPasswordToggles() {
+    document.querySelectorAll('.pw-tog').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var target = document.getElementById(btn.dataset.for);
+        if (!target) return;
+        var isPassword = target.type === 'password';
+        target.type = isPassword ? 'text' : 'password';
+        btn.textContent = isPassword ? 'hide' : 'show';
+      });
+    });
+  }
+
+  function bindPasswordStrength() {
+    var passInput = document.getElementById('rPass');
+    var fill = document.getElementById('strFill');
+    var lbl = document.getElementById('strLbl');
+    if (!passInput || !fill) return;
+    passInput.addEventListener('input', function () {
+      var v = passInput.value;
+      var score = 0;
+      if (v.length >= 8) score++;
+      if (v.length >= 12) score++;
+      if (/[A-Z]/.test(v)) score++;
+      if (/[0-9]/.test(v)) score++;
+      if (/[^A-Za-z0-9]/.test(v)) score++;
+      var pct = Math.min(score * 20, 100);
+      var color = pct <= 20 ? '#ef4444' : pct <= 40 ? '#f97316' : pct <= 60 ? '#eab308' : pct <= 80 ? '#22c55e' : '#10b981';
+      fill.style.width = pct + '%';
+      fill.style.background = color;
+      if (lbl) lbl.textContent = pct <= 20 ? 'Weak' : pct <= 40 ? 'Fair' : pct <= 60 ? 'Good' : pct <= 80 ? 'Strong' : 'Excellent';
+    });
+  }
+
+  function bindModals() {
+    var pairs = [
+      ['authBtn', 'authMod', 'closeAuth'],
+      ['fplBtn', 'fplMod', 'closeFpl']
+    ];
+    pairs.forEach(function (p) {
+      var trigger = document.getElementById(p[0]);
+      var close = document.getElementById(p[2]);
+      var overlay = document.getElementById(p[1]);
+      if (trigger && overlay) trigger.addEventListener('click', function () { openModal(p[1]); });
+      if (close) close.addEventListener('click', function () { closeModal(p[1]); });
+      if (overlay) overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(p[1]); });
+    });
   }
 
   document.addEventListener('DOMContentLoaded', function () {
-    var authBtn = document.getElementById('authBtn');
-    if (authBtn) authBtn.addEventListener('click', openModal);
-    var closeBtn = document.getElementById('closeAuthModal');
-    if (closeBtn) closeBtn.addEventListener('click', closeModal);
-    var overlay = document.getElementById('authModal');
-    if (overlay) {
-      overlay.addEventListener('click', function (e) {
-        if (e.target === overlay) closeModal();
-      });
-    }
+    bindModals();
     bindAuthTabs();
     bindLogin();
     bindRegister();
     bindGuest();
+    bindPasswordToggles();
+    bindPasswordStrength();
     checkAuth();
+
+    if (window.Store) {
+      Store.on('user', function (user) { setAuthBtn(user); });
+    }
   });
 
-  window.__BloomAuth = { openModal: openModal, closeModal: closeModal, checkAuth: checkAuth };
+  window.__BloomAuth = {
+    openModal: openModal,
+    closeModal: closeModal,
+    checkAuth: checkAuth,
+    trapFocus: trapFocus,
+    releaseFocus: releaseFocus
+  };
 
 })();
