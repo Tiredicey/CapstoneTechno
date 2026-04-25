@@ -10,19 +10,15 @@ const indexPath = path.join(publicDir, 'index.html');
 try {
   const indexHtml = fs.readFileSync(indexPath, 'utf-8');
 
-  // Extract parts of index.html
-  // Header part up to the closing </nav>
+ 
   const navEndIndex = indexHtml.indexOf('</nav>') + 6;
   const headerPart = indexHtml.substring(0, navEndIndex);
 
-  // Footer part starting from <footer class="bloom-foot">
+
   const footerStartIndex = indexHtml.indexOf('<footer class="bloom-foot"');
-  // But wait, there is also the bottom-sheet modals, we should probably grab from footer to the end, EXCEPT the hero specific scripts.
-  // Actually, we can grab the footer and everything after it.
+ 
   let footerPart = indexHtml.substring(footerStartIndex);
 
-  // We should remove the hero-specific initialization from the footer script if possible, but it's fine for now, they have safety checks.
-  // Just inject our content.
 
   const pages = {
     'about.html': `
