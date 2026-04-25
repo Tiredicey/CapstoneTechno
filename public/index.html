@@ -752,6 +752,12 @@ input:-webkit-autofill:focus {
   .funnel-bar { padding: 6px 10px; }
   .funnel-step { font-size: .6rem; }
 }
+@media (max-width: 720px) {
+  #voiceNavBtn { display: none !important; }
+}
+@media (max-width: 540px) {
+  #wlBtnNav { display: none !important; }
+}
 </style>
 </head>
 <body>
@@ -810,7 +816,7 @@ input:-webkit-autofill:focus {
     <button class="btn btn-g btn-sm btn-voice-toggle" id="voiceNavBtn" aria-label="Voice navigation" aria-pressed="false" hidden>
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 1 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><path d="M12 18v4"/><path d="M8 22h8"/></svg>
     </button>
-    <button class="btn btn-g btn-sm" id="wlBtnNav" aria-label="Open wishlist" aria-haspopup="dialog" aria-controls="wlDrawer">
+    <button class="btn btn-g btn-sm cart-wrap" id="wlBtnNav" aria-label="Open wishlist" aria-haspopup="dialog" aria-controls="wlDrawer" style="position:relative">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
       <span class="cart-badge" id="wlBadge" style="display:none">0</span>
     </button>
@@ -2113,7 +2119,9 @@ input:-webkit-autofill:focus {
       '<div style="font-family:var(--fc);font-weight:900;font-size:1.8rem;color:var(--gd);margin-bottom:14px">' + money(p.base_price || p.price) + '</div>' +
       '<button class="btn btn-p" style="width:100%;justify-content:center" id="qvAdd">Add to cart →</button>' +
       '<a href="/catalog.html?id=' + encodeURIComponent(p.id) + '" class="btn btn-g" style="width:100%;justify-content:center;margin-top:8px">View full details</a>' +
-      '</div></div>';
+      '</div></div>' +
+      buildVideoMessageBlock(p.id);
+    attachVideoMessageHandlers(p.id);
     on(qs('#qvAdd'), 'click', async function () {
       var btn = this; btn.disabled = true; btn.textContent = 'Adding…';
       try {
