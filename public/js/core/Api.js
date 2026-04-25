@@ -150,7 +150,7 @@
     method = method || 'POST';
     var h = {};
     try {
-      var token = (window.Store && window.Store.get('token')) || localStorage.getItem('bloom_token');
+      var token = (window.Store && window.Store.get('token')) || localStorage.getItem('bloom_token') || localStorage.getItem('token');
       if (token) h['Authorization'] = 'Bearer ' + token;
       var session = window.Store && window.Store.get('sessionId');
       if (session) h['X-Session-Id'] = session;
