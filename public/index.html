@@ -1148,7 +1148,7 @@ input:-webkit-autofill:focus {
     </div>
     <div class="subs-grid">
       <div class="subs-photo">
-        <img src="/img/hero-bokeh.jpg" alt="A weekly delivery of fresh seasonal flowers being unwrapped on a wooden table" loading="lazy" decoding="async" width="800" height="600" onerror="this.onerror=null;this.src='/img/footer-petals.jpg'">
+        <img src="/uploads/subscriptions/biweekly.jpg" alt="A subscription delivery of fresh seasonal flowers" id="subsPreviewImg" loading="lazy" decoding="async" width="800" height="600" style="transition: opacity 0.2s ease;">
       </div>
       <div class="subs-cards" role="radiogroup" aria-label="Subscription cadence">
         <button type="button" class="subs-card" data-sub="weekly" data-price="1499" role="radio" aria-checked="false">
@@ -1468,14 +1468,16 @@ input:-webkit-autofill:focus {
   };
 
   var FALLBACK_PRODUCTS = [
-    { id: 'fb-1', name: 'Crimson Vow', category: 'bouquets', base_price: 2480, rating: 4.9, images: ['/img/hero-flowers.jpg'], badge: 'Signature' },
-    { id: 'fb-2', name: 'Neon Blossom', category: 'arrangements', base_price: 3200, rating: 4.8, images: ['/img/hero-flowers.jpg'], badge: 'Bestseller' },
-    { id: 'fb-3', name: 'Velvet Midnight', category: 'fresh', base_price: 1890, rating: 4.9, images: ['/img/hero-flowers.jpg'] },
-    { id: 'fb-4', name: 'Obsidian Rose', category: 'dried', base_price: 2150, rating: 4.7, images: ['/img/hero-flowers.jpg'] },
-    { id: 'fb-5', name: 'Phantom Orchid', category: 'bouquets', base_price: 3490, rating: 4.9, images: ['/img/hero-flowers.jpg'], badge: 'Premium' },
-    { id: 'fb-6', name: 'Executive Crimson', category: 'corporate', base_price: 4200, rating: 4.8, images: ['/img/hero-flowers.jpg'], badge: 'For Teams' },
-    { id: 'fb-7', name: 'Rebel Spark', category: 'arrangements', base_price: 2780, rating: 4.8, images: ['/img/hero-flowers.jpg'] },
-    { id: 'fb-8', name: 'Shadow Garden', category: 'dried', base_price: 1650, rating: 4.6, images: ['/img/hero-flowers.jpg'] }
+    { id: 'fb-1', name: 'Crimson Vow', category: 'bouquets', base_price: 2480, rating: 4.9, images: ['/uploads/products/crimson-vow.jpg'], badge: 'Signature' },
+    { id: 'fb-2', name: 'Neon Blossom', category: 'arrangements', base_price: 3200, rating: 4.8, images: ['/uploads/products/neon-blossom.jpg'], badge: 'Bestseller' },
+    { id: 'fb-3', name: 'Velvet Midnight', category: 'fresh', base_price: 1890, rating: 4.9, images: ['/uploads/products/velvet-midnight.jpg'] },
+    { id: 'fb-4', name: 'Obsidian Rose', category: 'dried', base_price: 2150, rating: 4.7, images: ['/uploads/products/obsidian-rose.jpg'] },
+    { id: 'fb-5', name: 'Phantom Orchid', category: 'bouquets', base_price: 3490, rating: 4.9, images: ['/uploads/products/phantom-orchid.jpg'], badge: 'Premium' },
+    { id: 'fb-6', name: 'Executive Crimson', category: 'corporate', base_price: 4200, rating: 4.8, images: ['/uploads/products/executive-crimson.jpg'], badge: 'For Teams' },
+    { id: 'fb-7', name: 'Rebel Spark', category: 'arrangements', base_price: 2780, rating: 4.8, images: ['/uploads/products/rebel-spark.jpg'] },
+    { id: 'fb-8', name: 'Shadow Garden', category: 'dried', base_price: 1650, rating: 4.6, images: ['/uploads/products/shadow-garden.jpg'] },
+    { id: 'fb-9', name: 'Tulip Festival', category: 'bouquets', base_price: 2407, rating: 4.7, images: ['/uploads/products/tulip-festival.jpg'] },
+    { id: 'fb-10', name: 'Garden Peony', category: 'arrangements', base_price: 3359, rating: 4.9, images: ['/uploads/products/garden-peony.jpg'] }
   ];
 
   var FEATURED_REVIEWS = [
@@ -2535,12 +2537,21 @@ input:-webkit-autofill:focus {
     var cards = qsa('.subs-card', sec);
     var startBtn = qs('#subsStart');
     var learnBtn = qs('#subsLearn');
+    var previewImg = qs('#subsPreviewImg');
     cards.forEach(function (c) {
       on(c, 'click', function () {
         cards.forEach(function (x) { x.classList.remove('selected'); x.setAttribute('aria-checked', 'false'); });
         c.classList.add('selected');
         c.setAttribute('aria-checked', 'true');
-        bloomTrack('subscription_select', { plan: c.dataset.sub, price: c.dataset.price });
+        var plan = c.dataset.sub;
+        if (previewImg && plan) {
+          previewImg.style.opacity = '0';
+          setTimeout(function() {
+            previewImg.src = '/uploads/subscriptions/' + plan + '.jpg';
+            previewImg.style.opacity = '1';
+          }, 200);
+        }
+        bloomTrack('subscription_select', { plan: plan, price: c.dataset.price });
       });
       on(c, 'keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); c.click(); } });
     });
