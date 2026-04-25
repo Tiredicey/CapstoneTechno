@@ -22,7 +22,6 @@
 <link rel="alternate" hreflang="x-default" href="/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://videos.pexels.com" crossorigin>
 <link rel="dns-prefetch" href="https://fonts.googleapis.com">
 <link rel="preload" href="/img/hero-flowers.jpg" as="image" fetchpriority="high">
 <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=Barlow+Condensed:ital,wght@0,700;0,900;1,700;1,900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" as="style">
@@ -405,7 +404,6 @@ canvas#ptcl { position: absolute; inset: 0; width: 100%; height: 100%; pointer-e
 .corp-photo { border-radius: var(--r); overflow: hidden; aspect-ratio: 4/3; position: relative; background: var(--gl); min-height: 320px; }
 .corp-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .corp-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, transparent 50%, rgba(230,26,26,.2) 100%); }
-.hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; opacity: .18; filter: blur(1px) saturate(.7); pointer-events: none; }
 .corp-list { list-style: none; display: flex; flex-direction: column; gap: 14px; margin-top: 24px; margin-bottom: 28px; }
 .corp-list li { display: flex; align-items: flex-start; gap: 12px; font-size: .9rem; color: rgba(255,255,255,.72); line-height: 1.6; }
 .corp-list svg { width: 18px; height: 18px; flex-shrink: 0; color: var(--mn); margin-top: 3px; }
@@ -885,11 +883,9 @@ input:-webkit-autofill:focus {
   <style>
     @keyframes ethereal { 0% { filter: hue-rotate(0deg); opacity: 0.8; } 100% { filter: hue-rotate(30deg); opacity: 1; } }
   </style>
-  <video class="hero-video" id="heroVid" autoplay muted loop playsinline preload="metadata" poster="/img/hero-bokeh.jpg" aria-hidden="true">
-    <source src="https://videos.pexels.com/video-files/3571264/3571264-hd_1920_1080_30fps.mp4" type="video/mp4" media="(min-width: 768px)">
-    <source src="https://videos.pexels.com/video-files/3571264/3571264-sd_960_540_30fps.mp4" type="video/mp4">
-  </video>
   <div class="hero-photo" id="heroPhoto" aria-hidden="true"></div>
+  <div class="hero-bokeh" id="heroBokeh" aria-hidden="true" style="position:absolute;inset:0;background-image:url('/img/hero-bokeh.jpg');background-size:cover;background-position:center;opacity:.22;mix-blend-mode:screen;filter:blur(2px) saturate(1.2);z-index:1;pointer-events:none;animation:bokehDrift 24s ease-in-out infinite alternate;"></div>
+  <style>@keyframes bokehDrift{0%{transform:scale(1.04) translate3d(0,0,0)}50%{transform:scale(1.08) translate3d(-1.5%,-1%,0)}100%{transform:scale(1.04) translate3d(1.2%,.8%,0)}}@media (prefers-reduced-motion:reduce){.hero-bokeh{animation:none!important}}</style>
   <canvas id="ptcl" aria-hidden="true"></canvas>
   <div class="hero-noise" aria-hidden="true"></div>
   <div class="hero-scanlines" aria-hidden="true"></div>
@@ -925,20 +921,20 @@ input:-webkit-autofill:focus {
       <div class="hero-cards" id="heroCards" aria-label="Featured picks preview">
         <article class="h-card hc-1" id="hc1">
           <div class="hc-pulse" aria-hidden="true"></div>
-          <img class="h-card-img" src="/img/hero-flowers.jpg" alt="Dark red roses bouquet" loading="lazy" decoding="async" width="220" height="110">
+          <img class="h-card-img" src="/img/hero-flowers.jpg" alt="Dark red roses bouquet" loading="lazy" decoding="async" width="220" height="110" onerror="this.onerror=null;this.style.display='none'">
           <div class="hc-name">Crimson Vow</div>
           <div class="hc-price">₱2,480</div>
           <div class="hc-meta" id="hcLive">Ready within 48 hours</div>
         </article>
         <article class="h-card hc-2" id="hc2">
           <div class="hc-tag">Today's Pick</div>
-          <img class="h-card-img" src="/img/hero-bokeh.jpg" alt="Neon red floral lighting bokeh" loading="lazy" decoding="async" width="200" height="110">
+          <img class="h-card-img" src="/img/hero-bokeh.jpg" alt="Neon red floral lighting bokeh" loading="lazy" decoding="async" width="200" height="110" onerror="this.onerror=null;this.src='/img/hero-flowers.jpg'">
           <div class="hc-sub">Neon Blossom</div>
           <div class="hc-status">Fresh and waiting</div>
         </article>
         <article class="h-card hc-3" id="hc3">
           <div class="hc-tag">For Teams</div>
-          <img class="h-card-img" src="/img/corp-flowers.jpg" alt="Elegant dark corporate bouquet" loading="lazy" decoding="async" width="210" height="110">
+          <img class="h-card-img" src="/img/corp-flowers.jpg" alt="Elegant dark corporate bouquet" loading="lazy" decoding="async" width="210" height="110" onerror="this.onerror=null;this.src='/img/hero-flowers.jpg'">
           <div class="hc-sub">Thoughtful batch orders</div>
           <div class="hc-status">At your schedule</div>
         </article>
@@ -1123,7 +1119,7 @@ input:-webkit-autofill:focus {
   <div class="con">
     <div class="corp-grid">
       <div class="corp-photo">
-        <img src="/img/corp-flowers.jpg" alt="Sleek matching corporate bouquets in matte black vases" loading="lazy" decoding="async" width="900" height="675">
+        <img src="/img/corp-flowers.jpg" alt="Sleek matching corporate bouquets in matte black vases" loading="lazy" decoding="async" width="900" height="675" onerror="this.onerror=null;this.src='/img/hero-flowers.jpg'">
       </div>
       <div>
         <span class="tag tag-a">For Teams</span>
@@ -1152,7 +1148,7 @@ input:-webkit-autofill:focus {
     </div>
     <div class="subs-grid">
       <div class="subs-photo">
-        <img src="/img/subscription.jpg" alt="A weekly delivery of fresh seasonal flowers being unwrapped on a wooden table" loading="lazy" decoding="async" width="800" height="600">
+        <img src="/img/subscription.jpg" alt="A weekly delivery of fresh seasonal flowers being unwrapped on a wooden table" loading="lazy" decoding="async" width="800" height="600" onerror="this.onerror=null;this.src='/img/footer-petals.jpg'">
       </div>
       <div class="subs-cards" role="radiogroup" aria-label="Subscription cadence">
         <button type="button" class="subs-card" data-sub="weekly" data-price="1499" role="radio" aria-checked="false">
