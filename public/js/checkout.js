@@ -10,6 +10,20 @@ async function init() {
   const sessionId = Store.get('sessionId');
   const token = Store.get('token');
   if (!token && !sessionId) { window.location.href = '/cart.html'; return; }
+  const urlParams = new URLSearchParams(window.location.search);
+  const subPlan = urlParams.get('subscription');
+  const subPrice = urlParams.get('price');
+  
+  if (subPlan && subPrice) {
+    cartData = {
+      items: [{ name: subPlan.charAt(0).toUpperCase() + subPlan.slice(1) + ' Subscription', qty: 1, price: Number(subPrice) }],
+      pricing: { subtotal: Number(subPrice), customizationFee: 0, deliveryFee: 0, tax: Number(subPrice) * 0.12, finalTotal: Number(subPrice) * 1.12, promoDiscount: 0 }
+    };
+    renderCheckoutSummary();
+    renderCalendar();
+    return;
+  }
+
   try {
     cartData = await Api.get('/api/cart');
     if (!cartData.items?.length) { window.location.href = '/cart.html'; return; }
