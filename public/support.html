@@ -161,22 +161,22 @@ window.addEventListener('DOMContentLoaded', () => {
       return;
     }
     faqList.innerHTML = faqs.map(f => `
-      <div class="faq-item" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:20px;margin-bottom:12px;">
+      <div class="faq-item" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:20px;margin-bottom:12px;transition:all 0.3s ease;">
         <div class="faq-question" style="font-weight:600;margin-bottom:8px;font-size:0.95rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
           ${f.question}
-          <span class="faq-arrow" style="color:rgba(255,255,255,0.4);font-size:1.2rem;flex-shrink:0;margin-left:12px;">›</span>
+          <span class="faq-arrow" style="color:rgba(255,255,255,0.4);font-size:1.2rem;flex-shrink:0;margin-left:12px;transition:transform 0.3s ease;">›</span>
         </div>
-        <div class="faq-answer" style="font-size:0.88rem;color:rgba(255,255,255,0.55);line-height:1.7;display:none;">${f.answer}</div>
+        <div class="faq-answer" style="font-size:0.88rem;color:rgba(255,255,255,0.55);line-height:1.7;">${f.answer}</div>
       </div>
     `).join('');
 
     faqList.querySelectorAll('.faq-question').forEach(el => {
       el.addEventListener('click', () => {
-        const ans = el.nextElementSibling;
+        const item = el.closest('.faq-item');
         const arrow = el.querySelector('.faq-arrow');
-        const isHidden = ans.style.display === 'none';
-        ans.style.display = isHidden ? 'block' : 'none';
-        arrow.textContent = isHidden ? '⌄' : '›';
+        const isHidden = !item.classList.contains('open');
+        item.classList.toggle('open');
+        arrow.style.transform = isHidden ? 'rotate(90deg)' : 'rotate(0deg)';
       });
     });
   }
