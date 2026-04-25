@@ -71,7 +71,7 @@ function renderProductCard(p) {
   return '<div class="product-card" data-id="' + p.id + '" style="cursor:pointer;position:relative;">' +
     '<button class="product-wishlist" aria-label="Add to wishlist" style="position:absolute;top:12px;right:12px;background:rgba(0,0,0,0.4);border:none;color:white;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;z-index:2;">♡</button>' +
     '<div style="height:200px;border-radius:12px;overflow:hidden;background:rgba(139,31,110,0.15);display:flex;align-items:center;justify-content:center;margin-bottom:12px;">' +
-    (image ? '<img src="' + image + '" style="width:100%;height:100%;object-fit:cover;" alt="' + p.name + '" loading="lazy">' : '<span style="font-size:3rem;">🌸</span>') +
+    (image ? '<img src="' + image + '" style="width:100%;height:100%;object-fit:cover;" alt="' + name + '" loading="lazy" decoding="async" onerror="this.onerror=null;this.replaceWith(Object.assign(document.createElement(&quot;span&quot;),{textContent:&quot;\u{1F338}&quot;,style:&quot;font-size:3rem&quot;}));">' : '<span style="font-size:3rem;">🌸</span>') +
     '</div>' +
     '<div style="font-weight:600;margin-bottom:4px;font-size:0.95rem;">' + name + '</div>' +
     '<div style="font-size:0.78rem;color:rgba(255,255,255,0.4);margin-bottom:8px;">' + category + '</div>' +
