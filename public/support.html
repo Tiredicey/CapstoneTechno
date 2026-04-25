@@ -162,21 +162,35 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     faqList.innerHTML = faqs.map(f => `
       <div class="faq-item" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:20px;margin-bottom:12px;">
-        <div class="faq-question" style="font-weight:600;margin-bottom:8px;font-size:0.95rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none';this.querySelector('.faq-arrow').textContent=this.nextElementSibling.style.display==='none'?'›':'⌄';">
+        <div class="faq-question" style="font-weight:600;margin-bottom:8px;font-size:0.95rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
           ${f.question}
           <span class="faq-arrow" style="color:rgba(255,255,255,0.4);font-size:1.2rem;flex-shrink:0;margin-left:12px;">›</span>
         </div>
         <div class="faq-answer" style="font-size:0.88rem;color:rgba(255,255,255,0.55);line-height:1.7;display:none;">${f.answer}</div>
       </div>
     `).join('');
+
+    faqList.querySelectorAll('.faq-question').forEach(el => {
+      el.addEventListener('click', () => {
+        const ans = el.nextElementSibling;
+        const arrow = el.querySelector('.faq-arrow');
+        const isHidden = ans.style.display === 'none';
+        ans.style.display = isHidden ? 'block' : 'none';
+        arrow.textContent = isHidden ? '⌄' : '›';
+      });
+    });
   }
 
   function buildTabs(faqs) {
     if (!tabWrap) return;
     const cats = ['all', ...new Set(faqs.map(f => f.category).filter(Boolean))];
     tabWrap.innerHTML = cats.map(c => `
-      <button onclick="filterFaqs('${c}',this)" style="padding:6px 16px;border-radius:100px;border:1.5px solid rgba(255,255,255,0.15);background:${c==='all'?'linear-gradient(135deg,#8B1F6E,#E84393)':'transparent'};color:${c==='all'?'#fff':'rgba(255,255,255,0.6)'};font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.2s;">${c.charAt(0).toUpperCase()+c.slice(1)}</button>
+      <button data-cat="${c}" style="padding:6px 16px;border-radius:100px;border:1.5px solid rgba(255,255,255,0.15);background:${c==='all'?'linear-gradient(135deg,#8B1F6E,#E84393)':'transparent'};color:${c==='all'?'#fff':'rgba(255,255,255,0.6)'};font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.2s;">${c.charAt(0).toUpperCase()+c.slice(1)}</button>
     `).join('');
+
+    tabWrap.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', () => filterFaqs(btn.dataset.cat, btn));
+    });
   }
 
   let allFaqs = [];
