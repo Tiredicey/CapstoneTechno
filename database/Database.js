@@ -239,6 +239,37 @@ class DatabaseClass {
         UPDATE notifications SET body = message WHERE body IS NULL AND message IS NOT NULL
       `).run();
     } catch {}
+
+    try {
+      const localImageMap = {
+        prod_1:  '/uploads/products/crimson-vow.jpg',
+        prod_2:  '/uploads/products/neon-blossom.jpg',
+        prod_3:  '/uploads/products/velvet-midnight.jpg',
+        prod_4:  '/uploads/products/obsidian-rose.jpg',
+        prod_5:  '/uploads/products/phantom-orchid.jpg',
+        prod_6:  '/uploads/products/executive-crimson.jpg',
+        prod_7:  '/uploads/products/rebel-spark.jpg',
+        prod_8:  '/uploads/products/shadow-garden.jpg',
+        prod_9:  '/uploads/products/tulip-festival.jpg',
+        prod_10: '/uploads/products/garden-peony.jpg'
+      };
+      const stale = this.db.prepare(
+        `SELECT id, images FROM products WHERE images LIKE '%images.unsplash.com%' OR images LIKE '%pexels%' OR images LIKE '%null%'`
+      ).all();
+      if (stale.length) {
+        const update = this.db.prepare('UPDATE products SET images = ? WHERE id = ?');
+        const tx = this.db.transaction((rows) => {
+          for (const row of rows) {
+            const target = localImageMap[row.id];
+            if (target) update.run(JSON.stringify([target]), row.id);
+          }
+        });
+        tx(stale);
+        console.log(`🌸 Migrated ${stale.length} product image(s) to local /uploads/products/*.jpg`);
+      }
+    } catch (e) {
+      console.warn('[DB] product image migration skipped:', e && e.message);
+    }
   }
 
   seedAdmin() {
@@ -263,16 +294,16 @@ class DatabaseClass {
       for (const r of rows) insert.run(...r);
     });
     seed([
-      ['prod_1',  'Crimson Vow',           'bouquets',     'A timeless arrangement of dark red roses',          2799.44, JSON.stringify(['https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&h=400&fit=crop&q=80']),  JSON.stringify(['roses','classic','romance']),       50, 1],
-      ['prod_2',  'Neon Blossom',           'bouquets',     'Striking neon-lit red floral arrangement',       2239.44, JSON.stringify(['https://images.unsplash.com/photo-1550060594-d192131b0b53?w=600&h=400&fit=crop&q=80']),      JSON.stringify(['neon','urban']),           40, 1],
-      ['prod_3',  'Velvet Midnight',        'arrangements', 'Soothing yet dark lavender arrangement',                2519.44, JSON.stringify(['https://images.unsplash.com/photo-1508610048659-a06b669e3321?w=600&h=400&fit=crop&q=80']),       JSON.stringify(['lavender','dark']),              30, 1],
-      ['prod_4',  'Obsidian Rose',      'bouquets',     'Deep, beautiful mix of shadowed red flowers', 1959.44, JSON.stringify(['https://images.unsplash.com/photo-1589134707639-550974bc2ebf?w=600&h=400&fit=crop&q=80']),    JSON.stringify(['dark','seasonal']),          60, 1],
-      ['prod_5',  'Phantom Orchid',        'arrangements', 'Exotic orchids in a luxury black vase',              4479.44, JSON.stringify(['https://images.unsplash.com/photo-1614031679090-5b5cb3c8da85?w=600&h=400&fit=crop&q=80']),         JSON.stringify(['orchids','luxury','exotic']),       20, 1],
-      ['prod_6',  'Executive Crimson',        'bouquets',     'Bold crimson roses with elegant styling',         3639.44, JSON.stringify(['https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=600&h=400&fit=crop&q=80']),         JSON.stringify(['roses','bold','corporate']),         35, 1],
-      ['prod_7',  'Rebel Spark',            'arrangements', 'Vibrant pink and red against dark backgrounds',            3079.44, JSON.stringify(['https://images.unsplash.com/photo-1549414002-3855a80b1e4e?w=600&h=400&fit=crop&q=80']),           JSON.stringify(['rebel','spark','modern']),       25, 1],
-      ['prod_8',  'Shadow Garden',         'arrangements', 'Moody carnations and deep shadows',                3919.44, JSON.stringify(['https://images.unsplash.com/photo-1596434452077-8cba9a613271?w=600&h=400&fit=crop&q=80']),           JSON.stringify(['dark','shadow','elegant']),       20, 1],
-      ['prod_9',  'Tulip Festival',         'bouquets',     'Stylized mixed tulips with high contrast',        2407.44, JSON.stringify(['https://images.unsplash.com/photo-1603415526960-f7e0328c63b1?w=600&h=400&fit=crop&q=80']),          JSON.stringify(['tulips','colorful','stylish']),     45, 1],
-      ['prod_10', 'Garden Peony',           'arrangements', 'Lush red peonies on absolute black',            3359.44, JSON.stringify(['https://images.unsplash.com/photo-1562690868-60bbe7293e94?w=600&h=400&fit=crop&q=80']),           JSON.stringify(['peonies','dark','anniversary']), 30, 1]
+      ['prod_1',  'Crimson Vow',        'bouquets',     'A timeless arrangement of dark red roses',          2799.44, JSON.stringify(['/uploads/products/crimson-vow.jpg']),       JSON.stringify(['roses','classic','romance']),    50, 1],
+      ['prod_2',  'Neon Blossom',       'bouquets',     'Striking neon-lit red floral arrangement',          2239.44, JSON.stringify(['/uploads/products/neon-blossom.jpg']),     JSON.stringify(['neon','urban']),                 40, 1],
+      ['prod_3',  'Velvet Midnight',    'arrangements', 'Soothing yet dark lavender arrangement',            2519.44, JSON.stringify(['/uploads/products/velvet-midnight.jpg']),  JSON.stringify(['lavender','dark']),              30, 1],
+      ['prod_4',  'Obsidian Rose',      'bouquets',     'Deep, beautiful mix of shadowed red flowers',       1959.44, JSON.stringify(['/uploads/products/obsidian-rose.jpg']),    JSON.stringify(['dark','seasonal']),              60, 1],
+      ['prod_5',  'Phantom Orchid',     'arrangements', 'Exotic orchids in a luxury black vase',             4479.44, JSON.stringify(['/uploads/products/phantom-orchid.jpg']),   JSON.stringify(['orchids','luxury','exotic']),    20, 1],
+      ['prod_6',  'Executive Crimson',  'bouquets',     'Bold crimson roses with elegant styling',           3639.44, JSON.stringify(['/uploads/products/executive-crimson.jpg']),JSON.stringify(['roses','bold','corporate']),     35, 1],
+      ['prod_7',  'Rebel Spark',        'arrangements', 'Vibrant pink and red against dark backgrounds',     3079.44, JSON.stringify(['/uploads/products/rebel-spark.jpg']),      JSON.stringify(['rebel','spark','modern']),       25, 1],
+      ['prod_8',  'Shadow Garden',      'arrangements', 'Moody carnations and deep shadows',                 3919.44, JSON.stringify(['/uploads/products/shadow-garden.jpg']),    JSON.stringify(['dark','shadow','elegant']),      20, 1],
+      ['prod_9',  'Tulip Festival',     'bouquets',     'Stylized mixed tulips with high contrast',          2407.44, JSON.stringify(['/uploads/products/tulip-festival.jpg']),   JSON.stringify(['tulips','colorful','stylish']),  45, 1],
+      ['prod_10', 'Garden Peony',       'arrangements', 'Lush red peonies on absolute black',                3359.44, JSON.stringify(['/uploads/products/garden-peony.jpg']),     JSON.stringify(['peonies','dark','anniversary']), 30, 1]
     ]);
     console.log('🌸 Products seeded');
   }

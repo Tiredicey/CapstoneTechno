@@ -32,12 +32,21 @@ window.showToast = showToast;
 function resolveImage(raw) {
   if (!raw) return '';
   var imgs = raw;
-  if (typeof imgs === 'string') { try { imgs = JSON.parse(imgs); } catch (e) { return raw; } }
+  if (typeof imgs === 'string') { try { imgs = JSON.parse(imgs); } catch (e) { imgs = [raw]; } }
   if (!Array.isArray(imgs) || !imgs.length) return '';
   var img = imgs.flat(Infinity)[0];
-  if (typeof img !== 'string') return '';
-  var clean = img.replace(/[\[\]"\\]/g, '/');
-  var parts = clean.split('/');
+  if (typeof img !== 'string' || !img) return '';
+  if (img.indexOf('/uploads/') === 0 || img.indexOf('/img/') === 0) return img;
+  if (/^https?:\/\//i.test(img)) {
+    try {
+      var u = new URL(img);
+      var fname = u.pathname.split('/').pop().split('?')[0];
+      if (!fname || fname === 'null') return '';
+      if (/\.(jpe?g|png|webp|gif|svg)$/i.test(fname)) return '/uploads/products/' + fname;
+    } catch (e) {}
+    return '';
+  }
+  var parts = img.replace(/[\[\]"\\]/g, '/').split('/');
   var filename = parts[parts.length - 1];
   return filename && filename !== 'null' ? '/uploads/products/' + filename : '';
 }
@@ -107,7 +116,7 @@ function bindCardEvents(container) {
         Store.set('cart', updated);
         var count = (updated.items || []).reduce(function (s, i) { return s + (i.qty || 1); }, 0);
         Store.updateCartCount(count);
-        showToast('Added to cart 🌸', 'success');
+        showToast('Added to cart ����', 'success');
       } catch (err) {
         showToast(err.message || 'Failed to add to cart', 'error');
       } finally {
