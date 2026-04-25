@@ -10,14 +10,15 @@ const indexPath = path.join(publicDir, 'index.html');
 try {
   const indexHtml = fs.readFileSync(indexPath, 'utf-8');
 
- 
+
   const navEndIndex = indexHtml.indexOf('</nav>') + 6;
   const headerPart = indexHtml.substring(0, navEndIndex);
 
 
   const footerStartIndex = indexHtml.indexOf('<footer class="bloom-foot"');
- 
+
   let footerPart = indexHtml.substring(footerStartIndex);
+
 
 
   const pages = {
