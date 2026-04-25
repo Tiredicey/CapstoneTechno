@@ -62,18 +62,74 @@
   --fd: 'Playfair Display', Georgia, serif;
   --fc: 'Barlow Condensed', Impact, sans-serif;
   --fb: 'DM Sans', system-ui, sans-serif;
+  --text: #fff;
+  --text-muted: rgba(255,255,255,.6);
+  --text-dim: rgba(255,255,255,.35);
+}
+
+[data-theme="light"] {
+  --bg: #FEFCF9;
+  --bg2: #F5F0EB;
+  --bg3: #EDE6DF;
+  --ink: #1A1220;
+  --paper: #FFFFFF;
+  --gl: rgba(0,0,0,.04);
+  --glb: rgba(0,0,0,.08);
+  --gls: rgba(0,0,0,.02);
+  --text: #1A1220;
+  --text-muted: rgba(26,18,32,.6);
+  --text-dim: rgba(26,18,32,.35);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; color-scheme: dark; interpolate-size: allow-keywords; }
-body { background: var(--bg); color: #fff; font-family: var(--fb); overflow-x: hidden; min-height: 100dvh; }
+body { background: var(--bg); color: var(--text, #fff); font-family: var(--fb); overflow-x: hidden; min-height: 100dvh; }
 body.modal-open { overflow: hidden; }
 @media (pointer: fine) { body { cursor: none; } button, a, input, textarea, [role="button"] { cursor: none; } }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }
 ::selection { background: rgba(230,26,26,.35); color: #fff; }
+[data-theme="light"] { color-scheme: light; }
+[data-theme="light"] body { color: var(--text); }
+[data-theme="light"] nav.sc { background: var(--nav-bg); }
+[data-theme="light"] nav.sc::after { background: linear-gradient(90deg, transparent, var(--p5), var(--pk), transparent); }
+[data-theme="light"] .n-links a { color: var(--text-muted); }
+[data-theme="light"] .n-links a:hover { color: var(--text); background: var(--gl); }
+[data-theme="light"] .btn-g { background: var(--gl); border-color: var(--glb); color: var(--text-muted); }
+[data-theme="light"] .btn-g:hover { background: rgba(0,0,0,.08); color: var(--text); }
+[data-theme="light"] .p-card { background: var(--gl); border-color: var(--glb); }
+[data-theme="light"] .p-card:hover { border-color: rgba(230,26,26,.3); box-shadow: 0 10px 40px var(--shadow-color); }
+[data-theme="light"] .hero-sub, [data-theme="light"] .sec-sub { color: var(--text-muted); }
+[data-theme="light"] .n-srch-panel { background: rgba(255,255,255,.97); border-color: var(--glb); }
+[data-theme="light"] .n-srch-inp { background: var(--input-bg); border-color: var(--input-border); color: var(--text); }
+[data-theme="light"] .overlay .modal { background: var(--surface2); border-color: var(--glb); }
+[data-theme="light"] .fi-inp { background: var(--input-bg); border-color: var(--input-border); color: var(--text); }
+[data-theme="light"] .lang-dd { background: rgba(255,255,255,.97); border-color: var(--glb); }
+[data-theme="light"] .lang-opt { color: var(--text-muted); }
+[data-theme="light"] .lang-opt:hover { color: var(--text); }
+[data-theme="light"] .mob-menu { background: rgba(255,255,255,.97); }
+[data-theme="light"] .mob-inner a { color: var(--text-muted); }
+[data-theme="light"] .mob-inner a:hover { color: var(--text); }
+[data-theme="light"] .hero-photo::before { background: linear-gradient(to right, var(--bg) 0%, rgba(254,252,249,.72) 25%, rgba(254,252,249,.15) 60%, transparent 100%); }
+[data-theme="light"] .hero-photo::after { background: linear-gradient(to bottom, rgba(254,252,249,.5) 0%, transparent 20%, transparent 80%, rgba(254,252,249,.62) 100%); }
+[data-theme="light"] .hero-hl { color: var(--text); }
+[data-theme="light"] .trust-item { color: var(--text-dim); }
+[data-theme="light"] .stat-item { background: var(--gl); border-color: var(--glb); }
+[data-theme="light"] .rev-card { background: var(--gl); border-color: var(--glb); }
+[data-theme="light"] .feat-card { background: var(--gl); border-color: var(--glb); }
+[data-theme="light"] .fact-card { background: var(--gl); border-color: var(--glb); }
+[data-theme="light"] .bloom-foot { background: var(--surface2); }
+[data-theme="light"] .foot-bottom { border-top-color: var(--glb); }
+[data-theme="light"] .btt { background: var(--surface2); border-color: var(--glb); color: var(--text); }
+[data-theme="light"] ::-webkit-scrollbar-track { background: var(--bg); }
+[data-theme="light"] .cat-tab { border-color: var(--glb); background: var(--gl); color: var(--text-muted); }
+[data-theme="light"] .cat-tab:hover { color: var(--text); }
+[data-theme="light"] .cat-tab.active { color: var(--text); }
+[data-theme="light"] .wl-btn { background: var(--gl); border-color: var(--glb); color: var(--text-dim); }
+[data-theme="light"] .n-logo { -webkit-text-fill-color: var(--text); color: var(--text); background: none; }
+[data-theme="light"] .hmb span { background: var(--text); }
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: linear-gradient(var(--p5), var(--pk)); border-radius: 2px; }
@@ -563,11 +619,14 @@ input:-webkit-autofill:focus {
         <li><button class="lang-opt" role="option" data-lang="ja" data-flag="🇯🇵" data-lbl="JA"><span aria-hidden="true">🇯🇵</span> 日本語</button></li>
       </ul>
     </div>
+    <button class="btn btn-g btn-sm" id="themeToggle" aria-label="Toggle theme" data-i18n-aria="theme.toggle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" id="themeIcon"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+    </button>
     <a href="/cart.html" class="btn btn-g btn-sm cart-wrap" aria-label="Cart" id="cartBtn">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
       <span class="cart-badge" id="cartBadge" style="display:none" aria-live="polite">0</span>
     </a>
-    <button class="btn btn-p btn-sm" id="authBtn">Sign In</button>
+    <button class="btn btn-p btn-sm" id="authBtn" data-i18n="nav.signin">Sign In</button>
   </div>
 </nav>
 
@@ -892,8 +951,34 @@ input:-webkit-autofill:focus {
   </div>
 </footer>
 
+<section class="sec-pad section-lazy" id="recentSec" style="display:none" aria-label="Recently Viewed">
+  <div class="con">
+    <div class="sec-hd">
+      <div>
+        <div class="tag tag-a"><span aria-hidden="true">//</span> History</div>
+        <h2 class="sec-title" data-i18n="section.recently">Recently Viewed</h2>
+      </div>
+    </div>
+    <div class="p-grid" id="recentGrid" role="list" aria-live="polite" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))"></div>
+  </div>
+</section>
+
 <button class="btt" id="btt" aria-label="Back to top">↑</button>
 </main>
+
+<div class="overlay" id="exitMod" role="dialog" aria-modal="true" aria-labelledby="exitTitle" aria-hidden="true" style="display:none">
+  <div class="modal" style="max-width:440px;text-align:center;padding:40px 32px">
+    <button class="m-cls" id="closeExit" aria-label="Close">✕</button>
+    <div style="font-size:3rem;margin-bottom:16px" aria-hidden="true">🌸</div>
+    <h2 id="exitTitle" style="font-family:var(--fd);font-size:1.6rem;font-weight:900;margin-bottom:10px" data-i18n="exit.title">Wait — don't leave empty-handed!</h2>
+    <p class="m-sub" style="margin-bottom:24px" data-i18n="exit.subtitle">Get 10% off your first order</p>
+    <div class="fi" style="margin-bottom:16px">
+      <div class="fi-wrap"><input type="email" class="fi-inp" id="exitEmail" placeholder="you@example.com" aria-label="Email for discount"></div>
+    </div>
+    <button class="btn btn-p btn-lg" style="width:100%;justify-content:center;margin-bottom:12px" id="exitCta" data-i18n="exit.cta">Claim My Discount</button>
+    <button class="btn btn-g btn-sm" style="width:100%;justify-content:center" id="exitDismiss" data-i18n="exit.dismiss">No thanks</button>
+  </div>
+</div>
 
 <div class="overlay" id="authMod" role="dialog" aria-modal="true" aria-labelledby="authTitle" aria-hidden="true">
   <div class="modal">
@@ -1012,6 +1097,10 @@ input:-webkit-autofill:focus {
 </div>
 
 <div class="toast-con" id="toastCon" aria-live="polite" aria-atomic="false" role="status"></div>
+
+<script src="/js/core/Api.js"></script>
+<script src="/js/core/Store.js"></script>
+<script src="/js/core/Auth.js"></script>
 
 <script>
 (function () {
@@ -1335,6 +1424,7 @@ input:-webkit-autofill:focus {
         dd.setAttribute('aria-hidden', 'true');
         btn.setAttribute('aria-expanded', 'false');
         if (Store && Store.setLang) Store.setLang(o.dataset.lang);
+        if (window.I18n) I18n.setLang(o.dataset.lang);
         showToast('Language set to ' + o.textContent.trim(), 'info');
       });
     });
@@ -1921,6 +2011,7 @@ input:-webkit-autofill:focus {
   });
 })();
 </script>
+<script src="/js/core/I18n.js" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function () {
@@ -1932,6 +2023,71 @@ window.addEventListener('beforeinstallprompt', function (e) {
   e.preventDefault();
   _deferredInstall = e;
 });
+
+(function () {
+  var thBtn = document.getElementById('themeToggle');
+  if (thBtn) {
+    thBtn.addEventListener('click', function () {
+      if (window.Store) Store.toggleTheme();
+    });
+  }
+
+  function renderRecent() {
+    if (!window.Store) return;
+    var items = Store.get('recentlyViewed') || [];
+    var sec = document.getElementById('recentSec');
+    var grid = document.getElementById('recentGrid');
+    if (!sec || !grid) return;
+    if (!items.length) { sec.style.display = 'none'; return; }
+    sec.style.display = '';
+    grid.innerHTML = items.slice(0, 6).map(function (p) {
+      var img = String(p.image || '').replace(/["<>]/g, '');
+      var name = String(p.name || '').replace(/[<>&"']/g, '');
+      return '<div class="p-card vis" role="listitem" style="padding:14px">' +
+        '<div style="aspect-ratio:4/3;border-radius:var(--rs);overflow:hidden;margin-bottom:10px;background:var(--gl)">' +
+        '<img src="' + img + '" alt="' + name + '" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover" onerror="this.onerror=null;this.style.display=\'none\'">' +
+        '</div>' +
+        '<div style="font-weight:600;font-size:.88rem">' + name + '</div>' +
+        '<div style="font-size:.82rem;color:var(--text-muted)">' + (window.I18n ? I18n.formatMoney(p.price) : '₱' + Number(p.price||0).toFixed(2)) + '</div>' +
+        '</div>';
+    }).join('');
+  }
+  if (window.Store) Store.on('recentlyViewed', renderRecent);
+  document.addEventListener('DOMContentLoaded', renderRecent);
+
+  var _exitShown = false;
+  document.addEventListener('mouseleave', function (e) {
+    if (e.clientY > 10) return;
+    if (_exitShown) return;
+    if (window.Store && Store.get('hasSeenExitIntent')) return;
+    if (window.Store && Store.get('user')) return;
+    _exitShown = true;
+    var mod = document.getElementById('exitMod');
+    if (mod) {
+      mod.style.display = '';
+      setTimeout(function () { mod.classList.add('active'); mod.setAttribute('aria-hidden', 'false'); }, 30);
+    }
+  });
+  var exitClose = document.getElementById('closeExit');
+  var exitDismiss = document.getElementById('exitDismiss');
+  function closeExit() {
+    var mod = document.getElementById('exitMod');
+    if (mod) { mod.classList.remove('active'); mod.setAttribute('aria-hidden', 'true'); }
+    if (window.Store) Store.markExitIntent();
+  }
+  if (exitClose) exitClose.addEventListener('click', closeExit);
+  if (exitDismiss) exitDismiss.addEventListener('click', closeExit);
+  var exitCta = document.getElementById('exitCta');
+  if (exitCta) {
+    exitCta.addEventListener('click', function () {
+      var email = document.getElementById('exitEmail');
+      if (email && email.value) {
+        if (window.showToast) showToast('Discount code sent! Check your inbox 🌸', 'success');
+      }
+      closeExit();
+    });
+  }
+})();
 </script>
 
 </body>
