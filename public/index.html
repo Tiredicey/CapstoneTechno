@@ -746,10 +746,11 @@ input:-webkit-autofill:focus {
 .search-results-virt::-webkit-scrollbar { width: 4px; }
 
 @media (max-width: 768px) {
-  .delivery-bar { top: 56px; padding: 8px 0; }
+  .delivery-bar { top: 68px; padding: 8px 0; }
   .funnel-bar { padding: 6px 10px; }
   .funnel-step { font-size: .6rem; }
 }
+
 @media (max-width: 720px) {
   #voiceNavBtn { display: none !important; }
 }
@@ -2753,10 +2754,13 @@ input:-webkit-autofill:focus {
     qsa('.fe', formEl).forEach(function (e) {
       var msg = (e.textContent || '').trim();
       if (!msg) return;
-      var inp = e.previousElementSibling && e.previousElementSibling.querySelector ? e.previousElementSibling.querySelector('input,textarea,select') : null;
-      var label = inp ? (formEl.querySelector('label[for="' + inp.id + '"]')?.textContent || inp.id) : '';
+      var fi = e.closest('.fi') || formEl;
+      var inp = fi.querySelector('input,textarea,select');
+      var labelEl = inp ? formEl.querySelector('label[for="' + inp.id + '"]') : null;
+      var label = inp ? ((labelEl && labelEl.textContent.trim()) || inp.id) : '';
       errs.push({ id: inp ? inp.id : '', label: label, msg: msg });
     });
+
     var ul = summaryEl.querySelector('ul');
     if (!ul) return;
     if (!errs.length) { summaryEl.classList.remove('on'); ul.innerHTML = ''; return; }
@@ -2939,16 +2943,28 @@ window.addEventListener('beforeinstallprompt', function (e) {
     var mod = document.getElementById('exitMod');
     if (mod) {
       mod.style.display = '';
-      setTimeout(function () { mod.classList.add('active'); mod.setAttribute('aria-hidden', 'false'); }, 30);
+      requestAnimationFrame(function () {
+        mod.classList.add('open');
+        mod.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('modal-open');
+        var firstFocus = mod.querySelector('input, button');
+        if (firstFocus) firstFocus.focus();
+      });
     }
   });
   var exitClose = document.getElementById('closeExit');
   var exitDismiss = document.getElementById('exitDismiss');
   function closeExit() {
     var mod = document.getElementById('exitMod');
-    if (mod) { mod.classList.remove('active'); mod.setAttribute('aria-hidden', 'true'); }
-    if (window.Store) Store.markExitIntent();
+    if (mod) {
+      mod.classList.remove('open');
+      mod.setAttribute('aria-hidden', 'true');
+      mod.style.display = 'none';
+    }
+    document.body.classList.remove('modal-open');
+    if (window.Store && typeof Store.markExitIntent === 'function') Store.markExitIntent();
   }
+
   if (exitClose) exitClose.addEventListener('click', closeExit);
   if (exitDismiss) exitDismiss.addEventListener('click', closeExit);
   var exitCta = document.getElementById('exitCta');
@@ -2966,5 +2982,4 @@ window.addEventListener('beforeinstallprompt', function (e) {
 
 </body>
 </html>
-
 
