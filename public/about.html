@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Meet the STI LIPA BSIT team behind Bloom — handcrafted bouquets, pre-ordered for every moment.">
+<title>Our Team — Bloom</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=Barlow+Condensed:ital,wght@0,700;0,900;1,700;1,900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap">
+<link rel="stylesheet" href="/css/main.css">
+<style>
+:root{--fd:'Playfair Display',Georgia,serif;--fc:'Barlow Condensed',Impact,sans-serif;--fb:'DM Sans',system-ui,sans-serif;--p5:#E61A1A;--p5l:#FF3B3B;--pk:oklch(58% .22 348);--bg:oklch(11% .06 292);--bg2:oklch(15% .07 292);--gl:rgba(255,255,255,.055);--glb:rgba(255,255,255,.09);--mn:oklch(76% .15 172);--gd:oklch(84% .17 86);--r:20px;--rs:12px;--ease:cubic-bezier(.23,1,.32,1)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:#fff;font-family:var(--fb);min-height:100dvh}
+a{text-decoration:none;color:inherit}
+.wrap{max-width:1100px;margin:0 auto;padding:0 40px}
+@media(max-width:768px){.wrap{padding:0 20px}}
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 40px;background:rgba(11,5,22,.88);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+.nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--p5),var(--pk),transparent)}
+.logo{font-family:var(--fd);font-size:1.3rem;font-weight:900;background:linear-gradient(135deg,#fff 0%,var(--pk) 60%,var(--p5) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-links{display:flex;gap:6px;list-style:none}
+.nav-links a{padding:8px 14px;border-radius:8px;font-size:.85rem;font-weight:500;color:rgba(255,255,255,.6);transition:all .2s}
+.nav-links a:hover{color:#fff;background:var(--gl)}
+.hero-about{padding:160px 0 80px;text-align:center;position:relative}
+.hero-about::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:800px;height:600px;background:radial-gradient(circle,rgba(230,26,26,.08),transparent 60%);pointer-events:none}
+.tag{display:inline-flex;align-items:center;gap:6px;font-family:var(--fc);font-style:italic;font-weight:700;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;padding:4px 13px;border-radius:100px;margin-bottom:16px;background:rgba(230,26,26,.12);border:1px solid rgba(230,26,26,.3);color:var(--p5l)}
+.sec-title{font-family:var(--fd);font-size:clamp(2rem,4vw,3.2rem);font-weight:900;line-height:1.1;margin-bottom:20px}
+.sec-sub{font-size:.95rem;color:rgba(255,255,255,.55);line-height:1.75;max-width:620px;margin:0 auto 48px}
+.team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:24px;margin-bottom:80px}
+.team-card{background:var(--gl);border:1px solid var(--glb);border-radius:var(--r);padding:28px;text-align:center;transition:transform .4s var(--ease),border-color .3s,box-shadow .4s}
+.team-card:hover{transform:translateY(-6px);border-color:rgba(230,26,26,.3);box-shadow:0 18px 50px rgba(168,16,16,.22)}
+.team-avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,rgba(230,26,26,.2),rgba(188,49,148,.15));border:2px solid rgba(230,26,26,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:2rem}
+.team-name{font-family:var(--fd);font-size:1.05rem;font-weight:700;margin-bottom:4px}
+.team-role{font-family:var(--fc);font-style:italic;font-size:.72rem;color:var(--p5l);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px}
+.team-bio{font-size:.84rem;color:rgba(255,255,255,.56);line-height:1.7}
+.values-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px;margin-bottom:80px}
+.value-card{background:var(--gl);border:1px solid var(--glb);border-radius:var(--r);padding:28px;position:relative;overflow:hidden}
+.value-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:linear-gradient(to bottom,var(--p5),var(--pk))}
+.value-icon{font-size:1.8rem;margin-bottom:14px}
+.value-title{font-family:var(--fd);font-size:1.1rem;font-weight:700;margin-bottom:10px}
+.value-desc{font-size:.84rem;color:rgba(255,255,255,.58);line-height:1.7}
+.foot{background:oklch(8% .04 292);border-top:1px solid var(--glb);padding:40px 0;text-align:center;font-size:.82rem;color:rgba(255,255,255,.4)}
+.foot a{color:rgba(255,255,255,.6);transition:color .2s}
+.foot a:hover{color:var(--p5l)}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="logo">Bloom</a>
+  <ul class="nav-links">
+    <li><a href="/#shop">Shop</a></li>
+    <li><a href="/catalog.html">Catalog</a></li>
+    <li><a href="/#corp">Corporate</a></li>
+    <li><a href="/support.html">Support</a></li>
+  </ul>
+  <div style="display:flex;gap:8px;align-items:center">
+    <a href="/cart.html" style="padding:8px 14px;border-radius:8px;font-size:.85rem;font-weight:500;color:rgba(255,255,255,.6);background:var(--gl);border:1px solid var(--glb)">🛒 Cart</a>
+    <a href="/" style="padding:8px 14px;border-radius:8px;font-size:.85rem;font-weight:600;color:#fff;background:linear-gradient(135deg,#a81010,#e61a1a);box-shadow:0 4px 14px rgba(230,26,26,.35)">Home</a>
+  </div>
+</nav>
+
+<main>
+  <section class="hero-about">
+    <div class="wrap">
+      <span class="tag">Our Team</span>
+      <h1 class="sec-title">Built by students<br>who care about details.</h1>
+      <p class="sec-sub">Bloom is a capstone project by BSIT students of STI College Lipa. Every pixel, every line of code, and every cold-chain workflow was built from scratch — with the intent to ship a real product, not a classroom demo.</p>
+    </div>
+  </section>
+
+  <section style="padding:0 0 80px">
+    <div class="wrap">
+      <div class="team-grid">
+        <div class="team-card">
+          <div class="team-avatar">👨‍💻</div>
+          <div class="team-name">Team Lead</div>
+          <div class="team-role">Full-Stack Developer</div>
+          <p class="team-bio">Architected the entire platform — from the Express backend and SQLite data layer to the real-time WebSocket system and admin dashboard.</p>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar">🎨</div>
+          <div class="team-name">UI/UX Designer</div>
+          <div class="team-role">Frontend & Design</div>
+          <p class="team-bio">Designed the dark-mode interface, accessibility features, micro-animations, and the responsive component system that works across all devices.</p>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar">📊</div>
+          <div class="team-name">Project Manager</div>
+          <div class="team-role">Documentation & QA</div>
+          <p class="team-bio">Managed sprint planning, coordinated testing cycles, wrote the technical documentation, and ensured WCAG 2.1 AA conformance.</p>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar">🔧</div>
+          <div class="team-name">Backend Developer</div>
+          <div class="team-role">API & Database</div>
+          <p class="team-bio">Built the REST API, cart engine, pricing system, authentication flows with bcrypt + JWT, and the real-time notification infrastructure.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding:0 0 80px">
+    <div class="wrap">
+      <div style="text-align:center;margin-bottom:48px">
+        <span class="tag" style="background:rgba(0,212,170,.1);border-color:rgba(0,212,170,.25);color:var(--mn)">Our Values</span>
+        <h2 class="sec-title">What guides every decision.</h2>
+      </div>
+      <div class="values-grid">
+        <div class="value-card">
+          <div class="value-icon">❄️</div>
+          <div class="value-title">Freshness First</div>
+          <p class="value-desc">Every bouquet follows UC Davis postharvest cold-chain guidelines. 0–4°C from harvest to handoff extends vase life up to 2x.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">♿</div>
+          <div class="value-title">Accessibility by Default</div>
+          <p class="value-desc">WCAG 2.1 AA conformance target. Keyboard navigation, screen reader labels, reduced motion support, and 4.5:1 contrast ratios.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">📸</div>
+          <div class="value-title">Honest Delivery</div>
+          <p class="value-desc">Timestamped photo proof at the recipient's door. If the bouquet doesn't match what we quoted, we remake or refund.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p>© 2026 Bloom · Handcrafted in the Philippines · <a href="/">Home</a> · <a href="/catalog.html">Shop</a> · <a href="/support.html">Support</a> · <a href="/privacy.html">Privacy</a></p>
+  </div>
+</footer>
+
+<script src="/js/core/Store.js"></script>
+<script src="/js/core/Api.js"></script>
+</body>
+</html>
