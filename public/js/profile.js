@@ -80,9 +80,9 @@ document.querySelectorAll('.profile-nav-btn[data-target]').forEach(btn => {
 });
 
 document.getElementById('logoutBtn')?.addEventListener('click', () => {
-  Store.remove('token');
-  Store.remove('user');
-  Store.remove('sessionId');
+  Store.set('token', null);
+  Store.set('user', null);
+  Store.set('sessionId', null);
   window.location.href = '/';
 });
 
