@@ -99,7 +99,7 @@ app.get('/admin.html', (req, res) => {
 
 app.get('/sitemap.xml', async (req, res) => {
   const host = req.protocol + '://' + req.get('host');
-  const staticPages = ['/', '/catalog.html', '/cart.html', '/customize.html', '/support.html'];
+  const staticPages = ['/', '/catalog.html', '/cart.html', '/customize.html', '/support.html', '/about.html', '/blog.html', '/contact.html', '/shipping.html', '/returns.html', '/privacy.html'];
   let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
   staticPages.forEach(p => {
     xml += '  <url><loc>' + host + p + '</loc><changefreq>weekly</changefreq><priority>' + (p === '/' ? '1.0' : '0.7') + '</priority></url>\n';
