@@ -299,12 +299,14 @@ document.getElementById('productModal') && document.getElementById('productModal
 });
 
 var urlParams = new URLSearchParams(window.location.search);
-if (urlParams.get('cat')) {
-  currentCat = urlParams.get('cat');
+var urlCat = urlParams.get('cat') || urlParams.get('category');
+if (urlCat) {
+  currentCat = urlCat;
   var catTab = document.querySelector('[data-cat="' + currentCat + '"]');
   if (catTab) catTab.click();
 }
 if (urlParams.get('occasion')) currentTag = urlParams.get('occasion');
+if (urlParams.get('search')) { currentSearch = urlParams.get('search'); var si = document.getElementById('searchInput'); if (si) si.value = currentSearch; }
 if (urlParams.get('id')) openProductModal(urlParams.get('id'));
 
 loadProducts();
