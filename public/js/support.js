@@ -1,7 +1,4 @@
-import { Api } from './core/Api.js';
-import { Store } from './core/Store.js';
-import { Toast } from './core/Auth.js';
-
+const { Api, Store, Toast } = window;
 const FAQS = [
   { q: 'How far in advance should I pre-order?', a: 'We recommend ordering at least 2 days in advance. For large corporate or wedding orders, 7-14 days ensures the best selection and preparation.' },
   { q: 'Can I change my delivery date after ordering?', a: 'Yes! Contact support at least 24 hours before your scheduled delivery and we\'ll reschedule at no charge.' },
