@@ -55,9 +55,32 @@
     var panel = document.getElementById('cartItemsPanel');
     if (!panel) return;
     try {
-      var token = localStorage.getItem('bloom_token');
-      if (token) {
-        try {
+      var apiSuccess = false;
+      try {
+        cartData = await Api.get('/cart');
+        apiSuccess = true;
+        if (cartData && cartData.items) {
+          cartData.items = cartData.items.map(function (item) {
+            return Object.assign({}, item, {
+              lineId: item.lineId || item.id || item.product_id,
+              price: item.price > 500 ? item.price : phpFromUSD(item.price),
+              qty: item.qty || item.quantity || 1,
+              image: item.image_url || item.image || ''
+            });
+          });
+        }
+        Store.set('cart', cartData);
+        var local = [];
+        try { local = JSON.parse(localStorage.getItem('bloom_cart') || '[]'); } catch {}
+        if (local.length) {
+          for (var i = 0; i < local.length; i++) {
+            var li = local[i];
+            var exists = cartData.items && cartData.items.find(function (it) { return it.lineId === li.id || it.lineId === li.lineId; });
+            if (!exists) {
+              try { await Api.post('/cart/items', { productId: li.id || li.lineId, qty: li.qty || 1 }); } catch {}
+            }
+          }
+          localStorage.removeItem('bloom_cart');
           cartData = await Api.get('/cart');
           if (cartData && cartData.items) {
             cartData.items = cartData.items.map(function (item) {
@@ -70,22 +93,11 @@
             });
           }
           Store.set('cart', cartData);
-          var local = [];
-          try { local = JSON.parse(localStorage.getItem('bloom_cart') || '[]'); } catch {}
-          if (local.length) {
-            for (var i = 0; i < local.length; i++) {
-              var li = local[i];
-              var exists = cartData.items && cartData.items.find(function (it) { return it.lineId === li.id || it.lineId === li.lineId; });
-              if (!exists) {
-                try { await Api.post('/cart', { product_id: li.id, quantity: li.qty || 1 }); } catch {}
-              }
-            }
-            localStorage.removeItem('bloom_cart');
-          }
-        } catch {
-          cartData = buildLocalCart();
         }
-      } else {
+      } catch (apiErr) {
+        cartData = buildLocalCart();
+      }
+      if (!apiSuccess) {
         cartData = buildLocalCart();
       }
       renderCart();
