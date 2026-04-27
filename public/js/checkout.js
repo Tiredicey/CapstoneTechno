@@ -152,7 +152,7 @@ document.getElementById('placeOrder')?.addEventListener('click', async () => {
   btn.disabled = true;
   btn.textContent = 'Processing...';
   try {
-    const cartId = Store.get('cartId') || Store.get('sessionId');
+    const cartId = cartData?.id || Store.get('cartId') || Store.get('sessionId');
     const payload = {
       cartId,
       recipient: {
@@ -177,8 +177,9 @@ document.getElementById('placeOrder')?.addEventListener('click', async () => {
       return;
     }
     const order = await Api.post('/api/orders', payload);
-    Store.remove('cartId');
-    Store.remove('cart');
+    Store.set('cartId', null);
+    Store.set('cart', null);
+    Store.updateCartCount(0);
     const qrEl = document.getElementById('qrDisplay');
     if (qrEl) qrEl.textContent = order.qr_code || 'BLOOM-CONFIRMED';
     goTo(4);
