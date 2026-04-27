@@ -14,8 +14,7 @@
     <li><a href="/catalog.html">Shop</a></li>
     <li><a href="/customize.html">Create</a></li>
     <li><a href="/tracking.html">Track</a></li>
-    <li><a href="/support.html" style="color:#fff;">Support</a></li>
-  </ul>
+    <li><a href="/support.html" class="nav-active" aria-current="page">Support</a></li>  </ul>
   <div class="bloom-nav-actions">
     <a href="/cart.html" class="btn btn-ghost btn-sm" style="position:relative;">🛒 Cart <span class="badge" id="cartBadge" style="display:none;">0</span></a>
     <button class="btn btn-primary btn-sm" id="authBtn">Sign In</button>
@@ -32,115 +31,121 @@
       <p class="section-subtitle">AI chatbot, live agents, ticket system, and self-service — we're always here.</p>
     </div>
 
-    <div class="support-hub">
-      <div class="support-channel-card" id="openChatBtn">
-        <div class="support-channel-icon">🤖</div>
-        <div class="support-channel-label">AI Chatbot</div>
-        <div class="support-channel-desc">Instant answers 24/7. Handles tracking, refunds, order changes.</div>
-        <div class="tag tag-mint" style="margin-top:12px;">Available Now</div>
-      </div>
-      <div class="support-channel-card" id="openAgentBtn">
-        <div class="support-channel-icon">👤</div>
-        <div class="support-channel-label">Live Agent</div>
-        <div class="support-channel-desc">Speak to a real human for complex issues and escalations.</div>
-        <div class="tag tag-primary" style="margin-top:12px;">~2 min wait</div>
-      </div>
-      <div class="support-channel-card" id="openTicketBtn">
-        <div class="support-channel-icon">🎫</div>
-        <div class="support-channel-label">Submit Ticket</div>
-        <div class="support-channel-desc">Email-style tickets for non-urgent issues. Response within 4 hours.</div>
-        <div class="tag tag-accent" style="margin-top:12px;">4hr Response</div>
-      </div>
-      <div class="support-channel-card" id="openSelfBtn">
-        <div class="support-channel-icon">📖</div>
-        <div class="support-channel-label">Self-Service</div>
-        <div class="support-channel-desc">FAQ, return portal, order modifications — handle it yourself instantly.</div>
-        <div class="tag tag-lavender" style="margin-top:12px;">No Wait</div>
-      </div>
-    </div>
+  <div class="support-hub" role="list">
+  <button type="button" class="support-channel-card" id="openChatBtn" role="listitem" aria-label="Open AI Chatbot">
+    <span class="support-channel-icon" aria-hidden="true">🤖</span>
+    <span class="support-channel-label">AI Chatbot</span>
+    <span class="support-channel-desc">Instant answers 24/7. Handles tracking, refunds, order changes.</span>
+    <span class="tag tag-mint channel-tag">Available Now</span>
+  </button>
+  <button type="button" class="support-channel-card" id="openAgentBtn" role="listitem" aria-label="Connect to live agent">
+    <span class="support-channel-icon" aria-hidden="true">👤</span>
+    <span class="support-channel-label">Live Agent</span>
+    <span class="support-channel-desc">Speak to a real human for complex issues and escalations.</span>
+    <span class="tag tag-primary channel-tag">~2 min wait</span>
+  </button>
+  <button type="button" class="support-channel-card" id="openTicketBtn" role="listitem" aria-label="Submit a support ticket">
+    <span class="support-channel-icon" aria-hidden="true">🎫</span>
+    <span class="support-channel-label">Submit Ticket</span>
+    <span class="support-channel-desc">Email-style tickets for non-urgent issues. Response within 4 hours.</span>
+    <span class="tag tag-accent channel-tag">4hr Response</span>
+  </button>
+  <button type="button" class="support-channel-card" id="openSelfBtn" role="listitem" aria-label="Browse self-service FAQs">
+    <span class="support-channel-icon" aria-hidden="true">📖</span>
+    <span class="support-channel-label">Self-Service</span>
+    <span class="support-channel-desc">FAQ, return portal, order modifications — handle it yourself instantly.</span>
+    <span class="tag tag-lavender channel-tag">No Wait</span>
+  </button>
+</div>
 
-    <div id="chatSection" style="display:none;margin-bottom:48px;">
-      <div class="chat-window">
-        <div class="chat-header">
-          <div class="chat-agent-avatar">🤖</div>
-          <div class="chat-agent-info">
-            <div class="name">Bloom Assistant</div>
-            <div class="status">● Online — responds instantly</div>
-          </div>
-          <button style="margin-left:auto;background:none;border:none;color:rgba(255,255,255,0.4);cursor:pointer;font-size:1.1rem;" id="closeChatBtn">✕</button>
-        </div>
-        <div class="chat-messages" id="chatMessages">
-          <div class="chat-bubble bot">Hi! 🌸 I'm the Bloom Assistant. How can I help you today?</div>
-          <div class="chat-bubble bot">You can ask me about your order status, request a refund, change delivery details, or anything else!</div>
-        </div>
-        <div class="chat-input-bar">
-          <input type="text" placeholder="Type your message..." id="chatInput" autocomplete="off">
-          <button class="btn btn-primary btn-sm" id="chatSend">Send</button>
-        </div>
+    <div id="chatSection" class="chat-floating is-hidden" role="dialog" aria-modal="false" aria-labelledby="chatAgentName">
+  <div class="chat-window">
+    <div class="chat-header">
+      <div class="chat-agent-avatar" aria-hidden="true">🤖</div>
+      <div class="chat-agent-info">
+        <div class="name" id="chatAgentName">Bloom Assistant</div>
+        <div class="status">● Online — responds instantly</div>
       </div>
+      <button type="button" class="chat-close-btn" id="closeChatBtn" aria-label="Close chat">✕</button>
     </div>
-
-    <div id="ticketSection" style="display:none;margin-bottom:48px;">
-      <div class="glass-card" style="padding:36px;max-width:640px;">
-        <h2 style="font-family:var(--font-display);font-size:1.4rem;font-weight:700;margin-bottom:24px;">Submit a Support Ticket</h2>
-        <div class="form-group">
-          <label class="form-label">Order ID (optional)</label>
-          <input type="text" class="form-input" id="ticketOrderId" placeholder="BLOOM-XXXXXXXX">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Subject</label>
-          <input type="text" class="form-input" id="ticketSubject" placeholder="Brief description of your issue">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Message</label>
-          <textarea class="form-input" id="ticketMessage" rows="5" placeholder="Describe your issue in detail..." style="resize:none;"></textarea>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Channel</label>
-          <select class="form-input form-select" id="ticketChannel">
-            <option value="email">Email</option>
-            <option value="chat">Chat</option>
-            <option value="phone">Phone Callback</option>
-          </select>
-        </div>
-        <button class="btn btn-primary" id="submitTicket" style="width:100%;justify-content:center;">Submit Ticket →</button>
-      </div>
+    <div class="chat-messages" id="chatMessages" role="log" aria-live="polite" aria-atomic="false">
+      <div class="chat-bubble bot">Hi! 🌸 I'm the Bloom Assistant. How can I help you today?</div>
+      <div class="chat-bubble bot">You can ask me about your order status, request a refund, change delivery details, or anything else!</div>
     </div>
-
-    <div id="faqSection" style="margin-bottom:48px;">
-  <h2 style="font-family:var(--font-display);font-size:1.4rem;font-weight:700;margin-bottom:24px;">Frequently Asked Questions</h2>
-  <div id="faqCategoryTabs" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;"></div>
-  <div class="faq-list" id="faqList">
-    <div style="color:rgba(255,255,255,0.3);text-align:center;padding:40px;">Loading FAQs...</div>
+    <form class="chat-input-bar" id="chatForm" autocomplete="off">
+      <label for="chatInput" class="visually-hidden">Type your message</label>
+      <input type="text" placeholder="Type your message..." id="chatInput" autocomplete="off" required>
+      <button class="btn btn-primary btn-sm" id="chatSend" type="submit">Send</button>
+    </form>
   </div>
 </div>
 
-    <div id="csatSection" style="display:none;margin-bottom:48px;">
-      <div class="glass-card" style="padding:36px;max-width:560px;text-align:center;">
-        <h2 style="font-family:var(--font-display);font-size:1.4rem;font-weight:700;margin-bottom:8px;">How did we do?</h2>
-        <p style="color:rgba(255,255,255,0.5);font-size:0.88rem;margin-bottom:28px;">Your feedback helps us improve for every customer.</p>
-        <div style="margin-bottom:24px;">
-          <p style="font-size:0.85rem;font-weight:600;margin-bottom:12px;">Rate your experience</p>
-          <div class="rating-stars" style="justify-content:center;" id="csatStars">
-            <span class="rating-star" data-val="1">★</span>
-            <span class="rating-star" data-val="2">★</span>
-            <span class="rating-star" data-val="3">★</span>
-            <span class="rating-star" data-val="4">★</span>
-            <span class="rating-star" data-val="5">★</span>
-          </div>
-        </div>
-        <div style="margin-bottom:24px;">
-          <p style="font-size:0.85rem;font-weight:600;margin-bottom:12px;">How likely are you to recommend Bloom?</p>
-          <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;" id="npsRow">
-            <script>for(let i=0;i<=10;i++)document.write(`<button class="btn btn-ghost btn-sm nps-btn" data-nps="${i}" style="min-width:36px;padding:6px;">${i}</button>`)</script>
-          </div>
-        </div>
-        <textarea class="form-input" id="csatComment" rows="3" placeholder="Any additional comments? (optional)" style="resize:none;margin-bottom:16px;"></textarea>
-        <button class="btn btn-primary" id="submitCsat" style="width:100%;justify-content:center;">Submit Feedback →</button>
-      </div>
+
+   <div id="ticketSection" class="section-block is-hidden">
+  <form class="glass-card ticket-card" id="ticketForm" novalidate>
+    <h2 class="section-heading">Submit a Support Ticket</h2>
+    <div class="form-group">
+      <label class="form-label" for="ticketOrderId">Order ID (optional)</label>
+      <input type="text" class="form-input" id="ticketOrderId" name="orderId" placeholder="BLOOM-XXXXXXXX" autocomplete="off">
     </div>
+    <div class="form-group">
+      <label class="form-label" for="ticketSubject">Subject</label>
+      <input type="text" class="form-input" id="ticketSubject" name="subject" placeholder="Brief description of your issue" required minlength="3" maxlength="120">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="ticketMessage">Message</label>
+      <textarea class="form-input ticket-textarea" id="ticketMessage" name="message" rows="5" placeholder="Describe your issue in detail..." required minlength="10" maxlength="2000"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="ticketChannel">Channel</label>
+      <select class="form-input form-select" id="ticketChannel" name="channel">
+        <option value="email">Email</option>
+        <option value="chat">Chat</option>
+        <option value="phone">Phone Callback</option>
+      </select>
+    </div>
+    <button class="btn btn-primary btn-block" id="submitTicket" type="submit">Submit Ticket →</button>
+  </form>
+</div>
+
+
+   <div id="faqSection" class="section-block">
+  <h2 class="section-heading">Frequently Asked Questions</h2>
+  <div id="faqCategoryTabs" class="faq-tabs" role="tablist" aria-label="FAQ categories"></div>
+  <div class="faq-list" id="faqList" aria-live="polite">
+    <div class="faq-skeleton" aria-hidden="true"></div>
+    <div class="faq-skeleton" aria-hidden="true"></div>
+    <div class="faq-skeleton" aria-hidden="true"></div>
+    <div class="faq-skeleton" aria-hidden="true"></div>
+    <span class="visually-hidden">Loading FAQs…</span>
   </div>
 </div>
+
+
+    <div id="csatSection" class="section-block is-hidden">
+  <div class="glass-card csat-card">
+    <h2 class="section-heading csat-heading">How did we do?</h2>
+    <p class="csat-sub">Your feedback helps us improve for every customer.</p>
+    <fieldset class="csat-field">
+      <legend class="csat-legend">Rate your experience</legend>
+      <div class="rating-stars" id="csatStars" role="radiogroup" aria-label="Customer satisfaction rating">
+        <button type="button" class="rating-star" data-val="1" role="radio" aria-checked="false" aria-label="1 star">★</button>
+        <button type="button" class="rating-star" data-val="2" role="radio" aria-checked="false" aria-label="2 stars">★</button>
+        <button type="button" class="rating-star" data-val="3" role="radio" aria-checked="false" aria-label="3 stars">★</button>
+        <button type="button" class="rating-star" data-val="4" role="radio" aria-checked="false" aria-label="4 stars">★</button>
+        <button type="button" class="rating-star" data-val="5" role="radio" aria-checked="false" aria-label="5 stars">★</button>
+      </div>
+    </fieldset>
+    <fieldset class="csat-field">
+      <legend class="csat-legend">How likely are you to recommend Bloom?</legend>
+      <div class="nps-row" id="npsRow" role="radiogroup" aria-label="Net Promoter Score 0 to 10"></div>
+    </fieldset>
+    <label for="csatComment" class="visually-hidden">Additional comments</label>
+    <textarea class="form-input csat-textarea" id="csatComment" rows="3" placeholder="Any additional comments? (optional)" maxlength="500"></textarea>
+    <button class="btn btn-primary btn-block" id="submitCsat" type="button">Submit Feedback →</button>
+  </div>
+</div>
+
 
 <div class="toast-container" id="toastContainer"></div>
 
@@ -149,91 +154,5 @@
 <script type="module" src="/js/core/Api.js"></script>
 <script type="module" src="/js/core/Auth.js"></script>
 <script type="module" src="/js/support.js"></script>
-<script>
-window.addEventListener('DOMContentLoaded', () => {
-  const faqList = document.getElementById('faqList');
-  const tabWrap = document.getElementById('faqCategoryTabs');
-  if (!faqList) return;
-
-  function renderFaqs(faqs) {
-    if (!faqs.length) {
-      faqList.innerHTML = '<div style="color:rgba(255,255,255,0.3);text-align:center;padding:40px;">No FAQs available yet.</div>';
-      return;
-    }
-    faqList.innerHTML = faqs.map(f => `
-      <div class="faq-item" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:20px;margin-bottom:12px;transition:all 0.3s ease;">
-        <div class="faq-question" style="font-weight:600;margin-bottom:8px;font-size:0.95rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
-          ${f.question}
-          <span class="faq-arrow" style="color:rgba(255,255,255,0.4);font-size:1.2rem;flex-shrink:0;margin-left:12px;transition:transform 0.3s ease;">›</span>
-        </div>
-        <div class="faq-answer" style="font-size:0.88rem;color:rgba(255,255,255,0.55);line-height:1.7;">${f.answer}</div>
-      </div>
-    `).join('');
-
-    faqList.querySelectorAll('.faq-question').forEach(el => {
-      el.addEventListener('click', () => {
-        const item = el.closest('.faq-item');
-        const arrow = el.querySelector('.faq-arrow');
-        const isHidden = !item.classList.contains('open');
-        item.classList.toggle('open');
-        arrow.style.transform = isHidden ? 'rotate(90deg)' : 'rotate(0deg)';
-      });
-    });
-  }
-
-  function buildTabs(faqs) {
-    if (!tabWrap) return;
-    const cats = ['all', ...new Set(faqs.map(f => f.category).filter(Boolean))];
-    tabWrap.innerHTML = cats.map(c => `
-      <button data-cat="${c}" style="padding:6px 16px;border-radius:100px;border:1.5px solid rgba(255,255,255,0.15);background:${c==='all'?'linear-gradient(135deg,#8B1F6E,#E84393)':'transparent'};color:${c==='all'?'#fff':'rgba(255,255,255,0.6)'};font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.2s;">${c.charAt(0).toUpperCase()+c.slice(1)}</button>
-    `).join('');
-
-    tabWrap.querySelectorAll('button').forEach(btn => {
-      btn.addEventListener('click', () => filterFaqs(btn.dataset.cat, btn));
-    });
-  }
-
-  let allFaqs = [];
-  window.filterFaqs = function(cat, btn) {
-    document.querySelectorAll('#faqCategoryTabs button').forEach(b => {
-      b.style.background = 'transparent';
-      b.style.color = 'rgba(255,255,255,0.6)';
-    });
-    btn.style.background = 'linear-gradient(135deg,#8B1F6E,#E84393)';
-    btn.style.color = '#fff';
-    renderFaqs(cat === 'all' ? allFaqs : allFaqs.filter(f => f.category === cat));
-  };
-
-  function loadFaqs() {
-    fetch('/api/faq')
-      .then(r => r.json())
-      .then(data => {
-        allFaqs = Array.isArray(data) ? data : (data.faqs || []);
-        
-        // Preserve active category if any
-        const activeBtn = document.querySelector('#faqCategoryTabs button[style*="linear-gradient"]');
-        const activeCat = activeBtn ? activeBtn.dataset.cat : 'all';
-        
-        buildTabs(allFaqs);
-        
-        const newBtn = document.querySelector(`#faqCategoryTabs button[data-cat="${activeCat}"]`) || document.querySelector('#faqCategoryTabs button[data-cat="all"]');
-        if (newBtn) {
-          filterFaqs(newBtn.dataset.cat, newBtn);
-        } else {
-          renderFaqs(allFaqs);
-        }
-      })
-      .catch(() => {
-        faqList.innerHTML = '<div style="color:rgba(255,255,255,0.3);text-align:center;padding:40px;">Could not load FAQs. Please try again later.</div>';
-      });
-  }
-
-  loadFaqs();
-
-  if (window.Store && window.Store.on) {
-    window.Store.on('faq_update', loadFaqs);
-  }
-});
-</script>
 </body>
 </html>
