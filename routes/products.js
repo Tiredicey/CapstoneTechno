@@ -24,6 +24,17 @@ const upload = multer({
 });
 const router = Router();
 
+
+try {
+  db.exec(`CREATE TABLE IF NOT EXISTS wishlists (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    product_id TEXT NOT NULL,
+    added_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, product_id)
+  )`);
+} catch (e) { console.warn('[WISHLIST] Table creation skipped:', e.message); }
+
 function tryParse(val, fallback) {
   if (typeof val !== 'string') return val ?? fallback;
   try { return JSON.parse(val); } catch { return fallback; }
@@ -186,6 +197,30 @@ router.delete('/:id', authenticate, requireAdmin, (req, res) => {
     res.json({ message: 'Product deactivated' });
   } catch (err) {
     res.status(500).json({ error: 'Failed to delete product' });
+  }
+});
+
+
+
+router.post('/:id/wishlist', authenticate, (req, res) => {
+  try {
+    const productId = req.params.id;
+    const existing = db.get('SELECT id FROM wishlists WHERE user_id = ? AND product_id = ?', [req.user.id, productId]);
+    if (existing) return res.json({ message: 'Already in wishlist' });
+    db.run('INSERT INTO wishlists (id, user_id, product_id) VALUES (?, ?, ?)', [uuid(), req.user.id, productId]);
+    res.status(201).json({ message: 'Added to wishlist' });
+  } catch (err) {
+    console.error('[WISHLIST ADD ERROR]', err);
+    res.status(500).json({ error: 'Failed to add to wishlist' });
+  }
+});
+
+router.delete('/:id/wishlist', authenticate, (req, res) => {
+  try {
+    db.run('DELETE FROM wishlists WHERE user_id = ? AND product_id = ?', [req.user.id, req.params.id]);
+    res.json({ message: 'Removed from wishlist' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to remove from wishlist' });
   }
 });
 
