@@ -26,7 +26,7 @@ const router = Router();
 
 
 try {
-  db.exec(`CREATE TABLE IF NOT EXISTS wishlists (
+  db.run(`CREATE TABLE IF NOT EXISTS wishlists (
     id TEXT PRIMARY KEY,
     user_id TEXT NOT NULL,
     product_id TEXT NOT NULL,
