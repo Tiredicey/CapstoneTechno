@@ -1,0 +1,30 @@
+{
+  "env": {
+    "browser": true,
+    "node": true,
+    "es2022": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module"
+  },
+  "rules": {
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "no-undef": "warn",
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "eqeqeq": ["error", "always"],
+    "no-eval": "error",
+    "no-implied-eval": "error",
+    "no-new-func": "error",
+    "no-script-url": "error",
+    "no-proto": "error",
+    "no-with": "error",
+    "prefer-const": "warn",
+    "no-var": "warn",
+    "curly": ["warn", "multi-line"],
+    "no-throw-literal": "error",
+    "no-self-compare": "error",
+    "no-template-curly-in-string": "warn"
+  },
+  "ignorePatterns": ["node_modules/", "uploads/", "public/js/core/I18n.js"]
+}
