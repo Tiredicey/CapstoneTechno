@@ -316,7 +316,7 @@
       var token = localStorage.getItem('bloom_token');
       if (!token) {
         showToast('Please sign in to checkout', 'error');
-        var authModal = document.getElementById('authModal');
+        var authModal = document.getElementById('authMod');
         if (authModal) authModal.classList.add('active');
         return;
       }
