@@ -12,7 +12,7 @@ test.describe('Catalog Browsing', () => {
     const card = page.locator('.product-card').first();
     await expect(card).toBeVisible();
 
-
+   
     const img = card.locator('img').first();
     if (await img.isVisible().catch(() => false)) {
       const src = await img.getAttribute('src');
@@ -26,7 +26,7 @@ test.describe('Catalog Browsing', () => {
 
     const sortSelect = page.locator('#sortSelect');
     if (await sortSelect.isVisible()) {
-
+   
       await sortSelect.selectOption('price_asc');
       await page.waitForTimeout(800);
       await expect(page.locator('#productsGrid')).toBeVisible();
@@ -45,12 +45,12 @@ test.describe('Catalog Browsing', () => {
     await page.waitForTimeout(500);
 
     const modal = page.locator('#productModal');
-
+ 
     const modalBody = page.locator('#modalProductBody');
     if (await modal.isVisible({ timeout: 3000 }).catch(() => false)) {
       await expect(modalBody).toBeVisible();
 
-
+   
       const closeBtn = page.locator('#closeProductModal');
       if (await closeBtn.isVisible()) {
         await closeBtn.click();
@@ -69,10 +69,10 @@ test.describe('Catalog Browsing', () => {
       const btnCount = await buttons.count();
 
       if (btnCount > 1) {
-  
+   
         await buttons.nth(1).click();
         await page.waitForTimeout(800);
-      
+    
         await expect(page.locator('#productsGrid')).toBeVisible();
       }
     }
@@ -90,16 +90,16 @@ test.describe('Wishlist', () => {
 
       const wasActive = await heartBtn.evaluate(el => el.classList.contains('active'));
 
-
+    
       await heartBtn.click();
       await page.waitForTimeout(300);
 
       const isActive = await heartBtn.evaluate(el => el.classList.contains('active'));
       expect(isActive).toBe(!wasActive);
 
-  
-      const toast = page.locator('[class*="toast"], #toastContainer');
 
+      const toast = page.locator('[class*="toast"], #toastContainer');
+   
     }
   });
 
@@ -109,13 +109,13 @@ test.describe('Wishlist', () => {
 
     const heartBtn = page.locator('.product-wishlist').first();
     if (await heartBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-
+  
       if (!(await heartBtn.evaluate(el => el.classList.contains('active')))) {
         await heartBtn.click();
         await page.waitForTimeout(500);
       }
 
-
+  
       const wishlistData = await page.evaluate(() => {
         return localStorage.getItem('bloom_wishlist');
       });
@@ -124,11 +124,11 @@ test.describe('Wishlist', () => {
       const items = JSON.parse(wishlistData || '[]');
       expect(items.length).toBeGreaterThan(0);
 
- 
+   
       await page.reload();
       await page.waitForSelector('.product-card', { timeout: 15000 });
 
-  
+     
       const afterReload = await page.evaluate(() => {
         return localStorage.getItem('bloom_wishlist');
       });
@@ -155,7 +155,6 @@ test.describe('Navigation & Auth', () => {
         await expect(page.locator('#loginEmail')).toBeVisible();
         await expect(page.locator('#loginPassword')).toBeVisible();
 
-
         const registerTab = page.locator('.auth-tab[data-tab="register"]');
         if (await registerTab.isVisible()) {
           await registerTab.click();
@@ -163,7 +162,7 @@ test.describe('Navigation & Auth', () => {
           await expect(page.locator('#registerForm')).toBeVisible();
         }
 
-     
+  
         await page.locator('#closeAuthModal').click();
       }
     }
@@ -190,7 +189,6 @@ test.describe('Responsive Design', () => {
     await page.goto('/catalog.html');
     await page.waitForSelector('.product-card', { timeout: 15000 });
 
-  
     await expect(page.locator('.product-card').first()).toBeVisible();
 
 
@@ -228,6 +226,7 @@ test.describe('Performance Baseline', () => {
   });
 
   test('No console errors on landing page', async ({ page }) => {
+
     const errors = [];
     page.on('pageerror', err => errors.push(err.message));
 
