@@ -6,7 +6,17 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "build": "npm install"
+    "build": "node scripts/build.js",
+    "build:analyze": "node scripts/build.js && echo 'See dist/build-manifest.json for details'",
+    "start:prod": "npm run build && NODE_ENV=production node server.js",
+    "test": "npx playwright test",
+    "test:chromium": "npx playwright test --project=chromium",
+    "test:ui": "npx playwright test --ui",
+    "test:report": "npx playwright show-report test-results/html",
+    "lint": "npx eslint public/js/ routes/ middleware/ --ext .js",
+    "lint:css": "npx stylelint public/css/**/*.css",
+    "format": "npx prettier --write \"public/js/**/*.js\" \"routes/**/*.js\" \"middleware/**/*.js\"",
+    "format:check": "npx prettier --check \"public/js/**/*.js\" \"routes/**/*.js\""
   },
   "engines": {
     "node": "20.x"
@@ -27,5 +37,13 @@
     "multer": "^1.4.5-lts.1",
     "socket.io": "^4.7.4",
     "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0",
+    "@playwright/test": "^1.48.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.3.0",
+    "stylelint": "^16.10.0",
+    "stylelint-config-standard": "^36.0.0"
   }
 }
