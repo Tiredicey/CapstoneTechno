@@ -42,10 +42,10 @@ function spawnPetals() {
 function spawnParticles() {
   const field = document.getElementById('particles');
   if (!field) return;
-  // Adjust particle count based on device capability
+
   var cores = navigator.hardwareConcurrency || 2;
   var maxParticles = cores >= 8 ? 18 : cores >= 4 ? 12 : 6;
-  // Respect reduced motion preference
+
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     maxParticles = 3;
   }
