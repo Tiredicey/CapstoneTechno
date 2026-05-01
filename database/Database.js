@@ -294,16 +294,16 @@ class DatabaseClass {
       for (const r of rows) insert.run(...r);
     });
     seed([
-      ['prod_1',  'Crimson Vow',        'bouquets',     'A timeless arrangement of dark red roses',          2799.44, JSON.stringify(['/uploads/products/crimson-vow.jpg']),       JSON.stringify(['roses','classic','romance']),    50, 1],
-      ['prod_2',  'Neon Blossom',       'bouquets',     'Striking neon-lit red floral arrangement',          2239.44, JSON.stringify(['/uploads/products/neon-blossom.jpg']),     JSON.stringify(['neon','urban']),                 40, 1],
-      ['prod_3',  'Velvet Midnight',    'arrangements', 'Soothing yet dark lavender arrangement',            2519.44, JSON.stringify(['/uploads/products/velvet-midnight.jpg']),  JSON.stringify(['lavender','dark']),              30, 1],
-      ['prod_4',  'Obsidian Rose',      'bouquets',     'Deep, beautiful mix of shadowed red flowers',       1959.44, JSON.stringify(['/uploads/products/obsidian-rose.jpg']),    JSON.stringify(['dark','seasonal']),              60, 1],
-      ['prod_5',  'Phantom Orchid',     'arrangements', 'Exotic orchids in a luxury black vase',             4479.44, JSON.stringify(['/uploads/products/phantom-orchid.jpg']),   JSON.stringify(['orchids','luxury','exotic']),    20, 1],
-      ['prod_6',  'Executive Crimson',  'bouquets',     'Bold crimson roses with elegant styling',           3639.44, JSON.stringify(['/uploads/products/executive-crimson.jpg']),JSON.stringify(['roses','bold','corporate']),     35, 1],
-      ['prod_7',  'Rebel Spark',        'arrangements', 'Vibrant pink and red against dark backgrounds',     3079.44, JSON.stringify(['/uploads/products/rebel-spark.jpg']),      JSON.stringify(['rebel','spark','modern']),       25, 1],
-      ['prod_8',  'Shadow Garden',      'arrangements', 'Moody carnations and deep shadows',                 3919.44, JSON.stringify(['/uploads/products/shadow-garden.jpg']),    JSON.stringify(['dark','shadow','elegant']),      20, 1],
-      ['prod_9',  'Tulip Festival',     'bouquets',     'Stylized mixed tulips with high contrast',          2407.44, JSON.stringify(['/uploads/products/tulip-festival.jpg']),   JSON.stringify(['tulips','colorful','stylish']),  45, 1],
-      ['prod_10', 'Garden Peony',       'arrangements', 'Lush red peonies on absolute black',                3359.44, JSON.stringify(['/uploads/products/garden-peony.jpg']),     JSON.stringify(['peonies','dark','anniversary']), 30, 1]
+      ['prod_1',  'Crimson Vow',        'bouquets',     'A timeless arrangement of dark red roses',          2799.44, JSON.stringify(['https://picsum.photos/seed/crimsonvow/800/800']),       JSON.stringify(['roses','classic','romance']),    50, 1],
+      ['prod_2',  'Neon Blossom',       'bouquets',     'Striking neon-lit red floral arrangement',          2239.44, JSON.stringify(['https://picsum.photos/seed/neonblossom/800/800']),     JSON.stringify(['neon','urban']),                 40, 1],
+      ['prod_3',  'Velvet Midnight',    'arrangements', 'Soothing yet dark lavender arrangement',            2519.44, JSON.stringify(['https://picsum.photos/seed/velvet/800/800']),  JSON.stringify(['lavender','dark']),              30, 1],
+      ['prod_4',  'Obsidian Rose',      'bouquets',     'Deep, beautiful mix of shadowed red flowers',       1959.44, JSON.stringify(['https://picsum.photos/seed/obsidian/800/800']),    JSON.stringify(['dark','seasonal']),              60, 1],
+      ['prod_5',  'Phantom Orchid',     'arrangements', 'Exotic orchids in a luxury black vase',             4479.44, JSON.stringify(['https://picsum.photos/seed/phantom/800/800']),   JSON.stringify(['orchids','luxury','exotic']),    20, 1],
+      ['prod_6',  'Executive Crimson',  'bouquets',     'Bold crimson roses with elegant styling',           3639.44, JSON.stringify(['https://picsum.photos/seed/executive/800/800']),JSON.stringify(['roses','bold','corporate']),     35, 1],
+      ['prod_7',  'Rebel Spark',        'arrangements', 'Vibrant pink and red against dark backgrounds',     3079.44, JSON.stringify(['https://picsum.photos/seed/rebel/800/800']),      JSON.stringify(['rebel','spark','modern']),       25, 1],
+      ['prod_8',  'Shadow Garden',      'arrangements', 'Moody carnations and deep shadows',                 3919.44, JSON.stringify(['https://picsum.photos/seed/shadow/800/800']),    JSON.stringify(['dark','shadow','elegant']),      20, 1],
+      ['prod_9',  'Tulip Festival',     'bouquets',     'Stylized mixed tulips with high contrast',          2407.44, JSON.stringify(['https://picsum.photos/seed/tulip/800/800']),   JSON.stringify(['tulips','colorful','stylish']),  45, 1],
+      ['prod_10', 'Garden Peony',       'arrangements', 'Lush red peonies on absolute black',                3359.44, JSON.stringify(['https://picsum.photos/seed/garden/800/800']),     JSON.stringify(['peonies','dark','anniversary']), 30, 1]
     ]);
     console.log('🌸 Products seeded');
   }
