@@ -42,9 +42,16 @@ function spawnPetals() {
 function spawnParticles() {
   const field = document.getElementById('particles');
   if (!field) return;
+  // Adjust particle count based on device capability
+  var cores = navigator.hardwareConcurrency || 2;
+  var maxParticles = cores >= 8 ? 18 : cores >= 4 ? 12 : 6;
+  // Respect reduced motion preference
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    maxParticles = 3;
+  }
   const colors = ['rgba(232,67,147,0.6)', 'rgba(0,212,170,0.5)', 'rgba(124,58,237,0.5)', 'rgba(255,215,0,0.4)', 'rgba(255,255,255,0.3)'];
   const emojis = ['🌸', '✦', '·', '✿', '❋'];
-  for (let i = 0; i < 18; i++) {
+  for (let i = 0; i < maxParticles; i++) {
     const p = document.createElement('div');
     p.className = 'particle';
     const useEmoji = Math.random() > 0.6;
