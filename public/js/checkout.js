@@ -89,7 +89,7 @@ function showToast(msg, type = 'info') {
 
 document.getElementById('step1Next')?.addEventListener('click', () => {
   const section = document.getElementById('step1');
-  // Use BloomFormValidator for accessible error summary if available
+
   if (window.BloomFormValidator && section) {
     var valid = BloomFormValidator.validate(section, {
       recFirstName: { required: true, label: 'First Name', min: 1 },
