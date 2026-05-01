@@ -88,12 +88,27 @@ function showToast(msg, type = 'info') {
 }
 
 document.getElementById('step1Next')?.addEventListener('click', () => {
-  const req = ['recFirstName', 'recLastName', 'recAddress', 'recCity', 'recZip'];
-  for (const id of req) {
-    if (!document.getElementById(id)?.value?.trim()) {
-      showToast('Please fill in all required fields', 'error');
-      document.getElementById(id)?.focus();
-      return;
+  const section = document.getElementById('step1');
+  // Use BloomFormValidator for accessible error summary if available
+  if (window.BloomFormValidator && section) {
+    var valid = BloomFormValidator.validate(section, {
+      recFirstName: { required: true, label: 'First Name', min: 1 },
+      recLastName: { required: true, label: 'Last Name', min: 1 },
+      recAddress: { required: true, label: 'Delivery Address', min: 5 },
+      recCity: { required: true, label: 'City', min: 2 },
+      recZip: { required: true, label: 'ZIP Code', min: 3, pattern: /^[\d\-\s]{3,10}$/, message: 'ZIP Code must be 3-10 digits' }
+    });
+    if (!valid) return;
+    BloomFormValidator.clearErrors(section);
+  } else {
+    // Fallback validation
+    const req = ['recFirstName', 'recLastName', 'recAddress', 'recCity', 'recZip'];
+    for (const id of req) {
+      if (!document.getElementById(id)?.value?.trim()) {
+        showToast('Please fill in all required fields', 'error');
+        document.getElementById(id)?.focus();
+        return;
+      }
     }
   }
   goTo(2);
