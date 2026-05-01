@@ -69,7 +69,29 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(rateLimiter);
 app.use(inputSanitizer);
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+
+// In production, serve pre-built minified assets from dist/
+// In development, serve raw source from public/ for easy debugging
+import { existsSync } from 'fs';
+const DIST_DIR = path.join(__dirname, 'dist');
+const PUBLIC_DIR = path.join(__dirname, 'public');
+const STATIC_ROOT = IS_PROD && existsSync(DIST_DIR) ? DIST_DIR : PUBLIC_DIR;
+
+app.use(express.static(STATIC_ROOT, {
+  maxAge: IS_PROD ? '1y' : 0,
+  etag: true,
+  lastModified: true,
+  setHeaders: (res, filePath) => {
+    // Immutable cache for hashed assets in production
+    if (IS_PROD && (filePath.endsWith('.min.js') || filePath.endsWith('.min.css'))) {
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    }
+  },
+}));
+// Always serve public/ as fallback for non-built assets (images, manifest, etc.)
+if (IS_PROD && existsSync(DIST_DIR)) {
+  app.use(express.static(PUBLIC_DIR));
+}
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/api/auth', authRoutes);
@@ -151,7 +173,7 @@ app.get('/sitemap.xml', async (req, res) => {
     products.forEach(p => {
       xml += '  <url><loc>' + host + '/catalog.html?id=' + p.id + '</loc><changefreq>daily</changefreq><priority>0.8</priority></url>\n';
     });
-  } catch {}
+  } catch { }
   xml += '</urlset>';
   res.set('Content-Type', 'application/xml').send(xml);
 });
