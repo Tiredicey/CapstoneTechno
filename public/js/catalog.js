@@ -136,11 +136,27 @@ function bindCardEvents(container) {
 
   container.querySelectorAll('.product-wishlist:not([data-bound])').forEach(function (btn) {
     btn.dataset.bound = '1';
+    var card = btn.closest('.product-card');
+    var pid = card ? card.dataset.id : null;
+    // Sync initial state from Wishlist module
+    if (pid && window.Wishlist && Wishlist.has(pid)) {
+      btn.classList.add('active');
+      btn.textContent = '♥';
+    }
     btn.addEventListener('click', function (e) {
       e.stopPropagation();
-      btn.classList.toggle('active');
-      btn.textContent = btn.classList.contains('active') ? '♥' : '♡';
-      showToast(btn.classList.contains('active') ? 'Saved to wishlist ♥' : 'Removed from wishlist', 'info');
+      if (!pid) return;
+      if (window.Wishlist) {
+        var product = { id: pid, name: card.querySelector('[style*="font-weight:600"]')?.textContent || '', price: 0 };
+        var added = Wishlist.toggle(product);
+        btn.classList.toggle('active', added);
+        btn.textContent = added ? '♥' : '♡';
+        showToast(added ? 'Saved to wishlist ♥' : 'Removed from wishlist', 'info');
+      } else {
+        btn.classList.toggle('active');
+        btn.textContent = btn.classList.contains('active') ? '♥' : '♡';
+        showToast(btn.classList.contains('active') ? 'Saved to wishlist ♥' : 'Removed from wishlist', 'info');
+      }
     });
   });
 }
@@ -266,7 +282,14 @@ function renderPagination(count) {
 
 document.getElementById('searchInput') && document.getElementById('searchInput').addEventListener('input', function (e) {
   clearTimeout(searchTimer);
-  searchTimer = setTimeout(function () { currentSearch = e.target.value.trim(); currentPage = 0; loadProducts(); }, 380);
+  searchTimer = setTimeout(function () {
+    // Sanitize search input: strip HTML tags and suspicious patterns
+    var raw = e.target.value.trim();
+    raw = raw.replace(/<[^>]*>/g, '').replace(/javascript\s*:/gi, '').replace(/on\w+\s*=/gi, '');
+    currentSearch = raw;
+    currentPage = 0;
+    loadProducts();
+  }, 380);
 });
 
 document.getElementById('sortSelect') && document.getElementById('sortSelect').addEventListener('change', function (e) {
