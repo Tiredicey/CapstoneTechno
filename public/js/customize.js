@@ -1,240 +1,526 @@
-let basePrice = 64.99;
-let priceDelta = 0;
-let config = {
-  flower: 'rose',
-  color: 'crimson',
-  bloomCount: 12,
-  wrapping_premium: false,
-  wrapping_luxury: false,
-  ribbon_satin: false,
-  ribbon_velvet: false,
-  giftBox: false,
-  engraving: false,
-  engravingText: '',
-  greetingCard: false,
-  cardText: '',
-  logoUpload: false,
-  customDesign: false,
-  logoUrl: null
-};
-let productId = null;
-let customizationId = null;
+(function () {
+  'use strict';
 
-function fmt(n) {
-  return `₱${Number(n || 0).toFixed(2)}`;
-}
+  var POLLINATIONS_BASE = 'https://image.pollinations.ai/prompt/';
+  var SKETCHFAB_MODEL_UID = '48e92013548247a9ad486dc13110c9b4';
+  var SKETCHFAB_EMBED_URL = 'https://sketchfab.com/models/' + SKETCHFAB_MODEL_UID + '/embed?autostart=1&ui_theme=dark&ui_infos=0&ui_inspector=0&ui_stop=0&ui_watermark=0&ui_watermark_link=0&ui_ar=0&ui_help=0&ui_settings=0&ui_vr=0&ui_fullscreen=0&ui_annotations=0&transparent=1&camera=0';
+  var MODEL_SRC_LOCAL = '/models/bouquet.glb';
 
-function updatePrice() {
-  priceDelta = 0;
-  if (config.wrapping_premium) priceDelta += 8;
-  if (config.wrapping_luxury) priceDelta += 15;
-  if (config.ribbon_satin) priceDelta += 3;
-  if (config.ribbon_velvet) priceDelta += 6;
-  if (config.giftBox) priceDelta += 10;
-  if (config.engraving) priceDelta += 12;
-  if (config.logoUpload) priceDelta += 20;
-  if (config.customDesign) priceDelta += 15;
-  const extraStems = Math.max(0, config.bloomCount - 12);
-  priceDelta += Math.floor(extraStems / 3) * 2;
-  const total = basePrice + priceDelta;
-  const livePriceEl = document.getElementById('livePrice');
-  const cartPriceBtn = document.getElementById('cartPriceBtn');
-  if (livePriceEl) livePriceEl.textContent = fmt(total);
-  if (cartPriceBtn) cartPriceBtn.textContent = fmt(total);
-}
+  var basePrice = 64.99;
+  var priceDelta = 0;
+  var config = {
+    flower: 'rose',
+    color: 'crimson',
+    bloomCount: 12,
+    wrapping_premium: false,
+    wrapping_luxury: false,
+    ribbon_satin: false,
+    ribbon_velvet: false,
+    giftBox: false,
+    engraving: false,
+    engravingText: '',
+    greetingCard: false,
+    cardText: '',
+    logoUpload: false,
+    customDesign: false,
+    logoUrl: null
+  };
+  var productId = null;
+  var customizationId = null;
+  var currentMode = 'default';
+  var aiDebounce = null;
+  var lastAiPromptHash = '';
 
-document.addEventListener('DOMContentLoaded', () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get('id')) {
-    productId = urlParams.get('id');
-    
-    const loadProductData = () => {
-      Api.get(`/api/products/${productId}`).then(p => {
-        basePrice = p.base_price || p.basePrice || 64.99;
-        const titleEl = document.getElementById('productTitle');
-        if (titleEl) titleEl.textContent = p.name;
-        updatePrice();
-        
-        let pImgs = p.images ||[];
-        if (typeof pImgs === 'string') { try { pImgs = JSON.parse(pImgs); } catch(e){} }
-        let mainImg = Array.isArray(pImgs) && pImgs.length ? pImgs.flat(Infinity)[0] : '';
-        if (typeof mainImg === 'string') {
-          var cleanStr = mainImg.replace(/[\[\]"\\]/g, '/');
-          var parts = cleanStr.split('/');
-          var filename = parts[parts.length - 1];
-          mainImg = filename && filename !== 'null' ? '/uploads/products/' + filename : '';
-        }
-        
-        if (mainImg) {
-          const preview = document.getElementById('previewDisplay');
-          if (preview) preview.innerHTML = `<img src="${mainImg}" style="width:100%;height:100%;object-fit:contain;" alt="${p.name}">`;
-        }
-      }).catch(() => {});
+  function qs(s) { return document.querySelector(s); }
+  function qsa(s) { return Array.from(document.querySelectorAll(s)); }
+
+  function fmt(n) {
+    return '\u20B1' + Number(n || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function showToast(msg, type) {
+    if (window.showToast) return window.showToast(msg, type);
+    var con = qs('#toastContainer');
+    if (!con) return;
+    var t = document.createElement('div');
+    t.className = 'toast toast-' + (type || 'info');
+    t.textContent = msg;
+    con.appendChild(t);
+    setTimeout(function () { t.remove(); }, 3500);
+  }
+
+  function updatePrice() {
+    priceDelta = 0;
+    if (config.wrapping_premium) priceDelta += 8;
+    if (config.wrapping_luxury) priceDelta += 15;
+    if (config.ribbon_satin) priceDelta += 3;
+    if (config.ribbon_velvet) priceDelta += 6;
+    if (config.giftBox) priceDelta += 10;
+    if (config.engraving) priceDelta += 12;
+    if (config.logoUpload) priceDelta += 20;
+    if (config.customDesign) priceDelta += 15;
+    var extraStems = Math.max(0, config.bloomCount - 12);
+    priceDelta += Math.floor(extraStems / 3) * 2;
+    var total = basePrice + priceDelta;
+    var livePriceEl = qs('#livePrice');
+    var cartPriceBtn = qs('#cartPriceBtn');
+    if (livePriceEl) livePriceEl.textContent = fmt(total);
+    if (cartPriceBtn) cartPriceBtn.textContent = fmt(total);
+  }
+
+  function buildAIPrompt() {
+    var colorNames = {
+      crimson: 'deep crimson red',
+      blush: 'soft blush pink',
+      white: 'pure white',
+      lavender: 'lavender purple',
+      peach: 'warm peach',
+      yellow: 'golden yellow',
+      coral: 'coral pink',
+      burgundy: 'deep burgundy',
+      teal: 'teal green'
     };
+    var flowerNames = {
+      rose: 'roses',
+      tulip: 'tulips',
+      lily: 'lilies',
+      orchid: 'orchids',
+      sunflower: 'sunflowers',
+      peony: 'peonies'
+    };
+    var wrap = '';
+    if (config.wrapping_luxury) wrap = ', wrapped in luxury silk fabric with wax seal';
+    else if (config.wrapping_premium) wrap = ', wrapped in premium textured kraft paper with gold foil accent';
+    var ribbon = '';
+    if (config.ribbon_velvet) ribbon = ', tied with deep velvet ribbon';
+    else if (config.ribbon_satin) ribbon = ', tied with elegant satin ribbon';
+    var extras = '';
+    if (config.giftBox) extras += ', presented inside a rigid magnetic gift box';
+    var color = colorNames[config.color] || config.color;
+    var flower = flowerNames[config.flower] || config.flower;
+    return 'Professional studio photography of a luxurious bouquet containing ' +
+      config.bloomCount + ' ' + color + ' ' + flower +
+      wrap + ribbon + extras +
+      ', dark moody background with subtle warm lighting, high-end floral arrangement, photorealistic, 4k quality, elegant composition';
+  }
 
-    loadProductData();
+  function hashString(str) {
+    var hash = 0;
+    for (var i = 0; i < str.length; i++) {
+      hash = ((hash << 5) - hash) + str.charCodeAt(i);
+      hash |= 0;
+    }
+    return String(hash);
+  }
 
-    if (typeof io !== 'undefined') {
-      var socket = io();
-      socket.on('catalog_update', loadProductData);
+  function generateAIPreview() {
+    var prompt = buildAIPrompt();
+    var promptHash = hashString(prompt);
+    if (promptHash === lastAiPromptHash) return;
+    lastAiPromptHash = promptHash;
+
+    var loading = qs('#aiLoading');
+    var img = qs('#aiImage');
+    if (!img) return;
+
+    if (loading) loading.style.display = 'flex';
+    img.style.opacity = '0';
+
+    var seed = Math.abs(parseInt(promptHash)) % 100000;
+    var url = POLLINATIONS_BASE + encodeURIComponent(prompt) +
+      '?width=768&height=768&seed=' + seed + '&nologo=true&model=flux';
+
+    var preload = new Image();
+    preload.onload = function () {
+      img.src = url;
+      img.alt = 'AI-generated bouquet: ' + config.bloomCount + ' ' + config.color + ' ' + config.flower;
+      img.style.transition = 'opacity 0.6s ease';
+      img.style.opacity = '1';
+      if (loading) loading.style.display = 'none';
+    };
+    preload.onerror = function () {
+      if (loading) loading.style.display = 'none';
+      img.style.opacity = '1';
+      showToast('AI preview temporarily unavailable', 'info');
+    };
+    preload.src = url;
+  }
+
+  function scheduleAIPreview() {
+    if (currentMode !== 'ai') return;
+    clearTimeout(aiDebounce);
+    aiDebounce = setTimeout(generateAIPreview, 1200);
+  }
+
+  function switchMode(mode) {
+    currentMode = mode;
+    var modes = ['default', 'ai', '3d'];
+    modes.forEach(function (m) {
+      var el = qs('#preview' + (m === 'default' ? 'Default' : m === 'ai' ? 'AI' : '3D'));
+      if (el) el.style.display = (m === mode) ? 'flex' : 'none';
+    });
+
+    qsa('.canvas-btn').forEach(function (b) { b.classList.remove('mode-active'); });
+    var btnMap = { default: '#modeDefault', ai: '#modeAI', '3d': '#mode3D' };
+    var activeBtn = qs(btnMap[mode]);
+    if (activeBtn) activeBtn.classList.add('mode-active');
+
+    if (mode === 'ai') {
+      lastAiPromptHash = '';
+      generateAIPreview();
+    }
+
+    if (mode === '3d') {
+      initSketchfabViewer();
     }
   }
 
-  updatePrice();
+  var sketchfabInited = false;
 
-  document.querySelectorAll('.config-section-header').forEach(header => {
-    header.addEventListener('click', () => {
-      header.closest('.config-section')?.classList.toggle('open');
-    });
-  });
+  function initSketchfabViewer() {
+    var container = qs('#preview3D');
+    if (!container || sketchfabInited) return;
+    sketchfabInited = true;
 
-  document.querySelectorAll('#flowerPills .option-pill').forEach(pill => {
-    pill.addEventListener('click', () => {
-      document.querySelectorAll('#flowerPills .option-pill').forEach(p => p.classList.remove('selected'));
-      pill.classList.add('selected');
-      config.flower = pill.dataset.flower;
-      const emojis = { rose: '🌹', tulip: '🌷', lily: '🌸', orchid: '🪷', sunflower: '🌻', peony: '✿' };
-      if (!productId) {
-        const preview = document.getElementById('previewDisplay');
-        if (preview) preview.innerHTML = `<div style="font-size:8rem;display:flex;align-items:center;justify-content:center;height:100%;">${emojis[config.flower] || '🌸'}</div>`;
+    var status = qs('#modelStatus');
+    if (status) {
+      status.textContent = 'Loading 3D bouquet…';
+      status.style.display = 'block';
+      status.style.opacity = '1';
+    }
+
+    var existing = container.querySelector('iframe');
+    if (existing) existing.remove();
+
+    var iframe = document.createElement('iframe');
+    iframe.src = SKETCHFAB_EMBED_URL;
+    iframe.title = 'Flower Bouquet 3D — by ice (Sketchfab, CC-BY 4.0)';
+    iframe.allow = 'autoplay; fullscreen; xr-spatial-tracking';
+    iframe.setAttribute('allowfullscreen', '');
+    iframe.setAttribute('mozallowfullscreen', 'true');
+    iframe.setAttribute('webkitallowfullscreen', 'true');
+    iframe.style.cssText = 'width:100%;height:100%;border:none;border-radius:12px;position:absolute;inset:0;';
+
+    iframe.addEventListener('load', function () {
+      if (status) {
+        status.textContent = 'Flower Bouquet by ice — CC-BY 4.0';
+        setTimeout(function () { status.style.opacity = '0'; }, 3000);
       }
     });
-  });
 
-  document.getElementById('bloomCount')?.addEventListener('input', e => {
-    config.bloomCount = Number(e.target.value);
-    const label = document.getElementById('bloomCountLabel');
-    if (label) label.textContent = `${config.bloomCount} stems`;
+    var mv = container.querySelector('model-viewer');
+    if (mv) mv.style.display = 'none';
+
+    container.appendChild(iframe);
+  }
+
+  function initModelViewerForAR() {
+    var mv = qs('#modelViewer');
+    if (!mv) return;
+
+    if (!mv.getAttribute('src')) {
+      mv.setAttribute('src', MODEL_SRC_LOCAL);
+
+      mv.addEventListener('error', function () {
+        showToast('AR model not found — place bouquet.glb in /models/', 'info');
+      }, { once: true });
+    }
+  }
+
+  function launchAR() {
+    var mv = qs('#modelViewer');
+    if (!mv) {
+      showToast('3D model required for AR', 'info');
+      return;
+    }
+
+    initModelViewerForAR();
+
+    var container = qs('#preview3D');
+    if (container) {
+      var iframe = container.querySelector('iframe');
+      if (iframe) iframe.style.display = 'none';
+      mv.style.display = 'block';
+    }
+
+    if (currentMode !== '3d') {
+      switchMode('3d');
+    }
+
+    setTimeout(function () {
+      if (mv.canActivateAR) {
+        mv.activateAR();
+      } else {
+        window.open('https://sketchfab.com/3d-models/flower-bouquet-' + SKETCHFAB_MODEL_UID, '_blank');
+        showToast('Opening 3D viewer — use AR from Sketchfab app', 'info');
+      }
+    }, 800);
+  }
+
+  function onConfigChange() {
     updatePrice();
-  });
+    scheduleAIPreview();
+  }
 
-  document.querySelectorAll('#colorSwatches .swatch').forEach(swatch => {
-    swatch.addEventListener('click', () => {
-      document.querySelectorAll('.swatch').forEach(s => s.classList.remove('selected'));
-      swatch.classList.add('selected');
-      config.color = swatch.dataset.color;
-    });
-  });
+  document.addEventListener('DOMContentLoaded', function () {
+    var urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('id')) {
+      productId = urlParams.get('id');
 
-  document.querySelectorAll('input[data-config]').forEach(input => {
-    input.addEventListener('change', () => {
-      const key = input.dataset.config;
-      config[key] = input.checked;
-      if (key === 'engraving') {
-        const el = document.getElementById('engravingText');
-        if (el) el.style.display = input.checked ? 'block' : 'none';
+      var loadProductData = function () {
+        if (!window.Api) return;
+        Api.get('/api/products/' + productId).then(function (p) {
+          basePrice = p.base_price || p.basePrice || 64.99;
+          var titleEl = qs('#productTitle');
+          if (titleEl) titleEl.textContent = p.name;
+          updatePrice();
+
+          var pImgs = p.images || [];
+          if (typeof pImgs === 'string') { try { pImgs = JSON.parse(pImgs); } catch (e) {} }
+          var mainImg = Array.isArray(pImgs) && pImgs.length ? pImgs.flat(Infinity)[0] : '';
+          if (typeof mainImg === 'string') {
+            var cleanStr = mainImg.replace(/[\[\]"\\]/g, '/');
+            var parts = cleanStr.split('/');
+            var filename = parts[parts.length - 1];
+            mainImg = filename && filename !== 'null' ? '/uploads/products/' + filename : '';
+          }
+
+          if (mainImg) {
+            var preview = qs('#previewDefault');
+            if (preview) preview.innerHTML = '<img src="' + mainImg + '" style="width:100%;height:100%;object-fit:contain;" alt="' + (p.name || 'Product') + '">';
+          }
+        }).catch(function () {});
+      };
+
+      loadProductData();
+
+      if (typeof io !== 'undefined') {
+        var socket = io();
+        socket.on('catalog_update', loadProductData);
       }
-      if (key === 'greetingCard') {
-        const el = document.getElementById('cardText');
-        if (el) el.style.display = input.checked ? 'block' : 'none';
-      }
-      if (key === 'logoUpload') {
-        const el = document.getElementById('logoUploadArea');
-        if (el) el.style.display = input.checked ? 'block' : 'none';
-      }
-      updatePrice();
-    });
-  });
+    }
 
-  document.getElementById('engravingInput')?.addEventListener('input', e => { config.engravingText = e.target.value; });
-  document.getElementById('cardInput')?.addEventListener('input', e => { config.cardText = e.target.value; });
+    updatePrice();
 
-  const dragUpload = document.getElementById('dragUpload');
-  const logoFile = document.getElementById('logoFile');
-
-  dragUpload?.addEventListener('click', () => logoFile?.click());
-  dragUpload?.addEventListener('dragover', e => { e.preventDefault(); dragUpload.classList.add('dragover'); });
-  dragUpload?.addEventListener('dragleave', () => dragUpload.classList.remove('dragover'));
-  dragUpload?.addEventListener('drop', async e => {
-    e.preventDefault();
-    dragUpload.classList.remove('dragover');
-    const file = e.dataTransfer.files[0];
-    if (file) await uploadLogo(file);
-  });
-  logoFile?.addEventListener('change', async e => { if (e.target.files[0]) await uploadLogo(e.target.files[0]); });
-
-  document.getElementById('removeLogo')?.addEventListener('click', () => {
-    config.logoUrl = null;
-    const preview = document.getElementById('logoPreview');
-    const drag = document.getElementById('dragUpload');
-    if (preview) preview.style.display = 'none';
-    if (drag) drag.style.display = 'block';
-    if (logoFile) logoFile.value = '';
-  });
-
-  document.getElementById('addCustomToCart')?.addEventListener('click', async () => {
-    const btn = document.getElementById('addCustomToCart');
-    btn.disabled = true;
-    btn.textContent = 'Adding...';
-    try {
-      const id = productId || 'custom';
-      const cusRes = await Api.post('/api/customization', { productId: id, config });
-      customizationId = cusRes.id;
-      await Api.post('/api/cart/items', {
-        productId: id,
-        qty: 1,
-        customization: { ...config, id: customizationId, priceDelta: cusRes.priceDelta }
+    qsa('.config-section-header').forEach(function (header) {
+      header.addEventListener('click', function () {
+        var sec = header.closest('.config-section');
+        if (sec) sec.classList.toggle('open');
       });
-      const cart = await Api.get('/api/cart');
-      Store.set('cart', cart);
-      Store.updateCartCount(cart.items?.reduce((s, i) => s + (i.qty || 1), 0) || 0);
-      showToast('Custom arrangement added to cart 🌸', 'success');
-      setTimeout(() => { window.location.href = '/cart.html'; }, 800);
-    } catch (e) {
-      showToast(e.message || 'Error adding to cart', 'error');
-    } finally {
-      btn.disabled = false;
-      btn.innerHTML = `🛒 Add to Cart — <span id="cartPriceBtn">${fmt(basePrice + priceDelta)}</span>`;
+    });
+
+    qsa('#flowerPills .option-pill').forEach(function (pill) {
+      pill.addEventListener('click', function () {
+        qsa('#flowerPills .option-pill').forEach(function (p) { p.classList.remove('selected'); });
+        pill.classList.add('selected');
+        config.flower = pill.dataset.flower;
+        var emojis = { rose: '🌹', tulip: '🌷', lily: '🌸', orchid: '🪷', sunflower: '🌻', peony: '✿' };
+        if (!productId) {
+          var preview = qs('#previewDefault');
+          if (preview) preview.innerHTML = '<div style="font-size:8rem;display:flex;align-items:center;justify-content:center;height:100%;">' + (emojis[config.flower] || '🌸') + '</div>';
+        }
+        onConfigChange();
+      });
+    });
+
+    var bloomInput = qs('#bloomCount');
+    if (bloomInput) {
+      bloomInput.addEventListener('input', function (e) {
+        config.bloomCount = Number(e.target.value);
+        var label = qs('#bloomCountLabel');
+        if (label) label.textContent = config.bloomCount + ' stems';
+        onConfigChange();
+      });
+    }
+
+    qsa('#colorSwatches .swatch').forEach(function (swatch) {
+      swatch.addEventListener('click', function () {
+        qsa('.swatch').forEach(function (s) { s.classList.remove('selected'); });
+        swatch.classList.add('selected');
+        config.color = swatch.dataset.color;
+        onConfigChange();
+      });
+    });
+
+    qsa('input[data-config]').forEach(function (input) {
+      input.addEventListener('change', function () {
+        var key = input.dataset.config;
+        config[key] = input.checked;
+        if (key === 'engraving') {
+          var el = qs('#engravingText');
+          if (el) el.style.display = input.checked ? 'block' : 'none';
+        }
+        if (key === 'greetingCard') {
+          var el2 = qs('#cardText');
+          if (el2) el2.style.display = input.checked ? 'block' : 'none';
+        }
+        if (key === 'logoUpload') {
+          var el3 = qs('#logoUploadArea');
+          if (el3) el3.style.display = input.checked ? 'block' : 'none';
+        }
+        onConfigChange();
+      });
+    });
+
+    var engInput = qs('#engravingInput');
+    if (engInput) engInput.addEventListener('input', function (e) { config.engravingText = e.target.value; });
+    var cardInp = qs('#cardInput');
+    if (cardInp) cardInp.addEventListener('input', function (e) { config.cardText = e.target.value; });
+
+    var dragUpload = qs('#dragUpload');
+    var logoFile = qs('#logoFile');
+
+    if (dragUpload) {
+      dragUpload.addEventListener('click', function () { if (logoFile) logoFile.click(); });
+      dragUpload.addEventListener('dragover', function (e) { e.preventDefault(); dragUpload.classList.add('dragover'); });
+      dragUpload.addEventListener('dragleave', function () { dragUpload.classList.remove('dragover'); });
+      dragUpload.addEventListener('drop', function (e) {
+        e.preventDefault();
+        dragUpload.classList.remove('dragover');
+        var file = e.dataTransfer.files[0];
+        if (file) uploadLogo(file);
+      });
+    }
+    if (logoFile) logoFile.addEventListener('change', function (e) { if (e.target.files[0]) uploadLogo(e.target.files[0]); });
+
+    var removeLogoBtn = qs('#removeLogo');
+    if (removeLogoBtn) {
+      removeLogoBtn.addEventListener('click', function () {
+        config.logoUrl = null;
+        var preview = qs('#logoPreview');
+        var drag = qs('#dragUpload');
+        if (preview) preview.style.display = 'none';
+        if (drag) drag.style.display = 'block';
+        if (logoFile) logoFile.value = '';
+      });
+    }
+
+    var modeDefaultBtn = qs('#modeDefault');
+    var modeAIBtn = qs('#modeAI');
+    var mode3DBtn = qs('#mode3D');
+    var modeARBtn = qs('#modeAR');
+
+    if (modeDefaultBtn) modeDefaultBtn.addEventListener('click', function () { switchMode('default'); });
+    if (modeAIBtn) modeAIBtn.addEventListener('click', function () { switchMode('ai'); });
+    if (mode3DBtn) mode3DBtn.addEventListener('click', function () { switchMode('3d'); });
+    if (modeARBtn) modeARBtn.addEventListener('click', function () { launchAR(); });
+
+    var zoomLevel = 1;
+    var zoomInBtn = qs('#zoomIn');
+    var zoomOutBtn = qs('#zoomOut');
+    var canvasPreview = qs('#canvasPreview');
+
+    if (zoomInBtn) {
+      zoomInBtn.addEventListener('click', function () {
+        zoomLevel = Math.min(2, zoomLevel + 0.1);
+        applyZoom();
+      });
+    }
+    if (zoomOutBtn) {
+      zoomOutBtn.addEventListener('click', function () {
+        zoomLevel = Math.max(0.5, zoomLevel - 0.1);
+        applyZoom();
+      });
+    }
+
+    function applyZoom() {
+      var targets = qsa('.preview-mode');
+      targets.forEach(function (t) {
+        if (t.style.display !== 'none') {
+          t.style.transform = 'scale(' + zoomLevel + ')';
+          t.style.transition = 'transform 0.3s ease';
+        }
+      });
+    }
+
+    var addBtn = qs('#addCustomToCart');
+    if (addBtn) {
+      addBtn.addEventListener('click', function () {
+        addBtn.disabled = true;
+        addBtn.textContent = 'Adding…';
+        var id = productId || 'custom';
+        var Api = window.Api;
+        var Store = window.Store;
+        if (!Api) {
+          showToast('Service unavailable', 'error');
+          addBtn.disabled = false;
+          addBtn.innerHTML = '🛒 Add to Cart — <span id="cartPriceBtn">' + fmt(basePrice + priceDelta) + '</span>';
+          return;
+        }
+        Api.post('/api/customization', { productId: id, config: config })
+          .then(function (cusRes) {
+            customizationId = cusRes.id;
+            return Api.post('/api/cart/items', {
+              productId: id,
+              qty: 1,
+              customization: Object.assign({}, config, { id: customizationId, priceDelta: cusRes.priceDelta })
+            });
+          })
+          .then(function () { return Api.get('/api/cart'); })
+          .then(function (cart) {
+            if (Store) {
+              Store.set('cart', cart);
+              if (Store.updateCartCount) {
+                Store.updateCartCount((cart.items || []).reduce(function (s, i) { return s + (i.qty || 1); }, 0));
+              }
+            }
+            showToast('Custom arrangement added to cart 🌸', 'success');
+            setTimeout(function () { window.location.href = '/cart.html'; }, 800);
+          })
+          .catch(function (e) {
+            showToast((e && e.message) || 'Error adding to cart', 'error');
+          })
+          .finally(function () {
+            addBtn.disabled = false;
+            addBtn.innerHTML = '🛒 Add to Cart — <span id="cartPriceBtn">' + fmt(basePrice + priceDelta) + '</span>';
+          });
+      });
+    }
+
+    var saveBtn = qs('#saveCustomization');
+    if (saveBtn) {
+      saveBtn.addEventListener('click', function () {
+        var Store = window.Store;
+        var Api = window.Api;
+        if (!Store || !Api) return;
+        var user = Store.get('user');
+        if (!user || user.isGuest) { showToast('Sign in to save designs', 'info'); return; }
+        var doSave = function () {
+          if (!customizationId) {
+            Api.post('/api/customization', { productId: productId || 'custom', config: config })
+              .then(function (res) {
+                customizationId = res.id;
+                return Api.post('/api/customization/' + customizationId + '/save', {});
+              })
+              .then(function () { showToast('Design saved to your account 💾', 'success'); })
+              .catch(function () { showToast('Could not save design', 'error'); });
+          } else {
+            Api.post('/api/customization/' + customizationId + '/save', {})
+              .then(function () { showToast('Design saved to your account 💾', 'success'); })
+              .catch(function () { showToast('Could not save design', 'error'); });
+          }
+        };
+        doSave();
+      });
     }
   });
 
-  document.getElementById('saveCustomization')?.addEventListener('click', async () => {
-    const user = Store.get('user');
-    if (!user || user.isGuest) { showToast('Sign in to save designs', 'info'); return; }
-    try {
-      if (!customizationId) {
-        const res = await Api.post('/api/customization', { productId: productId || 'custom', config });
-        customizationId = res.id;
-      }
-      await Api.post(`/api/customization/${customizationId}/save`, {});
-      showToast('Design saved to your account 💾', 'success');
-    } catch { showToast('Could not save design', 'error'); }
-  });
-
-  document.getElementById('view3d')?.addEventListener('click', () => {
-    const preview = document.getElementById('previewDisplay');
-    if (!preview) return;
-    preview.style.transform = preview.style.transform ? '' : 'perspective(600px) rotateY(15deg)';
-    preview.style.transition = 'transform 0.5s ease';
-  });
-
-  document.getElementById('zoomIn')?.addEventListener('click', () => {
-    const preview = document.getElementById('previewDisplay');
-    if (!preview) return;
-    const curr = parseFloat(preview.style.transform?.match(/scale\(([^)]+)\)/)?.[1] || 1);
-    preview.style.transform = `scale(${Math.min(2, curr + 0.1)})`;
-  });
-
-  document.getElementById('zoomOut')?.addEventListener('click', () => {
-    const preview = document.getElementById('previewDisplay');
-    if (!preview) return;
-    const curr = parseFloat(preview.style.transform?.match(/scale\(([^)]+)\)/)?.[1] || 1);
-    preview.style.transform = `scale(${Math.max(0.5, curr - 0.1)})`;
-  });
-});
-
-async function uploadLogo(file) {
-  const fd = new FormData();
-  fd.append('design', file);
-  try {
-    const res = await Api.upload('/api/customization/upload', fd);
-    config.logoUrl = res.url;
-    const preview = document.getElementById('logoPreview');
-    const img = document.getElementById('logoPreviewImg');
-    const drag = document.getElementById('dragUpload');
-    if (preview) preview.style.display = 'block';
-    if (img) img.src = res.url;
-    if (drag) drag.style.display = 'none';
-    showToast('Logo uploaded!', 'success');
-  } catch { showToast('Upload failed', 'error'); }
-}
+  function uploadLogo(file) {
+    var Api = window.Api;
+    if (!Api || !Api.upload) { showToast('Upload unavailable', 'error'); return; }
+    var fd = new FormData();
+    fd.append('design', file);
+    Api.upload('/api/customization/upload', fd)
+      .then(function (res) {
+        config.logoUrl = res.url;
+        var preview = qs('#logoPreview');
+        var img = qs('#logoPreviewImg');
+        var drag = qs('#dragUpload');
+        if (preview) preview.style.display = 'block';
+        if (img) img.src = res.url;
+        if (drag) drag.style.display = 'none';
+        showToast('Logo uploaded!', 'success');
+      })
+      .catch(function () { showToast('Upload failed', 'error'); });
+  }
+})();
