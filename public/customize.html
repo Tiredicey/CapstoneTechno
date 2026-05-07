@@ -4,8 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Customize — Bloom</title>
+  <meta name="description" content="Design your custom bouquet with AI-powered preview and AR room visualization. Choose flowers, colors, wrapping, and see your creation in real-time.">
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/customize.css">
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.2.0/model-viewer.min.js"></script>
 </head>
 <body>
 <nav class="bloom-nav" id="nav">
@@ -24,17 +26,56 @@
 
 <div class="customize-layout">
   <div class="canvas-panel">
-    <div class="canvas-preview">
+    <div class="canvas-preview" id="canvasPreview">
       <div class="price-ticker">
         <span class="label">Total Price</span>
         <span class="amount" id="livePrice">₱3,769.42</span>
       </div>
-      <div id="previewDisplay" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:5rem;">🌹</div>
-      <div class="canvas-rotate">
-        <button class="canvas-btn" id="view2d" title="2D View">◻</button>
-        <button class="canvas-btn" id="view3d" title="3D Rotate">⟳</button>
-        <button class="canvas-btn" id="zoomIn" title="Zoom In">+</button>
-        <button class="canvas-btn" id="zoomOut" title="Zoom Out">−</button>
+
+      <div id="previewDefault" class="preview-mode active" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:5rem;">🌹</div>
+
+      <div id="previewAI" class="preview-mode" style="display:none;width:100%;height:100%;position:relative;">
+        <div class="ai-loading" id="aiLoading" style="display:none;">
+          <div class="ai-spinner"></div>
+          <span class="ai-loading-text">Generating preview…</span>
+        </div>
+        <img id="aiImage" style="width:100%;height:100%;object-fit:contain;border-radius:12px;" alt="AI-generated bouquet preview">
+        <div class="ai-badge">✦ AI Generated</div>
+      </div>
+
+      <div id="preview3D" class="preview-mode" style="display:none;width:100%;height:100%;">
+        <model-viewer
+          id="modelViewer"
+          alt="3D Bouquet Preview"
+          camera-controls
+          auto-rotate
+          auto-rotate-delay="0"
+          rotation-per-second="12deg"
+          interaction-prompt="none"
+          shadow-intensity="1.2"
+          shadow-softness="0.8"
+          exposure="1.1"
+          environment-image="neutral"
+          style="width:100%;height:100%;--poster-color:transparent;"
+          ar
+          ar-modes="webxr scene-viewer quick-look"
+          ar-scale="fixed"
+        >
+          <button slot="ar-button" class="ar-launch-btn" id="arLaunchSlot">
+            📱 View in Your Room
+          </button>
+        </model-viewer>
+        <div class="model-status" id="modelStatus"></div>
+      </div>
+
+      <div class="canvas-controls">
+        <button class="canvas-btn mode-active" id="modeDefault" title="Emoji Preview" aria-label="Default preview">◻</button>
+        <button class="canvas-btn" id="modeAI" title="AI Preview" aria-label="AI generated preview">✦</button>
+        <button class="canvas-btn" id="mode3D" title="3D View" aria-label="3D model view">⟳</button>
+        <button class="canvas-btn" id="modeAR" title="View in Room (AR)" aria-label="Augmented reality view">📱</button>
+        <span class="canvas-divider"></span>
+        <button class="canvas-btn" id="zoomIn" title="Zoom In" aria-label="Zoom in">+</button>
+        <button class="canvas-btn" id="zoomOut" title="Zoom Out" aria-label="Zoom out">−</button>
       </div>
     </div>
   </div>
@@ -76,15 +117,15 @@
       </div>
       <div class="config-body">
         <div class="swatch-grid" id="colorSwatches">
-          <div class="swatch selected" data-color="crimson" style="background:#DC143C;" title="Crimson"></div>
-          <div class="swatch" data-color="blush" style="background:#FFB6C1;" title="Blush"></div>
-          <div class="swatch" data-color="white" style="background:#F8F8FF;border:2px solid rgba(255,255,255,0.3);" title="White"></div>
-          <div class="swatch" data-color="lavender" style="background:#967BB6;" title="Lavender"></div>
-          <div class="swatch" data-color="peach" style="background:#FFDAB9;" title="Peach"></div>
-          <div class="swatch" data-color="yellow" style="background:#FFD700;" title="Sunburst"></div>
-          <div class="swatch" data-color="coral" style="background:#FF6B6B;" title="Coral"></div>
-          <div class="swatch" data-color="burgundy" style="background:#800020;" title="Burgundy"></div>
-          <div class="swatch" data-color="teal" style="background:#008080;" title="Teal"></div>
+          <div class="swatch selected" data-color="crimson" data-hex="#DC143C" style="background:#DC143C;" title="Crimson"></div>
+          <div class="swatch" data-color="blush" data-hex="#FFB6C1" style="background:#FFB6C1;" title="Blush"></div>
+          <div class="swatch" data-color="white" data-hex="#F8F8FF" style="background:#F8F8FF;border:2px solid rgba(255,255,255,0.3);" title="White"></div>
+          <div class="swatch" data-color="lavender" data-hex="#967BB6" style="background:#967BB6;" title="Lavender"></div>
+          <div class="swatch" data-color="peach" data-hex="#FFDAB9" style="background:#FFDAB9;" title="Peach"></div>
+          <div class="swatch" data-color="yellow" data-hex="#FFD700" style="background:#FFD700;" title="Sunburst"></div>
+          <div class="swatch" data-color="coral" data-hex="#FF6B6B" style="background:#FF6B6B;" title="Coral"></div>
+          <div class="swatch" data-color="burgundy" data-hex="#800020" style="background:#800020;" title="Burgundy"></div>
+          <div class="swatch" data-color="teal" data-hex="#008080" style="background:#008080;" title="Teal"></div>
         </div>
         <p style="font-size:0.75rem;color:rgba(255,255,255,0.35);margin-top:12px;">Hover for color name. Click to select.</p>
       </div>
