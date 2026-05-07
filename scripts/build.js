@@ -46,6 +46,8 @@ function copyRecursive(src, dest) {
 
 
 
+const MOTION_CDN = 'https://cdn.jsdelivr.net/npm/motion@11.18.2/dist/motion.js';
+
 const CORE_MODULES = [
   'public/js/core/Store.js',
   'public/js/core/Api.js',
@@ -55,6 +57,7 @@ const CORE_MODULES = [
   'public/js/core/WebVitals.js',
   'public/js/core/TouchGestures.js',
   'public/js/core/FormValidator.js',
+  'public/js/core/Motion.js',
 ];
 
 const PAGE_SCRIPTS = [
@@ -120,7 +123,7 @@ async function build() {
 
 
   console.log('📦 Bundling core modules → core.bundle.min.js');
-
+ 
   let coreConcat = '';
   for (const mod of CORE_MODULES) {
     const fullPath = path.join(ROOT, mod);
@@ -222,7 +225,7 @@ async function build() {
     console.log(`   ✓ ${baseName}.css → ${outName}  (${formatBytes(originalSize)} → ${formatBytes(minifiedSize)}, −${savings}%)`);
   }
 
-  // 5. Copy static assets
+
   console.log('\n📋 Copying static assets...');
   for (const staticFile of STATIC_COPY) {
     const src = path.join(ROOT, staticFile);
@@ -241,7 +244,7 @@ async function build() {
     console.log('   ✓ uploads/');
   }
 
- 
+
   console.log('\n🔧 Transforming HTML files...');
   for (const htmlFile of HTML_FILES) {
     const fullPath = path.join(ROOT, htmlFile);
@@ -249,16 +252,17 @@ async function build() {
 
     let html = fs.readFileSync(fullPath, 'utf-8');
 
+    html = html.replace(/<script\s+src="https:\/\/cdn\.jsdelivr\.net\/npm\/motion@[^"]*\/dist\/motion\.js"\s*><\/script>\s*/g, '');
 
-    const coreScriptPattern = /<script\s+src="\/js\/core\/(?:Store|Api|Auth|I18n|Wishlist|WebVitals|TouchGestures|FormValidator)\.js"(?:\s+defer)?\s*><\/script>\s*/g;
+
+    const coreScriptPattern = /<script\s+src="\/js\/core\/(?:Store|Api|Auth|I18n|Wishlist|WebVitals|TouchGestures|FormValidator|Motion)\.js"(?:\s+defer)?\s*><\/script>\s*/g;
     const coreMatches = html.match(coreScriptPattern);
     if (coreMatches && coreMatches.length > 0) {
-
       let first = true;
       html = html.replace(coreScriptPattern, (match) => {
         if (first) {
           first = false;
-          return `<script src="/js/core.bundle.min.js"></script>\n`;
+          return `<script src="${MOTION_CDN}"></script>\n<script src="/js/core.bundle.min.js"></script>\n`;
         }
         return '';
       });
@@ -276,7 +280,7 @@ async function build() {
       }
     );
 
-
+  
     html = html.replace(
       /<link\s+rel="stylesheet"\s+href="\/css\/(\w+)\.css"\s*>/g,
       (match, name) => {
