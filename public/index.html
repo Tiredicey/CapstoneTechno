@@ -889,6 +889,116 @@ input:-webkit-autofill:focus {
 
 <main id="main">
 
+<section id="cinematicHero" aria-label="Cinematic Hero" style="position:relative;width:100vw;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--bg);font-family:var(--fb);-webkit-font-smoothing:antialiased;perspective:1500px">
+  <div class="ch-film-grain" aria-hidden="true"></div>
+  <div class="ch-bg-grid" style="position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5" aria-hidden="true"></div>
+
+  <div class="ch-hero-text-wrapper" style="position:absolute;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;width:100vw;padding:0 16px;will-change:transform">
+    <h1 class="ch-text-track ch-gsap-reveal ch-text-3d-matte" style="font-family:var(--fd);font-size:clamp(2.4rem,5.5vw,6rem);font-weight:700;letter-spacing:-.03em;margin-bottom:8px;line-height:1.1">A small gesture,</h1>
+    <h1 class="ch-text-days ch-gsap-reveal ch-text-silver-matte" style="font-family:var(--fd);font-size:clamp(2.4rem,5.5vw,6rem);font-weight:900;letter-spacing:-.04em;line-height:1.1">a quiet comfort.</h1>
+  </div>
+
+  <div class="ch-cta-wrapper" style="position:absolute;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;width:100vw;padding:0 16px;pointer-events:auto;will-change:transform" aria-hidden="false">
+    <h2 class="ch-text-silver-matte" style="font-family:var(--fd);font-size:clamp(2rem,5vw,4.5rem);font-weight:700;margin-bottom:24px;letter-spacing:-.03em;line-height:1.1">Browse gently.</h2>
+    <p style="color:var(--text-muted);font-size:clamp(.9rem,1.2vw,1.25rem);margin-bottom:48px;max-width:520px;margin-left:auto;margin-right:auto;font-weight:300;line-height:1.7">Handcrafted bouquets and floral arrangements. Cold-chain fresh, delivered to the door — no rush, no pressure.</p>
+    <div style="display:flex;flex-direction:column;gap:16px;align-items:center">
+      <a href="#shop" class="ch-btn-modern-light" style="display:inline-flex;align-items:center;justify-content:center;gap:12px;padding:14px 32px;border-radius:20px;text-decoration:none;font-weight:700;font-size:1rem;font-family:var(--fb)">
+        <svg style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 2v6M12 22v-6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M2 12h6M22 12h-6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"/></svg>
+        <span>Browse Bouquets</span>
+      </a>
+      <a href="/catalog.html" class="ch-btn-modern-dark" style="display:inline-flex;align-items:center;justify-content:center;gap:12px;padding:14px 32px;border-radius:20px;text-decoration:none;font-weight:700;font-size:1rem;font-family:var(--fb)">
+        <svg style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span>Full Catalog</span>
+      </a>
+    </div>
+  </div>
+
+  <div style="position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;pointer-events:none;perspective:1500px">
+    <div class="ch-main-card ch-depth-card ch-gsap-reveal" style="position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;pointer-events:auto;width:92vw;height:92vh;border-radius:32px" role="complementary" aria-label="Bloom Preview">
+      <div class="ch-card-sheen" aria-hidden="true"></div>
+
+      <div style="position:relative;width:100%;height:100%;max-width:1280px;margin:0 auto;padding:16px;display:flex;flex-direction:column;justify-content:space-evenly;align-items:center;z-index:10">
+
+        <div class="ch-card-right-text ch-gsap-reveal" style="display:flex;justify-content:center;z-index:20;width:100%;order:1">
+          <h2 class="ch-text-card-silver" style="font-family:var(--fc);font-size:clamp(3rem,8vw,8rem);font-weight:900;text-transform:uppercase;letter-spacing:-.06em;line-height:1">Bloom</h2>
+        </div>
+
+        <div class="ch-mockup-wrapper" style="order:2;position:relative;width:100%;height:380px;display:flex;align-items:center;justify-content:center;z-index:10;perspective:1000px">
+          <div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;transform:scale(.65)">
+            <div class="ch-mockup-bezel ch-iphone-bezel" style="position:relative;width:280px;height:580px;border-radius:3rem;display:flex;flex-direction:column;will-change:transform;transform-style:preserve-3d">
+              <div class="ch-hw-btn" style="position:absolute;top:120px;left:-3px;width:3px;height:25px;border-radius:4px 0 0 4px;z-index:0" aria-hidden="true"></div>
+              <div class="ch-hw-btn" style="position:absolute;top:160px;left:-3px;width:3px;height:45px;border-radius:4px 0 0 4px;z-index:0" aria-hidden="true"></div>
+              <div class="ch-hw-btn" style="position:absolute;top:220px;left:-3px;width:3px;height:45px;border-radius:4px 0 0 4px;z-index:0" aria-hidden="true"></div>
+              <div class="ch-hw-btn" style="position:absolute;top:170px;right:-3px;width:3px;height:70px;border-radius:0 4px 4px 0;z-index:0;transform:scaleX(-1)" aria-hidden="true"></div>
+
+              <div style="position:absolute;inset:7px;background:#050914;border-radius:2.5rem;overflow:hidden;box-shadow:inset 0 0 15px rgba(0,0,0,1);color:#fff;z-index:10">
+                <div class="ch-screen-glare" style="position:absolute;inset:0;z-index:40;pointer-events:none" aria-hidden="true"></div>
+
+                <div style="position:absolute;top:5px;left:50%;transform:translateX(-50%);width:100px;height:28px;background:#000;border-radius:9999px;z-index:50;display:flex;align-items:center;justify-content:flex-end;padding:0 12px;box-shadow:inset 0 -1px 2px rgba(255,255,255,.1)">
+                  <div style="width:6px;height:6px;border-radius:50%;background:#22c55e;box-shadow:0 0 8px rgba(34,197,94,.8);animation:ping2 2s ease-out infinite"></div>
+                </div>
+
+                <div style="position:relative;width:100%;height:100%;padding:48px 20px 32px;display:flex;flex-direction:column">
+                  <div class="ch-phone-widget" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:32px">
+                    <div style="display:flex;flex-direction:column">
+                      <span style="font-size:10px;color:#a1a1aa;text-transform:uppercase;letter-spacing:.15em;font-weight:700;margin-bottom:4px">Today</span>
+                      <span style="font-size:1.25rem;font-weight:700;letter-spacing:-.03em;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.4)">My Bouquet</span>
+                    </div>
+                    <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.05);color:#e4e4e7;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;border:1px solid rgba(255,255,255,.1);box-shadow:0 4px 12px rgba(0,0,0,.5)">B</div>
+                  </div>
+
+                  <div class="ch-phone-widget" style="position:relative;width:176px;height:176px;margin:0 auto 32px;filter:drop-shadow(0 15px 25px rgba(0,0,0,.8))">
+                    <svg style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true">
+                      <circle cx="88" cy="88" r="64" fill="none" stroke="rgba(255,255,255,.03)" stroke-width="12"/>
+                      <circle class="ch-progress-ring" cx="88" cy="88" r="64" fill="none" stroke="var(--p5)" stroke-width="12"/>
+                    </svg>
+                    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10">
+                      <span class="ch-counter-val" style="font-size:2.5rem;font-weight:900;letter-spacing:-.04em;color:#fff">0</span>
+                      <span style="font-size:8px;color:rgba(255,107,107,.5);text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-top:2px">Orders</span>
+                    </div>
+                  </div>
+
+                  <div style="display:flex;flex-direction:column;gap:12px">
+                    <div class="ch-phone-widget ch-widget-depth" style="border-radius:16px;padding:12px;display:flex;align-items:center">
+                      <div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,rgba(230,26,26,.2),rgba(230,26,26,.05));display:flex;align-items:center;justify-content:center;margin-right:12px;border:1px solid rgba(230,26,26,.2);box-shadow:inset 0 1px 2px rgba(0,0,0,.3)">
+                        <svg style="width:16px;height:16px;color:var(--p5l)" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                      </div>
+                      <div style="flex:1"><div style="height:8px;width:80px;background:#d4d4d8;border-radius:9999px;margin-bottom:8px;box-shadow:inset 0 1px 1px rgba(0,0,0,.2)"></div><div style="height:6px;width:48px;background:#525252;border-radius:9999px;box-shadow:inset 0 1px 1px rgba(0,0,0,.2)"></div></div>
+                    </div>
+                    <div class="ch-phone-widget ch-widget-depth" style="border-radius:16px;padding:12px;display:flex;align-items:center">
+                      <div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,rgba(16,185,129,.2),rgba(16,185,129,.05));display:flex;align-items:center;justify-content:center;margin-right:12px;border:1px solid rgba(16,185,129,.2);box-shadow:inset 0 1px 2px rgba(0,0,0,.3)">
+                        <svg style="width:16px;height:16px;color:#34d399" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                      </div>
+                      <div style="flex:1"><div style="height:8px;width:64px;background:#d4d4d8;border-radius:9999px;margin-bottom:8px;box-shadow:inset 0 1px 1px rgba(0,0,0,.2)"></div><div style="height:6px;width:96px;background:#525252;border-radius:9999px;box-shadow:inset 0 1px 1px rgba(0,0,0,.2)"></div></div>
+                    </div>
+                  </div>
+                  <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:120px;height:4px;background:rgba(255,255,255,.2);border-radius:9999px;box-shadow:0 1px 2px rgba(0,0,0,.5)"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="ch-floating-badge ch-floating-ui-badge" style="position:absolute;display:flex;top:24px;left:-15px;border-radius:12px;padding:12px;align-items:center;gap:12px;z-index:30">
+              <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(180deg,rgba(230,26,26,.2),rgba(230,26,26,.1));display:flex;align-items:center;justify-content:center;border:1px solid rgba(230,26,26,.3);box-shadow:inset 0 1px 2px rgba(0,0,0,.3)"><span style="font-size:1rem" aria-hidden="true">🌸</span></div>
+              <div><p style="color:#fff;font-size:12px;font-weight:700;letter-spacing:-.02em">Fresh Today</p><p style="color:rgba(255,107,107,.5);font-size:10px;font-weight:500">Cold-chain verified</p></div>
+            </div>
+
+            <div class="ch-floating-badge ch-floating-ui-badge" style="position:absolute;display:flex;bottom:48px;right:-15px;border-radius:12px;padding:12px;align-items:center;gap:12px;z-index:30">
+              <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(180deg,rgba(124,58,237,.2),rgba(124,58,237,.1));display:flex;align-items:center;justify-content:center;border:1px solid rgba(124,58,237,.3);box-shadow:inset 0 1px 2px rgba(0,0,0,.3)"><span style="font-size:1rem" aria-hidden="true">📦</span></div>
+              <div><p style="color:#fff;font-size:12px;font-weight:700;letter-spacing:-.02em">Delivered</p><p style="color:rgba(255,107,107,.5);font-size:10px;font-weight:500">Photo confirmed</p></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ch-card-left-text ch-gsap-reveal" style="order:3;display:flex;flex-direction:column;justify-content:center;text-align:center;z-index:20;width:100%;padding:0 16px">
+          <h3 style="color:#fff;font-family:var(--fd);font-size:clamp(1.2rem,2.5vw,2.2rem);font-weight:700;margin-bottom:0;letter-spacing:-.03em">Handcrafted with care.</h3>
+          <p style="display:none;color:rgba(147,197,253,.7);font-size:clamp(.82rem,.9vw,1rem);font-weight:400;line-height:1.7;max-width:400px;margin:16px auto 0" class="ch-card-desc-desktop">Bloom empowers every flower moment — from custom bouquets to cold-chain delivery, built entirely by STI LIPA BSIT students.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="hero" aria-label="Hero" id="heroSec">
   <div class="hero-bg" aria-hidden="true" style="position:absolute;inset:0;background: radial-gradient(circle at 10% 20%, rgba(230,26,26,0.12) 0%, transparent 60%), radial-gradient(circle at 90% 80%, rgba(124,58,237,0.1) 0%, transparent 60%), var(--bg); animation: ethereal 20s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate; transform-style: preserve-3d; will-change: filter, transform;"></div>
   <style>
@@ -3136,6 +3246,9 @@ window.addEventListener('beforeinstallprompt', function (e) {
 <script src="/js/core/WebVitals.js" defer></script>
 <script src="/js/core/TouchGestures.js" defer></script>
 <script src="/js/core/FormValidator.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
+<script src="/js/core/CinematicHero.js" defer></script>
 
 </body>
 </html>
