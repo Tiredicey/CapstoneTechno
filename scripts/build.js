@@ -1,5 +1,19 @@
 #!/usr/bin/env node
-
+/**
+ * Bloom Production Build Script
+ * ─────────────────────────────
+ * Uses esbuild to:
+ *  1. Bundle & minify all core JS modules into a single core.bundle.min.js
+ *  2. Minify each page-level JS file independently
+ *  3. Minify all CSS files
+ *  4. Copy static assets (HTML, images, manifest, sw) to dist/
+ *  5. Rewrite HTML script/link tags to point to minified bundles
+ *  6. Generate source maps for debugging
+ *  7. Output a build manifest with file sizes and hash fingerprints
+ *
+ * Usage:  node scripts/build.js
+ * Output: dist/  (production-ready static assets)
+ */
 
 import * as esbuild from 'esbuild';
 import fs from 'fs';
@@ -13,7 +27,7 @@ const ROOT = path.resolve(__dirname, '..');
 const PUBLIC = path.join(ROOT, 'public');
 const DIST = path.join(ROOT, 'dist');
 
-
+/* ─── Utilities ─── */
 
 function ensureDir(dir) {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
@@ -44,9 +58,11 @@ function copyRecursive(src, dest) {
   }
 }
 
-
+/* ─── Configuration ─── */
 
 const MOTION_CDN = 'https://cdn.jsdelivr.net/npm/motion@11.18.2/dist/motion.js';
+const GSAP_CDN = 'https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js';
+const GSAP_ST_CDN = 'https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js';
 
 const CORE_MODULES = [
   'public/js/core/Store.js',
@@ -58,6 +74,7 @@ const CORE_MODULES = [
   'public/js/core/TouchGestures.js',
   'public/js/core/FormValidator.js',
   'public/js/core/Motion.js',
+  'public/js/core/CinematicHero.js',
 ];
 
 const PAGE_SCRIPTS = [
@@ -104,7 +121,7 @@ const HTML_FILES = [
   'public/admin.html',
 ];
 
-
+/* ─── Build Pipeline ─── */
 
 async function build() {
   const startTime = Date.now();
@@ -113,7 +130,7 @@ async function build() {
   console.log('\n🌸 Bloom Build Pipeline');
   console.log('═══════════════════════════════════\n');
 
-
+  // 1. Clean dist/
   console.log('📁 Cleaning dist/ ...');
   if (fs.existsSync(DIST)) fs.rmSync(DIST, { recursive: true });
   ensureDir(DIST);
@@ -121,9 +138,9 @@ async function build() {
   ensureDir(path.join(DIST, 'js', 'core'));
   ensureDir(path.join(DIST, 'css'));
 
-
+  // 2. Bundle & minify core modules
   console.log('📦 Bundling core modules → core.bundle.min.js');
- 
+  // Core modules are IIFEs, not ES modules — concatenate + minify
   let coreConcat = '';
   for (const mod of CORE_MODULES) {
     const fullPath = path.join(ROOT, mod);
@@ -154,7 +171,7 @@ async function build() {
   };
   console.log(`   ✓ ${formatBytes(fs.statSync(coreBundlePath).size)} (${CORE_MODULES.length} modules)`);
 
-
+  // 3. Minify each page-level script
   console.log('\n📄 Minifying page scripts...');
   for (const script of PAGE_SCRIPTS) {
     const fullPath = path.join(ROOT, script);
@@ -190,7 +207,7 @@ async function build() {
     console.log(`   ✓ ${baseName}.js → ${outName}  (${formatBytes(originalSize)} → ${formatBytes(minifiedSize)}, −${savings}%)`);
   }
 
-
+  // 4. Minify CSS files
   console.log('\n🎨 Minifying CSS...');
   for (const cssFile of CSS_FILES) {
     const fullPath = path.join(ROOT, cssFile);
@@ -225,7 +242,7 @@ async function build() {
     console.log(`   ✓ ${baseName}.css → ${outName}  (${formatBytes(originalSize)} → ${formatBytes(minifiedSize)}, −${savings}%)`);
   }
 
-
+  // 5. Copy static assets
   console.log('\n📋 Copying static assets...');
   for (const staticFile of STATIC_COPY) {
     const src = path.join(ROOT, staticFile);
@@ -237,14 +254,14 @@ async function build() {
     }
   }
 
-
+  // Copy uploads folder if it exists
   const uploadsDir = path.join(ROOT, 'uploads');
   if (fs.existsSync(uploadsDir)) {
     copyRecursive(uploadsDir, path.join(DIST, '..', 'uploads'));
     console.log('   ✓ uploads/');
   }
 
-
+  // 6. Transform HTML files — rewrite script/link tags to minified versions
   console.log('\n🔧 Transforming HTML files...');
   for (const htmlFile of HTML_FILES) {
     const fullPath = path.join(ROOT, htmlFile);
@@ -252,23 +269,26 @@ async function build() {
 
     let html = fs.readFileSync(fullPath, 'utf-8');
 
+    // Strip dev-time CDN tags (build injects them with the bundle)
     html = html.replace(/<script\s+src="https:\/\/cdn\.jsdelivr\.net\/npm\/motion@[^"]*\/dist\/motion\.js"\s*><\/script>\s*/g, '');
+    html = html.replace(/<script\s+src="https:\/\/cdn\.jsdelivr\.net\/npm\/gsap@[^"]*\/dist\/[^"]*\.min\.js"\s*><\/script>\s*/g, '');
 
-
-    const coreScriptPattern = /<script\s+src="\/js\/core\/(?:Store|Api|Auth|I18n|Wishlist|WebVitals|TouchGestures|FormValidator|Motion)\.js"(?:\s+defer)?\s*><\/script>\s*/g;
+    // Replace individual core module scripts with single bundle
+    // Pattern: multiple <script src="/js/core/XXX.js"></script> → single bundle
+    const coreScriptPattern = /<script\s+src="\/js\/core\/(?:Store|Api|Auth|I18n|Wishlist|WebVitals|TouchGestures|FormValidator|Motion|CinematicHero)\.js"(?:\s+defer)?\s*><\/script>\s*/g;
     const coreMatches = html.match(coreScriptPattern);
     if (coreMatches && coreMatches.length > 0) {
       let first = true;
       html = html.replace(coreScriptPattern, (match) => {
         if (first) {
           first = false;
-          return `<script src="${MOTION_CDN}"></script>\n<script src="/js/core.bundle.min.js"></script>\n`;
+          return `<script src="${MOTION_CDN}"></script>\n<script src="${GSAP_CDN}"></script>\n<script src="${GSAP_ST_CDN}"></script>\n<script src="/js/core.bundle.min.js"></script>\n`;
         }
         return '';
       });
     }
 
-
+    // Replace page-level scripts with minified versions
     html = html.replace(
       /<script(\s+type="module")?\s+src="\/js\/(\w+)\.js"\s*><\/script>/g,
       (match, typeAttr, name) => {
@@ -280,7 +300,7 @@ async function build() {
       }
     );
 
-  
+    // Replace CSS links with minified versions
     html = html.replace(
       /<link\s+rel="stylesheet"\s+href="\/css\/(\w+)\.css"\s*>/g,
       (match, name) => {
@@ -298,7 +318,7 @@ async function build() {
     console.log(`   ✓ ${path.basename(htmlFile)}`);
   }
 
-
+  // 7. Write build manifest
   const totalOriginal = Object.values(manifest.files).reduce((s, f) => s + (f.originalSize || f.size), 0);
   const totalMinified = Object.values(manifest.files).reduce((s, f) => s + f.size, 0);
   manifest.summary = {
