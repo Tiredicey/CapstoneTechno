@@ -186,6 +186,37 @@
   z-index: 8;
 }
 
+.bouquet-3d-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  padding: 5px 14px;
+  border-radius: 100px;
+  background: linear-gradient(135deg, rgba(0, 212, 170, 0.4), rgba(124, 58, 237, 0.4));
+  border: 1px solid rgba(0, 212, 170, 0.3);
+  backdrop-filter: blur(8px);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  z-index: 6;
+  pointer-events: none;
+}
+
+#bouquet3DCanvas {
+  background: radial-gradient(ellipse at center, #0f0a1a 0%, #050309 100%);
+}
+
+#bouquet3DCanvas canvas {
+  border-radius: 12px;
+  cursor: grab;
+}
+
+#bouquet3DCanvas canvas:active {
+  cursor: grabbing;
+}
+
 .ar-launch-btn {
   position: absolute;
   bottom: 70px;
@@ -562,5 +593,4 @@ model-viewer::part(default-ar-button) {
   .canvas-btn { transition: none; }
   .swatch { transition: none; }
   .option-pill { transition: none; }
-  model-viewer { auto-rotate: none; }
 }
