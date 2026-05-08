@@ -2,8 +2,6 @@
   'use strict';
 
   var POLLINATIONS_BASE = 'https://image.pollinations.ai/prompt/';
-  var SKETCHFAB_MODEL_UID = '48e92013548247a9ad486dc13110c9b4';
-  var SKETCHFAB_EMBED_URL = 'https://sketchfab.com/models/' + SKETCHFAB_MODEL_UID + '/embed?autostart=1&ui_theme=dark&ui_infos=0&ui_inspector=0&ui_stop=0&ui_watermark=0&ui_watermark_link=0&ui_ar=0&ui_help=0&ui_settings=0&ui_vr=0&ui_fullscreen=0&ui_annotations=0&transparent=1&camera=0';
   var MODEL_SRC_LOCAL = '/models/bouquet.glb';
 
   var basePrice = 64.99;
@@ -11,6 +9,7 @@
   var config = {
     flower: 'rose',
     color: 'crimson',
+    colorHex: '#DC143C',
     bloomCount: 12,
     wrapping_premium: false,
     wrapping_luxury: false,
@@ -30,6 +29,7 @@
   var currentMode = 'default';
   var aiDebounce = null;
   var lastAiPromptHash = '';
+  var bouquet3DInited = false;
 
   function qs(s) { return document.querySelector(s); }
   function qsa(s) { return Array.from(document.querySelectorAll(s)); }
@@ -70,23 +70,13 @@
 
   function buildAIPrompt() {
     var colorNames = {
-      crimson: 'deep crimson red',
-      blush: 'soft blush pink',
-      white: 'pure white',
-      lavender: 'lavender purple',
-      peach: 'warm peach',
-      yellow: 'golden yellow',
-      coral: 'coral pink',
-      burgundy: 'deep burgundy',
-      teal: 'teal green'
+      crimson: 'deep crimson red', blush: 'soft blush pink', white: 'pure white',
+      lavender: 'lavender purple', peach: 'warm peach', yellow: 'golden yellow',
+      coral: 'coral pink', burgundy: 'deep burgundy', teal: 'teal green'
     };
     var flowerNames = {
-      rose: 'roses',
-      tulip: 'tulips',
-      lily: 'lilies',
-      orchid: 'orchids',
-      sunflower: 'sunflowers',
-      peony: 'peonies'
+      rose: 'roses', tulip: 'tulips', lily: 'lilies',
+      orchid: 'orchids', sunflower: 'sunflowers', peony: 'peonies'
     };
     var wrap = '';
     if (config.wrapping_luxury) wrap = ', wrapped in luxury silk fabric with wax seal';
@@ -152,6 +142,45 @@
     aiDebounce = setTimeout(generateAIPreview, 1200);
   }
 
+  function init3DBouquet() {
+    var container = qs('#bouquet3DCanvas');
+    if (!container || !window.BloomBouquetRenderer) return;
+    if (bouquet3DInited) {
+      sync3DConfig();
+      return;
+    }
+    bouquet3DInited = true;
+    var status = qs('#modelStatus');
+    if (status) {
+      status.textContent = 'Generating 3D bouquet…';
+      status.style.display = 'block';
+      status.style.opacity = '1';
+    }
+    window.BloomBouquetRenderer.init(container, {
+      flower: config.flower,
+      color: config.colorHex,
+      bloomCount: config.bloomCount,
+      wrapping: config.wrapping_premium,
+      luxury: config.wrapping_luxury
+    }).then(function () {
+      if (status) {
+        status.textContent = 'Procedural 3D Bouquet — Drag to rotate';
+        setTimeout(function () { status.style.opacity = '0'; }, 3000);
+      }
+    });
+  }
+
+  function sync3DConfig() {
+    if (!bouquet3DInited || !window.BloomBouquetRenderer) return;
+    window.BloomBouquetRenderer.updateConfig({
+      flower: config.flower,
+      color: config.colorHex,
+      bloomCount: config.bloomCount,
+      wrapping: config.wrapping_premium,
+      luxury: config.wrapping_luxury
+    });
+  }
+
   function switchMode(mode) {
     currentMode = mode;
     var modes = ['default', 'ai', '3d'];
@@ -171,56 +200,15 @@
     }
 
     if (mode === '3d') {
-      initSketchfabViewer();
+      init3DBouquet();
     }
-  }
-
-  var sketchfabInited = false;
-
-  function initSketchfabViewer() {
-    var container = qs('#preview3D');
-    if (!container || sketchfabInited) return;
-    sketchfabInited = true;
-
-    var status = qs('#modelStatus');
-    if (status) {
-      status.textContent = 'Loading 3D bouquet…';
-      status.style.display = 'block';
-      status.style.opacity = '1';
-    }
-
-    var existing = container.querySelector('iframe');
-    if (existing) existing.remove();
-
-    var iframe = document.createElement('iframe');
-    iframe.src = SKETCHFAB_EMBED_URL;
-    iframe.title = 'Flower Bouquet 3D — by ice (Sketchfab, CC-BY 4.0)';
-    iframe.allow = 'autoplay; fullscreen; xr-spatial-tracking';
-    iframe.setAttribute('allowfullscreen', '');
-    iframe.setAttribute('mozallowfullscreen', 'true');
-    iframe.setAttribute('webkitallowfullscreen', 'true');
-    iframe.style.cssText = 'width:100%;height:100%;border:none;border-radius:12px;position:absolute;inset:0;';
-
-    iframe.addEventListener('load', function () {
-      if (status) {
-        status.textContent = 'Flower Bouquet by ice — CC-BY 4.0';
-        setTimeout(function () { status.style.opacity = '0'; }, 3000);
-      }
-    });
-
-    var mv = container.querySelector('model-viewer');
-    if (mv) mv.style.display = 'none';
-
-    container.appendChild(iframe);
   }
 
   function initModelViewerForAR() {
     var mv = qs('#modelViewer');
     if (!mv) return;
-
     if (!mv.getAttribute('src')) {
       mv.setAttribute('src', MODEL_SRC_LOCAL);
-
       mv.addEventListener('error', function () {
         showToast('AR model not found — place bouquet.glb in /models/', 'info');
       }, { once: true });
@@ -233,26 +221,19 @@
       showToast('3D model required for AR', 'info');
       return;
     }
-
     initModelViewerForAR();
-
     var container = qs('#preview3D');
     if (container) {
-      var iframe = container.querySelector('iframe');
-      if (iframe) iframe.style.display = 'none';
+      var canvas3d = qs('#bouquet3DCanvas');
+      if (canvas3d) canvas3d.style.display = 'none';
       mv.style.display = 'block';
     }
-
-    if (currentMode !== '3d') {
-      switchMode('3d');
-    }
-
+    if (currentMode !== '3d') switchMode('3d');
     setTimeout(function () {
       if (mv.canActivateAR) {
         mv.activateAR();
       } else {
-        window.open('https://sketchfab.com/3d-models/flower-bouquet-' + SKETCHFAB_MODEL_UID, '_blank');
-        showToast('Opening 3D viewer — use AR from Sketchfab app', 'info');
+        showToast('AR requires a supported mobile device', 'info');
       }
     }, 800);
   }
@@ -260,13 +241,31 @@
   function onConfigChange() {
     updatePrice();
     scheduleAIPreview();
+    if (currentMode === '3d') sync3DConfig();
+  }
+
+  function updateDefaultPreview() {
+    var emojis = { rose: '🌹', tulip: '🌷', lily: '🌸', orchid: '🪷', sunflower: '🌻', peony: '✿' };
+    if (!productId) {
+      var preview = qs('#previewDefault');
+      if (preview) {
+        var hex = config.colorHex || '#DC143C';
+        preview.innerHTML =
+          '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:8px">' +
+          '<div style="font-size:6rem;filter:drop-shadow(0 8px 24px ' + hex + '40);transition:all .4s ease">' + (emojis[config.flower] || '🌸') + '</div>' +
+          '<div style="display:flex;gap:4px;align-items:center;padding:6px 16px;border-radius:100px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)">' +
+          '<span style="width:12px;height:12px;border-radius:50%;background:' + hex + ';display:inline-block"></span>' +
+          '<span style="font-size:.78rem;color:rgba(255,255,255,.5);font-weight:500">' + config.bloomCount + ' ' + config.flower + 's</span>' +
+          '</div>' +
+          '</div>';
+      }
+    }
   }
 
   document.addEventListener('DOMContentLoaded', function () {
     var urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('id')) {
       productId = urlParams.get('id');
-
       var loadProductData = function () {
         if (!window.Api) return;
         Api.get('/api/products/' + productId).then(function (p) {
@@ -274,7 +273,6 @@
           var titleEl = qs('#productTitle');
           if (titleEl) titleEl.textContent = p.name;
           updatePrice();
-
           var pImgs = p.images || [];
           if (typeof pImgs === 'string') { try { pImgs = JSON.parse(pImgs); } catch (e) {} }
           var mainImg = Array.isArray(pImgs) && pImgs.length ? pImgs.flat(Infinity)[0] : '';
@@ -284,16 +282,13 @@
             var filename = parts[parts.length - 1];
             mainImg = filename && filename !== 'null' ? '/uploads/products/' + filename : '';
           }
-
           if (mainImg) {
             var preview = qs('#previewDefault');
             if (preview) preview.innerHTML = '<img src="' + mainImg + '" style="width:100%;height:100%;object-fit:contain;" alt="' + (p.name || 'Product') + '">';
           }
         }).catch(function () {});
       };
-
       loadProductData();
-
       if (typeof io !== 'undefined') {
         var socket = io();
         socket.on('catalog_update', loadProductData);
@@ -301,6 +296,7 @@
     }
 
     updatePrice();
+    updateDefaultPreview();
 
     qsa('.config-section-header').forEach(function (header) {
       header.addEventListener('click', function () {
@@ -314,11 +310,7 @@
         qsa('#flowerPills .option-pill').forEach(function (p) { p.classList.remove('selected'); });
         pill.classList.add('selected');
         config.flower = pill.dataset.flower;
-        var emojis = { rose: '🌹', tulip: '🌷', lily: '🌸', orchid: '🪷', sunflower: '🌻', peony: '✿' };
-        if (!productId) {
-          var preview = qs('#previewDefault');
-          if (preview) preview.innerHTML = '<div style="font-size:8rem;display:flex;align-items:center;justify-content:center;height:100%;">' + (emojis[config.flower] || '🌸') + '</div>';
-        }
+        updateDefaultPreview();
         onConfigChange();
       });
     });
@@ -329,6 +321,7 @@
         config.bloomCount = Number(e.target.value);
         var label = qs('#bloomCountLabel');
         if (label) label.textContent = config.bloomCount + ' stems';
+        updateDefaultPreview();
         onConfigChange();
       });
     }
@@ -338,6 +331,8 @@
         qsa('.swatch').forEach(function (s) { s.classList.remove('selected'); });
         swatch.classList.add('selected');
         config.color = swatch.dataset.color;
+        config.colorHex = swatch.dataset.hex;
+        updateDefaultPreview();
         onConfigChange();
       });
     });
@@ -408,7 +403,6 @@
     var zoomLevel = 1;
     var zoomInBtn = qs('#zoomIn');
     var zoomOutBtn = qs('#zoomOut');
-    var canvasPreview = qs('#canvasPreview');
 
     if (zoomInBtn) {
       zoomInBtn.addEventListener('click', function () {
@@ -426,7 +420,7 @@
     function applyZoom() {
       var targets = qsa('.preview-mode');
       targets.forEach(function (t) {
-        if (t.style.display !== 'none') {
+        if (t.style.display !== 'none' && !t.querySelector('canvas')) {
           t.style.transform = 'scale(' + zoomLevel + ')';
           t.style.transition = 'transform 0.3s ease';
         }
