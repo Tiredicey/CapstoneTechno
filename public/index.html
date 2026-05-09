@@ -249,10 +249,9 @@ nav.sc::after { opacity: 1; }
 .hero-eyebrow-tag > * { transform: skewX(6deg); display: inline-block; }
 .hero-eyebrow-tag::after { display: none; }
 .hero-eyebrow-sub { font-size: .78rem; color: rgba(255,255,255,.48); font-weight: 500; padding-left: 6px; white-space: nowrap; }
-
-.hero-hl { font-family: var(--fd); font-size: clamp(2.8rem, 5.5vw, 5rem); line-height: 1.08; font-weight: 900; letter-spacing: -.03em; margin-bottom: 24px; overflow: visible; }
+.hero-hl { font-family: var(--fd); font-size: clamp(2.8rem, 5.5vw, 5rem); line-height: 1.15; font-weight: 900; letter-spacing: -.03em; margin-bottom: 24px; padding-bottom: 0.1em; overflow: visible; }
 .hero-hl em { font-style: italic; font-weight: 400; color: rgba(255,255,255,.78); }
-.g-txt { background: linear-gradient(135deg, #fff 0%, var(--pk) 35%, var(--p5) 70%, var(--pk) 100%); background-size: 250% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: txt-shine 5s linear infinite; }
+.g-txt { background: linear-gradient(135deg, #fff 0%, var(--pk) 35%, var(--p5) 70%, var(--pk) 100%); background-size: 250% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: txt-shine 5s linear infinite; padding-bottom: 0.15em; margin-bottom: -0.15em; display: inline-block; }
 #typer { display: inline-block; min-width: 10em; text-align: left; vertical-align: baseline; white-space: nowrap; }
 @keyframes txt-shine { to { background-position: 250% center; } }
 .hero-sub { font-size: 1rem; line-height: 1.72; color: rgba(255,255,255,.58); max-width: 480px; margin-bottom: 36px; text-wrap: pretty; }
@@ -276,9 +275,9 @@ nav.sc::after { opacity: 1; }
 .h-card:hover { box-shadow: 0 32px 80px rgba(168,16,16,.3), inset 0 1px 0 rgba(255,255,255,.2); border-color: rgba(230,26,26,.4); }
 .h-card-img { width: 100%; height: 120px; object-fit: cover; border-radius: 14px; margin-bottom: 12px; transition: transform .6s var(--spring), filter .6s var(--ease); transform: translateZ(20px); filter: brightness(0.95); box-shadow: 0 8px 24px rgba(0,0,0,.2); }
 .h-card:hover .h-card-img { transform: translateZ(40px) scale(1.08); filter: brightness(1.1); box-shadow: 0 16px 32px rgba(230,26,26,.3); }
-.hc-1 { width: 230px; top: 60px; left: 50%; transform: translateX(-50%) translateZ(60px); text-align: center; animation: ag1 8s ease-in-out infinite; z-index: 3; }
-.hc-2 { width: 210px; top: 10px; right: 5px; transform: translateZ(20px); animation: ag2 11s ease-in-out infinite; z-index: 2; }
-.hc-3 { width: 220px; bottom: 30px; left: 5px; transform: translateZ(35px); animation: ag3 9s ease-in-out infinite; z-index: 2; }
+.hc-1 { width: 230px; top: 70px; left: 35%; transform: translateX(-50%) translateZ(60px); text-align: center; animation: ag1 8s ease-in-out infinite; z-index: 2; }
+.hc-2 { width: 210px; top: 0px; right: -15px; transform: translateZ(20px); animation: ag2 11s ease-in-out infinite; z-index: 5; }
+.hc-3 { width: 220px; bottom: 10px; left: -15px; transform: translateZ(35px); animation: ag3 9s ease-in-out infinite; z-index: 3; }
 @keyframes ag1 { 0%,100%{transform:translateX(-50%) translateY(0) translateZ(60px) rotate(-2deg) rotateX(4deg)} 50%{transform:translateX(-50%) translateY(-28px) translateZ(80px) rotate(1.5deg) rotateX(-2deg)} }
 @keyframes ag2 { 0%,100%{transform:translateY(0) translateZ(20px) rotate(3deg) rotateY(-4deg)} 50%{transform:translateY(-32px) translateZ(40px) rotate(-1.5deg) rotateY(2deg)} }
 @keyframes ag3 { 0%,100%{transform:translateY(0) translateZ(35px) rotate(-3deg) rotateX(-3deg)} 50%{transform:translateY(-24px) translateZ(55px) rotate(2deg) rotateX(2deg)} }
