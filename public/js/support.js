@@ -2,18 +2,18 @@ const { Api, Store, Toast } = window;
 const FAQS = [
   { q: 'How far in advance should I pre-order?', a: 'We recommend ordering at least 2 days in advance. For large corporate or wedding orders, 7-14 days ensures the best selection and preparation.' },
   { q: 'Can I change my delivery date after ordering?', a: 'Yes! Contact support at least 24 hours before your scheduled delivery and we\'ll reschedule at no charge.' },
-  { q: 'What is your refund policy?', a: 'If your arrangement arrives damaged or differs significantly from your order, we offer a full replacement or refund within 24 hours of delivery. Submit a ticket with a photo.' },
-  { q: 'Do you offer corporate bulk pricing?', a: 'Yes — for orders of 10+ arrangements, contact our B2B team through the support ticket system and mention "corporate" in your subject.' },
+  { q: 'What is your refund policy?', a: 'The platform models issue resolution. In a production scenario, it facilitates replacements or resolutions based on submitted tickets.' },
+  { q: 'Do you offer corporate bulk pricing?', a: 'Yes - for orders of 10+ arrangements, contact our B2B team through the support ticket system and mention "corporate" in your subject.' },
   { q: 'How do loyalty points work?', a: 'You earn 10 points per dollar spent. Points can be redeemed at checkout at a rate of $0.01 per point, up to 10% of your order total.' },
   { q: 'Can I track my delivery in real time?', a: 'Yes! Use our Track Order page with your order code. You\'ll receive socket-powered live status updates as your order moves through each stage.' }
 ];
 
 const BOT_RESPONSES = {
   track: 'To track your order, visit the **Track Order** page and enter your order code (starts with BLOOM-). Or tell me your order code and I\'ll look it up!',
-  refund: 'For refund requests, I\'ll need your order ID and a photo of the issue. You can also submit a support ticket for fastest processing. Would you like me to open one for you?',
+  refund: 'For simulated resolution requests, I would typically need an order ID and photo. Would you like me to demonstrate opening a support ticket?',
   cancel: 'Orders can be cancelled up to 12 hours before the scheduled delivery. What\'s your order code?',
-  delivery: 'Delivery times depend on your selected time slot: Morning (9am–12pm), Afternoon (12pm–4pm), or Evening (4pm–8pm).',
-  default: 'I\'m happy to help! I can assist with order tracking, refunds, delivery questions, or product information. What do you need?'
+  delivery: 'Delivery times depend on your selected time slot: Morning (9am-12pm), Afternoon (12pm-4pm), or Evening (4pm-8pm).',
+  default: 'I\'m happy to help! I can demonstrate order tracking, simulated resolutions, delivery workflows, or platform capabilities. What do you need?'
 };
 
 let currentTicketId = null;
@@ -210,7 +210,7 @@ document.getElementById('openAgentBtn')?.addEventListener('click', () => {
   if (nameEl) nameEl.textContent = 'Live Agent';
   if (statusEl) statusEl.textContent = '● Connecting...';
   setTimeout(() => {
-    if (statusEl) statusEl.textContent = '● Connected — Esperanza is here';
+    if (statusEl) statusEl.textContent = '● Connected - Esperanza is here';
     appendMessage("Hi! I'm Esperanza, your live support agent. How can I help you today?", 'agent');
   }, 2000);
 });
