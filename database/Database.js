@@ -71,8 +71,7 @@ class DatabaseClass {
         preview_url TEXT,
         price_delta REAL DEFAULT 0,
         saved INTEGER DEFAULT 0,
-        created_at INTEGER DEFAULT (unixepoch()),
-        FOREIGN KEY (product_id) REFERENCES products(id)
+        created_at INTEGER DEFAULT (unixepoch())
       );
 
       CREATE TABLE IF NOT EXISTS carts (
