@@ -199,6 +199,14 @@ class DatabaseClass {
         created_at INTEGER DEFAULT (unixepoch())
       );
 
+      CREATE TABLE IF NOT EXISTS wishlists (
+        user_id TEXT NOT NULL,
+        product_id TEXT NOT NULL,
+        added_at INTEGER DEFAULT (unixepoch()),
+        PRIMARY KEY (user_id, product_id)
+      );
+      CREATE INDEX IF NOT EXISTS idx_wishlists_user ON wishlists(user_id);
+
       CREATE INDEX IF NOT EXISTS idx_products_category ON products(category);
       CREATE INDEX IF NOT EXISTS idx_orders_user ON orders(user_id);
       CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
