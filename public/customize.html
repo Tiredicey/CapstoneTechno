@@ -15,7 +15,7 @@
     }
   }
   </script>
-  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.2.0/model-viewer.min.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.2.0/dist/model-viewer.min.js"></script>
 </head>
 <body>
 <nav class="bloom-nav" id="nav">
@@ -86,10 +86,12 @@
           min-camera-orbit="auto auto 0.5m"
           max-camera-orbit="auto auto 4m"
         >
-
           <button slot="ar-button" class="ar-launch-btn" id="arLaunchSlot">
             📱 View in Your Room
           </button>
+          <div slot="ar-failure" class="ar-failure">
+            AR is not supported on this device. Use the 3D view to inspect the bouquet.
+          </div>
         </model-viewer>
         <div class="model-status" id="modelStatus"></div>
         <div class="bouquet-3d-badge">⟳ Interactive 3D</div>
