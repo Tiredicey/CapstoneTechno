@@ -204,39 +204,80 @@
     }
   }
 
-  function initModelViewerForAR() {
+  var lastArBlobUrl = null;
+  var arExporting = false;
+
+  async function buildLiveARModel() {
+    if (!window.BloomBouquetRenderer) throw new Error('renderer missing');
+    if (!window.BloomBouquetRenderer.isReady || !window.BloomBouquetRenderer.isReady()) {
+      await window.BloomBouquetRenderer.init(qs('#bouquet3DCanvas'), {
+        flower: config.flower, color: config.colorHex,
+        bloomCount: config.bloomCount,
+        wrapping: config.wrapping_premium, luxury: config.wrapping_luxury
+      });
+      bouquet3DInited = true;
+    } else {
+      window.BloomBouquetRenderer.updateConfig({
+        flower: config.flower, color: config.colorHex,
+        bloomCount: config.bloomCount,
+        wrapping: config.wrapping_premium, luxury: config.wrapping_luxury
+      });
+    }
+    await new Promise(function (r) { requestAnimationFrame(function () { requestAnimationFrame(r); }); });
+    return window.BloomBouquetRenderer.exportGLB();
+  }
+
+  async function launchAR() {
+    if (arExporting) return;
     var mv = qs('#modelViewer');
-    if (!mv) return;
-    if (!mv.getAttribute('src')) {
-      mv.setAttribute('src', MODEL_SRC_LOCAL);
-      mv.addEventListener('error', function () {
-        showToast('AR model not found — place bouquet.glb in /models/', 'info');
-      }, { once: true });
+    if (!mv) { showToast('AR not available', 'error'); return; }
+    if (currentMode !== '3d') switchMode('3d');
+
+    var canvas3d = qs('#bouquet3DCanvas');
+    var status = qs('#modelStatus');
+    arExporting = true;
+    if (status) { status.textContent = 'Preparing AR scene…'; status.style.display = 'block'; status.style.opacity = '1'; }
+
+    try {
+      var url = await buildLiveARModel();
+      if (lastArBlobUrl) { try { URL.revokeObjectURL(lastArBlobUrl); } catch (e) {} }
+      lastArBlobUrl = url;
+
+      if (canvas3d) canvas3d.style.display = 'none';
+      mv.style.display = 'block';
+      mv.setAttribute('src', url);
+      mv.setAttribute('ios-src', url);
+
+      await new Promise(function (resolve, reject) {
+        var ok = function () { mv.removeEventListener('load', ok); mv.removeEventListener('error', err); resolve(); };
+        var err = function (e) { mv.removeEventListener('load', ok); mv.removeEventListener('error', err); reject(e); };
+        mv.addEventListener('load', ok, { once: true });
+        mv.addEventListener('error', err, { once: true });
+      });
+
+      if (status) { status.textContent = 'Tap to place in your room'; setTimeout(function () { status.style.opacity = '0'; }, 2500); }
+
+      var canAR = false;
+      try { canAR = await mv.canActivateAR; } catch (e) { canAR = !!mv.canActivateAR; }
+      if (canAR) {
+        mv.activateAR();
+      } else if ('xr' in navigator && navigator.xr.isSessionSupported) {
+        var supported = await navigator.xr.isSessionSupported('immersive-ar').catch(function () { return false; });
+        if (supported) mv.activateAR();
+        else showToast('AR requires an ARCore/ARKit-capable device', 'info');
+      } else {
+        showToast('Device does not support WebXR AR — rotate the 3D preview instead', 'info');
+      }
+    } catch (e) {
+      console.error('[AR] launch failed', e);
+      showToast('AR preparation failed — please retry', 'error');
+      if (canvas3d) canvas3d.style.display = 'block';
+      mv.style.display = 'none';
+    } finally {
+      arExporting = false;
     }
   }
 
-  function launchAR() {
-    var mv = qs('#modelViewer');
-    if (!mv) {
-      showToast('3D model required for AR', 'info');
-      return;
-    }
-    initModelViewerForAR();
-    var container = qs('#preview3D');
-    if (container) {
-      var canvas3d = qs('#bouquet3DCanvas');
-      if (canvas3d) canvas3d.style.display = 'none';
-      mv.style.display = 'block';
-    }
-    if (currentMode !== '3d') switchMode('3d');
-    setTimeout(function () {
-      if (mv.canActivateAR) {
-        mv.activateAR();
-      } else {
-        showToast('AR requires a supported mobile device', 'info');
-      }
-    }, 800);
-  }
 
   function onConfigChange() {
     updatePrice();
