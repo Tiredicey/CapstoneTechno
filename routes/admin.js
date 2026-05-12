@@ -39,17 +39,19 @@ router.get('/stats', (req, res) => {
     const products = db.get(`SELECT COUNT(*) as c FROM products WHERE is_active = 1`);
     const topProducts = db.all(`
       SELECT p.id, p.name, p.category, p.rating, p.base_price,
-             COUNT(DISTINCT o.id) as order_count
+             COUNT(DISTINCT o.id) AS order_count
       FROM products p
-      LEFT JOIN orders o ON o.items LIKE '%' || p.id || '%'
+      LEFT JOIN orders o
+        ON o.status != 'cancelled'
+       AND instr(o.items, '"' || p.id || '"') > 0
       WHERE p.is_active = 1
       GROUP BY p.id ORDER BY order_count DESC LIMIT 5
     `);
     const salesByCategory = db.all(`
       SELECT p.category,
-             COALESCE(SUM(json_extract(o.pricing,'$.finalTotal')),0) as revenue
+             COALESCE(SUM(json_extract(o.pricing,'$.finalTotal')),0) AS revenue
       FROM orders o
-      JOIN products p ON o.items LIKE '%' || p.id || '%'
+      JOIN products p ON instr(o.items, '"' || p.id || '"') > 0
       WHERE o.status != 'cancelled'
       GROUP BY p.category
     `);
