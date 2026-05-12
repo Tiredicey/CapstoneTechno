@@ -80,7 +80,21 @@ router.delete('/:id', authenticate, requireAdmin, (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
     SocketManager.emitToUser(req.params.id, 'account_deleted', { reason: 'Account removed by admin' });
-    db.run(`DELETE FROM users WHERE id = ?`, [req.params.id]);
+    
+    const tx = db.transaction(() => {
+      // 1. Clear sensitive data/references but keep orders for accounting (with NULL user)
+      db.run(`UPDATE orders SET user_id = NULL WHERE user_id = ?`, [req.params.id]);
+      
+      // 2. Delete peripheral data
+      db.run(`DELETE FROM wishlists WHERE user_id = ?`, [req.params.id]);
+      db.run(`DELETE FROM notifications WHERE user_id = ?`, [req.params.id]);
+      db.run(`DELETE FROM carts WHERE user_id = ?`, [req.params.id]);
+      
+      // 3. Finally delete the user
+      db.run(`DELETE FROM users WHERE id = ?`, [req.params.id]);
+    });
+    tx();
+    
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Failed to delete user' });
