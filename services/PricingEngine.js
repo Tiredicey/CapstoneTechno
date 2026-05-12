@@ -1,4 +1,4 @@
-import { Database } from '../database/Database.js';
+import db from '../database/Database.js';
 
 export class PricingEngine {
   static FREE_SHIPPING_THRESHOLD = 4350;
@@ -29,7 +29,7 @@ export class PricingEngine {
 
     if (promoCode) {
       try {
-        const promo = Database.get(
+        const promo = db.get(
           `SELECT * FROM promo_codes
            WHERE code = ? AND is_active = 1
            AND (max_uses IS NULL OR used_count < max_uses)`,
@@ -91,7 +91,7 @@ export class PricingEngine {
     if (!code) return { valid: false, error: 'No code provided' };
     let promo;
     try {
-      promo = Database.get(
+      promo = db.get(
         `SELECT * FROM promo_codes WHERE code = ? AND is_active = 1`,
         [code.toUpperCase()]
       );
@@ -118,7 +118,7 @@ export class PricingEngine {
 
   static redeemPromo(code) {
     try {
-      Database.run(
+      db.run(
         'UPDATE promo_codes SET used_count = used_count + 1 WHERE code = ?',
         [code.toUpperCase()]
       );
