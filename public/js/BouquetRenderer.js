@@ -14,6 +14,7 @@
   var OrbitControls = null;
   var GLTFExporter = null;
   var RoomEnvironment = null;
+  var junctionTex = null;
 
   var currentConfig = { flower: 'rose', color: '#DC143C', bloomCount: 12, wrapping: false, luxury: false };
 
@@ -495,7 +496,105 @@
     }
   }
 
-  function createStem(length, type) {
+  function getReceptacleProfile(type) {
+    switch (type) {
+      case 'tulip':     return { radius: 0.012, height: 0.020, color: 0x3a7020, top: -0.002 };
+      case 'lily':      return { radius: 0.014, height: 0.026, color: 0x4a8a32, top: -0.002 };
+      case 'orchid':    return { radius: 0.010, height: 0.022, color: 0x4a7028, top: -0.004 };
+      case 'sunflower': return { radius: 0.034, height: 0.020, color: 0x3d6a1c, top:  0.000 };
+      case 'peony':     return { radius: 0.022, height: 0.024, color: 0x3a6b1f, top: -0.002 };
+      default:          return { radius: 0.018, height: 0.022, color: 0x3a6b1f, top: -0.002 };
+    }
+  }
+
+  function createReceptacle(type) {
+    var p = getReceptacleProfile(type);
+    var g = new THREE.Group();
+    var bodyG = new THREE.SphereGeometry(p.radius, 16, 12);
+    var bodyM = new THREE.MeshPhysicalMaterial({
+      color: p.color,
+      roughness: 0.62,
+      metalness: 0.02,
+      clearcoat: 0.18,
+      clearcoatRoughness: 0.55
+    });
+    var body = new THREE.Mesh(bodyG, bodyM);
+    body.scale.y = p.height / (p.radius * 2);
+    body.position.y = p.top - p.radius * 0.4;
+    body.castShadow = true; body.receiveShadow = true;
+    g.add(body);
+    if (type !== 'sunflower') {
+      var sepalCount = type === 'tulip' ? 3 : type === 'lily' ? 3 : 5;
+      var sepalG = new THREE.ConeGeometry(p.radius * 0.55, p.radius * 2.4, 5, 1, true);
+      var sepalM = new THREE.MeshPhysicalMaterial({
+        color: new THREE.Color(p.color).offsetHSL(0, 0.05, 0.04),
+        roughness: 0.58, metalness: 0.02, side: THREE.DoubleSide
+      });
+      for (var s = 0; s < sepalCount; s++) {
+        var sa = (s / sepalCount) * Math.PI * 2 + rand(-0.1, 0.1);
+        var sep = new THREE.Mesh(sepalG, sepalM);
+        sep.position.set(Math.cos(sa) * p.radius * 0.6, p.top + p.radius * 0.4, Math.sin(sa) * p.radius * 0.6);
+        sep.rotation.z = Math.cos(sa) * (0.55 + rand(-0.08, 0.08));
+        sep.rotation.x = Math.sin(sa) * (0.55 + rand(-0.08, 0.08));
+        sep.scale.set(1, rand(0.85, 1.15), 1);
+        g.add(sep);
+      }
+    }
+    return { group: g, profile: p };
+  }
+
+  function getJunctionTexture() {
+    if (junctionTex) return junctionTex;
+    var canvas = document.createElement('canvas');
+    canvas.width = 128; canvas.height = 128;
+    var ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, 128, 128);
+    var g1 = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+    g1.addColorStop(0.00, 'rgba(90,140,55,0.85)');
+    g1.addColorStop(0.25, 'rgba(60,105,35,0.55)');
+    g1.addColorStop(0.55, 'rgba(45,80,25,0.22)');
+    g1.addColorStop(1.00, 'rgba(30,55,15,0.00)');
+    ctx.fillStyle = g1; ctx.fillRect(0, 0, 128, 128);
+    for (var i = 0; i < 80; i++) {
+      var rx = Math.random() * 128, ry = Math.random() * 128;
+      var dx = rx - 64, dy = ry - 64;
+      var dist = Math.sqrt(dx * dx + dy * dy);
+      var a = Math.max(0, 0.10 - dist / 900);
+      ctx.fillStyle = 'rgba(140,180,90,' + a.toFixed(3) + ')';
+      ctx.fillRect(rx, ry, 1, 1);
+    }
+    junctionTex = new THREE.CanvasTexture(canvas);
+    junctionTex.colorSpace = THREE.SRGBColorSpace;
+    return junctionTex;
+  }
+
+  function createJunctionBlur(profile) {
+    var spriteMat = new THREE.SpriteMaterial({
+      map: getJunctionTexture(),
+      transparent: true,
+      depthWrite: false,
+      opacity: 0.88,
+      blending: THREE.NormalBlending
+    });
+    var sprite = new THREE.Sprite(spriteMat);
+    var s = Math.max(profile.radius * 4.2, 0.055);
+    sprite.scale.set(s, s, 1);
+    sprite.position.y = profile.top - profile.radius * 0.2;
+    var halo = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: getJunctionTexture(),
+      transparent: true,
+      depthWrite: false,
+      opacity: 0.32,
+      blending: THREE.AdditiveBlending
+    }));
+    halo.scale.set(s * 1.55, s * 1.55, 1);
+    halo.position.y = profile.top - profile.radius * 0.2;
+    var grp = new THREE.Group();
+    grp.add(sprite); grp.add(halo);
+    return grp;
+  }
+
+  function createStem(length, type, topRadius) {
     var curvature = type === 'tulip' ? 0.012 : 0.025;
     var curve = new THREE.CatmullRomCurve3([
       new THREE.Vector3(0, 0, 0),
@@ -503,13 +602,39 @@
       new THREE.Vector3(rand(-curvature * 1.4, curvature * 1.4), -length * 0.65, rand(-curvature * 1.4, curvature * 1.4)),
       new THREE.Vector3(rand(-curvature * 0.5, curvature * 0.5), -length, rand(-curvature * 0.5, curvature * 0.5))
     ]);
-    var thickness = type === 'tulip' ? 0.014 : type === 'lily' ? 0.016 : 0.015;
-    var stemG = new THREE.TubeGeometry(curve, 14, thickness, 7, false);
+    var baseThickness = type === 'tulip' ? 0.014 : type === 'lily' ? 0.016 : 0.015;
+    var tubularSegs = 48;
+    var radialSegs = 10;
+    var tube = new THREE.TubeGeometry(curve, tubularSegs, baseThickness, radialSegs, false);
+    var pos = tube.attributes.position;
+    var idxRingTop = 0;
+    for (var i = 0; i <= tubularSegs; i++) {
+      var t = i / tubularSegs;
+      var taper;
+      if (t < 0.06) {
+        var k = t / 0.06;
+        taper = lerp(topRadius / baseThickness, 1.0, k);
+      } else {
+        taper = lerp(1.0, 1.12, (t - 0.06) / 0.94);
+      }
+      for (var r = 0; r <= radialSegs; r++) {
+        var vi = (i * (radialSegs + 1) + r) * 3;
+        var px = pos.array[vi], py = pos.array[vi + 1], pz = pos.array[vi + 2];
+        var cp = curve.getPoint(t);
+        var dx = px - cp.x, dy = py - cp.y, dz = pz - cp.z;
+        pos.array[vi]     = cp.x + dx * taper;
+        pos.array[vi + 1] = cp.y + dy * taper;
+        pos.array[vi + 2] = cp.z + dz * taper;
+      }
+    }
+    pos.needsUpdate = true;
+    tube.computeVertexNormals();
     var stemM = new THREE.MeshStandardMaterial({ color: '#2d5016', roughness: 0.68, metalness: 0.04 });
-    var stemMesh = new THREE.Mesh(stemG, stemM);
+    var stemMesh = new THREE.Mesh(tube, stemM);
+    stemMesh.castShadow = true; stemMesh.receiveShadow = true;
     var group = new THREE.Group(); group.add(stemMesh);
     var leafCnt = Math.floor(rand(1, 3));
-    for (var i = 0; i < leafCnt; i++) {
+    for (var li = 0; li < leafCnt; li++) {
       var leaf = createLeaf(type);
       var pt = curve.getPoint(rand(0.28, 0.72));
       leaf.position.copy(pt);
@@ -670,18 +795,27 @@
     for (var i = 0; i < count; i++) {
       var fg = new THREE.Group();
       var head = createFlowerHead(type, color);
-      var stemData = createStem(stemLength, type);
+      var recept = createReceptacle(type);
+      var stemData = createStem(stemLength, type, recept.profile.radius * 0.92);
       var ring = Math.floor(Math.sqrt(i));
       var radius = ring * 0.12 + 0.02;
       var angle = i * phi;
       var x = Math.cos(angle) * radius, z = Math.sin(angle) * radius;
       var yVar = rand(-0.082, 0.082);
-      head.position.set(x, yVar, z);
+      var pivot = new THREE.Vector3(x, yVar, z);
+      head.position.copy(pivot);
       head.rotation.set(rand(-0.14, 0.14), rand(0, Math.PI * 2), rand(-0.14, 0.14));
       var hs = rand(0.86, 1.14);
       head.scale.set(hs, hs, hs);
-      stemData.group.position.set(x, -0.05, z);
-      fg.add(head); fg.add(stemData.group);
+      recept.group.position.copy(pivot);
+      recept.group.rotation.y = rand(0, Math.PI * 2);
+      var blur = createJunctionBlur(recept.profile);
+      blur.position.copy(pivot);
+      stemData.group.position.copy(pivot);
+      fg.add(stemData.group);
+      fg.add(recept.group);
+      fg.add(head);
+      fg.add(blur);
       bouquetGroup.add(fg);
     }
     if (cfg.wrapping || cfg.luxury) bouquetGroup.add(createWrapping(count, color, cfg.luxury));
@@ -755,9 +889,6 @@
     if (bouquetGroup) {
       var t = Date.now() * 0.001;
       bouquetGroup.children.forEach(function (child, i) {
-        if (child.children && child.children[0]) {
-          child.children[0].position.y += Math.sin(t + i * 0.52) * 0.00014;
-        }
         if (child.userData && child.userData.isGlow) {
           var pos = child.geometry.attributes.position;
           for (var p = 0; p < pos.count; p++) {
@@ -780,6 +911,7 @@
       if (renderer.domElement && renderer.domElement.parentNode)
         renderer.domElement.parentNode.removeChild(renderer.domElement);
     }
+    if (junctionTex) { junctionTex.dispose(); junctionTex = null; }
     scene = camera = renderer = controls = bouquetGroup = null;
     loaded = false;
   }
