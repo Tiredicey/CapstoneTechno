@@ -601,6 +601,54 @@
     return group;
   }
 
+  function addEtherealGlow(group, count, color) {
+    var baseCol = new THREE.Color(color);
+    var glowCol = baseCol.clone().offsetHSL(0, -0.15, 0.35);
+    var canvas = document.createElement('canvas');
+    canvas.width = 64; canvas.height = 64;
+    var ctx = canvas.getContext('2d');
+    var grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+    grad.addColorStop(0, 'rgba(255,255,255,0.9)');
+    grad.addColorStop(0.3, 'rgba(255,220,240,0.4)');
+    grad.addColorStop(0.7, 'rgba(200,180,255,0.1)');
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 64, 64);
+    var tex = new THREE.CanvasTexture(canvas);
+    var particleCount = Math.min(count * 8, 120);
+    var positions = new Float32Array(particleCount * 3);
+    var sizes = new Float32Array(particleCount);
+    var colors = new Float32Array(particleCount * 3);
+    for (var i = 0; i < particleCount; i++) {
+      var phi = 137.508 * Math.PI / 180;
+      var fi = i % count;
+      var ring = Math.floor(Math.sqrt(fi));
+      var r = ring * 0.12 + 0.02;
+      var a = fi * phi;
+      var cx = Math.cos(a) * r + rand(-0.06, 0.06);
+      var cz = Math.sin(a) * r + rand(-0.06, 0.06);
+      var cy = rand(-0.4, 0.08);
+      positions[i * 3] = cx;
+      positions[i * 3 + 1] = cy;
+      positions[i * 3 + 2] = cz;
+      sizes[i] = rand(0.02, 0.06);
+      var c = glowCol.clone().offsetHSL(rand(-0.05, 0.05), 0, rand(-0.1, 0.1));
+      colors[i * 3] = c.r; colors[i * 3 + 1] = c.g; colors[i * 3 + 2] = c.b;
+    }
+    var geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    var mat = new THREE.PointsMaterial({
+      map: tex, size: 0.045, sizeAttenuation: true,
+      transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending,
+      depthWrite: false, vertexColors: true
+    });
+    var points = new THREE.Points(geo, mat);
+    points.userData.isGlow = true;
+    group.add(points);
+  }
+
   function buildBouquet(cfg) {
     if (!THREE) return;
     if (bouquetGroup) {
@@ -637,6 +685,7 @@
       bouquetGroup.add(fg);
     }
     if (cfg.wrapping || cfg.luxury) bouquetGroup.add(createWrapping(count, color, cfg.luxury));
+    addEtherealGlow(bouquetGroup, count, color);
     var box = new THREE.Box3().setFromObject(bouquetGroup);
     var ctr = box.getCenter(new THREE.Vector3());
     bouquetGroup.position.sub(ctr);
@@ -658,6 +707,7 @@
     renderer.toneMappingExposure = 1.18;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.xr.enabled = true;
     container.appendChild(renderer.domElement);
     pmrem = new THREE.PMREMGenerator(renderer);
     pmrem.compileEquirectangularShader();
@@ -687,6 +737,7 @@
     var floor = new THREE.Mesh(floorG, floorM);
     floor.rotation.x = -Math.PI * 0.5; floor.position.y = -1.42;
     floor.receiveShadow = true; scene.add(floor);
+    scene.fog = new THREE.FogExp2(0x080412, 0.18);
     window.addEventListener('resize', onResize);
     animate();
   }
@@ -706,6 +757,14 @@
       bouquetGroup.children.forEach(function (child, i) {
         if (child.children && child.children[0]) {
           child.children[0].position.y += Math.sin(t + i * 0.52) * 0.00014;
+        }
+        if (child.userData && child.userData.isGlow) {
+          var pos = child.geometry.attributes.position;
+          for (var p = 0; p < pos.count; p++) {
+            pos.setY(p, pos.getY(p) + Math.sin(t * 0.8 + p * 1.3) * 0.00025);
+          }
+          pos.needsUpdate = true;
+          child.material.opacity = 0.28 + Math.sin(t * 0.6) * 0.08;
         }
       });
     }
