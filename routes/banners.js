@@ -76,9 +76,14 @@ router.put('/:id', authenticate, requireAdmin, upload.single('image'), (req, res
 
 router.delete('/:id', authenticate, requireAdmin, (req, res) => {
   try {
-    if (!db.get(`SELECT id FROM banners WHERE id = ?`, [req.params.id])) {
-      return res.status(404).json({ error: 'Banner not found' });
+    const banner = db.get(`SELECT image_url FROM banners WHERE id = ?`, [req.params.id]);
+    if (!banner) return res.status(404).json({ error: 'Banner not found' });
+
+    if (banner.image_url && banner.image_url.startsWith('/uploads/')) {
+      const fullPath = path.join(__dirname, '..', banner.image_url);
+      try { if (fs.existsSync(fullPath)) fs.unlinkSync(fullPath); } catch (e) {}
     }
+
     db.run(`DELETE FROM banners WHERE id = ?`, [req.params.id]);
     SocketManager.emitBannerUpdate({ action: 'deleted', id: req.params.id });
     res.json({ success: true });
