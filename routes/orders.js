@@ -5,7 +5,7 @@ import { PricingEngine } from '../services/PricingEngine.js';
 import { ProductModel } from '../models/ProductModel.js';
 import { SocketManager } from '../sockets/SocketManager.js';
 import { authenticate, optionalAuth, requireAdmin } from '../middleware/auth.js';
-import { Database } from '../database/Database.js';
+import db from '../database/Database.js';
 import { v4 as uuid } from 'uuid';
 
 const router = Router();
@@ -17,23 +17,42 @@ router.post('/', optionalAuth, (req, res) => {
     if (!recipient || !deliveryDate || !deliverySlot || !paymentMethod) return res.status(400).json({ error: 'Missing required fields' });
     const userId = req.user?.id || null;
     const sessionId = req.headers['x-session-id'] || null;
-    let cart = cartId ? Database.get('SELECT * FROM carts WHERE id = ?', [cartId]) : null;
-    if (!cart && userId) cart = Database.get('SELECT * FROM carts WHERE user_id = ?', [userId]);
-    if (!cart && sessionId) cart = Database.get('SELECT * FROM carts WHERE session_id = ?', [sessionId]);
+    let cart = cartId ? db.get('SELECT * FROM carts WHERE id = ?', [cartId]) : null;
+    if (!cart && userId) cart = db.get('SELECT * FROM carts WHERE user_id = ?', [userId]);
+    if (!cart && sessionId) cart = db.get('SELECT * FROM carts WHERE session_id = ?', [sessionId]);
     if (!cart) return res.status(404).json({ error: 'Cart not found' });
     const items = typeof cart.items === 'string' ? JSON.parse(cart.items || '[]') : cart.items;
     if (!items.length) return res.status(400).json({ error: 'Cart is empty' });
     const hasCustomization = items.some(i => i.customized);
     const pricing = PricingEngine.calculate({ items, promoCode: cart.promo_code, loyaltyPointsUsed: Number(loyaltyPointsUsed) || 0, hasCustomization });
-    const order = OrderModel.create({ userId, sessionId, items, recipient, deliveryDate, deliverySlot, recurring: recurring || null, pricing, paymentMethod, specialInstructions: specialInstructions || null });
-    items.forEach(item => { if (item.productId) ProductModel.decrementInventory(item.productId, item.qty || 1); });
-    if (cart.promo_code) PricingEngine.redeemPromo(cart.promo_code);
-    if (userId) {
-      const points = Math.floor((pricing.finalTotal || 0) * 10);
-      Database.run('UPDATE users SET loyalty_points = loyalty_points + ? WHERE id = ?', [points, userId]);
-      try { Database.run('INSERT INTO notifications (id, user_id, type, title, body) VALUES (?, ?, ?, ?, ?)',[uuid(), userId, 'order_confirmed', 'Order Confirmed', `Order ${order.qr_code} placed.`]); } catch {}
-    }
-    CartModel.clearCart(cart.id);
+    const tx = db.transaction(() => {
+      const order = OrderModel.create({
+        userId, sessionId, items, recipient,
+        deliveryDate, deliverySlot, recurring: recurring || null, pricing,
+        paymentMethod, specialInstructions: specialInstructions || null
+      });
+      
+      // Decrement inventory
+      for (const item of items) {
+        db.run('UPDATE products SET inventory = MAX(0, inventory - ?) WHERE id = ?', [item.qty || 1, item.productId]);
+      }
+
+      if (cart.promo_code) PricingEngine.redeemPromo(cart.promo_code);
+      
+      if (userId) {
+        const points = Math.floor((pricing.finalTotal || 0) * 10);
+        db.run('UPDATE users SET loyalty_points = loyalty_points + ? WHERE id = ?', [points, userId]);
+        try { 
+          db.run('INSERT INTO notifications (id, user_id, type, title, body) VALUES (?, ?, ?, ?, ?)',
+            [uuid(), userId, 'order_confirmed', 'Order Confirmed', `Order ${order.qr_code} placed.`]); 
+        } catch {}
+      }
+      
+      CartModel.clearCart(cart.id);
+      return order;
+    });
+
+    const order = tx();
     try { SocketManager.emitNewOrder(order); } catch {}
     res.status(201).json(order);
   } catch (err) {
@@ -71,11 +90,11 @@ router.put('/:id/status', authenticate, requireAdmin, (req, res) => {
     if (!VALID_STATUSES.includes(status)) return res.status(400).json({ error: 'Invalid status' });
     const order = OrderModel.updateStatus(req.params.id, status);
     if (!order) return res.status(404).json({ error: 'Order not found' });
-    try { SocketManager.emitOrderUpdate(req.params.id, { status, orderId: req.params.id }); } catch {}
+    try { SocketManager.emitOrderUpdate(req.params.id, { status, orderId: req.params.id, trackingSteps: order.trackingSteps }); } catch {}
     if (order.user_id) {
       const msgs = { shipped: `Order ${order.qr_code} shipped`, delivered: `Order ${order.qr_code} delivered` };
       if (msgs[status]) {
-        try { Database.run('INSERT INTO notifications (id, user_id, type, title, body) VALUES (?, ?, ?, ?, ?)',[uuid(), order.user_id, `order_${status}`, status, msgs[status]]); } catch {}
+        try { db.run('INSERT INTO notifications (id, user_id, type, title, body) VALUES (?, ?, ?, ?, ?)',[uuid(), order.user_id, `order_${status}`, status, msgs[status]]); } catch {}
       }
     }
     res.json(order);
