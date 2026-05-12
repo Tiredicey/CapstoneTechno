@@ -20,14 +20,15 @@ const router = Router();
 
 function calculatePriceDelta(config = {}) {
   let delta = 0;
-  if (config.wrapping === 'premium') delta += 8;
-  if (config.wrapping === 'luxury') delta += 15;
-  if (config.ribbon === 'satin') delta += 3;
-  if (config.ribbon === 'velvet') delta += 6;
+  if (config.wrapping === 'premium' || config.wrapping_premium) delta += 8;
+  if (config.wrapping === 'luxury' || config.wrapping_luxury) delta += 15;
+  if (config.ribbon === 'satin' || config.ribbon_satin) delta += 3;
+  if (config.ribbon === 'velvet' || config.ribbon_velvet) delta += 6;
   if (config.engraving) delta += 12;
   if (config.giftBox) delta += 10;
   if (config.logoUpload) delta += 20;
   if (config.customDesign) delta += 15;
+  if (config.greetingCard) delta += 5;
   if (config.extraBlooms) delta += Number(config.extraBlooms) * 2;
   return delta;
 }
