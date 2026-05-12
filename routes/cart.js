@@ -44,7 +44,16 @@ router.post('/items', optionalAuth, (req, res) => {
     const count = Number(qty || quantity || 1);
     if (!pid) return res.status(400).json({ error: 'productId required' });
 
-    const product = ProductModel.getById(pid);
+    let product = ProductModel.getById(pid);
+    if (!product && pid === 'custom') {
+      product = {
+        id: 'custom',
+        name: 'Custom Bloom Arrangement',
+        base_price: 64.99,
+        images: '[]',
+        inventory: 999
+      };
+    }
     if (!product) return res.status(404).json({ error: 'Product not found' });
     if ((product.inventory || 0) < 1) {
       return res.status(400).json({ error: 'Out of stock' });
@@ -59,7 +68,7 @@ router.post('/items', optionalAuth, (req, res) => {
 
     const item = {
       productId:     pid,
-      name:          product.name,
+      name:          customization?.flower ? `Custom ${customization.flower.charAt(0).toUpperCase() + customization.flower.slice(1)} Arrangement` : product.name,
       price:         Number(product.base_price) + Number(customization?.priceDelta || 0),
       image,
       qty:           count,
@@ -86,7 +95,16 @@ router.post('/', optionalAuth, (req, res) => {
     const count = Number(qty || quantity || 1);
     if (!pid) return res.status(400).json({ error: 'productId required' });
 
-    const product = ProductModel.getById(pid);
+    let product = ProductModel.getById(pid);
+    if (!product && pid === 'custom') {
+      product = {
+        id: 'custom',
+        name: 'Custom Bloom Arrangement',
+        base_price: 64.99,
+        images: '[]',
+        inventory: 999
+      };
+    }
     if (!product) return res.status(404).json({ error: 'Product not found' });
     if ((product.inventory || 0) < 1) {
       return res.status(400).json({ error: 'Out of stock' });
@@ -101,7 +119,7 @@ router.post('/', optionalAuth, (req, res) => {
 
     const item = {
       productId:     pid,
-      name:          product.name,
+      name:          customization?.flower ? `Custom ${customization.flower.charAt(0).toUpperCase() + customization.flower.slice(1)} Arrangement` : product.name,
       price:         Number(product.base_price) + Number(customization?.priceDelta || 0),
       image,
       qty:           count,
