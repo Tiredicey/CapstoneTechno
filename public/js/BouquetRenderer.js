@@ -5,7 +5,6 @@
   var THREE_SPECIFIER = 'three';
   var ORBIT_SPECIFIER = 'three/addons/controls/OrbitControls.js';
   var EXPORTER_SPECIFIER = 'three/addons/exporters/GLTFExporter.js';
-  var RGBE_SPECIFIER = 'three/addons/loaders/RGBELoader.js';
   var ROOM_SPECIFIER = 'three/addons/environments/RoomEnvironment.js';
 
   var renderer, scene, camera, controls, bouquetGroup, animId, pmrem, envTex;
@@ -27,49 +26,42 @@
 
   var FLOWER_PROFILES = {
     rose: {
-      petalCount: 28, petalLayers: 6, petalWidth: 0.20, petalLength: 0.34,
-      centerRadius: 0.05, thickness: 0.006, phyllotaxis: 137.508,
-      bezier: { p1: [0.55, 0.10, 0.05], p2: [0.85, 0.65, 0.35], p3: [0.20, 1.00, 0.55] },
-      taper: 0.35, ruffle: 0.18, twist: 0.22, reflex: 0.10,
-      material: { roughness: 0.42, clearcoat: 0.55, clearcoatRoughness: 0.30, sheen: 0.25, sheenRoughness: 0.7, transmission: 0.08, ior: 1.42 }
+      flower: 'rose', petalCount: 26, petalLayers: 5, petalWidth: 0.18, petalLength: 0.28,
+      centerRadius: 0.04, cupInner: 0.6, cupOuter: 0.2, bendInner: 0.15, bendOuter: 0.9,
+      reflex: 0.3, ruffle: 0.008, widthPow: 0.8,
+      material: { roughness: 0.42, clearcoat: 0.5, clearcoatRoughness: 0.3, sheen: 0.3, sheenRoughness: 0.6, transmission: 0.08, ior: 1.42 }
     },
     tulip: {
-      petalCount: 6, petalLayers: 2, petalWidth: 0.19, petalLength: 0.42,
-      centerRadius: 0.035, thickness: 0.010, phyllotaxis: 60,
-      bezier: { p1: [0.40, 0.20, 0.02], p2: [0.55, 0.70, 0.06], p3: [0.30, 1.00, 0.18] },
-      taper: 0.55, ruffle: 0.02, twist: 0.05, reflex: -0.15,
-      material: { roughness: 0.55, clearcoat: 0.20, clearcoatRoughness: 0.55, sheen: 0.10, sheenRoughness: 0.8, transmission: 0.04, ior: 1.40 }
+      flower: 'tulip', petalCount: 6, petalLayers: 2, petalWidth: 0.16, petalLength: 0.38,
+      centerRadius: 0.03, cupInner: 0.7, cupOuter: 0.5, bendInner: 0.08, bendOuter: 0.25,
+      reflex: 0.0, ruffle: 0.0, widthPow: 0.65,
+      material: { roughness: 0.5, clearcoat: 0.2, clearcoatRoughness: 0.5, sheen: 0.1, sheenRoughness: 0.8, transmission: 0.05, ior: 1.40 }
     },
     lily: {
-      petalCount: 6, petalLayers: 2, petalWidth: 0.18, petalLength: 0.52,
-      centerRadius: 0.04, thickness: 0.005, phyllotaxis: 60,
-      bezier: { p1: [0.50, 0.15, 0.0], p2: [0.75, 0.55, -0.20], p3: [0.25, 1.00, -0.45] },
-      taper: 0.30, ruffle: 0.06, twist: 0.10, reflex: 0.85,
-      material: { roughness: 0.38, clearcoat: 0.70, clearcoatRoughness: 0.20, sheen: 0.15, sheenRoughness: 0.6, transmission: 0.14, ior: 1.45 }
+      flower: 'lily', petalCount: 6, petalLayers: 2, petalWidth: 0.14, petalLength: 0.42,
+      centerRadius: 0.03, cupInner: 0.3, cupOuter: 0.15, bendInner: 0.3, bendOuter: 1.1,
+      reflex: 0.6, ruffle: 0.012, widthPow: 0.9,
+      material: { roughness: 0.35, clearcoat: 0.65, clearcoatRoughness: 0.2, sheen: 0.15, sheenRoughness: 0.6, transmission: 0.12, ior: 1.45 }
     },
     orchid: {
-      petalCount: 5, petalLayers: 1, petalWidth: 0.30, petalLength: 0.36,
-      centerRadius: 0.06, thickness: 0.004, phyllotaxis: 72,
-      bezier: { p1: [0.65, 0.25, 0.04], p2: [0.95, 0.55, 0.10], p3: [0.55, 1.00, 0.05] },
-      taper: 0.20, ruffle: 0.30, twist: 0.35, reflex: 0.05,
-      material: { roughness: 0.48, clearcoat: 0.40, clearcoatRoughness: 0.45, sheen: 0.55, sheenRoughness: 0.5, transmission: 0.18, ior: 1.43 }
+      flower: 'orchid', petalCount: 5, petalLayers: 1, petalWidth: 0.22, petalLength: 0.30,
+      centerRadius: 0.04, cupInner: 0.25, cupOuter: 0.15, bendInner: 0.2, bendOuter: 0.6,
+      reflex: 0.1, ruffle: 0.015, widthPow: 0.7,
+      material: { roughness: 0.45, clearcoat: 0.4, clearcoatRoughness: 0.4, sheen: 0.5, sheenRoughness: 0.5, transmission: 0.15, ior: 1.43 }
     },
     sunflower: {
-      petalCount: 28, petalLayers: 2, petalWidth: 0.07, petalLength: 0.48,
-      centerRadius: 0.20, thickness: 0.007, phyllotaxis: 137.508,
-      bezier: { p1: [0.35, 0.20, 0.0], p2: [0.50, 0.65, 0.04], p3: [0.20, 1.00, 0.0] },
-      taper: 0.65, ruffle: 0.05, twist: 0.02, reflex: -0.05,
-      material: { roughness: 0.62, clearcoat: 0.10, clearcoatRoughness: 0.65, sheen: 0.05, sheenRoughness: 0.85, transmission: 0.02, ior: 1.39 }
+      flower: 'sunflower', petalCount: 24, petalLayers: 2, petalWidth: 0.06, petalLength: 0.35,
+      centerRadius: 0.18, cupInner: 0.15, cupOuter: 0.08, bendInner: 0.6, bendOuter: 0.9,
+      reflex: 0.0, ruffle: 0.0, widthPow: 0.5,
+      material: { roughness: 0.6, clearcoat: 0.1, clearcoatRoughness: 0.6, sheen: 0.05, sheenRoughness: 0.85, transmission: 0.02, ior: 1.39 }
     },
     peony: {
-      petalCount: 42, petalLayers: 7, petalWidth: 0.24, petalLength: 0.30,
-      centerRadius: 0.06, thickness: 0.005, phyllotaxis: 137.508,
-      bezier: { p1: [0.70, 0.20, 0.10], p2: [1.05, 0.55, 0.55], p3: [0.10, 1.00, 0.75] },
-      taper: 0.40, ruffle: 0.35, twist: 0.28, reflex: 0.20,
-      material: { roughness: 0.50, clearcoat: 0.30, clearcoatRoughness: 0.40, sheen: 0.85, sheenRoughness: 0.45, transmission: 0.06, ior: 1.42 }
+      flower: 'peony', petalCount: 36, petalLayers: 6, petalWidth: 0.20, petalLength: 0.24,
+      centerRadius: 0.05, cupInner: 0.55, cupOuter: 0.15, bendInner: 0.12, bendOuter: 0.85,
+      reflex: 0.2, ruffle: 0.02, widthPow: 0.75,
+      material: { roughness: 0.48, clearcoat: 0.3, clearcoatRoughness: 0.4, sheen: 0.8, sheenRoughness: 0.45, transmission: 0.06, ior: 1.42 }
     }
   };
-
 
   function rand(min, max) { return min + Math.random() * (max - min); }
   function lerp(a, b, t) { return a + (b - a) * t; }
@@ -88,108 +80,74 @@
     RoomEnvironment = r.RoomEnvironment;
   }
 
-
-  function bez3(p0, p1, p2, p3, t) {
-    var mt = 1 - t, mt2 = mt * mt, t2 = t * t;
-    return p0 * mt2 * mt + 3 * p1 * mt2 * t + 3 * p2 * mt * t2 + p3 * t2 * t;
-  }
-
-  function bez3d(p0, p1, p2, p3, t) {
-    var mt = 1 - t;
-    return 3 * mt * mt * (p1 - p0) + 6 * mt * t * (p2 - p1) + 3 * t * t * (p3 - p2);
-  }
-
-  function createPetalGeometry(profile, layer, totalLayers) {
-    var lenSeg = 18, widSeg = 10;
-    var positions = new Float32Array((lenSeg + 1) * (widSeg + 1) * 3);
-    var normals = new Float32Array((lenSeg + 1) * (widSeg + 1) * 3);
-    var uvs = new Float32Array((lenSeg + 1) * (widSeg + 1) * 2);
+  // Petal geometry: parametric surface with real bowl-shaped cupping
+  function createPetalGeometry(profile, layerT) {
+    var vSegs = 14, uSegs = 10;
+    var total = (vSegs + 1) * (uSegs + 1);
+    var positions = new Float32Array(total * 3);
+    var uvs = new Float32Array(total * 2);
     var indices = [];
 
-    var layerT = totalLayers > 1 ? layer / (totalLayers - 1) : 0;
-    var openness = lerp(0.15, 1.0, layerT);
-    var sizeScale = lerp(0.55, 1.05, layerT);
+    var sizeScale = lerp(0.4, 1.0, Math.pow(layerT, 0.5));
     var W = profile.petalWidth * sizeScale;
     var L = profile.petalLength * sizeScale;
-    var b = profile.bezier;
-    var reflex = profile.reflex * openness;
-    var twist = profile.twist * openness;
-    var ruffle = profile.ruffle;
-    var taper = profile.taper;
-    var th = profile.thickness;
+    var cupDepth = W * lerp(profile.cupInner, profile.cupOuter, layerT);
+    var maxBend = lerp(profile.bendInner, profile.bendOuter, Math.pow(layerT, 0.6));
+    var reflex = profile.reflex * layerT;
+    var wPow = profile.widthPow || 0.8;
 
-    var p0x = 0, p0y = 0, p0z = 0;
-    var p1x = b.p1[0] * L, p1y = b.p1[1] * L, p1z = b.p1[2] + reflex * 0.3;
-    var p2x = b.p2[0] * L, p2y = b.p2[1] * L, p2z = b.p2[2] + reflex * 0.6;
-    var p3x = b.p3[0] * L, p3y = b.p3[1] * L, p3z = b.p3[2] + reflex;
+    var idx = 0, uI = 0;
+    for (var j = 0; j <= vSegs; j++) {
+      var v = j / vSegs;
+      // Width: narrow at base, widest ~55%, narrow at tip
+      var wShape = Math.pow(Math.sin(v * Math.PI), wPow) * (1 - 0.15 * v);
+      var halfW = W * wShape * 0.5;
 
-    var idx = 0, uIdx = 0;
-    for (var j = 0; j <= lenSeg; j++) {
-      var t = j / lenSeg;
-      var sx = bez3(p0x, p1x, p2x, p3x, t);
-      var sy = bez3(p0y, p1y, p2y, p3y, t);
-      var sz = bez3(p0z, p1z, p2z, p3z, t);
-      var tx = bez3d(p0x, p1x, p2x, p3x, t);
-      var ty = bez3d(p0y, p1y, p2y, p3y, t);
-      var tz = bez3d(p0z, p1z, p2z, p3z, t);
-      var tl = Math.hypot(tx, ty, tz) || 1;
-      tx /= tl; ty /= tl; tz /= tl;
-      var bx = ty * 0 - tz * 0, by = tz * 1 - tx * 0, bz = tx * 0 - ty * 1;
-      var bl = Math.hypot(bx, by, bz) || 1;
-      bx = 1; by = 0; bz = 0;
-      var nx0 = ty * bz - tz * by, ny0 = tz * bx - tx * bz, nz0 = tx * by - ty * bx;
-      var nl0 = Math.hypot(nx0, ny0, nz0) || 1;
-      nx0 /= nl0; ny0 /= nl0; nz0 /= nl0;
+      // Spine: starts vertical (Y-up), bends outward (+Z) progressively
+      var bendT = Math.pow(v, 1.8);
+      var spineY = v * L * Math.cos(maxBend * bendT);
+      var spineZ = v * L * Math.sin(maxBend * bendT);
 
-      var widthAtT = W * Math.pow(Math.sin(t * Math.PI), 0.85) * (1 - taper * t);
-      var twistA = twist * t * Math.PI;
-      var cT = Math.cos(twistA), sT = Math.sin(twistA);
+      // Tip reflex: curl backward at tip
+      if (v > 0.7 && reflex > 0) {
+        var rT = (v - 0.7) / 0.3;
+        spineZ -= Math.sin(reflex * rT * rT) * L * 0.12;
+      }
 
-      for (var i = 0; i <= widSeg; i++) {
-        var u = i / widSeg;
-        var wx = (u - 0.5) * 2;
-        var rf = ruffle * Math.sin(wx * Math.PI * 3) * t * t * 0.5;
-        var local = wx * widthAtT;
-        var ox = local * cT;
-        var oz = local * sT + rf;
-        var thick = th * Math.sin(u * Math.PI);
+      // Cup depth fades toward tip
+      var cupAtV = cupDepth * (1 - Math.pow(v, 1.5) * 0.7);
 
-        var px = sx + ox;
-        var py = sy;
-        var pz = sz + oz + thick;
+      for (var i = 0; i <= uSegs; i++) {
+        var u = i / uSegs;
+        var ux = (u - 0.5) * 2; // -1 to 1
+        var x = ux * halfW;
+        // Bowl cupping: center pushed outward, edges at baseline
+        var cup = cupAtV * (1 - ux * ux);
+        // Subtle edge ruffle
+        var ruf = 0;
+        if (profile.ruffle > 0 && v > 0.4) {
+          ruf = profile.ruffle * Math.sin(ux * Math.PI * 3 + v * 2) * (v - 0.4);
+        }
 
-        positions[idx] = px;
-        positions[idx + 1] = py;
-        positions[idx + 2] = pz;
-
-        var nx = nx0 - sT * 0.4 * (1 - Math.abs(wx));
-        var ny = ny0;
-        var nz = nz0 + cT * 0.4 * (1 - Math.abs(wx));
-        var nl = Math.hypot(nx, ny, nz) || 1;
-        normals[idx] = nx / nl;
-        normals[idx + 1] = ny / nl;
-        normals[idx + 2] = nz / nl;
-
-        uvs[uIdx] = u;
-        uvs[uIdx + 1] = t;
-        idx += 3; uIdx += 2;
+        positions[idx] = x;
+        positions[idx + 1] = spineY;
+        positions[idx + 2] = spineZ + cup + ruf;
+        uvs[uI] = u;
+        uvs[uI + 1] = v;
+        idx += 3; uI += 2;
       }
     }
 
-    var rowSize = widSeg + 1;
-    for (var jj = 0; jj < lenSeg; jj++) {
-      for (var ii = 0; ii < widSeg; ii++) {
-        var a = jj * rowSize + ii;
-        var bb = a + rowSize;
-        var c = a + 1;
-        var d = bb + 1;
-        indices.push(a, bb, c, c, bb, d);
+    var rs = uSegs + 1;
+    for (var jj = 0; jj < vSegs; jj++) {
+      for (var ii = 0; ii < uSegs; ii++) {
+        var a = jj * rs + ii, b = a + rs, c = a + 1, d = b + 1;
+        indices.push(a, b, c, c, b, d);
       }
     }
 
     var geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geo.setAttribute('normal', new THREE.BufferAttribute(normals, 3));
     geo.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
     geo.setIndex(indices);
     geo.computeVertexNormals();
@@ -200,16 +158,16 @@
   function createFlowerHead(profile, color) {
     var group = new THREE.Group();
     var baseColor = new THREE.Color(color);
-    var sheenTint = baseColor.clone().offsetHSL(0.02, 0.15, 0.18);
+    var sheenTint = baseColor.clone().offsetHSL(0.02, 0.1, 0.15);
     var layers = profile.petalLayers;
     var totalPetals = profile.petalCount;
     var m = profile.material;
-    var goldenAngle = profile.phyllotaxis * Math.PI / 180;
+    var goldenOffset = 0.618 * Math.PI; // golden ratio angle offset between rings
 
     for (var layer = 0; layer < layers; layer++) {
       var layerT = layers > 1 ? layer / (layers - 1) : 0;
-      var petalGeo = createPetalGeometry(profile, layer, layers);
-      var petalColor = baseColor.clone().offsetHSL(0, -layerT * 0.08, layerT * 0.06);
+      var petalGeo = createPetalGeometry(profile, layerT);
+      var petalColor = baseColor.clone().offsetHSL(0, -layerT * 0.06, layerT * 0.08);
 
       var mat = new THREE.MeshPhysicalMaterial({
         color: petalColor,
@@ -221,65 +179,68 @@
         sheenRoughness: m.sheenRoughness,
         sheenColor: sheenTint,
         transmission: m.transmission,
-        thickness: 0.05,
+        thickness: 0.03,
         ior: m.ior,
-        attenuationDistance: 0.6,
-        attenuationColor: petalColor,
         side: THREE.DoubleSide,
         flatShading: false
       });
 
-      var layerCount = Math.max(3, Math.round(totalPetals / layers * lerp(0.55, 1.15, layerT)));
-      var openAngle = lerp(-1.35, -0.25, layerT);
-      var radiusBase = profile.centerRadius * lerp(0.25, 1.05, layerT);
+      // Fewer petals inside, more outside
+      var layerCount = Math.max(3, Math.round(totalPetals / layers * lerp(0.5, 1.3, layerT)));
+      var radiusBase = profile.centerRadius * lerp(0.15, 1.0, layerT);
 
       for (var p = 0; p < layerCount; p++) {
         var petal = new THREE.Mesh(petalGeo, mat);
-        var angle = p * goldenAngle + layer * 0.41;
-        petal.position.set(Math.cos(angle) * radiusBase, layerT * 0.012, Math.sin(angle) * radiusBase);
+        // Even distribution per ring + golden offset between rings
+        var angle = (p / layerCount) * Math.PI * 2 + layer * goldenOffset;
+        petal.position.set(Math.cos(angle) * radiusBase, layerT * 0.008, Math.sin(angle) * radiusBase);
         petal.rotation.y = -angle + Math.PI / 2;
-        petal.rotation.x = openAngle + rand(-0.06, 0.06);
-        petal.rotation.z = rand(-0.04, 0.04);
+        petal.rotation.z = rand(-0.03, 0.03);
         petal.castShadow = true;
         petal.receiveShadow = true;
         group.add(petal);
       }
     }
 
-    var centerGeo = new THREE.SphereGeometry(profile.centerRadius * 0.85, 24, 18);
-    var centerHex = profile.petalCount > 18 ? '#2b1d10' : baseColor.clone().offsetHSL(0.04, -0.25, -0.28).getHexString();
+    // Center sphere
+    var centerGeo = new THREE.SphereGeometry(profile.centerRadius * 0.7, 20, 16);
+    var isBig = profile.petalCount > 16;
+    var centerColor = isBig ? '#3d2b1f' : baseColor.clone().offsetHSL(0.04, -0.25, -0.3);
     var centerMat = new THREE.MeshPhysicalMaterial({
-      color: typeof centerHex === 'string' && centerHex.length === 6 ? '#' + centerHex : centerHex,
-      roughness: 0.85,
-      metalness: 0.0,
-      sheen: 0.4,
-      sheenRoughness: 0.6,
-      clearcoat: 0.15
+      color: centerColor, roughness: 0.85, sheen: 0.3, sheenRoughness: 0.6, clearcoat: 0.1
     });
     var center = new THREE.Mesh(centerGeo, centerMat);
-    center.position.y = 0.018;
-    center.scale.y = 0.55;
+    center.position.y = 0.01;
+    center.scale.y = 0.5;
     center.castShadow = true;
     group.add(center);
 
-    if (profile.petalCount >= 18 && profile.centerRadius >= 0.05) {
-      var stamenCount = profile.flower === 'sunflower' ? 0 : 10;
-      var stamenGeo = new THREE.CylinderGeometry(0.0025, 0.0035, 0.055, 5);
-      var tipGeo = new THREE.SphereGeometry(0.009, 8, 6);
+    // Sunflower: large flat disk center
+    if (profile.flower === 'sunflower') {
+      var diskGeo = new THREE.CylinderGeometry(profile.centerRadius, profile.centerRadius, 0.04, 32);
+      var diskMat = new THREE.MeshStandardMaterial({ color: 0x2b1d10, roughness: 0.9 });
+      var disk = new THREE.Mesh(diskGeo, diskMat);
+      disk.position.y = 0.02;
+      group.add(disk);
+    }
+
+    // Stamens for non-sunflower large flowers
+    if (profile.petalCount >= 16 && profile.flower !== 'sunflower') {
+      var stamenCount = 8;
+      var stamenGeo = new THREE.CylinderGeometry(0.002, 0.003, 0.045, 4);
+      var tipGeo = new THREE.SphereGeometry(0.007, 6, 6);
       var stamenMat = new THREE.MeshPhysicalMaterial({
-        color: 0xFFC93C, roughness: 0.35, metalness: 0.15,
-        clearcoat: 0.6, clearcoatRoughness: 0.25, sheen: 0.3, sheenColor: 0xFFE066
+        color: 0xFFC93C, roughness: 0.35, metalness: 0.1, clearcoat: 0.5
       });
       for (var s = 0; s < stamenCount; s++) {
         var sa = (s / stamenCount) * Math.PI * 2;
-        var sr = profile.centerRadius * 0.45;
-        var stem = new THREE.Mesh(stamenGeo, stamenMat);
-        stem.position.set(Math.cos(sa) * sr, 0.035, Math.sin(sa) * sr);
-        stem.rotation.z = rand(-0.25, 0.25);
-        stem.castShadow = true;
-        group.add(stem);
+        var sr = profile.centerRadius * 0.35;
+        var stm = new THREE.Mesh(stamenGeo, stamenMat);
+        stm.position.set(Math.cos(sa) * sr, 0.03, Math.sin(sa) * sr);
+        stm.rotation.z = rand(-0.2, 0.2);
+        group.add(stm);
         var tip = new THREE.Mesh(tipGeo, stamenMat);
-        tip.position.set(Math.cos(sa) * sr, 0.065, Math.sin(sa) * sr);
+        tip.position.set(Math.cos(sa) * sr, 0.055, Math.sin(sa) * sr);
         group.add(tip);
       }
     }
