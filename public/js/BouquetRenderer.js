@@ -10,6 +10,7 @@
   var renderer, scene, camera, controls, bouquetGroup, animId, pmrem, envTex;
   var container = null;
   var loaded = false;
+  var initPromise = null;
   var THREE = null;
   var OrbitControls = null;
   var GLTFExporter = null;
@@ -918,13 +919,16 @@
 
   async function init(containerEl, cfg) {
     if (loaded) { updateConfig(cfg); return; }
-    try {
+    if (initPromise) { await initPromise; updateConfig(cfg); return; }
+    initPromise = (async function () {
       await loadThreeJS();
       setupScene(containerEl);
       currentConfig = Object.assign({}, currentConfig, cfg);
       buildBouquet(currentConfig);
       loaded = true;
-    } catch (e) { console.error('[BouquetRenderer] Init failed:', e); }
+    })();
+    try { await initPromise; }
+    catch (e) { initPromise = null; loaded = false; console.error('[BouquetRenderer] Init failed:', e); throw e; }
   }
 
   function updateConfig(cfg) {
@@ -939,16 +943,28 @@
       if (!loaded || !bouquetGroup || !GLTFExporter) { reject(new Error('renderer not ready')); return; }
       var root = new THREE.Group();
       var clone = bouquetGroup.clone(true);
-      clone.rotation.set(0, 0, 0); clone.position.set(0, 0, 0);
+      clone.traverse(function (o) {
+        if (o.userData && o.userData.isGlow) o.visible = false;
+      });
+      clone.rotation.set(0, 0, 0);
+      clone.position.set(0, 0, 0);
       root.add(clone);
-      var box = new THREE.Box3().setFromObject(root);
-      var size = box.getSize(new THREE.Vector3());
-      var sc = 0.45 / Math.max(size.x, size.y, size.z);
+      var pre = new THREE.Box3().setFromObject(root);
+      var preSize = pre.getSize(new THREE.Vector3());
+      var TARGET_HEIGHT_M = 0.42;
+      var sc = TARGET_HEIGHT_M / Math.max(preSize.y, 0.0001);
       root.scale.setScalar(sc);
-      var ctr = box.getCenter(new THREE.Vector3()).multiplyScalar(sc);
-      root.position.set(-ctr.x, -box.min.y * sc, -ctr.z);
-      new GLTFExporter().parse(root,
-        function (buf) { resolve(URL.createObjectURL(new Blob([buf], { type: 'model/gltf-binary' }))); },
+      var post = new THREE.Box3().setFromObject(root);
+      var ctr = post.getCenter(new THREE.Vector3());
+      root.position.set(-ctr.x, -post.min.y, -ctr.z);
+      new GLTFExporter().parse(
+        root,
+        function (buf) {
+          try {
+            var blob = new Blob([buf], { type: 'model/gltf-binary' });
+            resolve(URL.createObjectURL(blob));
+          } catch (e) { reject(e); }
+        },
         function (err) { reject(err); },
         { binary: true, embedImages: true, onlyVisible: true, includeCustomExtensions: false }
       );
