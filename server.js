@@ -102,6 +102,14 @@ app.use('/api/customization', customizationRoutes);
 app.use('/api/support', supportRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/admin/users', userRoutes);
+app.use('/api/admin/orders', orderRoutes);
+app.use('/api/admin/products', productRoutes);
+app.use('/api/admin/banners', bannerRoutes);
+app.use('/api/admin/promos', promoRoutes);
+app.use('/api/admin/reviews', reviewRoutes);
+app.use('/api/admin/content', contentRoutes);
+app.use('/api/admin/faqs', faqRoutes);
 
 app.use('/api/faq', faqRoutes);
 app.use('/api/content', contentRoutes);
