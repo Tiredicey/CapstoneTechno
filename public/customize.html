@@ -63,21 +63,30 @@
         <div id="bouquet3DCanvas" style="width:100%;height:100%;border-radius:12px;overflow:hidden;"></div>
         <model-viewer
           id="modelViewer"
-          alt="3D Bouquet Preview"
+          alt="Your custom procedural bouquet in AR"
           camera-controls
+          touch-action="pan-y"
           auto-rotate
           auto-rotate-delay="0"
-          rotation-per-second="12deg"
+          rotation-per-second="14deg"
           interaction-prompt="none"
-          shadow-intensity="1.2"
-          shadow-softness="0.8"
-          exposure="1.1"
+          shadow-intensity="1.4"
+          shadow-softness="0.85"
+          exposure="1.15"
+          tone-mapping="aces"
           environment-image="neutral"
+          loading="eager"
+          reveal="auto"
           style="width:100%;height:100%;--poster-color:transparent;display:none;"
           ar
           ar-modes="webxr scene-viewer quick-look"
-          ar-scale="fixed"
+          ar-scale="auto"
+          ar-placement="floor"
+          xr-environment
+          min-camera-orbit="auto auto 0.5m"
+          max-camera-orbit="auto auto 4m"
         >
+
           <button slot="ar-button" class="ar-launch-btn" id="arLaunchSlot">
             📱 View in Your Room
           </button>
