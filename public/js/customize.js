@@ -183,98 +183,147 @@
 
   function switchMode(mode) {
     currentMode = mode;
-    var modes = ['default', 'ai', '3d'];
-    modes.forEach(function (m) {
+    ['default', 'ai', '3d'].forEach(function (m) {
       var el = qs('#preview' + (m === 'default' ? 'Default' : m === 'ai' ? 'AI' : '3D'));
       if (el) el.style.display = (m === mode) ? 'flex' : 'none';
     });
-
     qsa('.canvas-btn').forEach(function (b) { b.classList.remove('mode-active'); });
     var btnMap = { default: '#modeDefault', ai: '#modeAI', '3d': '#mode3D' };
     var activeBtn = qs(btnMap[mode]);
     if (activeBtn) activeBtn.classList.add('mode-active');
-
-    if (mode === 'ai') {
-      lastAiPromptHash = '';
-      generateAIPreview();
-    }
-
+    if (mode === 'ai') { lastAiPromptHash = ''; generateAIPreview(); }
     if (mode === '3d') {
       init3DBouquet();
+      var mv = qs('#modelViewer');
+      var canvas3d = qs('#bouquet3DCanvas');
+      if (mv) mv.style.display = 'none';
+      if (canvas3d) canvas3d.style.display = 'block';
+      setTimeout(function () { queueARPrepare().catch(function () {}); }, 600);
     }
   }
 
   var lastArBlobUrl = null;
-  var arExporting = false;
+  var arPreparing = false;
+  var arReadyPromise = null;
 
-  async function buildLiveARModel() {
+  function setStatus(msg, autoHide) {
+    var s = qs('#modelStatus');
+    if (!s) return;
+    s.textContent = msg;
+    s.style.display = 'block';
+    s.style.opacity = '1';
+    if (autoHide) setTimeout(function () { s.style.opacity = '0'; }, 2500);
+  }
+
+  async function ensureRendererReady() {
     if (!window.BloomBouquetRenderer) throw new Error('renderer missing');
-    if (!window.BloomBouquetRenderer.isReady || !window.BloomBouquetRenderer.isReady()) {
-      await window.BloomBouquetRenderer.init(qs('#bouquet3DCanvas'), {
-        flower: config.flower, color: config.colorHex,
-        bloomCount: config.bloomCount,
-        wrapping: config.wrapping_premium, luxury: config.wrapping_luxury
-      });
-      bouquet3DInited = true;
-    } else {
-      window.BloomBouquetRenderer.updateConfig({
-        flower: config.flower, color: config.colorHex,
-        bloomCount: config.bloomCount,
-        wrapping: config.wrapping_premium, luxury: config.wrapping_luxury
-      });
-    }
+    await window.BloomBouquetRenderer.init(qs('#bouquet3DCanvas'), {
+      flower: config.flower, color: config.colorHex,
+      bloomCount: config.bloomCount,
+      wrapping: config.wrapping_premium, luxury: config.wrapping_luxury
+    });
+    bouquet3DInited = true;
+    window.BloomBouquetRenderer.updateConfig({
+      flower: config.flower, color: config.colorHex,
+      bloomCount: config.bloomCount,
+      wrapping: config.wrapping_premium, luxury: config.wrapping_luxury
+    });
     await new Promise(function (r) { requestAnimationFrame(function () { requestAnimationFrame(r); }); });
-    return window.BloomBouquetRenderer.exportGLB();
+  }
+
+  async function prepareARModel() {
+    await ensureRendererReady();
+    var url = await window.BloomBouquetRenderer.exportGLB();
+    var mv = qs('#modelViewer');
+    if (!mv) throw new Error('model-viewer missing');
+    await new Promise(function (resolve, reject) {
+      var done = false;
+      var onLoad = function () { if (done) return; done = true; cleanup(); resolve(); };
+      var onError = function (e) { if (done) return; done = true; cleanup(); reject(e); };
+      var cleanup = function () {
+        mv.removeEventListener('load', onLoad);
+        mv.removeEventListener('error', onError);
+      };
+      mv.addEventListener('load', onLoad, { once: true });
+      mv.addEventListener('error', onError, { once: true });
+      if (lastArBlobUrl && lastArBlobUrl !== url) {
+        try { URL.revokeObjectURL(lastArBlobUrl); } catch (e) {}
+      }
+      lastArBlobUrl = url;
+      mv.setAttribute('src', url);
+      mv.removeAttribute('ios-src');
+      setTimeout(function () { if (!done) onError(new Error('model-viewer load timeout')); }, 20000);
+    });
+    return mv;
+  }
+
+  function queueARPrepare() {
+    if (arReadyPromise) return arReadyPromise;
+    arPreparing = true;
+    setStatus('Preparing AR scene…');
+    arReadyPromise = prepareARModel()
+      .then(function (mv) {
+        arPreparing = false;
+        setStatus('Tap "View in Your Room" to place', true);
+        return mv;
+      })
+      .catch(function (e) {
+        arPreparing = false;
+        arReadyPromise = null;
+        console.error('[AR] prepare failed', e);
+        setStatus('AR preparation failed', true);
+        showToast('AR preparation failed — retry', 'error');
+        throw e;
+      });
+    return arReadyPromise;
+  }
+
+  function invalidateARModel() {
+    arReadyPromise = null;
+    var mv = qs('#modelViewer');
+    if (mv) mv.removeAttribute('src');
+    if (lastArBlobUrl) {
+      try { URL.revokeObjectURL(lastArBlobUrl); } catch (e) {}
+      lastArBlobUrl = null;
+    }
   }
 
   async function launchAR() {
-    if (arExporting) return;
     var mv = qs('#modelViewer');
-    if (!mv) { showToast('AR not available', 'error'); return; }
+    if (!mv) { showToast('AR not available on this browser', 'error'); return; }
     if (currentMode !== '3d') switchMode('3d');
-
     var canvas3d = qs('#bouquet3DCanvas');
-    var status = qs('#modelStatus');
-    arExporting = true;
-    if (status) { status.textContent = 'Preparing AR scene…'; status.style.display = 'block'; status.style.opacity = '1'; }
 
     try {
-      var url = await buildLiveARModel();
-      if (lastArBlobUrl) { try { URL.revokeObjectURL(lastArBlobUrl); } catch (e) {} }
-      lastArBlobUrl = url;
-
+      await queueARPrepare();
       if (canvas3d) canvas3d.style.display = 'none';
       mv.style.display = 'block';
-      mv.setAttribute('src', url);
-      mv.setAttribute('ios-src', url);
-
-      await new Promise(function (resolve, reject) {
-        var ok = function () { mv.removeEventListener('load', ok); mv.removeEventListener('error', err); resolve(); };
-        var err = function (e) { mv.removeEventListener('load', ok); mv.removeEventListener('error', err); reject(e); };
-        mv.addEventListener('load', ok, { once: true });
-        mv.addEventListener('error', err, { once: true });
-      });
-
-      if (status) { status.textContent = 'Tap to place in your room'; setTimeout(function () { status.style.opacity = '0'; }, 2500); }
 
       var canAR = false;
-      try { canAR = await mv.canActivateAR; } catch (e) { canAR = !!mv.canActivateAR; }
+      try { canAR = !!(await mv.canActivateAR); } catch (e) { canAR = !!mv.canActivateAR; }
+
       if (canAR) {
-        mv.activateAR();
-      } else if ('xr' in navigator && navigator.xr.isSessionSupported) {
-        var supported = await navigator.xr.isSessionSupported('immersive-ar').catch(function () { return false; });
-        if (supported) mv.activateAR();
-        else showToast('AR requires an ARCore/ARKit-capable device', 'info');
+        try { mv.activateAR(); return; }
+        catch (e) {
+          console.warn('[AR] activateAR threw (gesture likely consumed):', e);
+          var slot = qs('#arLaunchSlot');
+          if (slot) {
+            slot.style.display = 'inline-flex';
+            showToast('Tap "View in Your Room" to enter AR', 'info');
+          }
+          return;
+        }
+      }
+
+      var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      if (isIOS) {
+        showToast('iOS AR Quick Look needs a USDZ file — server conversion required', 'info');
       } else {
-        showToast('Device does not support WebXR AR — rotate the 3D preview instead', 'info');
+        showToast('This device does not support WebXR / Scene Viewer AR', 'info');
       }
     } catch (e) {
-      console.error('[AR] launch failed', e);
-      showToast('AR preparation failed — please retry', 'error');
       if (canvas3d) canvas3d.style.display = 'block';
       mv.style.display = 'none';
-    } finally {
-      arExporting = false;
     }
   }
 
@@ -282,7 +331,14 @@
   function onConfigChange() {
     updatePrice();
     scheduleAIPreview();
-    if (currentMode === '3d') sync3DConfig();
+    if (currentMode === '3d') {
+      sync3DConfig();
+      invalidateARModel();
+      clearTimeout(window.__arDebounce);
+      window.__arDebounce = setTimeout(function () {
+        if (currentMode === '3d') queueARPrepare().catch(function () {});
+      }, 800);
+    }
   }
 
   function updateDefaultPreview() {
