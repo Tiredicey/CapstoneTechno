@@ -47,16 +47,16 @@ router.put('/:id', authenticate, requireAdmin, (req, res) => {
   try {
     const existing = db.get(`SELECT * FROM promo_codes WHERE id = ?`, [req.params.id]);
     if (!existing) return res.status(404).json({ error: 'Promo not found' });
-    const { value, min_order_amount, min_order, max_uses, is_active, expires_at } = req.body;
-    const minOrd = min_order_amount !== undefined ? Number(min_order_amount)
-      : min_order !== undefined ? Number(min_order)
-      : existing.min_order_amount;
+    const { code, type, discount_type, value, min_order_amount, min_order, max_uses, is_active, expires_at } = req.body;
+    const finalCode = (code || existing.code).toUpperCase();
+    const finalType = type || discount_type || existing.type;
+    const minOrd = min_order_amount !== undefined ? Number(min_order_amount) : (min_order !== undefined ? Number(min_order) : existing.min_order_amount);
     db.run(
-      `UPDATE promo_codes SET value=?, min_order_amount=?, min_order=?, max_uses=?, is_active=?, expires_at=? WHERE id=?`,
+      `UPDATE promo_codes SET code=?, type=?, discount_type=?, value=?, min_order_amount=?, min_order=?, max_uses=?, is_active=?, expires_at=? WHERE id=?`,
       [
+        finalCode, finalType, finalType,
         value !== undefined ? Number(value) : existing.value,
-        minOrd,
-        minOrd,
+        minOrd, minOrd,
         max_uses !== undefined ? Number(max_uses) : existing.max_uses,
         is_active !== undefined ? (is_active ? 1 : 0) : existing.is_active,
         expires_at !== undefined ? expires_at : existing.expires_at,
