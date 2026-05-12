@@ -4,12 +4,18 @@
 
   var THREE_SPECIFIER = 'three';
   var ORBIT_SPECIFIER = 'three/addons/controls/OrbitControls.js';
+  var EXPORTER_SPECIFIER = 'three/addons/exporters/GLTFExporter.js';
+  var RGBE_SPECIFIER = 'three/addons/loaders/RGBELoader.js';
+  var ROOM_SPECIFIER = 'three/addons/environments/RoomEnvironment.js';
 
-  var renderer, scene, camera, controls, bouquetGroup, animId;
+  var renderer, scene, camera, controls, bouquetGroup, animId, pmrem, envTex;
   var container = null;
   var loaded = false;
   var THREE = null;
   var OrbitControls = null;
+  var GLTFExporter = null;
+  var RoomEnvironment = null;
+
 
   var currentConfig = {
     flower: 'rose',
@@ -20,145 +26,267 @@
   };
 
   var FLOWER_PROFILES = {
-    rose: { petalCount: 24, petalLayers: 5, petalWidth: 0.22, petalLength: 0.38, curlFactor: 0.7, centerRadius: 0.06, petalThickness: 0.008 },
-    tulip: { petalCount: 6, petalLayers: 2, petalWidth: 0.18, petalLength: 0.4, curlFactor: 0.3, centerRadius: 0.04, petalThickness: 0.012 },
-    lily: { petalCount: 6, petalLayers: 2, petalWidth: 0.24, petalLength: 0.45, curlFactor: 0.85, centerRadius: 0.05, petalThickness: 0.006 },
-    orchid: { petalCount: 5, petalLayers: 2, petalWidth: 0.28, petalLength: 0.35, curlFactor: 0.4, centerRadius: 0.07, petalThickness: 0.005 },
-    sunflower: { petalCount: 20, petalLayers: 2, petalWidth: 0.08, petalLength: 0.5, curlFactor: 0.15, centerRadius: 0.18, petalThickness: 0.008 },
-    peony: { petalCount: 32, petalLayers: 6, petalWidth: 0.25, petalLength: 0.32, curlFactor: 0.55, centerRadius: 0.08, petalThickness: 0.006 }
+    rose: {
+      petalCount: 28, petalLayers: 6, petalWidth: 0.20, petalLength: 0.34,
+      centerRadius: 0.05, thickness: 0.006, phyllotaxis: 137.508,
+      bezier: { p1: [0.55, 0.10, 0.05], p2: [0.85, 0.65, 0.35], p3: [0.20, 1.00, 0.55] },
+      taper: 0.35, ruffle: 0.18, twist: 0.22, reflex: 0.10,
+      material: { roughness: 0.42, clearcoat: 0.55, clearcoatRoughness: 0.30, sheen: 0.25, sheenRoughness: 0.7, transmission: 0.08, ior: 1.42 }
+    },
+    tulip: {
+      petalCount: 6, petalLayers: 2, petalWidth: 0.19, petalLength: 0.42,
+      centerRadius: 0.035, thickness: 0.010, phyllotaxis: 60,
+      bezier: { p1: [0.40, 0.20, 0.02], p2: [0.55, 0.70, 0.06], p3: [0.30, 1.00, 0.18] },
+      taper: 0.55, ruffle: 0.02, twist: 0.05, reflex: -0.15,
+      material: { roughness: 0.55, clearcoat: 0.20, clearcoatRoughness: 0.55, sheen: 0.10, sheenRoughness: 0.8, transmission: 0.04, ior: 1.40 }
+    },
+    lily: {
+      petalCount: 6, petalLayers: 2, petalWidth: 0.18, petalLength: 0.52,
+      centerRadius: 0.04, thickness: 0.005, phyllotaxis: 60,
+      bezier: { p1: [0.50, 0.15, 0.0], p2: [0.75, 0.55, -0.20], p3: [0.25, 1.00, -0.45] },
+      taper: 0.30, ruffle: 0.06, twist: 0.10, reflex: 0.85,
+      material: { roughness: 0.38, clearcoat: 0.70, clearcoatRoughness: 0.20, sheen: 0.15, sheenRoughness: 0.6, transmission: 0.14, ior: 1.45 }
+    },
+    orchid: {
+      petalCount: 5, petalLayers: 1, petalWidth: 0.30, petalLength: 0.36,
+      centerRadius: 0.06, thickness: 0.004, phyllotaxis: 72,
+      bezier: { p1: [0.65, 0.25, 0.04], p2: [0.95, 0.55, 0.10], p3: [0.55, 1.00, 0.05] },
+      taper: 0.20, ruffle: 0.30, twist: 0.35, reflex: 0.05,
+      material: { roughness: 0.48, clearcoat: 0.40, clearcoatRoughness: 0.45, sheen: 0.55, sheenRoughness: 0.5, transmission: 0.18, ior: 1.43 }
+    },
+    sunflower: {
+      petalCount: 28, petalLayers: 2, petalWidth: 0.07, petalLength: 0.48,
+      centerRadius: 0.20, thickness: 0.007, phyllotaxis: 137.508,
+      bezier: { p1: [0.35, 0.20, 0.0], p2: [0.50, 0.65, 0.04], p3: [0.20, 1.00, 0.0] },
+      taper: 0.65, ruffle: 0.05, twist: 0.02, reflex: -0.05,
+      material: { roughness: 0.62, clearcoat: 0.10, clearcoatRoughness: 0.65, sheen: 0.05, sheenRoughness: 0.85, transmission: 0.02, ior: 1.39 }
+    },
+    peony: {
+      petalCount: 42, petalLayers: 7, petalWidth: 0.24, petalLength: 0.30,
+      centerRadius: 0.06, thickness: 0.005, phyllotaxis: 137.508,
+      bezier: { p1: [0.70, 0.20, 0.10], p2: [1.05, 0.55, 0.55], p3: [0.10, 1.00, 0.75] },
+      taper: 0.40, ruffle: 0.35, twist: 0.28, reflex: 0.20,
+      material: { roughness: 0.50, clearcoat: 0.30, clearcoatRoughness: 0.40, sheen: 0.85, sheenRoughness: 0.45, transmission: 0.06, ior: 1.42 }
+    }
   };
+
 
   function rand(min, max) { return min + Math.random() * (max - min); }
   function lerp(a, b, t) { return a + (b - a) * t; }
 
   async function loadThreeJS() {
     if (THREE) return;
-    var threeModule = await import(THREE_SPECIFIER);
-    THREE = threeModule;
-    var orbitModule = await import(ORBIT_SPECIFIER);
-    OrbitControls = orbitModule.OrbitControls;
+    var [t, o, e, r] = await Promise.all([
+      import(THREE_SPECIFIER),
+      import(ORBIT_SPECIFIER),
+      import(EXPORTER_SPECIFIER),
+      import(ROOM_SPECIFIER)
+    ]);
+    THREE = t;
+    OrbitControls = o.OrbitControls;
+    GLTFExporter = e.GLTFExporter;
+    RoomEnvironment = r.RoomEnvironment;
+  }
+
+
+  function bez3(p0, p1, p2, p3, t) {
+    var mt = 1 - t, mt2 = mt * mt, t2 = t * t;
+    return p0 * mt2 * mt + 3 * p1 * mt2 * t + 3 * p2 * mt * t2 + p3 * t2 * t;
+  }
+
+  function bez3d(p0, p1, p2, p3, t) {
+    var mt = 1 - t;
+    return 3 * mt * mt * (p1 - p0) + 6 * mt * t * (p2 - p1) + 3 * t * t * (p3 - p2);
   }
 
   function createPetalGeometry(profile, layer, totalLayers) {
-    var segments = 12;
-    var widthSegments = 6;
-    var positions = [];
-    var normals = [];
-    var uvs = [];
+    var lenSeg = 18, widSeg = 10;
+    var positions = new Float32Array((lenSeg + 1) * (widSeg + 1) * 3);
+    var normals = new Float32Array((lenSeg + 1) * (widSeg + 1) * 3);
+    var uvs = new Float32Array((lenSeg + 1) * (widSeg + 1) * 2);
     var indices = [];
 
-    var layerRatio = layer / totalLayers;
-    var openness = lerp(0.2, 1.0, layerRatio);
-    var scaleFactor = lerp(0.5, 1.0, layerRatio);
-    var w = profile.petalWidth * scaleFactor;
-    var l = profile.petalLength * scaleFactor;
-    var curl = profile.curlFactor * openness;
+    var layerT = totalLayers > 1 ? layer / (totalLayers - 1) : 0;
+    var openness = lerp(0.15, 1.0, layerT);
+    var sizeScale = lerp(0.55, 1.05, layerT);
+    var W = profile.petalWidth * sizeScale;
+    var L = profile.petalLength * sizeScale;
+    var b = profile.bezier;
+    var reflex = profile.reflex * openness;
+    var twist = profile.twist * openness;
+    var ruffle = profile.ruffle;
+    var taper = profile.taper;
+    var th = profile.thickness;
 
-    for (var j = 0; j <= widthSegments; j++) {
-      var wt = j / widthSegments;
-      var wx = (wt - 0.5) * 2;
-      for (var i = 0; i <= segments; i++) {
-        var t = i / segments;
-        var widthAtT = w * Math.sin(t * Math.PI) * (1 - 0.3 * t);
-        var x = wx * widthAtT;
-        var y = t * l;
-        var z = curl * t * t * (1 - Math.abs(wx) * 0.5) + profile.petalThickness * (1 - Math.abs(wx));
-        z += Math.sin(wx * Math.PI) * 0.02 * t;
-        positions.push(x, y, z);
-        var nx = -Math.sin(wx * Math.PI) * 0.3;
-        var ny = -curl * 2 * t * 0.2;
-        var nz = 1;
-        var nl = Math.sqrt(nx * nx + ny * ny + nz * nz);
-        normals.push(nx / nl, ny / nl, nz / nl);
-        uvs.push(wt, t);
+    var p0x = 0, p0y = 0, p0z = 0;
+    var p1x = b.p1[0] * L, p1y = b.p1[1] * L, p1z = b.p1[2] + reflex * 0.3;
+    var p2x = b.p2[0] * L, p2y = b.p2[1] * L, p2z = b.p2[2] + reflex * 0.6;
+    var p3x = b.p3[0] * L, p3y = b.p3[1] * L, p3z = b.p3[2] + reflex;
+
+    var idx = 0, uIdx = 0;
+    for (var j = 0; j <= lenSeg; j++) {
+      var t = j / lenSeg;
+      var sx = bez3(p0x, p1x, p2x, p3x, t);
+      var sy = bez3(p0y, p1y, p2y, p3y, t);
+      var sz = bez3(p0z, p1z, p2z, p3z, t);
+      var tx = bez3d(p0x, p1x, p2x, p3x, t);
+      var ty = bez3d(p0y, p1y, p2y, p3y, t);
+      var tz = bez3d(p0z, p1z, p2z, p3z, t);
+      var tl = Math.hypot(tx, ty, tz) || 1;
+      tx /= tl; ty /= tl; tz /= tl;
+      var bx = ty * 0 - tz * 0, by = tz * 1 - tx * 0, bz = tx * 0 - ty * 1;
+      var bl = Math.hypot(bx, by, bz) || 1;
+      bx = 1; by = 0; bz = 0;
+      var nx0 = ty * bz - tz * by, ny0 = tz * bx - tx * bz, nz0 = tx * by - ty * bx;
+      var nl0 = Math.hypot(nx0, ny0, nz0) || 1;
+      nx0 /= nl0; ny0 /= nl0; nz0 /= nl0;
+
+      var widthAtT = W * Math.pow(Math.sin(t * Math.PI), 0.85) * (1 - taper * t);
+      var twistA = twist * t * Math.PI;
+      var cT = Math.cos(twistA), sT = Math.sin(twistA);
+
+      for (var i = 0; i <= widSeg; i++) {
+        var u = i / widSeg;
+        var wx = (u - 0.5) * 2;
+        var rf = ruffle * Math.sin(wx * Math.PI * 3) * t * t * 0.5;
+        var local = wx * widthAtT;
+        var ox = local * cT;
+        var oz = local * sT + rf;
+        var thick = th * Math.sin(u * Math.PI);
+
+        var px = sx + ox;
+        var py = sy;
+        var pz = sz + oz + thick;
+
+        positions[idx] = px;
+        positions[idx + 1] = py;
+        positions[idx + 2] = pz;
+
+        var nx = nx0 - sT * 0.4 * (1 - Math.abs(wx));
+        var ny = ny0;
+        var nz = nz0 + cT * 0.4 * (1 - Math.abs(wx));
+        var nl = Math.hypot(nx, ny, nz) || 1;
+        normals[idx] = nx / nl;
+        normals[idx + 1] = ny / nl;
+        normals[idx + 2] = nz / nl;
+
+        uvs[uIdx] = u;
+        uvs[uIdx + 1] = t;
+        idx += 3; uIdx += 2;
       }
     }
 
-    var rowSize = segments + 1;
-    for (var j2 = 0; j2 < widthSegments; j2++) {
-      for (var i2 = 0; i2 < segments; i2++) {
-        var a = j2 * rowSize + i2;
-        var b = a + rowSize;
+    var rowSize = widSeg + 1;
+    for (var jj = 0; jj < lenSeg; jj++) {
+      for (var ii = 0; ii < widSeg; ii++) {
+        var a = jj * rowSize + ii;
+        var bb = a + rowSize;
         var c = a + 1;
-        var d = b + 1;
-        indices.push(a, b, c, c, b, d);
+        var d = bb + 1;
+        indices.push(a, bb, c, c, bb, d);
       }
     }
 
     var geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-    geo.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
-    geo.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geo.setAttribute('normal', new THREE.BufferAttribute(normals, 3));
+    geo.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
     geo.setIndex(indices);
+    geo.computeVertexNormals();
     return geo;
   }
+
 
   function createFlowerHead(profile, color) {
     var group = new THREE.Group();
     var baseColor = new THREE.Color(color);
-    var totalPetals = profile.petalCount;
+    var sheenTint = baseColor.clone().offsetHSL(0.02, 0.15, 0.18);
     var layers = profile.petalLayers;
-    var petalsPerLayer = Math.ceil(totalPetals / layers);
+    var totalPetals = profile.petalCount;
+    var m = profile.material;
+    var goldenAngle = profile.phyllotaxis * Math.PI / 180;
 
     for (var layer = 0; layer < layers; layer++) {
+      var layerT = layers > 1 ? layer / (layers - 1) : 0;
       var petalGeo = createPetalGeometry(profile, layer, layers);
-      var layerRatio = layer / layers;
-      var petalColor = baseColor.clone();
-      petalColor.offsetHSL(0, -layerRatio * 0.1, layerRatio * 0.08);
+      var petalColor = baseColor.clone().offsetHSL(0, -layerT * 0.08, layerT * 0.06);
 
-      var mat = new THREE.MeshStandardMaterial({
+      var mat = new THREE.MeshPhysicalMaterial({
         color: petalColor,
-        roughness: 0.55,
-        metalness: 0.02,
+        roughness: m.roughness,
+        metalness: 0.0,
+        clearcoat: m.clearcoat,
+        clearcoatRoughness: m.clearcoatRoughness,
+        sheen: m.sheen,
+        sheenRoughness: m.sheenRoughness,
+        sheenColor: sheenTint,
+        transmission: m.transmission,
+        thickness: 0.05,
+        ior: m.ior,
+        attenuationDistance: 0.6,
+        attenuationColor: petalColor,
         side: THREE.DoubleSide,
-        transparent: true,
-        opacity: 0.95
+        flatShading: false
       });
 
-      var layerPetals = petalsPerLayer;
-      if (layer === 0) layerPetals = Math.max(3, Math.floor(petalsPerLayer * 0.5));
+      var layerCount = Math.max(3, Math.round(totalPetals / layers * lerp(0.55, 1.15, layerT)));
+      var openAngle = lerp(-1.35, -0.25, layerT);
+      var radiusBase = profile.centerRadius * lerp(0.25, 1.05, layerT);
 
-      for (var p = 0; p < layerPetals; p++) {
+      for (var p = 0; p < layerCount; p++) {
         var petal = new THREE.Mesh(petalGeo, mat);
-        var angle = (p / layerPetals) * Math.PI * 2 + layer * 0.3;
-        var radius = profile.centerRadius * lerp(0.3, 1.0, layerRatio);
-        petal.position.set(Math.cos(angle) * radius, 0, Math.sin(angle) * radius);
+        var angle = p * goldenAngle + layer * 0.41;
+        petal.position.set(Math.cos(angle) * radiusBase, layerT * 0.012, Math.sin(angle) * radiusBase);
         petal.rotation.y = -angle + Math.PI / 2;
-        petal.rotation.x = lerp(-0.4, -1.2, layerRatio) + rand(-0.08, 0.08);
-        petal.rotation.z = rand(-0.05, 0.05);
+        petal.rotation.x = openAngle + rand(-0.06, 0.06);
+        petal.rotation.z = rand(-0.04, 0.04);
+        petal.castShadow = true;
+        petal.receiveShadow = true;
         group.add(petal);
       }
     }
 
-    var centerGeo = new THREE.SphereGeometry(profile.centerRadius * 0.8, 16, 12);
-    var centerColor = profile.petalCount > 15 ? '#3d2b1f' : baseColor.clone().offsetHSL(0.05, -0.3, -0.3);
-    var centerMat = new THREE.MeshStandardMaterial({ color: centerColor, roughness: 0.9, metalness: 0 });
+    var centerGeo = new THREE.SphereGeometry(profile.centerRadius * 0.85, 24, 18);
+    var centerHex = profile.petalCount > 18 ? '#2b1d10' : baseColor.clone().offsetHSL(0.04, -0.25, -0.28).getHexString();
+    var centerMat = new THREE.MeshPhysicalMaterial({
+      color: typeof centerHex === 'string' && centerHex.length === 6 ? '#' + centerHex : centerHex,
+      roughness: 0.85,
+      metalness: 0.0,
+      sheen: 0.4,
+      sheenRoughness: 0.6,
+      clearcoat: 0.15
+    });
     var center = new THREE.Mesh(centerGeo, centerMat);
-    center.position.y = 0.02;
-    center.scale.y = 0.6;
+    center.position.y = 0.018;
+    center.scale.y = 0.55;
+    center.castShadow = true;
     group.add(center);
 
-    if (profile.petalCount >= 18) {
-      var stamenCount = 8;
-      var stamenGeo = new THREE.CylinderGeometry(0.003, 0.003, 0.06, 4);
-      var stamenTipGeo = new THREE.SphereGeometry(0.008, 6, 6);
-      var stamenMat = new THREE.MeshStandardMaterial({ color: '#FFD700', roughness: 0.4, metalness: 0.3 });
-
+    if (profile.petalCount >= 18 && profile.centerRadius >= 0.05) {
+      var stamenCount = profile.flower === 'sunflower' ? 0 : 10;
+      var stamenGeo = new THREE.CylinderGeometry(0.0025, 0.0035, 0.055, 5);
+      var tipGeo = new THREE.SphereGeometry(0.009, 8, 6);
+      var stamenMat = new THREE.MeshPhysicalMaterial({
+        color: 0xFFC93C, roughness: 0.35, metalness: 0.15,
+        clearcoat: 0.6, clearcoatRoughness: 0.25, sheen: 0.3, sheenColor: 0xFFE066
+      });
       for (var s = 0; s < stamenCount; s++) {
         var sa = (s / stamenCount) * Math.PI * 2;
-        var sr = profile.centerRadius * 0.5;
-        var stamen = new THREE.Mesh(stamenGeo, stamenMat);
-        stamen.position.set(Math.cos(sa) * sr, 0.04, Math.sin(sa) * sr);
-        stamen.rotation.z = rand(-0.3, 0.3);
-        group.add(stamen);
-        var tip = new THREE.Mesh(stamenTipGeo, stamenMat);
-        tip.position.set(Math.cos(sa) * sr, 0.07, Math.sin(sa) * sr);
+        var sr = profile.centerRadius * 0.45;
+        var stem = new THREE.Mesh(stamenGeo, stamenMat);
+        stem.position.set(Math.cos(sa) * sr, 0.035, Math.sin(sa) * sr);
+        stem.rotation.z = rand(-0.25, 0.25);
+        stem.castShadow = true;
+        group.add(stem);
+        var tip = new THREE.Mesh(tipGeo, stamenMat);
+        tip.position.set(Math.cos(sa) * sr, 0.065, Math.sin(sa) * sr);
         group.add(tip);
       }
     }
 
     return group;
   }
+
 
   function createStem(length) {
     var curve = new THREE.CatmullRomCurve3([
@@ -364,17 +492,26 @@
     scene = new THREE.Scene();
     scene.background = null;
 
-    camera = new THREE.PerspectiveCamera(40, w / h, 0.01, 100);
-    camera.position.set(0, 0.3, 2.5);
+    camera = new THREE.PerspectiveCamera(38, w / h, 0.01, 100);
+    camera.position.set(0, 0.35, 2.4);
 
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(w, h);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
+    renderer.toneMappingExposure = 1.15;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.xr.enabled = true;
     container.appendChild(renderer.domElement);
+
+    pmrem = new THREE.PMREMGenerator(renderer);
+    pmrem.compileEquirectangularShader();
+    envTex = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    scene.environment = envTex;
+    scene.environmentIntensity = 0.55;
+
 
     controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
@@ -489,9 +626,40 @@
     if (changed) buildBouquet(currentConfig);
   }
 
+  function exportGLB() {
+    return new Promise(function (resolve, reject) {
+      if (!loaded || !bouquetGroup || !GLTFExporter) { reject(new Error('renderer not ready')); return; }
+      var exportRoot = new THREE.Group();
+      var clone = bouquetGroup.clone(true);
+      clone.rotation.set(0, 0, 0);
+      clone.position.set(0, 0, 0);
+      exportRoot.add(clone);
+      var box = new THREE.Box3().setFromObject(exportRoot);
+      var size = box.getSize(new THREE.Vector3());
+      var target = 0.45;
+      var scale = target / Math.max(size.x, size.y, size.z);
+      exportRoot.scale.setScalar(scale);
+      var center = box.getCenter(new THREE.Vector3()).multiplyScalar(scale);
+      exportRoot.position.set(-center.x, -box.min.y * scale, -center.z);
+
+      new GLTFExporter().parse(
+        exportRoot,
+        function (buf) {
+          var blob = new Blob([buf], { type: 'model/gltf-binary' });
+          resolve(URL.createObjectURL(blob));
+        },
+        function (err) { reject(err); },
+        { binary: true, embedImages: true, onlyVisible: true, includeCustomExtensions: false }
+      );
+    });
+  }
+
   window.BloomBouquetRenderer = {
     init: init,
     updateConfig: updateConfig,
-    dispose: dispose
+    dispose: dispose,
+    exportGLB: exportGLB,
+    isReady: function () { return loaded; }
   };
+
 })();
