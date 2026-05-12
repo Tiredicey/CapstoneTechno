@@ -29,6 +29,8 @@ import userRoutes from './routes/users.js';
 import reviewRoutes from './routes/reviews.js';
 import notificationRoutes from './routes/notifications.js';
 import { SocketManager } from './sockets/SocketManager.js';
+import { authenticate } from './middleware/auth.js';
+import db from './database/Database.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -103,8 +105,6 @@ app.use('/api/support', supportRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/admin/users', userRoutes);
-app.use('/api/admin/orders', orderRoutes);
-app.use('/api/admin/products', productRoutes);
 app.use('/api/admin/banners', bannerRoutes);
 app.use('/api/admin/promos', promoRoutes);
 app.use('/api/admin/reviews', reviewRoutes);
@@ -119,26 +119,36 @@ app.use('/api/users', userRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/notifications', notificationRoutes);
 
-// Wishlist aggregate endpoint
-app.get('/api/wishlist', async (req, res) => {
+app.get('/api/wishlist', authenticate, (req, res) => {
   try {
-    const { authenticate } = await import('./middleware/auth.js');
-    // Quick inline auth check
-    const token = req.cookies?.bloom_token || (req.headers.authorization || '').replace('Bearer ', '');
-    if (!token) return res.json([]);
-    const jwt = await import('jsonwebtoken');
-    const decoded = jwt.default.verify(token, process.env.JWT_SECRET || 'bloom-secret-key-change-in-production');
-    const db = (await import('./database/Database.js')).default;
     const items = db.all(
-      `SELECT w.product_id, w.added_at, p.name, p.base_price as price, p.images, p.category
+      `SELECT w.product_id, w.added_at, p.name, p.base_price AS price, p.images, p.category
        FROM wishlists w LEFT JOIN products p ON w.product_id = p.id
        WHERE w.user_id = ? ORDER BY w.added_at DESC`,
-      [decoded.id || decoded.userId]
+      [req.user.id]
     );
-    res.json(items || []);
+    res.set('Cache-Control', 'no-store');
+    res.json(items);
   } catch (err) {
+    console.error('[WISHLIST]', err);
     res.json([]);
   }
+});
+
+app.post('/api/wishlist/:productId', authenticate, (req, res) => {
+  try {
+    db.run(`INSERT OR IGNORE INTO wishlists (user_id, product_id) VALUES (?, ?)`,
+      [req.user.id, req.params.productId]);
+    res.json({ success: true });
+  } catch { res.status(500).json({ error: 'Failed' }); }
+});
+
+app.delete('/api/wishlist/:productId', authenticate, (req, res) => {
+  try {
+    db.run(`DELETE FROM wishlists WHERE user_id = ? AND product_id = ?`,
+      [req.user.id, req.params.productId]);
+    res.json({ success: true });
+  } catch { res.status(500).json({ error: 'Failed' }); }
 });
 
 try {
