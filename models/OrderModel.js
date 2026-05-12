@@ -1,11 +1,11 @@
-import { Database } from '../database/Database.js';
+import db from '../database/Database.js';
 import { v4 as uuid } from 'uuid';
 
 export class OrderModel {
   static create(data) {
     const id = uuid();
     const qr = `BLOOM-${id.substring(0, 8).toUpperCase()}`;
-    Database.run(
+    db.run(
       `INSERT INTO orders
         (id, user_id, session_id, items, recipient, delivery_date, delivery_slot,
          recurring, pricing, payment_method, qr_code, special_instructions)
@@ -23,12 +23,12 @@ export class OrderModel {
   }
 
   static getById(id) {
-    const o = Database.get('SELECT * FROM orders WHERE id = ?', [id]);
+    const o = db.get('SELECT * FROM orders WHERE id = ?', [id]);
     return o ? OrderModel.parse(o) : null;
   }
 
   static getByUser(userId, limit = 20) {
-    return Database.all(
+    return db.all(
       'SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC LIMIT ?',
       [userId, limit]
     ).map(OrderModel.parse);
@@ -43,14 +43,14 @@ export class OrderModel {
     }
     sql += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
     params.push(limit, offset);
-    return Database.all(sql, params).map(OrderModel.parse);
+    return db.all(sql, params).map(OrderModel.parse);
   }
 
   static updateStatus(id, status) {
-    const row = Database.get('SELECT tracking_steps FROM orders WHERE id = ?', [id]);
+    const row = db.get('SELECT tracking_steps FROM orders WHERE id = ?', [id]);
     const steps = JSON.parse(row?.tracking_steps || '[]');
     steps.push({ status, timestamp: Date.now() });
-    Database.run(
+    db.run(
       'UPDATE orders SET status = ?, tracking_steps = ?, updated_at = unixepoch() WHERE id = ?',
       [status, JSON.stringify(steps), id]
     );
@@ -58,14 +58,14 @@ export class OrderModel {
   }
 
   static updatePayment(id, paymentStatus) {
-    Database.run(
+    db.run(
       'UPDATE orders SET payment_status = ?, updated_at = unixepoch() WHERE id = ?',
       [paymentStatus, id]
     );
   }
 
   static assignFlorist(id, floristId) {
-    Database.run(
+    db.run(
       'UPDATE orders SET florist_id = ?, updated_at = unixepoch() WHERE id = ?',
       [floristId, id]
     );
