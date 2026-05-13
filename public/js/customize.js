@@ -185,7 +185,7 @@
     }
     window.BloomBouquetRenderer.init(container, buildRendererCfg()).then(function () {
       if (status) {
-        status.textContent = 'Procedural 3D Bouquet — Drag to rotate';
+        status.textContent = 'Procedural 3D Bouquet - Drag to rotate';
         setTimeout(function () { status.style.opacity = '0'; }, 3000);
       }
     });
@@ -341,7 +341,7 @@
     setStatus('Preparing AR scene…');
     arReadyPromise = prepareARModel()
       .then(function (mv) {
-        setStatus('AR ready — tap “View in Your Room”', true);
+        setStatus('AR ready - tap “View in Your Room”', true);
         var slot = qs('#arLaunchSlot');
         if (slot) slot.disabled = false;
         return mv;
@@ -349,7 +349,7 @@
       .catch(function (e) {
         arReadyPromise = null;
         console.error('[AR] prepare failed', e);
-        setStatus('AR prep failed — retrying on next change', true);
+        setStatus('AR prep failed - retrying on next change', true);
         throw e;
       });
     return arReadyPromise;
