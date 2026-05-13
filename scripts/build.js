@@ -106,6 +106,12 @@ const HTML_FILES = [
   'public/support.html',
   'public/tracking.html',
   'public/admin.html',
+  'public/about.html',
+  'public/blog.html',
+  'public/contact.html',
+  'public/shipping.html',
+  'public/returns.html',
+  'public/privacy.html',
 ];
 
 
