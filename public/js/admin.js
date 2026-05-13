@@ -743,6 +743,7 @@ async function loadSupportTickets() {
             <div style="flex:1;">
               <div style="font-weight:700;margin-bottom:4px;">${t.subject||'No subject'}</div>
               <div style="font-size:0.78rem;color:rgba(255,255,255,0.35);">#${(t.id||'').slice(0,8)} · ${t.channel||'web'} · ${t.messages?.length||0} msg(s)</div>
+              ${(t.csat_score || t.nps_score) ? `<div style="font-size:0.85rem;margin-top:6px;color:#FFD700;background:rgba(255,215,0,0.1);display:inline-block;padding:2px 8px;border-radius:4px;">⭐ CSAT: <b>${t.csat_score||'—'}</b>/5 &nbsp;&middot;&nbsp; 📊 NPS: <b>${t.nps_score||'—'}</b>/10</div>` : ''}
             </div>
             <div class="action-btns" style="align-items:center;">
               <span class="pill ${t.status==='resolved'?'pill-green':t.status==='pending'?'pill-yellow':'pill-blue'}">${(t.status||'open').toUpperCase()}</span>
