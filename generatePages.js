@@ -467,35 +467,52 @@ try {
 
     let html = fs.readFileSync(filePath, 'utf-8');
 
+    // Clean existing injections
     html = html.replace(/\s*<!-- BLOOM_STYLE_INJECT -->[\s\S]*?<!-- BLOOM_STYLE_END -->\s*/g, '\n');
     html = html.replace(/\s*<!-- BLOOM_NAV_INJECT -->[\s\S]*?<!-- BLOOM_NAV_END -->\s*/g, '\n');
     html = html.replace(/\s*<!-- BLOOM_BASE_INJECT -->[\s\S]*?<!-- BLOOM_BASE_END -->\s*/g, '\n');
     html = html.replace(/\s*<!-- BLOOM_FOOT_INJECT -->[\s\S]*?<!-- BLOOM_FOOT_END -->\s*/g, '\n');
 
-    html = html.replace(/<nav\s+class="bloom-nav"[^>]*>([\s\S]*?)<\/nav>/gi, '');
-    html = html.replace(/<div\s+class="toast-container"[^>]*>([\s\S]*?)<\/div>/gi, '');
-    html = html.replace(/<div\s+class="particle-field"[^>]*>([\s\S]*?)<\/div>/gi, '');
+    // Remove raw duplicates if markers were missing (robustness)
+    html = html.replace(/<nav\s+class="bloom-nav"[^>]*>[\s\S]*?<\/nav>/gi, '');
+    html = html.replace(/<footer\s+class="bloom-footer"[^>]*>[\s\S]*?<\/footer>/gi, '');
+    html = html.replace(/<div\s+id="bloomBoot"[^>]*>[\s\S]*?<\/div>\s*<div\s+id="bloomBoot"[^>]*>[\s\S]*?<\/div>/gi, '');
 
-    html = html.replace('</head>', `${styleBlock}</head>`);
-
-    const bodyTagRegex = /<body[^>]*>/i;
-    const bodyMatch = html.match(bodyTagRegex);
-    if (bodyMatch) {
-      html = html.replace(bodyMatch[0], `${bodyMatch[0]}${storeNavBlock}`);
-    }
-
-    html = html.replace(/<script[^>]*src="\/js\/core\/Store\.js"[^>]*><\/script>/gi, '');
-    html = html.replace(/<script[^>]*src="\/js\/core\/Api\.js"[^>]*><\/script>/gi, '');
-    html = html.replace(/<script[^>]*src="\/js\/core\/Auth\.js"[^>]*><\/script>/gi, '');
-
-    const firstScriptIndex = html.indexOf('<script');
-    if (firstScriptIndex !== -1) {
-      html = html.substring(0, firstScriptIndex) + baseScriptsBlock + html.substring(firstScriptIndex);
+    // Inject Head Styles
+    if (html.includes('<!-- BLOOM_STYLE_INJECT -->')) {
+      html = html.replace('<!-- BLOOM_STYLE_INJECT -->', `<!-- BLOOM_STYLE_INJECT -->\n${indexFonts}\n`);
     } else {
-      html = html.replace('</body>', `${baseScriptsBlock}</body>`);
+      html = html.replace('</head>', `${styleBlock}</head>`);
     }
 
-    html = html.replace('</body>', `${footBlock}</body>`);
+    // Inject Nav
+    if (html.includes('<!-- BLOOM_NAV_INJECT -->')) {
+      html = html.replace('<!-- BLOOM_NAV_INJECT -->', `<!-- BLOOM_NAV_INJECT -->\n${indexNavPrefix}\n${storeNav}\n${storeMob}\n`);
+    } else {
+      const bodyMatch = html.match(/<body[^>]*>/i);
+      if (bodyMatch) html = html.replace(bodyMatch[0], `${bodyMatch[0]}${storeNavBlock}`);
+    }
+
+    // Inject Footer & Scripts
+    // We only inject indexFooter and overlays, NOT the whole homepage script block
+    const storeFootBlock = `\n<!-- BLOOM_FOOT_INJECT -->\n${indexFooter}\n${indexOverlays}\n<script>
+    (function(){
+      var b=document.getElementById('bloomBoot');
+      if(b){
+        var h=function(){b.classList.add('gone');setTimeout(function(){b.style.display='none'},700)};
+        if(document.readyState==='complete')setTimeout(h,400);
+        else window.addEventListener('load',function(){setTimeout(h,400)});
+        setTimeout(h,4500);
+      }
+      var y=document.getElementById('yr');if(y)y.textContent=new Date().getFullYear();
+    })();
+    </script>\n<!-- BLOOM_FOOT_END -->\n`;
+
+    if (html.includes('<!-- BLOOM_FOOT_INJECT -->')) {
+      html = html.replace('<!-- BLOOM_FOOT_INJECT -->', storeFootBlock);
+    } else {
+      html = html.replace('</body>', `${storeFootBlock}</body>`);
+    }
 
     fs.writeFileSync(filePath, html, 'utf-8');
     console.log('✅ Synchronized layout:', filename);
