@@ -36,16 +36,10 @@ function resolveImage(raw) {
   if (!Array.isArray(imgs) || !imgs.length) return '';
   var img = imgs.flat(Infinity)[0];
   if (typeof img !== 'string' || !img) return '';
-  if (img.indexOf('/uploads/') === 0 || img.indexOf('/img/') === 0) return img;
-  if (/^https?:\/\//i.test(img)) {
-    try {
-      var u = new URL(img);
-      var fname = u.pathname.split('/').pop().split('?')[0];
-      if (!fname || fname === 'null') return '';
-      if (/\.(jpe?g|png|webp|gif|svg)$/i.test(fname)) return '/uploads/products/' + fname;
-    } catch (e) {}
-    return '';
-  }
+  
+  if (/^https?:\/\//i.test(img)) return img;
+  if (img.startsWith('/')) return img;
+  
   var parts = img.replace(/[\[\]"\\]/g, '/').split('/');
   var filename = parts[parts.length - 1];
   return filename && filename !== 'null' ? '/uploads/products/' + filename : '';
@@ -261,7 +255,9 @@ async function loadRecs() {
     };
 
     scroll.innerHTML = recs.map(function (p) {
-      var img = artisticMap[p.name] || '/img/vow-crimson.png';
+      var img = resolveImage(p.images);
+      if (!img && artisticMap[p.name]) img = artisticMap[p.name];
+      if (!img) img = '/img/vow-crimson.png';
       return '<div class="rec-chip" data-id="' + p.id + '">' +
         '<img src="' + img + '" style="width:36px;height:36px;border-radius:50%;object-fit:cover;" alt="">' +
         '<div><div style="font-weight:600;font-size:0.82rem;">' + p.name + '</div>' +
