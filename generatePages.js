@@ -55,12 +55,16 @@ try {
   function syncPageLayout(filePath) {
     let html = fs.readFileSync(filePath, 'utf-8');
     
-    // Aggressive Cleanup
-    html = html.replace(/<div\s+id="bloomBoot"[^>]*>[\s\S]*?<\/div>/gi, '');
-    html = html.replace(/<nav\s+id="nav"[^>]*>[\s\S]*?<\/nav>/gi, '');
-    html = html.replace(/<div\s+class="mob-menu"[^>]*>[\s\S]*?<\/div>/gi, '');
-    html = html.replace(/<footer\s+class="bloom-footer"[^>]*>[\s\S]*?<\/footer>/gi, '');
+    // Flexible Cleanup (handles any attribute order)
+    html = html.replace(/<div\s+[^>]*id="bloomBoot"[^>]*>[\s\S]*?<\/div>/gi, '');
+    html = html.replace(/<nav\s+[^>]*id="nav"[^>]*>[\s\S]*?<\/nav>/gi, '');
+    html = html.replace(/<div\s+[^>]*class="mob-menu"[^>]*>[\s\S]*?<\/div>/gi, '');
+    html = html.replace(/<footer\s+[^>]*class="bloom-footer"[^>]*>[\s\S]*?<\/footer>/gi, '');
     
+    // Also remove any stray Bloom logos or nav links that might have been hardcoded
+    // (This is dangerous but might be needed if they lack IDs)
+    // For now, let's just stick to IDs.
+
     // Injection
     if (html.includes('<!-- BLOOM_STYLE_INJECT -->')) {
       html = html.replace(/(<!-- BLOOM_STYLE_INJECT -->)[\s\S]*?(<!-- BLOOM_STYLE_END -->)/g, styleBlock);
