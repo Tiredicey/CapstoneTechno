@@ -61,7 +61,7 @@
     opts = opts || {};
 
     if (isRateLimited()) {
-      var err429 = new Error('Rate limited — please wait');
+      var err429 = new Error('Rate limited. Please wait.');
       err429.status = 429;
       throw err429;
     }
