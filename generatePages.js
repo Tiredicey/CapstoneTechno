@@ -10,7 +10,7 @@ const indexPath = path.join(publicDir, 'index.html');
 try {
   const indexHtml = fs.readFileSync(indexPath, 'utf-8');
 
-  // Extraction
+  // Extraction from Index
   const fontsStart = indexHtml.indexOf('<link rel="preconnect"');
   const fontsEnd = indexHtml.indexOf('<style>');
   const indexFonts = indexHtml.substring(fontsStart, fontsEnd);
@@ -54,29 +54,48 @@ try {
   const storeFootBlock = `\n<!-- BLOOM_FOOT_INJECT -->\n${storeFoot}\n${storeOverlays}\n<!-- BLOOM_FOOT_END -->\n`;
 
   function syncPageLayout(filePath) {
-    let html = fs.readFileSync(filePath, 'utf-8');
+    const pageName = path.basename(filePath);
+    let pageHtml = fs.readFileSync(filePath, 'utf-8');
     
-    // 1. Total Wipeout: Remove markers and ALL likely duplicated elements
-    html = html.replace(/<!-- BLOOM_(STYLE|NAV|FOOT)_INJECT -->[\s\S]*?<!-- BLOOM_(STYLE|NAV|FOOT)_END -->/g, '');
-    html = html.replace(/<div\s+[^>]*id="bloomBoot"[^>]*>[\s\S]*?<\/div>/gi, '');
-    html = html.replace(/<nav[^>]*>[\s\S]*?<\/nav>/gi, '');
-    html = html.replace(/<div\s+[^>]*class="mob-menu"[^>]*>[\s\S]*?<\/div>/gi, '');
-    html = html.replace(/<footer[^>]*>[\s\S]*?<\/footer>/gi, '');
-    html = html.replace(/<div\s+[^>]*id="toastCon"[^>]*>[\s\S]*?<\/div>/gi, '');
-    html = html.replace(/<div\s+[^>]*id="exitMod"[^>]*>[\s\S]*?<\/div>/gi, '');
+    // Extract unique pieces
+    const mainMatch = pageHtml.match(/<main[^>]*>[\s\S]*?<\/main>/i);
+    const pageMain = mainMatch ? mainMatch[0] : '<main></main>';
     
-    // 2. Fresh Injection
-    html = html.replace('</head>', styleBlock + '</head>');
-    html = html.replace('<body>', '<body>\n' + storeNavBlock);
+    const titleMatch = pageHtml.match(/<title>[\s\S]*?<\/title>/i);
+    const pageTitle = titleMatch ? titleMatch[0] : '<title>Bloom</title>';
     
-    const mainEnd = html.indexOf('</main>');
-    if (mainEnd !== -1) {
-      html = html.replace('</main>', '</main>\n' + storeFootBlock);
-    } else {
-      html = html.replace('</body>', storeFootBlock + '</body>');
-    }
+    // Extract local scripts (like catalog.js)
+    const scriptMatches = pageHtml.match(/<script\s+[^>]*src="[^"]+"[^>]*><\/script>/gi) || [];
+    const localScripts = scriptMatches.filter(s => !indexHtml.includes(s) && !s.includes('google') && !s.includes('analytics')).join('\n');
+    
+    // Extract local styles (like catalog.css)
+    const styleMatches = pageHtml.match(/<link\s+[^>]*rel="stylesheet"[^>]*href="[^"]+"[^>]*>/gi) || [];
+    const localStyles = styleMatches.filter(s => !indexHtml.includes(s)).join('\n');
 
-    fs.writeFileSync(filePath, html, 'utf-8');
+    // Build fresh
+    let freshHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  ${pageTitle}
+  ${localStyles}
+  <!-- BLOOM_STYLE_INJECT --><!-- BLOOM_STYLE_END -->
+</head>
+<body>
+  <!-- BLOOM_NAV_INJECT --><!-- BLOOM_NAV_END -->
+  ${pageMain}
+  ${localScripts}
+  <!-- BLOOM_FOOT_INJECT --><!-- BLOOM_FOOT_END -->
+</body>
+</html>`;
+
+    // Inject
+    freshHtml = freshHtml.replace(/(<!-- BLOOM_STYLE_INJECT -->)[\s\S]*?(<!-- BLOOM_STYLE_END -->)/g, styleBlock);
+    freshHtml = freshHtml.replace(/(<!-- BLOOM_NAV_INJECT -->)[\s\S]*?(<!-- BLOOM_NAV_END -->)/g, storeNavBlock);
+    freshHtml = freshHtml.replace(/(<!-- BLOOM_FOOT_INJECT -->)[\s\S]*?(<!-- BLOOM_FOOT_END -->)/g, storeFootBlock);
+
+    fs.writeFileSync(filePath, freshHtml, 'utf-8');
   }
 
   const storefrontPages = [
@@ -84,15 +103,15 @@ try {
     'tracking.html', 'confirmation.html', 'support.html', 'profile.html'
   ];
 
-  console.log('\n--- Initiating Global Storefront Layout Synchronization ---');
+  console.log('\n--- Initiating Global Storefront Layout Re-Construction ---');
   storefrontPages.forEach(page => {
     const p = path.join(publicDir, page);
     if (fs.existsSync(p)) {
       syncPageLayout(p);
-      console.log(`✅ Synchronized layout: ${page}`);
+      console.log(`✅ Re-constructed layout: ${page}`);
     }
   });
-  console.log('--- All Application Pages Synchronized! ---');
+  console.log('--- All Application Pages Re-Constructed! ---');
 
 } catch (err) {
   console.error('Build Error:', err);
