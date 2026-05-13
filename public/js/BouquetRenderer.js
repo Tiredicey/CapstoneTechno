@@ -83,7 +83,7 @@
     var reflexAmt = layerT > 0.62 ? ((layerT - 0.62) / 0.38) * 0.62 : 0;
     var ruffle = lerp(0, 0.026, Math.pow(layerT, 1.4));
     var shape = { widthSegs: [[0,0],[0.10,0.32,0.7],[0.18,0.58,1],[0.50,1,1],[0.78,0.76,1],[0.90,0.30,0.6],[1,0]] };
-    return buildGeo(16, 12, function (u, v) {
+    return buildGeo(22, 16, function (u, v) {
       var w = petalWidthProfile(v, shape);
       var hw = W * 0.5 * w, ux = (u - 0.5) * 2;
       var ang = tilt + lerp(0, Math.PI * 0.46, Math.pow(v, 1.3));
@@ -112,7 +112,7 @@
   function buildLilyPetalGeo(inner) {
     var L = inner ? 0.40 : 0.44, W = inner ? 0.135 : 0.155, ruffle = 0.020;
     var shape = { widthSegs: [[0,0],[0.07,0.22,0.8],[0.18,0.52,1],[0.44,1,1],[0.70,0.88,1],[0.86,0.42,0.7],[1,0,0.55]] };
-    return buildGeo(16, 10, function (u, v) {
+    return buildGeo(20, 14, function (u, v) {
       var w = petalWidthProfile(v, shape);
       var hw = W * 0.5 * w, ux = (u - 0.5) * 2;
       var ang = lerp(0.28, -1.30, Math.pow(v, 0.78));
@@ -138,7 +138,7 @@
   function buildOrchidLabellumGeo() {
     var L = 0.24, W = 0.20;
     var shape = { widthSegs: [[0,0],[0.15,0.55,0.8],[0.30,0.88,1],[0.50,1,1],[0.65,0.58,1],[0.78,0.72,1],[1,0,0.6]] };
-    return buildGeo(16, 12, function (u, v) {
+    return buildGeo(20, 16, function (u, v) {
       var w = petalWidthProfile(v, shape);
       var hw = W * 0.5 * w, ux = (u - 0.5) * 2;
       var ang = lerp(-0.08, 0.55, v);
@@ -170,7 +170,7 @@
     var ruffle = lerp(0.010, 0.038, ruffleIntensity);
     var cupSign = ruffleIntensity > 0.55 ? -1 : 0.4;
     var shape = { widthSegs: [[0,0],[0.10,0.42,0.8],[0.22,0.72,1],[0.55,1,1],[0.78,0.82,1],[0.90,0.35,0.7],[1,0,0.6]] };
-    return buildGeo(14, 12, function (u, v) {
+    return buildGeo(18, 14, function (u, v) {
       var w = petalWidthProfile(v, shape);
       var hw = W * 0.5 * w, ux = (u - 0.5) * 2;
       var ang = tilt + Math.pow(v, 1.25) * 0.38;
@@ -869,7 +869,7 @@
     grad.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.fillStyle = grad; ctx.fillRect(0, 0, 64, 64);
     var tex = new THREE.CanvasTexture(canvas);
-    var particleCount = Math.min(count * 5, 80);
+    var particleCount = Math.min(count * 8, 120);
     var positions = new Float32Array(particleCount * 3), colors = new Float32Array(particleCount * 3);
     for (var i = 0; i < particleCount; i++) {
       var phi = 137.508 * Math.PI / 180;
@@ -885,7 +885,7 @@
     geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     var mat = new THREE.PointsMaterial({
-      map: tex, size: 0.035, sizeAttenuation: true, transparent: true, opacity: 0.22,
+      map: tex, size: 0.045, sizeAttenuation: true, transparent: true, opacity: 0.32,
       blending: THREE.AdditiveBlending, depthWrite: false, vertexColors: true
     });
     var points = new THREE.Points(geo, mat);
@@ -1042,8 +1042,10 @@
       var t = Date.now() * 0.001;
       bouquetGroup.children.forEach(function (child) {
         if (child.userData && child.userData.isGlow) {
-          child.material.opacity = 0.20 + Math.sin(t * 0.6) * 0.05;
-          child.rotation.y = t * 0.05;
+          var pos = child.geometry.attributes.position;
+          for (var p = 0; p < pos.count; p++) pos.setY(p, pos.getY(p) + Math.sin(t * 0.8 + p * 1.3) * 0.00025);
+          pos.needsUpdate = true;
+          child.material.opacity = 0.28 + Math.sin(t * 0.6) * 0.08;
         }
       });
     }

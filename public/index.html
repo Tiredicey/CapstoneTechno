@@ -170,7 +170,8 @@ body.c-hover .c-ring { width: 52px; height: 52px; border-color: rgba(230,26,26,.
 
 .skip { position: fixed; top: -80px; left: 20px; z-index: 99990; padding: 10px 20px; background: var(--p5); color: #fff; border-radius: 8px; font-weight: 700; transition: top .2s; text-decoration: none; }
 .skip:focus { top: 20px; }
-
+.con { max-width: 1280px; margin: 0 auto; padding: 0 40px; }
+@media (max-width: 768px) { .con { padding: 0 20px; } }
 
 .p5-slash { position: absolute; width: 3px; background: var(--p5); border-radius: 2px; transform: rotate(-18deg); pointer-events: none; }
 .p5-diamond { position: absolute; width: 8px; height: 8px; background: var(--p5); transform: rotate(45deg); pointer-events: none; }
@@ -418,7 +419,23 @@ canvas#ptcl { position: absolute; inset: 0; width: 100%; height: 100%; pointer-e
 .corp-list li { display: flex; align-items: flex-start; gap: 12px; font-size: .9rem; color: rgba(255,255,255,.72); line-height: 1.6; }
 .corp-list svg { width: 18px; height: 18px; flex-shrink: 0; color: var(--mn); margin-top: 3px; }
 
-
+.bloom-foot { background: var(--ink); padding: 72px 0 32px; border-top: 1px solid var(--glb); }
+.foot-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 48px; }
+.foot-brand { font-family: var(--fd); font-size: 1.4rem; font-weight: 900; margin-bottom: 14px; background: linear-gradient(135deg, #fff 0%, var(--pk) 60%, var(--p5) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.foot-tag { font-size: .85rem; color: rgba(255,255,255,.54); line-height: 1.7; margin-bottom: 18px; max-width: 340px; text-wrap: pretty; }
+.nl-form { display: flex; gap: 8px; max-width: 340px; align-items: stretch; height: 40px; }
+.nl-inp { flex: 1; background: var(--gl); border: 1px solid var(--glb); border-radius: var(--rs); padding: 0 14px; color: #fff; font-size: .86rem; outline: none; transition: border-color .2s; height: 100%; }
+.nl-form .btn { height: 100%; padding: 0 18px; align-items: center; }
+.nl-inp:focus { border-color: var(--p5); box-shadow: 0 0 0 3px rgba(230,26,26,.12); }
+.foot-col h4 { font-family: var(--fd); font-size: .95rem; font-weight: 700; margin-bottom: 16px; }
+.foot-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.foot-col a { font-size: .82rem; color: rgba(255,255,255,.52); transition: color .2s; }
+.foot-col a:hover, .foot-col a:focus-visible { color: var(--p5l); }
+.foot-bottom { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-top: 24px; border-top: 1px solid var(--glb); font-size: .76rem; color: rgba(255,255,255,.4); flex-wrap: wrap; }
+.foot-soc { display: flex; gap: 10px; }
+.foot-soc a { width: 34px; height: 34px; border-radius: 50%; background: var(--gl); border: 1px solid var(--glb); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.6); transition: all .2s; }
+.foot-soc a:hover, .foot-soc a:focus-visible { background: rgba(230,26,26,.16); color: #fff; border-color: rgba(230,26,26,.4); }
+.foot-soc svg { width: 14px; height: 14px; }
 
 .btt { position: fixed; bottom: 28px; right: 28px; width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, var(--p5d), var(--p5)); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; opacity: 0; pointer-events: none; transition: all .3s var(--ease); z-index: 900; box-shadow: 0 6px 20px rgba(230,26,26,.35); }
 .btt.vis { opacity: 1; pointer-events: all; }
@@ -545,7 +562,7 @@ input:-webkit-autofill:focus {
 }
 
 @supports (padding: env(safe-area-inset-bottom)) {
-  .bloom-footer { padding-bottom: calc(32px + env(safe-area-inset-bottom)); }
+  .bloom-foot { padding-bottom: calc(32px + env(safe-area-inset-bottom)); }
   .btt { bottom: calc(28px + env(safe-area-inset-bottom)); }
   nav { padding-left: max(40px, env(safe-area-inset-left)); padding-right: max(40px, env(safe-area-inset-right)); }
 }
@@ -572,7 +589,7 @@ input:-webkit-autofill:focus {
   .rev-mob { display: flex; }
   .facts-grid { grid-template-columns: 1fr; }
   .corp-grid { grid-template-columns: 1fr; gap: 32px; }
-
+  .foot-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
   nav { padding: 0 20px; }
   .sec-pad { padding: 72px 0; }
   .toast-con { top: 76px; right: 14px; left: 14px; max-width: none; }
@@ -582,7 +599,7 @@ input:-webkit-autofill:focus {
   .p-card { padding: 14px; }
   .p-img { height: 140px; }
   .feat-grid { grid-template-columns: 1fr; }
-
+  .foot-grid { grid-template-columns: 1fr; }
   .stat-num { font-size: 1.5rem; }
 }
 
@@ -843,7 +860,7 @@ input:-webkit-autofill:focus {
 </div>
 
 <div class="delivery-bar" id="dlvBar" role="region" aria-label="Pre-select your delivery">
-  <div class="container">
+  <div class="con">
     <div class="delivery-inner">
       <span class="delivery-pill" aria-hidden="true">Plan first · Browse next</span>
       <div class="delivery-fields">
@@ -1000,7 +1017,7 @@ input:-webkit-autofill:focus {
   <div class="hero-orb hero-orb-1" aria-hidden="true"></div>
   <div class="hero-orb hero-orb-2" aria-hidden="true"></div>
 
-  <div class="container" style="width:100%">
+  <div class="con" style="width:100%">
     <div class="hero-grid">
       <div class="hero-left">
         <div class="hero-countdown" id="cdWrap" aria-live="polite" aria-atomic="true"></div>
@@ -1055,7 +1072,7 @@ input:-webkit-autofill:focus {
 <div class="p5-sec-div" aria-hidden="true"></div>
 
 <section class="stats-strip" aria-label="Service facts">
-  <div class="container">
+  <div class="con">
     <div class="stats-inner">
       <div class="stat-item">
         <span class="stat-icon" aria-hidden="true">❄️</span>
@@ -1092,7 +1109,7 @@ input:-webkit-autofill:focus {
 <div class="p5-sec-div" aria-hidden="true"></div>
 
 <section class="sec-pad" id="shop" aria-label="Shop featured products">
-  <div class="container">
+  <div class="con">
     <div class="sec-hd">
       <div>
         <span class="tag tag-p">Featured</span>
@@ -1122,7 +1139,7 @@ input:-webkit-autofill:focus {
 <div class="p5-sec-div" aria-hidden="true"></div>
 
 <section class="feat-sec sec-pad" id="features" aria-label="Why Bloom">
-  <div class="container">
+  <div class="con">
     <div class="sec-hd" style="flex-direction:column;align-items:flex-start;text-align:left">
       <span class="tag tag-m">Built right</span>
       <h2 class="sec-title" style="max-width:680px">Why people trust Bloom with the day they planned.</h2>
@@ -1156,7 +1173,7 @@ input:-webkit-autofill:focus {
 <div class="p5-sec-div" aria-hidden="true"></div>
 
 <section class="rev-sec sec-pad" aria-label="Customer stories">
-  <div class="container">
+  <div class="con">
     <div class="sec-hd">
       <div>
         <span class="tag tag-a">Stories</span>
@@ -1176,7 +1193,7 @@ input:-webkit-autofill:focus {
 <div class="p5-sec-div" aria-hidden="true"></div>
 
 <section class="facts-sec sec-pad" aria-label="Verified facts">
-  <div class="container">
+  <div class="con">
     <div class="sec-hd" style="flex-direction:column;align-items:flex-start">
       <span class="tag tag-p">Receipts</span>
       <h2 class="sec-title" style="max-width:640px">Claims, with sources. No handwaving.</h2>
@@ -1225,7 +1242,7 @@ input:-webkit-autofill:focus {
 <div class="p5-sec-div" aria-hidden="true"></div>
 
 <section class="corp-sec sec-pad" id="corp" aria-label="For teams and groups">
-  <div class="container">
+  <div class="con">
     <div class="corp-grid">
       <div class="corp-photo">
         <img src="/img/hero-flowers.jpg" alt="Sleek matching corporate bouquets in matte black vases" loading="lazy" decoding="async" width="900" height="675" onerror="this.onerror=null;this.src='/img/hero-flowers.jpg'">
@@ -1249,7 +1266,7 @@ input:-webkit-autofill:focus {
 <div class="p5-sec-div" aria-hidden="true"></div>
 
 <section class="subs-sec sec-pad" id="subs" aria-label="Flower subscriptions">
-  <div class="container">
+  <div class="con">
     <div class="sec-hd" style="flex-direction:column;align-items:flex-start;text-align:left;margin-bottom:36px">
       <span class="tag tag-m">Recurring · Pause anytime</span>
       <h2 class="sec-title" style="max-width:680px">A small bloom that keeps showing up.</h2>
@@ -1305,8 +1322,8 @@ input:-webkit-autofill:focus {
   </div>
 </section>
 
-<footer class="bloom-footer" role="contentinfo">
-  <div class="container">
+<footer class="bloom-foot" role="contentinfo">
+  <div class="con">
     <div class="foot-grid">
       <div>
         <div class="foot-brand">Bloom</div>
@@ -1357,7 +1374,7 @@ input:-webkit-autofill:focus {
 </footer>
 
 <section class="sec-pad section-lazy" id="recentSec" style="display:none" aria-label="Recently Viewed">
-  <div class="container">
+  <div class="con">
     <div class="sec-hd">
       <div>
         <div class="tag tag-a"><span aria-hidden="true">//</span> History</div>
@@ -3240,3 +3257,4 @@ window.addEventListener('beforeinstallprompt', function (e) {
 
 </body>
 </html>
+

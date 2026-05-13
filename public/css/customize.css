@@ -13,10 +13,10 @@
   position: sticky;
   top: 100px;
   border-radius: var(--bloom-radius-lg);
-  background: rgba(11, 5, 22, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: radial-gradient(circle at 50% 50%, rgba(26, 10, 46, 0.4), rgba(5, 3, 10, 0.9));
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--ethereal-blur));
+  -webkit-backdrop-filter: blur(var(--ethereal-blur));
   overflow: hidden;
   aspect-ratio: 4/3;
   display: flex;
@@ -24,26 +24,25 @@
   justify-content: center;
   flex-direction: column;
   gap: 16px;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
-  transform: translateZ(0);
-  will-change: transform;
+  box-shadow: 
+    0 40px 100px rgba(0, 0, 0, 0.6),
+    inset 0 0 60px rgba(255, 0, 255, 0.05);
 }
 
 .canvas-panel::after {
   content: '';
   position: absolute;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle at 50% 50%, var(--ethereal-glow-pink), transparent 70%);
-  opacity: 0.08;
+  width: 140%;
+  height: 140%;
+  background: radial-gradient(circle at 50% 50%, var(--ethereal-glow-pink), transparent 60%);
+  opacity: 0.15;
   pointer-events: none;
-  animation: auraPulse 10s ease-in-out infinite alternate;
-  filter: blur(40px);
+  animation: auraPulse 8s ease-in-out infinite alternate;
 }
 
 @keyframes auraPulse {
-  0% { transform: scale(1); opacity: 0.05; }
-  100% { transform: scale(1.1); opacity: 0.12; }
+  0% { transform: scale(1) rotate(0deg); opacity: 0.1; }
+  100% { transform: scale(1.2) rotate(10deg); opacity: 0.25; }
 }
 
 .canvas-preview {

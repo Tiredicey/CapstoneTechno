@@ -97,10 +97,10 @@
     if (config.giftBox) extras += ', presented inside a rigid magnetic gift box';
     var color = colorNames[config.color] || config.color;
     var flower = flowerNames[config.flower] || config.flower;
-    return 'Exquisite studio photograph of a bespoke floral bouquet, ' +
+    return 'Professional studio photography of a luxurious bouquet containing ' +
       config.bloomCount + ' ' + color + ' ' + flower +
       wrap + ribbon + extras +
-      ', soft ethereal lighting, shallow depth of field, neutral stone background, high-end botanical art, 8k resolution, elegant minimalism';
+      ', dark moody background with subtle warm lighting, high-end floral arrangement, photorealistic, 4k quality, elegant composition';
   }
 
   function hashString(str) {
@@ -418,12 +418,12 @@
       window.history.replaceState(null, '', buildHandoffURL());
     } catch (_) { }
     if (currentMode === '3d') {
-      clearTimeout(window.__rendererDebounce);
-      window.__rendererDebounce = setTimeout(function() {
-        sync3DConfig();
-        invalidateARModel();
-        queueARPrepare().catch(function () { });
-      }, 150);
+      sync3DConfig();
+      invalidateARModel();
+      clearTimeout(window.__arDebounce);
+      window.__arDebounce = setTimeout(function () {
+        if (currentMode === '3d') queueARPrepare().catch(function () { });
+      }, 900);
     }
   }
 
@@ -485,7 +485,7 @@
   document.addEventListener('DOMContentLoaded', function () {
     var urlParams = new URLSearchParams(window.location.search);
 
-
+    // Parse handoff configurations from URL query parameters
     Object.keys(config).forEach(key => {
       if (urlParams.has(key)) {
         const val = urlParams.get(key);

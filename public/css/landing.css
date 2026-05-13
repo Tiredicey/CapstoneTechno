@@ -31,10 +31,9 @@
   background: 
     radial-gradient(circle at 20% 30%, var(--ethereal-glow-pink), transparent 40%),
     radial-gradient(circle at 80% 70%, var(--ethereal-glow-red), transparent 40%);
-  filter: blur(40px);
-  opacity: 0.5;
-  animation: etherealPulse 15s ease-in-out infinite alternate;
-  will-change: transform, opacity;
+  filter: blur(60px);
+  opacity: 0.6;
+  animation: etherealPulse 12s ease-in-out infinite alternate;
 }
 
 @keyframes etherealPulse {
@@ -46,11 +45,10 @@
 .hero-orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(60px);
-  opacity: 0.3;
+  filter: blur(100px);
+  opacity: 0.35;
   animation: orbFloat ease-in-out infinite;
   mix-blend-mode: screen;
-  will-change: transform;
 }
 
 .hero-orb-1 {
