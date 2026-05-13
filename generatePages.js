@@ -122,7 +122,7 @@ try {
         
         <div style="position: relative; z-index: 10;">
           <header style="text-align: center; margin-bottom: 64px;">
-            <span class="tag tag-p shimmer" style="letter-spacing: 0.2em;">LEGAL FRAMEWORK</span>
+            <span class="tag tag-p shimmer" style="letter-spacing: 0.2em;">COMMERCE TRANSPARENCY</span>
             <h1 class="sec-title" style="font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; margin-bottom: 16px; background: linear-gradient(135deg, #fff 30%, var(--p5) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 4px 20px rgba(230,26,26,0.1);">
               Privacy Policy
             </h1>
@@ -140,7 +140,7 @@ try {
               <span style="color: var(--p5);">❖</span> Our Privacy Promise
             </h2>
             <p style="font-size: 1.15rem; line-height: 1.8; color: rgba(255,255,255,0.85); text-wrap: pretty;">
-              Privacy is not a feature of <strong>BATASnatin Lexitary</strong> — it is the foundation. Your Lexitary workspace is your private environment. Only you can see what is inside. Not other users. Not our staff. Not the people who maintain our physical servers. <span style="color: var(--p5l); font-weight: 600;">You are the boss.</span>
+              At Bloom, our relationship with you is rooted in trust. We believe your recipient details, floral gift messages, and custom 3D configurations belong strictly to you. We collect only what is necessary to handcraft, package, and safely deliver your moments of warmth. <span style="color: var(--p5l); font-weight: 600;">You retain complete ownership over your personal data.</span>
             </p>
           </section>
 
@@ -152,10 +152,10 @@ try {
                 <h3 style="font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: #fff;">Information We Collect</h3>
               </header>
               <ul style="list-style: none; display: flex; flex-direction: column; gap: 16px; color: rgba(255,255,255,0.75); font-size: 0.95rem;">
-                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Account:</strong> Email, name, role, hashed credentials.</li>
-                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Usage:</strong> Queries, case notes, documents — stored in your private workspace only.</li>
-                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Lexi Personalization:</strong> Practice areas, preferences, style — belongs to you alone.</li>
-                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Payment:</strong> Processed by PayMongo (PCI-DSS). We never store card/GCash details.</li>
+                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Account Profile:</strong> Email address, billing name, delivery contact number, and hashed credentials.</li>
+                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Customization Data:</strong> Saved 3D bouquet configurations, arrangement metadata, and personalized gift messages.</li>
+                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Logistics & Fulfillment:</strong> Recipient name, precise physical delivery coordinates, and timing windows.</li>
+                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Financial Security:</strong> Payments are securely processed via PayMongo (PCI-DSS compliant). Bloom never ingests or stores card numbers.</li>
               </ul>
             </article>
 
@@ -165,52 +165,52 @@ try {
                 <h3 style="font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: #fff;">How We Protect Your Data</h3>
               </header>
               <ul style="list-style: none; display: flex; flex-direction: column; gap: 16px; color: rgba(255,255,255,0.75); font-size: 0.95rem;">
-                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Encryption at Rest:</strong> AES-256.</li>
-                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">In Transit:</strong> TLS.</li>
-                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Access:</strong> Only through your authenticated session. No staff has routine access.</li>
-                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Infrastructure:</strong> Servers in the Philippines. Data never leaves PH jurisdiction.</li>
+                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Encrypted Pipeline:</strong> Standard TLS encryption in transit and AES-256 protection for data at rest.</li>
+                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Access Containment:</strong> Delivery details are strictly restricted to active logistics coordinators during your chosen arrival window.</li>
+                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Data Minimization:</strong> Recipient contact details are masked on dispatch sheets within 72 hours of successful delivery.</li>
+                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">PH Localization:</strong> Our database infrastructure complies with Philippine statutory data localization protocols.</li>
               </ul>
             </article>
 
             <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: 32px;">
               <header style="margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--glb); padding-bottom: 12px;">
                 <span style="font-family: var(--fc); font-size: 1.5rem; font-weight: 900; color: var(--p5); font-style: italic;">03.</span>
-                <h3 style="font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: #fff;">Your Lexitary — Your Personal AI</h3>
+                <h3 style="font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: #fff;">3D Renders & Local Cache</h3>
               </header>
               <p style="line-height: 1.7; color: rgba(255,255,255,0.75); font-size: 0.95rem; text-wrap: pretty;">
-                Lexitary is pre-trained on Philippine law (shared). As you interact, she develops personalization unique to you. This is the only "AI training" contributed by users. It is private, deletable, and erased if you delete your account. Your data never trains other users' Lexi.
+                To deliver a sub-second, low-latency 3D arrangement experience, Bloom utilizes local browser caching (IndexedDB) to store lightweight flower geometry and textures. These visual assets reside strictly on your local device and are never compiled into cross-platform advertising profiles.
               </p>
             </article>
 
             <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: 32px;">
               <header style="margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--glb); padding-bottom: 12px;">
                 <span style="font-family: var(--fc); font-size: 1.5rem; font-weight: 900; color: var(--p5); font-style: italic;">04.</span>
-                <h3 style="font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: #fff;">Data Deletion</h3>
+                <h3 style="font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: #fff;">Data Deletion Rights</h3>
               </header>
               <ul style="list-style: none; display: flex; flex-direction: column; gap: 16px; color: rgba(255,255,255,0.75); font-size: 0.95rem;">
-                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Soft Delete:</strong> 30-day trash (recoverable).</li>
-                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Permanent Purge:</strong> After 30 days, gone from all systems including backups.</li>
-                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Account Deletion:</strong> Everything erased within 30 days.</li>
+                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Cart Expulsion:</strong> Unfinished orders are automatically cleared from active database memory after 14 days of inactivity.</li>
+                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Account Terminations:</strong> Account deletion requests result in full erasure of your profile credentials within 30 days.</li>
+                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Regulatory Backups:</strong> Transactional records are securely maintained as mandated by BIR accounting regulations.</li>
               </ul>
             </article>
 
             <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: 32px;">
               <header style="margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--glb); padding-bottom: 12px;">
                 <span style="font-family: var(--fc); font-size: 1.5rem; font-weight: 900; color: var(--p5); font-style: italic;">05.</span>
-                <h3 style="font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: #fff;">Data We Never Share</h3>
+                <h3 style="font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: #fff;">Non-Distribution Guarantee</h3>
               </header>
               <p style="line-height: 1.7; color: rgba(255,255,255,0.75); font-size: 0.95rem; text-wrap: pretty;">
-                We do not sell, rent, or share personal data. Exceptions: valid PH court order, PayMongo transaction metadata, anonymized aggregated statistics.
+                We will never sell, lease, or share your personal contact lists or recipient information with third-party marketing services. We share data exclusively with verified logistics partners solely to execute physical fulfillment.
               </p>
             </article>
 
             <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: 32px;">
               <header style="margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--glb); padding-bottom: 12px;">
                 <span style="font-family: var(--fc); font-size: 1.5rem; font-weight: 900; color: var(--p5); font-style: italic;">06.</span>
-                <h3 style="font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: #fff;">Cookies</h3>
+                <h3 style="font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: #fff;">Functional Cookies</h3>
               </header>
               <p style="line-height: 1.7; color: rgba(255,255,255,0.75); font-size: 0.95rem; text-wrap: pretty;">
-                Essential auth cookies only. No tracking or advertising cookies.
+                We employ strictly essential session cookies to facilitate cart memory, maintain persistent login authorization, and honor your localized language selection. No advertising or tracking pixels are installed.
               </p>
             </article>
 
@@ -220,35 +220,35 @@ try {
                 <h3 style="font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: #fff;">Your Rights (RA 10173)</h3>
               </header>
               <p style="line-height: 1.7; color: rgba(255,255,255,0.75); font-size: 0.95rem; text-wrap: pretty; margin-bottom: 12px;">
-                Access, Correction, Erasure, Portability, Object.
+                Under the Data Privacy Act of 2012, you possess absolute rights to be informed, access your information, correct inaccuracies, erase outdated records, object to processing, and secure data portability.
               </p>
               <p style="font-size: 0.95rem;">
-                Contact: <a href="mailto:privacy@batasnatin.com" style="color: var(--p5l); font-weight: 600; border-bottom: 1px dotted var(--p5); transition: color 0.2s;">privacy@batasnatin.com</a>
+                Contact: <a href="mailto:hello@bloom.ph" style="color: var(--p5l); font-weight: 600; border-bottom: 1px dotted var(--p5); transition: color 0.2s;">hello@bloom.ph</a>
               </p>
             </article>
 
             <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: 32px; border: 1.5px solid rgba(230,26,26,0.2); background: linear-gradient(135deg, rgba(230,26,26,0.08), rgba(255,255,255,0.03));">
               <header style="margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid rgba(230,26,26,0.2); padding-bottom: 12px;">
                 <span style="font-family: var(--fc); font-size: 1.5rem; font-weight: 900; color: var(--p5); font-style: italic;">08.</span>
-                <h3 style="font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: #fff;">Data Protection Officer</h3>
+                <h3 style="font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: #fff;">Compliance Office</h3>
               </header>
               <ul style="list-style: none; display: flex; flex-direction: column; gap: 10px; color: rgba(255,255,255,0.8); font-size: 0.95rem;">
-                <li><strong>DPO:</strong> Atty. Ranny Randolf B. Libayan</li>
-                <li><strong>Email:</strong> <a href="mailto:privacy@batasnatin.com" style="color: var(--p5l); font-weight: 600; border-bottom: 1px dotted var(--p5);">privacy@batasnatin.com</a></li>
-                <li><strong>Office:</strong> BATASNATIN CO., Taguig City</li>
+                <li><strong>Data Protection:</strong> Bloom Security Team</li>
+                <li><strong>Inquiries:</strong> <a href="mailto:hello@bloom.ph" style="color: var(--p5l); font-weight: 600; border-bottom: 1px dotted var(--p5);">hello@bloom.ph</a></li>
+                <li><strong>Campus Center:</strong> STI College Lipa BSIT Innovation Lab</li>
               </ul>
             </article>
           </section>
 
           <footer style="text-align: center; margin-top: 64px; padding: 32px; border-top: 1px solid var(--glb);">
             <h4 style="font-family: var(--fd); font-size: 1.4rem; font-weight: 900; letter-spacing: 0.05em; color: #fff; text-transform: uppercase; margin-bottom: 12px;">
-              BATASNATIN CO.
+              BLOOM BOTANICAL COMMERCE
             </h4>
             <p style="font-family: var(--fc); font-style: italic; color: rgba(255,255,255,0.4); letter-spacing: 0.15em; font-size: 0.85rem; text-transform: uppercase; margin-bottom: 24px;">
-              Taguig City, Philippines
+              Lipa City, Batangas, Philippines
             </p>
             <div style="display: flex; align-items: center; justify-content: center; gap: 24px;">
-              <a href="#" style="font-size: 0.85rem; color: rgba(255,255,255,0.5); text-decoration: underline; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Terms</a>
+              <a href="/about.html" style="font-size: 0.85rem; color: rgba(255,255,255,0.5); text-decoration: underline; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">About</a>
               <span style="color: var(--glb);">|</span>
               <a href="/" style="font-size: 0.85rem; color: rgba(255,255,255,0.5); text-decoration: underline; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Home</a>
             </div>
@@ -256,6 +256,7 @@ try {
         </div>
       </main>
     `
+
   };
 
   for (const [filename, content] of Object.entries(pages)) {
