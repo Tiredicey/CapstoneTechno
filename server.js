@@ -62,7 +62,7 @@ app.use(helmet({
       scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.socket.io", "https://ajax.googleapis.com", "https://cdn.jsdelivr.net"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      imgSrc: ["'self'", "data:", "blob:", "https://picsum.photos", "https://fastly.picsum.photos", "https://images.unsplash.com", "https://images.pexels.com", "https://image.pollinations.ai", "https://media.sketchfab.com", "https://static.sketchfab.com"],
+      imgSrc: ["'self'", "data:", "blob:", "https://picsum.photos", "https://fastly.picsum.photos", "https://images.unsplash.com", "https://images.pexels.com", "https://image.pollinations.ai", "https://media.sketchfab.com", "https://static.sketchfab.com", "https://api.qrserver.com"],
       connectSrc: ["'self'", "wss:", "ws:", "blob:", "data:", "https://image.pollinations.ai", "https://text.pollinations.ai", "https://gen.pollinations.ai", "https://modelviewer.dev", "https://cdn.jsdelivr.net", "https://arvr.google.com"],
       mediaSrc: ["'self'", "https://videos.pexels.com", "https://player.vimeo.com"],
       frameSrc: ["https://sketchfab.com", "https://arvr.google.com"],
