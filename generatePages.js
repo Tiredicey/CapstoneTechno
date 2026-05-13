@@ -30,6 +30,10 @@ try {
   const indexNavPrefix = indexHtml.substring(bloomBootStart, navStart);
   const indexNav = indexHtml.substring(navStart, navEndIndex);
 
+  const mobMenuStart = indexHtml.indexOf('<div class="mob-menu"');
+  const dlvBarStart = indexHtml.indexOf('<div class="delivery-bar"');
+  const indexMobMenu = indexHtml.substring(mobMenuStart, dlvBarStart);
+
   const footerEnd = indexHtml.indexOf('</footer>', footerStartIndex) + 9;
   const indexFooter = indexHtml.substring(footerStartIndex, footerEnd);
 
@@ -44,7 +48,28 @@ try {
   const indexLayoutScript = indexHtml.substring(iifeStart, indexHtml.lastIndexOf('</script>') + 9);
 
   const styleBlock = `\n<!-- BLOOM_STYLE_INJECT -->\n${indexFonts}\n${indexStyles}\n<!-- BLOOM_STYLE_END -->\n`;
-  const navBlock = `\n<!-- BLOOM_NAV_INJECT -->\n${indexNavPrefix}\n${indexNav}\n<!-- BLOOM_NAV_END -->\n`;
+  const navBlock = `\n<!-- BLOOM_NAV_INJECT -->\n${indexNavPrefix}\n${indexNav}\n${indexMobMenu}\n<!-- BLOOM_NAV_END -->\n`;
+
+  const storeNavLinks = `
+  <ul class="n-links" role="list">
+    <li><a href="/catalog.html" data-label="shop" data-i18n="nav.shop">Shop</a></li>
+    <li><a href="/customize.html" data-label="create" data-i18n="nav.custom">Create</a></li>
+    <li><a href="/tracking.html" data-label="track" data-i18n="nav.track">Track</a></li>
+    <li><a href="/support.html" data-label="support" data-i18n="nav.support">Support</a></li>
+  </ul>`;
+
+  const storeMobLinks = `
+    <ul role="list">
+      <li><a href="/catalog.html" data-i18n="nav.shop">Shop</a></li>
+      <li><a href="/customize.html" data-i18n="nav.custom">Create</a></li>
+      <li><a href="/tracking.html" data-i18n="nav.track">Track</a></li>
+      <li><a href="/support.html" data-i18n="nav.support">Support</a></li>
+    </ul>`;
+
+  const storeNav = indexNav.replace(/<ul class="n-links"[\s\S]*?<\/ul>/, storeNavLinks);
+  const storeMob = indexMobMenu.replace(/<ul role="list">[\s\S]*?<\/ul>/, storeMobLinks);
+  const storeNavBlock = `\n<!-- BLOOM_NAV_INJECT -->\n${indexNavPrefix}\n${storeNav}\n${storeMob}\n<!-- BLOOM_NAV_END -->\n`;
+
   const baseScriptsBlock = `\n<!-- BLOOM_BASE_INJECT -->\n${indexBaseScripts}\n<!-- BLOOM_BASE_END -->\n`;
   const footBlock = `\n<!-- BLOOM_FOOT_INJECT -->\n${indexFooter}\n${indexOverlays}\n${indexLayoutScript}\n<!-- BLOOM_FOOT_END -->\n`;
 
@@ -290,7 +315,7 @@ try {
             <div class="p5-line-h" style="max-width: 120px;"></div>
           </header>
 
-          <section class="glass-ethereal shimmer" style="border-radius: 24px; padding: 48px; margin-bottom: 48px; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); background: linear-gradient(135deg, rgba(230,26,26,0.05), rgba(255,255,255,0.03)); backdrop-filter: blur(24px);">
+          <section class="glass-ethereal shimmer" style="border-radius: 24px; padding: clamp(24px, 5vw, 48px); margin-bottom: 48px; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); background: linear-gradient(135deg, rgba(230,26,26,0.05), rgba(255,255,255,0.03)); backdrop-filter: blur(24px);">
             <div style="position: absolute; top: -30px; right: -30px; font-size: 12rem; opacity: 0.03; font-family: var(--fd); font-weight: 900; font-style: italic; user-select: none; pointer-events: none; color: var(--p5);">
               Promise
             </div>
@@ -302,9 +327,9 @@ try {
             </p>
           </section>
 
-          <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 28px; margin-bottom: 64px;">
+          <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 64px;">
             
-            <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: 32px; transition: transform 0.3s var(--spring), border-color 0.3s;">
+            <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: clamp(20px, 4vw, 32px); transition: transform 0.3s var(--spring), border-color 0.3s;">
               <header style="margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--glb); padding-bottom: 12px;">
                 <span style="font-family: var(--fc); font-size: 1.5rem; font-weight: 900; color: var(--p5); font-style: italic;">01.</span>
                 <h3 style="font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: #fff;">Information We Collect</h3>
@@ -317,7 +342,7 @@ try {
               </ul>
             </article>
 
-            <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: 32px;">
+            <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: clamp(20px, 4vw, 32px);">
               <header style="margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--glb); padding-bottom: 12px;">
                 <span style="font-family: var(--fc); font-size: 1.5rem; font-weight: 900; color: var(--p5); font-style: italic;">02.</span>
                 <h3 style="font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: #fff;">How We Protect Your Data</h3>
@@ -330,7 +355,7 @@ try {
               </ul>
             </article>
 
-            <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: 32px;">
+            <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: clamp(20px, 4vw, 32px);">
               <header style="margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--glb); padding-bottom: 12px;">
                 <span style="font-family: var(--fc); font-size: 1.5rem; font-weight: 900; color: var(--p5); font-style: italic;">03.</span>
                 <h3 style="font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: #fff;">3D Renders & Local Cache</h3>
@@ -340,7 +365,7 @@ try {
               </p>
             </article>
 
-            <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: 32px;">
+            <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: clamp(20px, 4vw, 32px);">
               <header style="margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--glb); padding-bottom: 12px;">
                 <span style="font-family: var(--fc); font-size: 1.5rem; font-weight: 900; color: var(--p5); font-style: italic;">04.</span>
                 <h3 style="font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: #fff;">Data Deletion Rights</h3>
@@ -352,7 +377,7 @@ try {
               </ul>
             </article>
 
-            <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: 32px;">
+            <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: clamp(20px, 4vw, 32px);">
               <header style="margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--glb); padding-bottom: 12px;">
                 <span style="font-family: var(--fc); font-size: 1.5rem; font-weight: 900; color: var(--p5); font-style: italic;">05.</span>
                 <h3 style="font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: #fff;">Non-Distribution Guarantee</h3>
@@ -362,7 +387,7 @@ try {
               </p>
             </article>
 
-            <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: 32px;">
+            <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: clamp(20px, 4vw, 32px);">
               <header style="margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--glb); padding-bottom: 12px;">
                 <span style="font-family: var(--fc); font-size: 1.5rem; font-weight: 900; color: var(--p5); font-style: italic;">06.</span>
                 <h3 style="font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: #fff;">Functional Cookies</h3>
@@ -372,7 +397,7 @@ try {
               </p>
             </article>
 
-            <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: 32px;">
+            <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: clamp(20px, 4vw, 32px);">
               <header style="margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--glb); padding-bottom: 12px;">
                 <span style="font-family: var(--fc); font-size: 1.5rem; font-weight: 900; color: var(--p5); font-style: italic;">07.</span>
                 <h3 style="font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: #fff;">Your Rights (RA 10173)</h3>
@@ -385,7 +410,7 @@ try {
               </p>
             </article>
 
-            <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: 32px; border: 1.5px solid rgba(230,26,26,0.2); background: linear-gradient(135deg, rgba(230,26,26,0.08), rgba(255,255,255,0.03));">
+            <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: clamp(20px, 4vw, 32px); border: 1.5px solid rgba(230,26,26,0.2); background: linear-gradient(135deg, rgba(230,26,26,0.08), rgba(255,255,255,0.03));">
               <header style="margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid rgba(230,26,26,0.2); padding-bottom: 12px;">
                 <span style="font-family: var(--fc); font-size: 1.5rem; font-weight: 900; color: var(--p5); font-style: italic;">08.</span>
                 <h3 style="font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: #fff;">Compliance Office</h3>
@@ -398,7 +423,7 @@ try {
             </article>
           </section>
 
-          <footer style="text-align: center; margin-top: 64px; padding: 32px; border-top: 1px solid var(--glb);">
+          <footer style="text-align: center; margin-top: 64px; padding: clamp(24px, 5vw, 32px); border-top: 1px solid var(--glb);">
             <h4 style="font-family: var(--fd); font-size: 1.4rem; font-weight: 900; letter-spacing: 0.05em; color: #fff; text-transform: uppercase; margin-bottom: 12px;">
               BLOOM BOTANICAL COMMERCE
             </h4>
@@ -417,7 +442,7 @@ try {
   };
 
   for (const [filename, content] of Object.entries(pages)) {
-    const fullHtml = headerPart + content + footerPart;
+    const fullHtml = headerPart + indexMobMenu + content + footerPart;
     fs.writeFileSync(path.join(publicDir, filename), fullHtml, 'utf-8');
     console.log('Generated:', filename);
   }
@@ -456,7 +481,7 @@ try {
     const bodyTagRegex = /<body[^>]*>/i;
     const bodyMatch = html.match(bodyTagRegex);
     if (bodyMatch) {
-      html = html.replace(bodyMatch[0], `${bodyMatch[0]}${navBlock}`);
+      html = html.replace(bodyMatch[0], `${bodyMatch[0]}${storeNavBlock}`);
     }
 
     html = html.replace(/<script[^>]*src="\/js\/core\/Store\.js"[^>]*><\/script>/gi, '');
