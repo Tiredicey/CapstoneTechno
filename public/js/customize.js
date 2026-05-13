@@ -267,9 +267,30 @@
       '&margin=8&data=' + encodeURIComponent(text);
   }
 
+  function buildHandoffURL() {
+    const url = new URL(window.location.href);
+    Object.keys(config).forEach(key => {
+      const val = config[key];
+      if (val !== null && val !== undefined && val !== '') {
+        url.searchParams.set(key, String(val));
+      } else {
+        url.searchParams.delete(key);
+      }
+    });
+    return url.toString();
+  }
+
   function showHandoffModal() {
+    const handoffUrl = buildHandoffURL();
     let modal = qs('#arHandoffModal');
-    if (modal) { modal.classList.add('active'); return; }
+    if (modal) {
+      var qr = modal.querySelector('.ar-handoff-qr');
+      var linkText = modal.querySelector('.ar-handoff-url');
+      if (qr) qr.src = buildQRDataURL(handoffUrl);
+      if (linkText) linkText.textContent = handoffUrl;
+      modal.classList.add('active');
+      return;
+    }
     modal = document.createElement('div');
     modal.id = 'arHandoffModal';
     modal.className = 'ar-handoff-modal active';
@@ -278,15 +299,15 @@
         '<button class="ar-handoff-close">✕</button>' +
         '<h3>View in Your Room</h3>' +
         '<p>AR requires a phone camera. Scan this code with your iPhone or Android to open this exact bouquet and tap View in Your Room.</p>' +
-        '<img src="' + buildQRDataURL(location.href) + '" class="ar-handoff-qr">' +
-        '<div class="ar-handoff-url">' + location.href + '</div>' +
+        '<img src="' + buildQRDataURL(handoffUrl) + '" class="ar-handoff-qr">' +
+        '<div class="ar-handoff-url">' + handoffUrl + '</div>' +
         '<button class="ar-handoff-copy">Copy link</button>' +
       '</div>';
     document.body.appendChild(modal);
     modal.querySelector('.ar-handoff-close').onclick = () => modal.classList.remove('active');
     modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('active'); });
     modal.querySelector('.ar-handoff-copy').onclick = async () => {
-      try { await navigator.clipboard.writeText(location.href); showToast('Link copied', 'success'); }
+      try { await navigator.clipboard.writeText(buildHandoffURL()); showToast('Link copied', 'success'); }
       catch { showToast('Copy failed', 'error'); }
     };
   }
@@ -393,6 +414,9 @@
   function onConfigChange() {
     updatePrice();
     scheduleAIPreview();
+    try {
+      window.history.replaceState(null, '', buildHandoffURL());
+    } catch (_) {}
     if (currentMode === '3d') {
       sync3DConfig();
       invalidateARModel();
@@ -421,8 +445,60 @@
     }
   }
 
+  function syncConfigToUI() {
+    qsa('#flowerPills .option-pill').forEach(function (pill) {
+      pill.classList.toggle('selected', pill.dataset.flower === config.flower);
+    });
+    var bloomInput = qs('#bloomCount');
+    if (bloomInput) {
+      bloomInput.value = config.bloomCount;
+      var label = qs('#bloomCountLabel');
+      if (label) label.textContent = config.bloomCount + ' stems';
+    }
+    qsa('#colorSwatches .swatch').forEach(function (swatch) {
+      swatch.classList.toggle('selected', swatch.dataset.color === config.color);
+    });
+    qsa('input[data-config]').forEach(function (input) {
+      const key = input.dataset.config;
+      input.checked = !!config[key];
+      if (key === 'engraving') {
+        var el = qs('#engravingText');
+        if (el) el.style.display = input.checked ? 'block' : 'none';
+      }
+      if (key === 'greetingCard') {
+        var el2 = qs('#cardText');
+        if (el2) el2.style.display = input.checked ? 'block' : 'none';
+      }
+      if (key === 'logoUpload') {
+        var el3 = qs('#logoUploadArea');
+        if (el3) el3.style.display = input.checked ? 'block' : 'none';
+      }
+    });
+    var engInput = qs('#engravingInput');
+    if (engInput) engInput.value = config.engravingText || '';
+    var cardInp = qs('#cardInput');
+    if (cardInp) cardInp.value = config.cardText || '';
+    updatePrice();
+    updateDefaultPreview();
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     var urlParams = new URLSearchParams(window.location.search);
+    
+    // Parse handoff configurations from URL query parameters
+    Object.keys(config).forEach(key => {
+      if (urlParams.has(key)) {
+        const val = urlParams.get(key);
+        if (typeof config[key] === 'boolean') {
+          config[key] = val === 'true';
+        } else if (typeof config[key] === 'number') {
+          config[key] = Number(val);
+        } else {
+          config[key] = val;
+        }
+      }
+    });
+    syncConfigToUI();
     if (urlParams.get('id')) {
       productId = urlParams.get('id');
       var loadProductData = function () {
