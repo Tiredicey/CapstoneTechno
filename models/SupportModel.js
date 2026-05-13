@@ -50,12 +50,12 @@ export class SupportModel {
     return SupportModel.getById(id);
   }
 
-  static resolve(id, csatScore, npsScore) {
+  static resolve(id, csatScore, npsScore, feedbackComment) {
     Database.run(
       `UPDATE support_tickets
-       SET status = 'resolved', csat_score = ?, nps_score = ?, updated_at = unixepoch()
+       SET status = 'resolved', csat_score = ?, nps_score = ?, feedback_comment = ?, updated_at = unixepoch()
        WHERE id = ?`,
-      [csatScore || null, npsScore || null, id]
+      [csatScore || null, npsScore || null, feedbackComment || null, id]
     );
   }
 
