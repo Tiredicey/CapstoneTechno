@@ -3,7 +3,7 @@ var Store = window.Store;
 
 const MOCK_REVIEWS = [
   { name: 'Valentina Cruz', rating: 5, body: "I ordered a custom arrangement for my mother's birthday and she cried happy tears. The silk wrap was exquisite and arrived perfectly on time.", occasion: 'Birthday' },
-  { name: 'Hiroki Tanaka', rating: 5, body: 'The corporate order process was seamless — 40 branded bouquets for our product launch, every single one perfect. Repeat customer forever.', occasion: 'Corporate' },
+  { name: 'Hiroki Tanaka', rating: 5, body: 'The corporate order process was seamless. 40 branded bouquets for our product launch, every single one perfect. Repeat customer forever.', occasion: 'Corporate' },
   { name: 'Marisol Reyes', rating: 5, body: 'Ordered a surprise delivery for my wife on our anniversary. The evening slot worked perfectly. The photo proof on delivery was such a thoughtful touch.', occasion: 'Anniversary' }
 ];
 
