@@ -115,17 +115,144 @@ try {
       </main>
     `,
     'privacy.html': `
-      <main class="con sec-pad" style="padding-top: 140px; min-height: 70vh;">
-        <h1 class="sec-title" style="margin-bottom: 24px; color: var(--p5);">Privacy Policy</h1>
-        <p class="sec-sub" style="font-size: 1.1rem; max-width: 800px; color: rgba(255,255,255,0.8);">
-          Data protection protocols implemented in the Bloom platform.
-        </p>
-        <div style="margin-top: 40px; max-width: 800px; color: rgba(255,255,255,0.7); line-height: 1.8;">
-          <h3 style="color: white; margin-bottom: 12px; margin-top: 24px;">Data Collection</h3>
-          <p>As an academic Capstone project by STI LIPA BSIT students, any data entered into this system (names, emails, simulated addresses) is securely stored locally in the SQLite database. We do not sell, distribute, or utilize this data outside of academic demonstration purposes.</p>
-          
-          <h3 style="color: white; margin-bottom: 12px; margin-top: 24px;">Security Measures</h3>
-          <p>We enforce strict data sanitization on all inputs to prevent Cross-Site Scripting (XSS) and utilize parameterized queries to prevent SQL Injection (SQLi). Your simulated sessions are protected by industry-standard JWT protocols.</p>
+      <main class="con sec-pad" style="padding-top: 140px; position: relative; min-height: 100vh; overflow: hidden;">
+        <div class="hero-orb hero-orb-1" style="opacity: 0.15;"></div>
+        <div class="hero-orb hero-orb-2" style="opacity: 0.1;"></div>
+        <div class="p5-glow" style="top: 20%; right: 10%; opacity: 0.3;"></div>
+        
+        <div style="position: relative; z-index: 10;">
+          <header style="text-align: center; margin-bottom: 64px;">
+            <span class="tag tag-p shimmer" style="letter-spacing: 0.2em;">LEGAL FRAMEWORK</span>
+            <h1 class="sec-title" style="font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; margin-bottom: 16px; background: linear-gradient(135deg, #fff 30%, var(--p5) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 4px 20px rgba(230,26,26,0.1);">
+              Privacy Policy
+            </h1>
+            <p style="font-family: var(--fc); font-style: italic; color: var(--p5l); letter-spacing: 0.1em; font-size: 0.9rem; text-transform: uppercase; margin-bottom: 24px;">
+              Last updated: March 22, 2026 &nbsp;|&nbsp; Compliant with RA 10173 (Data Privacy Act)
+            </p>
+            <div class="p5-line-h" style="max-width: 120px;"></div>
+          </header>
+
+          <section class="glass-ethereal shimmer" style="border-radius: 24px; padding: 48px; margin-bottom: 48px; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); background: linear-gradient(135deg, rgba(230,26,26,0.05), rgba(255,255,255,0.03)); backdrop-filter: blur(24px);">
+            <div style="position: absolute; top: -30px; right: -30px; font-size: 12rem; opacity: 0.03; font-family: var(--fd); font-weight: 900; font-style: italic; user-select: none; pointer-events: none; color: var(--p5);">
+              Promise
+            </div>
+            <h2 style="font-family: var(--fd); font-size: 1.8rem; font-weight: 700; color: #fff; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">
+              <span style="color: var(--p5);">❖</span> Our Privacy Promise
+            </h2>
+            <p style="font-size: 1.15rem; line-height: 1.8; color: rgba(255,255,255,0.85); text-wrap: pretty;">
+              Privacy is not a feature of <strong>BATASnatin Lexitary</strong> — it is the foundation. Your Lexitary workspace is your private environment. Only you can see what is inside. Not other users. Not our staff. Not the people who maintain our physical servers. <span style="color: var(--p5l); font-weight: 600;">You are the boss.</span>
+            </p>
+          </section>
+
+          <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 28px; margin-bottom: 64px;">
+            
+            <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: 32px; transition: transform 0.3s var(--spring), border-color 0.3s;">
+              <header style="margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--glb); padding-bottom: 12px;">
+                <span style="font-family: var(--fc); font-size: 1.5rem; font-weight: 900; color: var(--p5); font-style: italic;">01.</span>
+                <h3 style="font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: #fff;">Information We Collect</h3>
+              </header>
+              <ul style="list-style: none; display: flex; flex-direction: column; gap: 16px; color: rgba(255,255,255,0.75); font-size: 0.95rem;">
+                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Account:</strong> Email, name, role, hashed credentials.</li>
+                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Usage:</strong> Queries, case notes, documents — stored in your private workspace only.</li>
+                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Lexi Personalization:</strong> Practice areas, preferences, style — belongs to you alone.</li>
+                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Payment:</strong> Processed by PayMongo (PCI-DSS). We never store card/GCash details.</li>
+              </ul>
+            </article>
+
+            <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: 32px;">
+              <header style="margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--glb); padding-bottom: 12px;">
+                <span style="font-family: var(--fc); font-size: 1.5rem; font-weight: 900; color: var(--p5); font-style: italic;">02.</span>
+                <h3 style="font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: #fff;">How We Protect Your Data</h3>
+              </header>
+              <ul style="list-style: none; display: flex; flex-direction: column; gap: 16px; color: rgba(255,255,255,0.75); font-size: 0.95rem;">
+                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Encryption at Rest:</strong> AES-256.</li>
+                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">In Transit:</strong> TLS.</li>
+                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Access:</strong> Only through your authenticated session. No staff has routine access.</li>
+                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Infrastructure:</strong> Servers in the Philippines. Data never leaves PH jurisdiction.</li>
+              </ul>
+            </article>
+
+            <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: 32px;">
+              <header style="margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--glb); padding-bottom: 12px;">
+                <span style="font-family: var(--fc); font-size: 1.5rem; font-weight: 900; color: var(--p5); font-style: italic;">03.</span>
+                <h3 style="font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: #fff;">Your Lexitary — Your Personal AI</h3>
+              </header>
+              <p style="line-height: 1.7; color: rgba(255,255,255,0.75); font-size: 0.95rem; text-wrap: pretty;">
+                Lexitary is pre-trained on Philippine law (shared). As you interact, she develops personalization unique to you. This is the only "AI training" contributed by users. It is private, deletable, and erased if you delete your account. Your data never trains other users' Lexi.
+              </p>
+            </article>
+
+            <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: 32px;">
+              <header style="margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--glb); padding-bottom: 12px;">
+                <span style="font-family: var(--fc); font-size: 1.5rem; font-weight: 900; color: var(--p5); font-style: italic;">04.</span>
+                <h3 style="font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: #fff;">Data Deletion</h3>
+              </header>
+              <ul style="list-style: none; display: flex; flex-direction: column; gap: 16px; color: rgba(255,255,255,0.75); font-size: 0.95rem;">
+                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Soft Delete:</strong> 30-day trash (recoverable).</li>
+                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Permanent Purge:</strong> After 30 days, gone from all systems including backups.</li>
+                <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Account Deletion:</strong> Everything erased within 30 days.</li>
+              </ul>
+            </article>
+
+            <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: 32px;">
+              <header style="margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--glb); padding-bottom: 12px;">
+                <span style="font-family: var(--fc); font-size: 1.5rem; font-weight: 900; color: var(--p5); font-style: italic;">05.</span>
+                <h3 style="font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: #fff;">Data We Never Share</h3>
+              </header>
+              <p style="line-height: 1.7; color: rgba(255,255,255,0.75); font-size: 0.95rem; text-wrap: pretty;">
+                We do not sell, rent, or share personal data. Exceptions: valid PH court order, PayMongo transaction metadata, anonymized aggregated statistics.
+              </p>
+            </article>
+
+            <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: 32px;">
+              <header style="margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--glb); padding-bottom: 12px;">
+                <span style="font-family: var(--fc); font-size: 1.5rem; font-weight: 900; color: var(--p5); font-style: italic;">06.</span>
+                <h3 style="font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: #fff;">Cookies</h3>
+              </header>
+              <p style="line-height: 1.7; color: rgba(255,255,255,0.75); font-size: 0.95rem; text-wrap: pretty;">
+                Essential auth cookies only. No tracking or advertising cookies.
+              </p>
+            </article>
+
+            <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: 32px;">
+              <header style="margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--glb); padding-bottom: 12px;">
+                <span style="font-family: var(--fc); font-size: 1.5rem; font-weight: 900; color: var(--p5); font-style: italic;">07.</span>
+                <h3 style="font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: #fff;">Your Rights (RA 10173)</h3>
+              </header>
+              <p style="line-height: 1.7; color: rgba(255,255,255,0.75); font-size: 0.95rem; text-wrap: pretty; margin-bottom: 12px;">
+                Access, Correction, Erasure, Portability, Object.
+              </p>
+              <p style="font-size: 0.95rem;">
+                Contact: <a href="mailto:privacy@batasnatin.com" style="color: var(--p5l); font-weight: 600; border-bottom: 1px dotted var(--p5); transition: color 0.2s;">privacy@batasnatin.com</a>
+              </p>
+            </article>
+
+            <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: 32px; border: 1.5px solid rgba(230,26,26,0.2); background: linear-gradient(135deg, rgba(230,26,26,0.08), rgba(255,255,255,0.03));">
+              <header style="margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid rgba(230,26,26,0.2); padding-bottom: 12px;">
+                <span style="font-family: var(--fc); font-size: 1.5rem; font-weight: 900; color: var(--p5); font-style: italic;">08.</span>
+                <h3 style="font-family: var(--fd); font-size: 1.25rem; font-weight: 700; color: #fff;">Data Protection Officer</h3>
+              </header>
+              <ul style="list-style: none; display: flex; flex-direction: column; gap: 10px; color: rgba(255,255,255,0.8); font-size: 0.95rem;">
+                <li><strong>DPO:</strong> Atty. Ranny Randolf B. Libayan</li>
+                <li><strong>Email:</strong> <a href="mailto:privacy@batasnatin.com" style="color: var(--p5l); font-weight: 600; border-bottom: 1px dotted var(--p5);">privacy@batasnatin.com</a></li>
+                <li><strong>Office:</strong> BATASNATIN CO., Taguig City</li>
+              </ul>
+            </article>
+          </section>
+
+          <footer style="text-align: center; margin-top: 64px; padding: 32px; border-top: 1px solid var(--glb);">
+            <h4 style="font-family: var(--fd); font-size: 1.4rem; font-weight: 900; letter-spacing: 0.05em; color: #fff; text-transform: uppercase; margin-bottom: 12px;">
+              BATASNATIN CO.
+            </h4>
+            <p style="font-family: var(--fc); font-style: italic; color: rgba(255,255,255,0.4); letter-spacing: 0.15em; font-size: 0.85rem; text-transform: uppercase; margin-bottom: 24px;">
+              Taguig City, Philippines
+            </p>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 24px;">
+              <a href="#" style="font-size: 0.85rem; color: rgba(255,255,255,0.5); text-decoration: underline; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Terms</a>
+              <span style="color: var(--glb);">|</span>
+              <a href="/" style="font-size: 0.85rem; color: rgba(255,255,255,0.5); text-decoration: underline; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Home</a>
+            </div>
+          </footer>
         </div>
       </main>
     `
