@@ -202,6 +202,9 @@
       var el = qs('#preview' + (m === 'default' ? 'Default' : m === 'ai' ? 'AI' : '3D'));
       if (el) el.style.display = (m === mode) ? 'flex' : 'none';
     });
+    var ptcl = qs('#ptcl');
+    if (ptcl) ptcl.style.display = (mode === 'default') ? 'block' : 'none';
+    
     qsa('.canvas-btn').forEach(function (b) { b.classList.remove('mode-active'); });
     var btnMap = { default: '#modeDefault', ai: '#modeAI', '3d': '#mode3D' };
     var activeBtn = qs(btnMap[mode]);
