@@ -197,6 +197,121 @@ function bindStarRating() {
   });
 }
 
+let frustrationCounter = 0;
+const OFFLINE_MESSAGES_KEY = 'bloom_offline_chat_messages';
+const FRUSTRATION_KEYWORDS = [
+  'scam', 'fake', 'stole', 'worst', 'angry', 'sucks', 'bulok', 'pangit', 'galit',
+  'bad', 'error', 'fail', 'hate', 'useless', 'horrible', 'disaster', 'broken',
+  'cheap', 'never again', 'annoyed', 'disappointed', 'estafa', 'basura', 'nagsasayang',
+  'fraude', 'peor', 'malo', 'no funciona', 'enojado', 'fracaso',
+  '最悪', '詐欺', 'だめ', '怒', 'ゴミ', '使えない', 'ひどい', '失敗'
+];
+const LOCAL_ROUTER = [
+  { pattern: /\b(human|agent|person|representative|esperanza|talk to someone)\b/i, action: () => {
+      document.getElementById('openAgentBtn')?.click();
+      return "Connecting you to an active Live Agent immediately. Please wait a moment... 🌸";
+  }},
+  { pattern: /\b(ticket|complaint|refund|dispute|cancel|issue|open a ticket)\b/i, action: () => {
+      document.getElementById('openTicketBtn')?.click();
+      return "I've opened the formal Support Ticket system below so we can process this securely. Please fill in your details.";
+  }},
+  { pattern: /\b(faq|help|question|guide|policy|shipping|price|cost)\b/i, action: () => {
+      document.getElementById('openSelfBtn')?.click();
+      return "I've scrolled to our Frequently Asked Questions (FAQ) and Knowledge Base below for your convenience! 📖";
+  }},
+  { pattern: /\b(cart|order status|track|where is|delivery|status|bloom-)\b/i, action: () => {
+      return BOT_RESPONSES.track + " Or enter your Bloom order code directly for instant tracking lookup.";
+  }}
+];
+
+function routeIntentLocally(msg) {
+  const m = msg.toLowerCase();
+  for (const route of LOCAL_ROUTER) {
+    if (route.pattern.test(m)) return route.action();
+  }
+  return null;
+}
+
+function detectFrustrationAndEscalate(msg) {
+  const input = msg.toLowerCase();
+  let triggers = 0;
+  FRUSTRATION_KEYWORDS.forEach(w => { if (input.includes(w)) triggers++; });
+  if (triggers > 0) frustrationCounter += triggers;
+  if (frustrationCounter >= 2) {
+    frustrationCounter = -999;
+    setTimeout(() => {
+      appendMessage("🌸 Alert: High urgency detected. Connecting you immediately to Live Human Agent support for dedicated resolution.", 'agent');
+      document.getElementById('openAgentBtn')?.click();
+    }, 500);
+    return true;
+  }
+  return false;
+}
+
+function isLowBandwidth() {
+  if (navigator.connection) {
+    const type = navigator.connection.effectiveType || '';
+    const saveData = navigator.connection.saveData;
+    return saveData || type === 'slow-2g' || type === '2g' || type === '3g';
+  }
+  return false;
+}
+
+function updateBandwidthUI() {
+  const statusEl = document.querySelector('.chat-agent-info .status');
+  if (statusEl && isLowBandwidth()) {
+    statusEl.innerHTML = '⚡ Eco Mode Active (Low Bandwidth)';
+    statusEl.style.color = '#facc15';
+  }
+}
+
+function getEnhancedSessionContext() {
+  const user = window.Store?.get('user');
+  const lang = window.I18n?.getLang() || window.Store?.get('lang') || 'en';
+  const connectionType = navigator.connection?.effectiveType || 'unknown';
+  const recentlyViewed = window.Store?.get('recentlyViewed') || [];
+  let cartData = [];
+  try { cartData = JSON.parse(localStorage.getItem('bloom_cart') || '[]'); } catch {}
+  const cartTotal = cartData.reduce((s, i) => s + (Number(i.price || i.base_price || 0) * (Number(i.qty || i.quantity || 1))), 0);
+  const cartCount = cartData.length;
+  const bandwidthStatus = isLowBandwidth() ? 'CRITICAL LOW BANDWIDTH: Restrict response to minimum plain text only. NO emojis, NO markdown, NO placeholders.' : 'Normal Bandwidth';
+  return `[USER SESSION CONTEXT]
+Current Time: ${new Date().toISOString()}
+Status: ${navigator.onLine ? 'ONLINE' : 'OFFLINE'}
+Language/Locale: ${lang}
+User: ${user ? `${user.name} (ID: ${user.id || 'active'})` : 'Anonymous Visitor'}
+Network Speed: ${connectionType} (${bandwidthStatus})
+Active Shopping Cart: ${cartCount} products | Cart Total: ₱${cartTotal.toLocaleString()}
+Products in Cart: ${cartData.map(p => p.name).join(', ') || 'Empty'}
+Recently Viewed: ${recentlyViewed.map(p => p.name).join(', ') || 'None'}
+[DIRECTIVE] Tailor solutions directly around user session, cart total, or products mentioned.`;
+}
+
+function queueOfflineChat(msg) {
+  try {
+    const queue = JSON.parse(localStorage.getItem(OFFLINE_MESSAGES_KEY) || '[]');
+    queue.push({ content: msg, timestamp: Date.now(), role: 'user' });
+    localStorage.setItem(OFFLINE_MESSAGES_KEY, JSON.stringify(queue));
+  } catch {}
+}
+
+async function syncOfflineChat() {
+  if (!navigator.onLine) return;
+  try {
+    const queue = JSON.parse(localStorage.getItem(OFFLINE_MESSAGES_KEY) || '[]');
+    if (queue.length === 0) return;
+    Toast.show(`Reconnected. Syncing ${queue.length} offline messages...`, 'success');
+    localStorage.removeItem(OFFLINE_MESSAGES_KEY);
+    for (const item of queue) {
+      if (currentTicketId) {
+        await Api.post(`/support/${currentTicketId}/message`, { message: item.content, sender: 'user' }).catch(() => {});
+      }
+    }
+  } catch {}
+}
+
+window.addEventListener('online', syncOfflineChat);
+
 document.addEventListener('DOMContentLoaded', () => {
   renderFAQ();
   buildNpsButtons();
@@ -204,11 +319,13 @@ document.addEventListener('DOMContentLoaded', () => {
   if (window.Store && typeof window.Store.on === 'function') {
     window.Store.on('faq_update', () => FaqController.refresh());
   }
+  syncOfflineChat();
 });
 
 function openChat() {
   document.getElementById('chatSection')?.classList.remove('is-hidden');
   document.getElementById('ticketSection')?.classList.add('is-hidden');
+  updateBandwidthUI();
   setTimeout(() => document.getElementById('chatInput')?.focus(), 80);
 }
 function closeChat() {
@@ -261,23 +378,49 @@ async function sendChat() {
   input.value = '';
   chatHistory.push({ role: 'user', content: msg });
 
+  if (!navigator.onLine) {
+    queueOfflineChat(msg);
+    const localResp = routeIntentLocally(msg) || "You are currently offline. I've received your query and will sync it as soon as your connection stabilizes. In the meantime, I can demonstrate tracking or basic support info.";
+    appendMessage(localResp, 'bot');
+    chatHistory.push({ role: 'assistant', content: localResp });
+    return;
+  }
+
   if (currentTicketId) {
     Api.post(`/support/${currentTicketId}/message`, { message: msg, sender: 'user' }).catch(() => {});
   }
 
+  const escalated = detectFrustrationAndEscalate(msg);
+  if (escalated) return;
+
+  const localRoutingReply = routeIntentLocally(msg);
+  if (localRoutingReply) {
+    appendMessage(localRoutingReply, 'bot');
+    chatHistory.push({ role: 'assistant', content: localRoutingReply });
+    if (currentTicketId) {
+      Api.post(`/support/${currentTicketId}/message`, { message: localRoutingReply, sender: 'bot' }).catch(() => {});
+    }
+    return;
+  }
+
   showTypingIndicator();
+
+  const activeHistory = isLowBandwidth() ? chatHistory.slice(-4) : chatHistory.slice(-10);
+  const contextualPayload = [
+    chatHistory[0],
+    { role: 'system', content: getEnhancedSessionContext() },
+    ...activeHistory.slice(1)
+  ];
 
   try {
     const res = await fetch('https://text.pollinations.ai/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: chatHistory.slice(-10) })
+      body: JSON.stringify({ messages: contextualPayload })
     });
-    
     if (!res.ok) throw new Error('API Offline');
     const reply = await res.text();
     hideTypingIndicator();
-    
     if (reply && reply.trim()) {
       appendMessage(reply, 'bot');
       chatHistory.push({ role: 'assistant', content: reply });
