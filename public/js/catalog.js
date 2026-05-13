@@ -54,27 +54,28 @@ function resolveImage(raw) {
 function renderProductCard(p) {
   var image = resolveImage(p.images);
   
-  // Artistic Render Mapping
-  var artisticMap = {
+  var thematicPlaceholders = {
     'Crimson Vow': '/img/vow-crimson.png',
     'Velvet Midnight': '/img/midnight-velvet.png',
-    'Obsidian Rose': '/img/rose-obsidian.png',
-    'Neon Blossom': '/img/midnight-velvet.png',
-    'Phantom Lily': '/img/rose-obsidian.png'
+    'Obsidian Rose': '/img/rose-obsidian.png'
   };
   
-  if (!image && artisticMap[p.name]) image = artisticMap[p.name];
-  if (!image) image = '/img/vow-crimson.png'; // Global ethereal fallback
+  if (!image) {
+    image = thematicPlaceholders[p.name] || null;
+  }
 
   var price = p.base_price || p.basePrice || 0;
   var stars = Array.from({ length: 5 }, function (_, i) {
     return '<span style="color:' + (i < Math.round(p.rating || 0) ? '#FFD700' : 'rgba(255,255,255,0.2)') + ';">★</span>';
   }).join('');
+
+  var cardBackground = image ? 'url(' + image + ')' : 'var(--glass-shine)';
+
   return '<div class="product-card" data-id="' + p.id + '">' +
     '<div class="p-shine"></div>' +
     '<button class="product-wishlist">♡</button>' +
-    '<div class="product-img-wrap">' +
-    '<img src="' + image + '" alt="' + p.name + '" loading="lazy">' +
+    '<div class="product-img-wrap" style="background-image: ' + cardBackground + '; background-size: cover; background-position: center;">' +
+    (image ? '<img src="' + image + '" alt="' + p.name + '" loading="lazy" style="width:100%; height:100%; object-fit:cover;">' : '<span style="font-size:3rem; opacity: 0.2;">🌸</span>') +
     '</div>' +
     '<div class="product-body">' +
     '<div class="product-name">' + p.name + '</div>' +
@@ -153,7 +154,6 @@ function bindCardEvents(container) {
     btn.dataset.bound = '1';
     var card = btn.closest('.product-card');
     var pid = card ? card.dataset.id : null;
-    // Sync initial state from Wishlist module
     if (pid && window.Wishlist && Wishlist.has(pid)) {
       btn.classList.add('active');
       btn.textContent = '♥';
@@ -305,7 +305,6 @@ function renderPagination(count) {
 document.getElementById('searchInput') && document.getElementById('searchInput').addEventListener('input', function (e) {
   clearTimeout(searchTimer);
   searchTimer = setTimeout(function () {
-    // Sanitize search input: strip HTML tags and suspicious patterns
     var raw = e.target.value.trim();
     raw = raw.replace(/<[^>]*>/g, '').replace(/javascript\s*:/gi, '').replace(/on\w+\s*=/gi, '');
     currentSearch = raw;
