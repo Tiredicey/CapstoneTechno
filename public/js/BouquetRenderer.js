@@ -1100,19 +1100,37 @@
       if (!loaded || !bouquetGroup || !GLTFExporter) { reject(new Error('renderer not ready')); return; }
       var root = new THREE.Group();
       var clone = bouquetGroup.clone(true);
-      clone.traverse(function (o) { if (o.userData && o.userData.isGlow) o.visible = false; });
+      clone.traverse(function (o) {
+        if (o.userData && o.userData.isGlow) o.visible = false;
+        if (o.isMesh && o.material) {
+          var mats = Array.isArray(o.material) ? o.material : [o.material];
+          mats.forEach(function (m) {
+            if (m.transmission && m.transmission > 0) m.transmission = Math.min(m.transmission, 0.05);
+            if (m.sheen) m.sheen = Math.min(m.sheen, 0.4);
+          });
+        }
+      });
       clone.rotation.set(0, 0, 0); clone.position.set(0, 0, 0);
       root.add(clone);
       var pre = new THREE.Box3().setFromObject(root);
-      var sc = 0.42 / Math.max(pre.getSize(new THREE.Vector3()).y, 0.0001);
+      var preSize = pre.getSize(new THREE.Vector3());
+      var targetHeight = 0.55;
+      var sc = targetHeight / Math.max(preSize.y, 0.0001);
       root.scale.setScalar(sc);
       var post = new THREE.Box3().setFromObject(root);
       var ctr = post.getCenter(new THREE.Vector3());
       root.position.set(-ctr.x, -post.min.y, -ctr.z);
-      new GLTFExporter().parse(root,
-        function (buf) { try { resolve(URL.createObjectURL(new Blob([buf], { type: 'model/gltf-binary' }))); } catch (e) { reject(e); } },
+      var wrapper = new THREE.Group();
+      wrapper.add(root);
+      new GLTFExporter().parse(wrapper,
+        function (buf) {
+          try {
+            var blob = new Blob([buf], { type: 'model/gltf-binary' });
+            resolve(URL.createObjectURL(blob));
+          } catch (e) { reject(e); }
+        },
         function (err) { reject(err); },
-        { binary: true, embedImages: true, onlyVisible: true }
+        { binary: true, embedImages: true, onlyVisible: true, includeCustomExtensions: false, forceIndices: true }
       );
     });
   }
