@@ -97,7 +97,8 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; color-scheme: dark; interpolate-size: allow-keywords; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; color-scheme: dark; interpolate-size: allow-keywords; scrollbar-width: none; -ms-overflow-style: none; }
+html::-webkit-scrollbar { display: none !important; }
 body { background: var(--bg); color: var(--text, #fff); font-family: var(--fb); overflow-x: hidden; min-height: 100dvh; }
 body.modal-open { overflow: hidden; }
 @media (pointer: fine) { body { cursor: none; } button, a, input, textarea, [role="button"] { cursor: none; } }
