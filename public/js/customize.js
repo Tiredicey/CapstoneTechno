@@ -337,6 +337,13 @@
     if (arReadyPromise && arHostedUrl && mv.getAttribute('src')) {
       if (canvas3d) canvas3d.style.display = 'none';
       mv.style.display = 'block';
+
+      var isMobile = /Android|iPhone|iPad|iPod/.test(navigator.userAgent);
+      if (!isMobile && arCapability.tone !== 'ok') {
+        showToast('AR is best experienced on mobile. Open this page on your phone to see the bouquet in your room.', 'info');
+        return;
+      }
+
       var canAR = false;
       try { canAR = !!mv.canActivateAR; } catch (e) {}
       if (canAR) {
@@ -347,15 +354,18 @@
           console.warn('[AR] activateAR failed:', e);
         }
       }
+
       if (arCapability.tone === 'no') {
-        showToast('This device/browser does not support AR. Use a recent Chrome on Android, Safari on iOS 12+, or Edge/Chrome with WebXR on Windows 11.', 'info');
+        showToast('Device unsupported. Use a recent Chrome (Android) or Safari (iOS).', 'info');
         return;
       }
+
       if (arCapability.needsUSDZ) {
-        showToast('iOS Quick Look needs a USDZ file. GLB-only fallback used — open in Safari for AR.', 'info');
+        showToast('iOS requires Safari for AR. If in another app, open in Safari.', 'info');
         return;
       }
-      showToast('Tap the AR button overlay on the model to enter your room.', 'info');
+
+      showToast('Tap the floating “View in Your Room” button above the model.', 'success');
       return;
     }
 
