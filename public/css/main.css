@@ -501,6 +501,8 @@ body {
   position: relative;
   overflow: hidden;
   isolation: isolate;
+  padding: 80px 0 40px;
+  background: var(--bg);
 }
 
 .bloom-footer::before {
@@ -533,9 +535,27 @@ body {
   z-index: 2 !important;
 }
 
-.bloom-footer .container {
-  position: relative;
-  z-index: 3;
+.foot-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 48px; }
+.foot-brand { font-family: var(--fd); font-size: 1.4rem; font-weight: 900; margin-bottom: 14px; background: linear-gradient(135deg, #fff 0%, var(--pk) 60%, var(--p5) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.foot-tag { font-size: .85rem; color: rgba(255,255,255,.54); line-height: 1.7; margin-bottom: 18px; max-width: 340px; text-wrap: pretty; }
+.foot-col h4 { font-family: var(--fd); font-size: .95rem; font-weight: 700; margin-bottom: 16px; }
+.foot-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.foot-col a { font-size: .82rem; color: rgba(255,255,255,.52); transition: color .2s; }
+.foot-col a:hover, .foot-col a:focus-visible { color: var(--p5l); }
+.foot-bottom { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-top: 24px; border-top: 1px solid var(--glb); font-size: .76rem; color: rgba(255,255,255,.4); flex-wrap: wrap; }
+.foot-soc { display: flex; gap: 10px; }
+.foot-soc a { width: 34px; height: 34px; border-radius: 50%; background: var(--gl); border: 1px solid var(--glb); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.6); transition: all .2s; }
+.foot-soc a:hover, .foot-soc a:focus-visible { background: rgba(230,26,26,.16); color: #fff; border-color: rgba(230,26,26,.4); }
+.foot-soc svg { width: 14px; height: 14px; }
+
+[data-theme="light"] .foot-bottom { border-top-color: var(--glb); }
+
+@media (max-width: 900px) {
+  .foot-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+}
+
+@media (max-width: 560px) {
+  .foot-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 768px) {
