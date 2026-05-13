@@ -16,7 +16,6 @@ try {
   const footerStartIndex = indexHtml.indexOf('<footer class="bloom-foot"');
   let footerPart = indexHtml.substring(footerStartIndex);
 
-  // ---------------- Centralized Layout Component Extraction ----------------
   const styleStart = indexHtml.indexOf('<style>');
   const styleEnd = indexHtml.indexOf('</style>') + 8;
   const indexStyles = indexHtml.substring(styleStart, styleEnd);
@@ -44,7 +43,6 @@ try {
   const indexBaseScripts = indexHtml.substring(scriptStart, iifeStart);
   const indexLayoutScript = indexHtml.substring(iifeStart, indexHtml.lastIndexOf('</script>') + 9);
 
-  // Wrap modules in unique idempotent HTML bounded tags
   const styleBlock = `\n<!-- BLOOM_STYLE_INJECT -->\n${indexFonts}\n${indexStyles}\n<!-- BLOOM_STYLE_END -->\n`;
   const navBlock = `\n<!-- BLOOM_NAV_INJECT -->\n${indexNavPrefix}\n${indexNav}\n<!-- BLOOM_NAV_END -->\n`;
   const baseScriptsBlock = `\n<!-- BLOOM_BASE_INJECT -->\n${indexBaseScripts}\n<!-- BLOOM_BASE_END -->\n`;
@@ -424,7 +422,6 @@ try {
     console.log('Generated:', filename);
   }
 
-  // ---------------- Idempotent Layout Synchronization for Special Application Pages ----------------
   const storePages = [
     'catalog.html',
     'customize.html',
@@ -445,33 +442,27 @@ try {
 
     let html = fs.readFileSync(filePath, 'utf-8');
 
-    // 1. Clean previously injected blocks to ensure strict idempotency (swallows surrounding whitespace)
     html = html.replace(/\s*<!-- BLOOM_STYLE_INJECT -->[\s\S]*?<!-- BLOOM_STYLE_END -->\s*/g, '\n');
     html = html.replace(/\s*<!-- BLOOM_NAV_INJECT -->[\s\S]*?<!-- BLOOM_NAV_END -->\s*/g, '\n');
     html = html.replace(/\s*<!-- BLOOM_BASE_INJECT -->[\s\S]*?<!-- BLOOM_BASE_END -->\s*/g, '\n');
     html = html.replace(/\s*<!-- BLOOM_FOOT_INJECT -->[\s\S]*?<!-- BLOOM_FOOT_END -->\s*/g, '\n');
 
-    // 2. Strip original legacy structures (acts on fresh/legacy copies on first execution)
     html = html.replace(/<nav\s+class="bloom-nav"[^>]*>([\s\S]*?)<\/nav>/gi, '');
     html = html.replace(/<div\s+class="toast-container"[^>]*>([\s\S]*?)<\/div>/gi, '');
     html = html.replace(/<div\s+class="particle-field"[^>]*>([\s\S]*?)<\/div>/gi, '');
 
-    // 3. Inject Styles and Font definitions into the head
     html = html.replace('</head>', `${styleBlock}</head>`);
 
-    // 4. Inject dynamic loader, cursor systems, and premium navigation at top of body
     const bodyTagRegex = /<body[^>]*>/i;
     const bodyMatch = html.match(bodyTagRegex);
     if (bodyMatch) {
       html = html.replace(bodyMatch[0], `${bodyMatch[0]}${navBlock}`);
     }
 
-    // 5. Avoid duplication by removing historical direct imports of scripts now bundled centrally
     html = html.replace(/<script[^>]*src="\/js\/core\/Store\.js"[^>]*><\/script>/gi, '');
     html = html.replace(/<script[^>]*src="\/js\/core\/Api\.js"[^>]*><\/script>/gi, '');
     html = html.replace(/<script[^>]*src="\/js\/core\/Auth\.js"[^>]*><\/script>/gi, '');
 
-    // 6. Inject base infrastructure scripts BEFORE the page-specific controller execution
     const firstScriptIndex = html.indexOf('<script');
     if (firstScriptIndex !== -1) {
       html = html.substring(0, firstScriptIndex) + baseScriptsBlock + html.substring(firstScriptIndex);
@@ -479,7 +470,6 @@ try {
       html = html.replace('</body>', `${baseScriptsBlock}</body>`);
     }
 
-    // 7. Inject the standard footer, dynamic modals/drawers, and the layout IIFE script before body closing
     html = html.replace('</body>', `${footBlock}</body>`);
 
     fs.writeFileSync(filePath, html, 'utf-8');
