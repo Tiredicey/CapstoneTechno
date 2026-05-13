@@ -1,4 +1,16 @@
-const { Api, Store, Toast } = window;
+const { Api, Store } = window;
+const Toast = window.Toast || {
+  show: function(msg, type) {
+    if (window.showToast) return window.showToast(msg, type);
+    const con = document.getElementById('toastContainer');
+    if (!con) return alert(msg);
+    const t = document.createElement('div');
+    t.className = 'toast toast-' + (type || 'info');
+    t.textContent = msg;
+    con.appendChild(t);
+    setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3500);
+  }
+};
 const FAQS = [
   { q: 'How far in advance should I pre-order?', a: 'We recommend ordering at least 2 days in advance. For large corporate or wedding orders, 7-14 days ensures the best selection and preparation.' },
   { q: 'Can I change my delivery date after ordering?', a: 'Yes! Contact support at least 24 hours before your scheduled delivery and we\'ll reschedule at no charge.' },
