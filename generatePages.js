@@ -16,22 +16,25 @@ try {
   const footerStartIndex = indexHtml.indexOf('<footer class="bloom-footer"');
   let footerPart = indexHtml.substring(footerStartIndex);
 
+  const fontsStart = indexHtml.indexOf('<link rel="preconnect"');
+  const fontsEnd = indexHtml.indexOf('<style>');
+  const indexFonts = indexHtml.substring(fontsStart, fontsEnd);
+
   const styleStart = indexHtml.indexOf('<style>');
   const styleEnd = indexHtml.indexOf('</style>') + 8;
+  
+  const extraStyles = `
+    .nl-form svg, .foot-soc svg, footer svg { width: 18px !important; height: 18px !important; display: inline-block !important; vertical-align: middle !important; }
+    .bloom-footer { z-index: 1000 !important; position: relative !important; }
+    nav { z-index: 2000 !important; }
+    .product-card, .p-card { z-index: 1 !important; }
+    .product-card:hover, .p-card:hover { z-index: 10 !important; }
+  `;
+  
   const indexStyles = indexHtml.substring(styleStart, styleEnd)
-    .replace(/\.bloom-footer\s*\{/g, '.bloom-footer { z-index: 1000; position: relative;')
-    .replace(/nav\s*\{/g, 'nav { z-index: 2000;')
-    .replace(/\.nl-form\s+svg\s*\{/g, '.nl-form svg { width: 18px; height: 18px; ')
-    .replace(/\.foot-soc\s+svg\s*\{/g, '.foot-soc svg { width: 22px; height: 22px; ')
-    .replace(/\.p-card\s*\{/g, '.p-card { z-index: 1;')
-    .replace(/\.p-card:hover\s*\{/g, '.p-card:hover { z-index: 10;')
-    .replace(/\.product-card\s*\{/g, '.product-card { z-index: 1;')
-    .replace(/\.product-card:hover\s*\{/g, '.product-card:hover { z-index: 10;');
+    .replace('</style>', extraStyles + '</style>');
 
-  const indexFonts = `<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="dns-prefetch" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=Barlow+Condensed:ital,wght@0,700;0,900;1,700;1,900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap">`;
+
 
   const bloomBootStart = indexHtml.indexOf('<div id="bloomBoot"');
   const navStart = indexHtml.indexOf('<nav id="nav"');
