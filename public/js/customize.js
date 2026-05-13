@@ -1,29 +1,32 @@
 (function () {
   'use strict';
 
-  var POLLINATIONS_BASE = 'https://image.pollinations.ai/prompt/';
-  var MODEL_SRC_LOCAL = '/models/bouquet.glb';
+  const POLLINATIONS_BASE = 'https://image.pollinations.ai/prompt/';
+  const MODEL_SRC_LOCAL = '/models/bouquet.glb';
+  const PHP_RATE = 56;
+  const PHP_FMT = new Intl.NumberFormat('en-PH', {
+    style: 'currency', currency: 'PHP', minimumFractionDigits: 2
+  });
 
-  var basePrice = 64.99;
-  var priceDelta = 0;
-  var config = {
-    flower: 'rose',
-    color: 'crimson',
-    colorHex: '#DC143C',
-    bloomCount: 12,
-    wrapping_premium: false,
-    wrapping_luxury: false,
-    ribbon_satin: false,
-    ribbon_velvet: false,
-    giftBox: false,
-    engraving: false,
-    engravingText: '',
-    greetingCard: false,
-    cardText: '',
-    logoUpload: false,
-    customDesign: false,
-    logoUrl: null,
-    customDesignUrl: null
+  let basePricePHP = 0;
+  let priceDeltaPHP = 0;
+
+  const ADDON_PHP = {
+    wrapping_premium: 448, wrapping_luxury: 840,
+    ribbon_satin: 168, ribbon_velvet: 336,
+    giftBox: 560, engraving: 672,
+    logoUpload: 1120, customDesign: 840
+  };
+  const EXTRA_STEM_TRIPLET_PHP = 112;
+
+  const config = {
+    flower: 'rose', color: 'crimson', colorHex: '#DC143C', bloomCount: 12,
+    wrapping_premium: false, wrapping_luxury: false,
+    ribbon_satin: false, ribbon_velvet: false,
+    giftBox: false, engraving: false, engravingText: '',
+    greetingCard: false, cardText: '',
+    logoUpload: false, customDesign: false,
+    logoUrl: null, customDesignUrl: null
   };
   var productId = null;
   var customizationId = null;
@@ -32,11 +35,14 @@
   var lastAiPromptHash = '';
   var bouquet3DInited = false;
 
-  function qs(s) { return document.querySelector(s); }
-  function qsa(s) { return Array.from(document.querySelectorAll(s)); }
+  const qs = s => document.querySelector(s);
+  const qsa = s => Array.from(document.querySelectorAll(s));
+  const fmt = n => PHP_FMT.format(Number(n) || 0);
 
-  function fmt(n) {
-    return '\u20B1' + Number(n || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  function toPHP(v) {
+    const n = Number(v) || 0;
+    if (n < 500) return Math.round(n * PHP_RATE * 100) / 100;
+    return n;
   }
 
   function showToast(msg, type) {
@@ -51,22 +57,24 @@
   }
 
   function updatePrice() {
-    priceDelta = 0;
-    if (config.wrapping_premium) priceDelta += 8;
-    if (config.wrapping_luxury) priceDelta += 15;
-    if (config.ribbon_satin) priceDelta += 3;
-    if (config.ribbon_velvet) priceDelta += 6;
-    if (config.giftBox) priceDelta += 10;
-    if (config.engraving) priceDelta += 12;
-    if (config.logoUpload) priceDelta += 20;
-    if (config.customDesign) priceDelta += 15;
-    var extraStems = Math.max(0, config.bloomCount - 12);
-    priceDelta += Math.floor(extraStems / 3) * 2;
-    var total = basePrice + priceDelta;
-    var livePriceEl = qs('#livePrice');
-    var cartPriceBtn = qs('#cartPriceBtn');
-    if (livePriceEl) livePriceEl.textContent = fmt(total);
-    if (cartPriceBtn) cartPriceBtn.textContent = fmt(total);
+    priceDeltaPHP = 0;
+    if (config.wrapping_premium) priceDeltaPHP += ADDON_PHP.wrapping_premium;
+    if (config.wrapping_luxury) priceDeltaPHP += ADDON_PHP.wrapping_luxury;
+    if (config.ribbon_satin) priceDeltaPHP += ADDON_PHP.ribbon_satin;
+    if (config.ribbon_velvet) priceDeltaPHP += ADDON_PHP.ribbon_velvet;
+    if (config.giftBox) priceDeltaPHP += ADDON_PHP.giftBox;
+    if (config.engraving) priceDeltaPHP += ADDON_PHP.engraving;
+    if (config.logoUpload) priceDeltaPHP += ADDON_PHP.logoUpload;
+    if (config.customDesign) priceDeltaPHP += ADDON_PHP.customDesign;
+
+    const extraStems = Math.max(0, config.bloomCount - 12);
+    priceDeltaPHP += Math.floor(extraStems / 3) * EXTRA_STEM_TRIPLET_PHP;
+
+    const totalPHP = basePricePHP + priceDeltaPHP;
+    const livePriceEl = qs('#livePrice');
+    const cartPriceBtn = qs('#cartPriceBtn');
+    if (livePriceEl) livePriceEl.textContent = fmt(totalPHP);
+    if (cartPriceBtn) cartPriceBtn.textContent = fmt(totalPHP);
   }
 
   function buildAIPrompt() {
@@ -225,34 +233,62 @@
   }
 
   function detectARCapability() {
-    var ua = navigator.userAgent;
-    var isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
-    var isAndroid = /Android/.test(ua);
-    var isWin = /Windows NT/.test(ua);
-    var hasXR = !!(navigator.xr && navigator.xr.isSessionSupported);
-    if (isIOS) return { mode: 'quick-look', label: 'iOS AR Ready', tone: 'ok', needsUSDZ: true };
-    if (isAndroid) return { mode: 'scene-viewer', label: 'Android AR Ready', tone: 'ok', needsHTTPS: true };
-    if (hasXR) return { mode: 'webxr', label: 'WebXR Capable', tone: 'ok' };
-    if (isWin) return { mode: 'webxr', label: 'Windows — Use Edge/Chrome w/ WebXR', tone: 'warn' };
-    return { mode: null, label: '3D Only — AR unsupported', tone: 'no' };
+    const ua = navigator.userAgent;
+    const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+    const isAndroid = /Android/.test(ua);
+    const isWin = /Windows NT/.test(ua);
+    const isMac = /Macintosh/.test(ua);
+    if (isIOS) return { mode: 'quick-look', label: 'iOS AR Ready', tone: 'ok' };
+    if (isAndroid) return { mode: 'scene-viewer', label: 'Android AR Ready', tone: 'ok' };
+    if (isWin || isMac) return { mode: 'qr-handoff', label: 'Scan QR with phone', tone: 'warn' };
+    return { mode: 'none', label: '3D only', tone: 'no' };
   }
 
   async function refreshARCapability() {
     arCapability = detectARCapability();
-    if (navigator.xr && navigator.xr.isSessionSupported) {
+    if (arCapability.mode !== 'quick-look' && arCapability.mode !== 'scene-viewer'
+        && navigator.xr?.isSessionSupported) {
       try {
-        var ok = await navigator.xr.isSessionSupported('immersive-ar');
-        if (ok && arCapability.tone !== 'ok') {
-          arCapability = { mode: 'webxr', label: 'WebXR Immersive AR Ready', tone: 'ok' };
+        if (await navigator.xr.isSessionSupported('immersive-ar')) {
+          arCapability = { mode: 'webxr', label: 'WebXR AR Ready', tone: 'ok' };
         }
-      } catch (e) {}
+      } catch (_) {}
     }
-    var el = qs('#arCapability');
+    const el = qs('#arCapability');
     if (el) {
       el.style.display = 'inline-flex';
       el.className = 'ar-capability ' + arCapability.tone;
       el.innerHTML = '<span class="dot"></span>' + arCapability.label;
     }
+  }
+
+  function buildQRDataURL(text, size = 220) {
+    return 'https://api.qrserver.com/v1/create-qr-code/?size=' + size + 'x' + size +
+      '&margin=8&data=' + encodeURIComponent(text);
+  }
+
+  function showHandoffModal() {
+    let modal = qs('#arHandoffModal');
+    if (modal) { modal.classList.add('active'); return; }
+    modal = document.createElement('div');
+    modal.id = 'arHandoffModal';
+    modal.className = 'ar-handoff-modal active';
+    modal.innerHTML =
+      '<div class="ar-handoff-card">' +
+        '<button class="ar-handoff-close">✕</button>' +
+        '<h3>View in Your Room</h3>' +
+        '<p>AR requires a phone camera. Scan this code with your iPhone or Android to open this exact bouquet and tap View in Your Room.</p>' +
+        '<img src="' + buildQRDataURL(location.href) + '" class="ar-handoff-qr">' +
+        '<div class="ar-handoff-url">' + location.href + '</div>' +
+        '<button class="ar-handoff-copy">Copy link</button>' +
+      '</div>';
+    document.body.appendChild(modal);
+    modal.querySelector('.ar-handoff-close').onclick = () => modal.classList.remove('active');
+    modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('active'); });
+    modal.querySelector('.ar-handoff-copy').onclick = async () => {
+      try { await navigator.clipboard.writeText(location.href); showToast('Link copied', 'success'); }
+      catch { showToast('Copy failed', 'error'); }
+    };
   }
 
   async function ensureRendererReady() {
@@ -328,57 +364,29 @@
     if (slot) slot.disabled = true;
   }
 
-  function launchAR() {
-    var mv = qs('#modelViewer');
-    if (!mv) { showToast('AR not available on this browser', 'error'); return; }
+  async function launchAR() {
+    const mv = qs('#modelViewer');
     if (currentMode !== '3d') switchMode('3d');
-    var canvas3d = qs('#bouquet3DCanvas');
 
-    if (arReadyPromise && arHostedUrl && mv.getAttribute('src')) {
-      if (canvas3d) canvas3d.style.display = 'none';
-      mv.style.display = 'block';
-
-      var isMobile = /Android|iPhone|iPad|iPod/.test(navigator.userAgent);
-      if (!isMobile && arCapability.tone !== 'ok') {
-        showToast('AR is best experienced on mobile. Open this page on your phone to see the bouquet in your room.', 'info');
-        return;
-      }
-
-      var canAR = false;
-      try { canAR = !!mv.canActivateAR; } catch (e) {}
-      if (canAR) {
-        try {
-          mv.activateAR();
-          return;
-        } catch (e) {
-          console.warn('[AR] activateAR failed:', e);
-        }
-      }
-
-      if (arCapability.tone === 'no') {
-        showToast('Device unsupported. Use a recent Chrome (Android) or Safari (iOS).', 'info');
-        return;
-      }
-
-      if (arCapability.needsUSDZ) {
-        showToast('iOS requires Safari for AR. If in another app, open in Safari.', 'info');
-        return;
-      }
-
-      showToast('Tap the floating “View in Your Room” button above the model.', 'success');
+    if (arCapability.mode === 'qr-handoff' || arCapability.mode === 'none') {
+      showHandoffModal();
       return;
     }
+    if (!mv) { showToast('AR not available', 'error'); return; }
 
-    setStatus('Preparing AR — tap again in a moment…');
-    queueARPrepare()
-      .then(function () {
-        if (canvas3d) canvas3d.style.display = 'none';
-        mv.style.display = 'block';
-        showToast('AR ready — tap “View in Your Room” again', 'success');
-      })
-      .catch(function () {
-        showToast('Could not prepare AR. Check connection and retry.', 'error');
-      });
+    try { await queueARPrepare(); }
+    catch { showToast('Could not prepare AR. Retry.', 'error'); return; }
+
+    const canvas3d = qs('#bouquet3DCanvas');
+    if (canvas3d) canvas3d.style.display = 'none';
+    mv.style.display = 'block';
+
+    let canAR = false;
+    try { canAR = await Promise.resolve(mv.canActivateAR); } catch (_) {}
+    if (canAR) {
+      try { mv.activateAR(); return; } catch (e) { console.warn('[AR]', e); }
+    }
+    showToast('Tap "View in Your Room" above the model.', 'info');
   }
 
 
@@ -419,10 +427,10 @@
       productId = urlParams.get('id');
       var loadProductData = function () {
         if (!window.Api) return;
-        Api.get('/api/products/' + productId).then(function (p) {
-          basePrice = p.base_price || p.basePrice || 64.99;
-          var titleEl = qs('#productTitle');
-          if (titleEl) titleEl.textContent = p.name;
+        window.Api.get('/api/products/' + productId).then(p => {
+          const raw = p.price_php ?? p.base_price_php ?? p.base_price ?? p.basePrice ?? 64.99;
+          basePricePHP = toPHP(raw);
+          const t = qs('#productTitle'); if (t) t.textContent = p.name || 'Custom Bouquet';
           updatePrice();
           var pImgs = p.images || [];
           if (typeof pImgs === 'string') { try { pImgs = JSON.parse(pImgs); } catch (e) {} }
@@ -437,7 +445,10 @@
             var preview = qs('#previewDefault');
             if (preview) preview.innerHTML = '<img src="' + mainImg + '" style="width:100%;height:100%;object-fit:contain;" alt="' + (p.name || 'Product') + '">';
           }
-        }).catch(function () {});
+        }).catch(() => {
+          basePricePHP = toPHP(64.99);
+          updatePrice();
+        });
       };
       loadProductData();
       if (typeof io !== 'undefined') {
@@ -606,45 +617,38 @@
 
     var addBtn = qs('#addCustomToCart');
     if (addBtn) {
-      addBtn.addEventListener('click', function () {
+      addBtn.addEventListener('click', async function () {
+        if (!window.Api) return;
+        const original = addBtn.innerHTML;
         addBtn.disabled = true;
-        addBtn.textContent = 'Adding…';
-        var id = productId || 'custom';
-        var Api = window.Api;
-        var Store = window.Store;
-        if (!Api) {
-          showToast('Service unavailable', 'error');
-          addBtn.disabled = false;
-          addBtn.innerHTML = '🛒 Add to Cart — <span id="cartPriceBtn">' + fmt(basePrice + priceDelta) + '</span>';
-          return;
-        }
-        Api.post('/api/customization', { productId: id, config: config })
-          .then(function (cusRes) {
-            customizationId = cusRes.id;
-            return Api.post('/api/cart/items', {
-              productId: id,
-              qty: 1,
-              customization: Object.assign({}, config, { id: customizationId, priceDelta: cusRes.priceDelta })
-            });
-          })
-          .then(function () { return Api.get('/api/cart'); })
-          .then(function (cart) {
-            if (Store) {
-              Store.set('cart', cart);
-              if (Store.updateCartCount) {
-                Store.updateCartCount((cart.items || []).reduce(function (s, i) { return s + (i.qty || 1); }, 0));
-              }
+        addBtn.innerHTML = '🛒 Adding...';
+        const clientLineId = 'cust_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+        try {
+          const payload = {
+            productId: 'custom',
+            qty: 1,
+            customization: {
+              clientLineId,
+              ...config,
+              priceDeltaPHP
             }
-            showToast('Custom arrangement added to cart 🌸', 'success');
-            setTimeout(function () { window.location.href = '/cart.html'; }, 800);
-          })
-          .catch(function (e) {
-            showToast((e && e.message) || 'Error adding to cart', 'error');
-          })
-          .finally(function () {
-            addBtn.disabled = false;
-            addBtn.innerHTML = '🛒 Add to Cart — <span id="cartPriceBtn">' + fmt(basePrice + priceDelta) + '</span>';
-          });
+          };
+          const cusRes = await window.Api.post('/api/customization', payload);
+          const Store = window.__BloomStore || window.Store;
+          if (Store) {
+            const cartData = (await window.Api.get('/cart')) || { items: [] };
+            Store.set('cart', cartData);
+            const count = (cartData.items || []).reduce((s, i) => s + (i.qty || 1), 0);
+            if (Store.updateCartCount) Store.updateCartCount(count);
+          }
+          showToast('Custom arrangement added 🌸', 'success');
+          setTimeout(() => location.href = '/cart.html', 700);
+        } catch (e) {
+          showToast((e && e.message) || 'Error adding to cart', 'error');
+        } finally {
+          addBtn.disabled = false;
+          addBtn.innerHTML = original;
+        }
       });
     }
 
