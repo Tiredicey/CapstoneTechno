@@ -5,7 +5,11 @@
   var dictionaries = {
     en: {
       'nav.shop': 'Shop',
-      'nav.custom': 'Custom',
+      'nav.catalog': 'Catalog',
+      'nav.subscriptions': 'Subscriptions',
+      'nav.corporate': 'Corporate',
+      'nav.why': 'Why Bloom',
+      'nav.custom': 'Create',
       'nav.track': 'Track',
       'nav.support': 'Support',
       'nav.cart': 'Cart',
@@ -41,6 +45,10 @@
     },
     fil: {
       'nav.shop': 'Tindahan',
+      'nav.catalog': 'Katalogo',
+      'nav.subscriptions': 'Mga Subskripsyon',
+      'nav.corporate': 'Korporasyon',
+      'nav.why': 'Bakit Bloom?',
       'nav.custom': 'Custom',
       'nav.track': 'Subaybayan',
       'nav.support': 'Tulong',
@@ -77,6 +85,10 @@
     },
     ja: {
       'nav.shop': 'ショップ',
+      'nav.catalog': 'カタログ',
+      'nav.subscriptions': 'サブスクリプション',
+      'nav.corporate': 'コーポレート',
+      'nav.why': 'なぜBloom？',
       'nav.custom': 'カスタム',
       'nav.track': '追跡',
       'nav.support': 'サポート',
@@ -113,6 +125,10 @@
     },
     es: {
       'nav.shop': 'Tienda',
+      'nav.catalog': 'Catálogo',
+      'nav.subscriptions': 'Suscripciones',
+      'nav.corporate': 'Corporativo',
+      'nav.why': '¿Por qué Bloom?',
       'nav.custom': 'Personalizar',
       'nav.track': 'Rastrear',
       'nav.support': 'Soporte',
