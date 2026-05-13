@@ -62,7 +62,7 @@ router.post('/:id/message', optionalAuth, (req, res) => {
   }
 });
 
-router.post('/:id/resolve', authenticate, requireAdmin, (req, res) => {
+router.post('/:id/resolve', optionalAuth, (req, res) => {
   try {
     const { csatScore, npsScore } = req.body;
     SupportModel.resolve(req.params.id, csatScore, npsScore);
