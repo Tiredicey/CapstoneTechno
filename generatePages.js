@@ -23,6 +23,7 @@ try {
     nav { z-index: 2000 !important; }
     .product-card, .p-card { z-index: 1 !important; }
     .product-card:hover, .p-card:hover { z-index: 10 !important; }
+    #bloomBoot { z-index: 9999 !important; }
   `;
   const indexStyles = indexHtml.substring(styleStart, styleEnd).replace('</style>', extraStyles + '</style>');
 
@@ -55,44 +56,25 @@ try {
   function syncPageLayout(filePath) {
     let html = fs.readFileSync(filePath, 'utf-8');
     
-    // Flexible Cleanup (handles any attribute order)
+    // 1. Total Wipeout: Remove markers and ALL likely duplicated elements
+    html = html.replace(/<!-- BLOOM_(STYLE|NAV|FOOT)_INJECT -->[\s\S]*?<!-- BLOOM_(STYLE|NAV|FOOT)_END -->/g, '');
     html = html.replace(/<div\s+[^>]*id="bloomBoot"[^>]*>[\s\S]*?<\/div>/gi, '');
-    html = html.replace(/<nav\s+[^>]*id="nav"[^>]*>[\s\S]*?<\/nav>/gi, '');
+    html = html.replace(/<nav[^>]*>[\s\S]*?<\/nav>/gi, '');
     html = html.replace(/<div\s+[^>]*class="mob-menu"[^>]*>[\s\S]*?<\/div>/gi, '');
-    html = html.replace(/<footer\s+[^>]*class="bloom-footer"[^>]*>[\s\S]*?<\/footer>/gi, '');
+    html = html.replace(/<footer[^>]*>[\s\S]*?<\/footer>/gi, '');
+    html = html.replace(/<div\s+[^>]*id="toastCon"[^>]*>[\s\S]*?<\/div>/gi, '');
+    html = html.replace(/<div\s+[^>]*id="exitMod"[^>]*>[\s\S]*?<\/div>/gi, '');
     
-    // Also remove any stray Bloom logos or nav links that might have been hardcoded
-    // (This is dangerous but might be needed if they lack IDs)
-    // For now, let's just stick to IDs.
-
-    // Injection
-    if (html.includes('<!-- BLOOM_STYLE_INJECT -->')) {
-      html = html.replace(/(<!-- BLOOM_STYLE_INJECT -->)[\s\S]*?(<!-- BLOOM_STYLE_END -->)/g, styleBlock);
-    } else {
-      html = html.replace('</head>', styleBlock + '</head>');
-    }
+    // 2. Fresh Injection
+    html = html.replace('</head>', styleBlock + '</head>');
+    html = html.replace('<body>', '<body>\n' + storeNavBlock);
     
-    if (html.includes('<!-- BLOOM_NAV_INJECT -->')) {
-      html = html.replace(/(<!-- BLOOM_NAV_INJECT -->)[\s\S]*?(<!-- BLOOM_NAV_END -->)/g, storeNavBlock);
+    const mainEnd = html.indexOf('</main>');
+    if (mainEnd !== -1) {
+      html = html.replace('</main>', '</main>\n' + storeFootBlock);
     } else {
-      html = html.replace('<body>', '<body>\n' + storeNavBlock);
+      html = html.replace('</body>', storeFootBlock + '</body>');
     }
-    
-    if (html.includes('<!-- BLOOM_FOOT_INJECT -->')) {
-      html = html.replace(/(<!-- BLOOM_FOOT_INJECT -->)[\s\S]*?(<!-- BLOOM_FOOT_END -->)/g, storeFootBlock);
-    } else {
-      const mainEnd = html.indexOf('</main>');
-      if (mainEnd !== -1) {
-        html = html.replace('</main>', '</main>\n' + storeFootBlock);
-      } else {
-        html = html.replace('</body>', storeFootBlock + '</body>');
-      }
-    }
-
-    // De-duplicate end markers
-    html = html.replace(/(<!-- BLOOM_STYLE_END -->\s*){2,}/g, '<!-- BLOOM_STYLE_END -->\n');
-    html = html.replace(/(<!-- BLOOM_NAV_END -->\s*){2,}/g, '<!-- BLOOM_NAV_END -->\n');
-    html = html.replace(/(<!-- BLOOM_FOOT_END -->\s*){2,}/g, '<!-- BLOOM_FOOT_END -->\n');
 
     fs.writeFileSync(filePath, html, 'utf-8');
   }
