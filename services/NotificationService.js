@@ -18,7 +18,7 @@ export class NotificationService {
   }
 
   static orderDelivered(userId, orderId) {
-    NotificationService.send(userId, 'delivery', '✅ Delivered!', `Your blooms have arrived. We hope they bring joy — leave a review to earn loyalty points!`);
+    NotificationService.send(userId, 'delivery', '✅ Delivered!', `Your blooms have arrived. We hope they bring joy. Leave a review to earn loyalty points!`);
   }
 
   static reEngagement(userId, occasion) {
