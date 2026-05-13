@@ -7,6 +7,7 @@ import compression from 'compression';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import cookieParser from 'cookie-parser';
+import { execSync } from 'child_process';
 import { createHandler } from 'graphql-http/lib/use/express';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { schema } from './graphql/schema.js';
@@ -34,6 +35,15 @@ import db from './database/Database.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+
+try {
+  console.log('🧬 Running Pre-Boot Page Generation...');
+  execSync('node generatePages.js', { cwd: __dirname, stdio: 'inherit' });
+  console.log('✨ Pre-Boot Page Generation Completed Successfully.');
+} catch (e) {
+  console.error('❌ Pre-Boot Page Generation FAILED:', e.message);
+}
 
 const app = express();
 const httpServer = createServer(app);
@@ -73,8 +83,7 @@ app.use(rateLimiter);
 app.use(inputSanitizer);
 app.use(cookieParser());
 
-// In production, serve pre-built minified assets from dist/
-// In development, serve raw source from public/ for easy debugging
+
 import { existsSync } from 'fs';
 const DIST_DIR = path.join(__dirname, 'dist');
 const PUBLIC_DIR = path.join(__dirname, 'public');
@@ -85,13 +94,13 @@ app.use(express.static(STATIC_ROOT, {
   etag: true,
   lastModified: true,
   setHeaders: (res, filePath) => {
-    // Immutable cache for hashed assets in production
+    
     if (IS_PROD && (filePath.endsWith('.min.js') || filePath.endsWith('.min.css'))) {
       res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
     }
   },
 }));
-// Always serve public/ as fallback for non-built assets (images, manifest, etc.)
+
 if (IS_PROD && existsSync(DIST_DIR)) {
   app.use(express.static(PUBLIC_DIR));
 }
