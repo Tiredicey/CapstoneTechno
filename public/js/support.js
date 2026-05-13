@@ -32,6 +32,9 @@ let currentTicketId = null;
 let csatRating = 0;
 let npsScore = null;
 let socket = null;
+const chatHistory = [
+  { role: 'system', content: 'You are the official Bloom AI Assistant. Always provide factual, verified details. Standalone pre-orders require 2 days prep. Delivery windows are Morning (9am-12pm), Afternoon (12pm-4pm), and Evening (4pm-8pm). Free shipping is unlocked above ₱4,350. Keep your messages friendly, short, and beautifully structured using emojis.' }
+];
 
 const FaqController = (() => {
   let allFaqs = [];
@@ -186,25 +189,76 @@ function getBotResponse(msg) {
 
 function appendMessage(body, type) {
   const container = document.getElementById('chatMessages');
+  if (!container) return;
   const div = document.createElement('div');
   div.className = `chat-bubble ${type}`;
-  div.textContent = body;
+  const safeTxt = String(body || '')
+    .replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))
+    .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+    .replace(/\n/g, '<br>');
+  div.innerHTML = safeTxt;
   container.appendChild(div);
   container.scrollTop = container.scrollHeight;
 }
 
-function sendChat() {
+let typingBubble = null;
+function showTypingIndicator() {
+  if (typingBubble) return;
+  const container = document.getElementById('chatMessages');
+  if (!container) return;
+  typingBubble = document.createElement('div');
+  typingBubble.className = 'chat-bubble bot';
+  typingBubble.innerHTML = '<span style="opacity:0.65; font-style:italic;">Typing...</span>';
+  container.appendChild(typingBubble);
+  container.scrollTop = container.scrollHeight;
+}
+function hideTypingIndicator() {
+  if (typingBubble) { typingBubble.remove(); typingBubble = null; }
+}
+
+async function sendChat() {
   const input = document.getElementById('chatInput');
   const msg = input?.value?.trim();
   if (!msg) return;
   appendMessage(msg, 'user');
   input.value = '';
-  setTimeout(() => {
-    appendMessage(getBotResponse(msg), 'bot');
-    if (currentTicketId) {
-      Api.post(`/support/${currentTicketId}/message`, { message: msg, sender: 'user' }).catch(() => {});
+  chatHistory.push({ role: 'user', content: msg });
+
+  if (currentTicketId) {
+    Api.post(`/support/${currentTicketId}/message`, { message: msg, sender: 'user' }).catch(() => {});
+  }
+
+  showTypingIndicator();
+
+  try {
+    const res = await fetch('https://text.pollinations.ai/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: chatHistory.slice(-10) })
+    });
+    
+    if (!res.ok) throw new Error('API Offline');
+    const reply = await res.text();
+    hideTypingIndicator();
+    
+    if (reply && reply.trim()) {
+      appendMessage(reply, 'bot');
+      chatHistory.push({ role: 'assistant', content: reply });
+      if (currentTicketId) {
+        Api.post(`/support/${currentTicketId}/message`, { message: reply, sender: 'bot' }).catch(() => {});
+      }
+    } else {
+      throw new Error('Empty Response');
     }
-  }, 600);
+  } catch (e) {
+    hideTypingIndicator();
+    const fallback = getBotResponse(msg);
+    appendMessage(fallback, 'bot');
+    chatHistory.push({ role: 'assistant', content: fallback });
+    if (currentTicketId) {
+      Api.post(`/support/${currentTicketId}/message`, { message: fallback, sender: 'bot' }).catch(() => {});
+    }
+  }
 }
 
 document.getElementById('chatForm')?.addEventListener('submit', e => { e.preventDefault(); sendChat(); });
