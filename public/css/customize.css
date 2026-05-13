@@ -246,9 +246,22 @@ model-viewer {
   --poster-color: transparent;
 }
 
-model-viewer::part(default-ar-button) {
-  display: none;
-}
+.ar-handoff-modal{position:fixed;inset:0;z-index:9998;display:none;align-items:center;justify-content:center;background:rgba(5,3,10,.78);backdrop-filter:blur(14px);}
+.ar-handoff-modal.active{display:flex;animation:fadeIn .25s ease}
+.ar-handoff-card{max-width:380px;width:90%;padding:32px;border-radius:20px;background:linear-gradient(160deg,#1a0a2e,#0f0a1a);border:1px solid rgba(232,67,147,.25);text-align:center;color:#fff;position:relative;box-shadow:0 24px 80px rgba(0,0,0,.6)}
+.ar-handoff-card h3{font-size:1.3rem;font-weight:700;margin:0 0 10px;background:linear-gradient(135deg,#ff6b9d,#a06bff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ar-handoff-card p{font-size:.88rem;color:rgba(255,255,255,.65);line-height:1.5;margin:0 0 20px}
+.ar-handoff-qr{width:220px;height:220px;border-radius:14px;background:#fff;padding:10px;display:block;margin:0 auto 16px}
+.ar-handoff-url{font-size:.74rem;color:rgba(255,255,255,.4);word-break:break-all;margin-bottom:14px}
+.ar-handoff-copy{padding:10px 22px;border-radius:100px;border:1px solid rgba(232,67,147,.4);background:rgba(232,67,147,.12);color:#fff;cursor:pointer;font-weight:600;font-size:.85rem}
+.ar-handoff-copy:hover{background:rgba(232,67,147,.22)}
+.ar-handoff-close{position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);border:none;color:#fff;cursor:pointer;font-size:.9rem}
+.ar-capability{padding:5px 12px;border-radius:100px;font-size:.72rem;font-weight:600;align-items:center;gap:6px}
+.ar-capability .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.ar-capability.ok{background:rgba(0,212,170,.15);color:#00d4aa}.ar-capability.ok .dot{background:#00d4aa;box-shadow:0 0 8px #00d4aa}
+.ar-capability.warn{background:rgba(255,193,7,.15);color:#ffc107}.ar-capability.warn .dot{background:#ffc107}
+.ar-capability.no{background:rgba(255,107,107,.15);color:#ff6b6b}.ar-capability.no .dot{background:#ff6b6b}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
 .config-panel {
   display: flex;
