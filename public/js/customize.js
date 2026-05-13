@@ -624,16 +624,20 @@
         addBtn.innerHTML = '🛒 Adding...';
         const clientLineId = 'cust_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
         try {
-          const payload = {
-            productId: 'custom',
+          const id = productId || 'custom';
+          const cusRes = await window.Api.post('/api/customization', { productId: id, config: config });
+          const cartItemPayload = {
+            productId: id,
             qty: 1,
             customization: {
               clientLineId,
               ...config,
+              id: cusRes.id,
               priceDeltaPHP
             }
           };
-          const cusRes = await window.Api.post('/api/customization', payload);
+          await window.Api.post('/api/cart/items', cartItemPayload);
+
           const Store = window.__BloomStore || window.Store;
           if (Store) {
             const cartData = (await window.Api.get('/cart')) || { items: [] };
