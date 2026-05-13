@@ -53,22 +53,37 @@ function resolveImage(raw) {
 
 function renderProductCard(p) {
   var image = resolveImage(p.images);
+  
+  // Artistic Render Mapping
+  var artisticMap = {
+    'Crimson Vow': '/img/vow-crimson.png',
+    'Velvet Midnight': '/img/midnight-velvet.png',
+    'Obsidian Rose': '/img/rose-obsidian.png',
+    'Neon Blossom': '/img/midnight-velvet.png',
+    'Phantom Lily': '/img/rose-obsidian.png'
+  };
+  
+  if (!image && artisticMap[p.name]) image = artisticMap[p.name];
+  if (!image) image = '/img/vow-crimson.png'; // Global ethereal fallback
+
   var price = p.base_price || p.basePrice || 0;
   var stars = Array.from({ length: 5 }, function (_, i) {
     return '<span style="color:' + (i < Math.round(p.rating || 0) ? '#FFD700' : 'rgba(255,255,255,0.2)') + ';">★</span>';
   }).join('');
-  return '<div class="product-card" data-id="' + p.id + '" style="cursor:pointer;position:relative;">' +
-    '<button class="product-wishlist" style="position:absolute;top:12px;right:12px;background:rgba(0,0,0,0.4);border:none;color:white;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;z-index:2;">♡</button>' +
-    '<div style="height:200px;border-radius:12px;overflow:hidden;background:rgba(139,31,110,0.15);display:flex;align-items:center;justify-content:center;margin-bottom:12px;">' +
-    (image ? '<img src="' + image + '" style="width:100%;height:100%;object-fit:cover;" alt="' + p.name + '" loading="lazy">' : '<span style="font-size:3rem;">🌸</span>') +
+  return '<div class="product-card" data-id="' + p.id + '">' +
+    '<div class="p-shine"></div>' +
+    '<button class="product-wishlist">♡</button>' +
+    '<div class="product-img-wrap">' +
+    '<img src="' + image + '" alt="' + p.name + '" loading="lazy">' +
     '</div>' +
-    '<div style="font-weight:600;margin-bottom:4px;font-size:0.95rem;">' + p.name + '</div>' +
-    '<div style="font-size:0.78rem;color:rgba(255,255,255,0.4);margin-bottom:8px;">' + (p.category || '') + '</div>' +
+    '<div class="product-body">' +
+    '<div class="product-name">' + p.name + '</div>' +
+    '<div class="product-desc">' + (p.category || 'Special Arrangement') + '</div>' +
     '<div style="display:flex;gap:2px;margin-bottom:10px;">' + stars + '</div>' +
-    '<div style="display:flex;justify-content:space-between;align-items:center;">' +
-    '<div style="font-weight:700;color:#FFD700;font-size:1rem;">' + fmt(price) + '</div>' +
-    '<button class="add-to-cart-btn" data-id="' + p.id + '" style="background:linear-gradient(135deg,#e879a0,#c026d3);color:white;border:none;padding:6px 14px;border-radius:8px;font-size:0.78rem;font-weight:600;cursor:pointer;">+ Cart</button>' +
-    '</div></div>';
+    '<div class="product-meta">' +
+    '<div class="product-price">' + fmt(price) + '</div>' +
+    '<button class="add-to-cart-btn btn btn-primary btn-sm" data-id="' + p.id + '">+ Cart</button>' +
+    '</div></div></div>';
 }
 
 async function loadProducts(append) {
@@ -238,10 +253,17 @@ async function loadRecs() {
     var data = await Api.get('/products/recommendations');
     var recs = data.products || data;
     if (!Array.isArray(recs) || !recs.length) return;
-    var emojiMap = { fresh: '🌷', dried: '🌿', branded: '🏢', bundled: '🎁', merchandise: '✨', bouquets: '💐', arrangements: '🌸' };
+    
+    var artisticMap = {
+      'Crimson Vow': '/img/vow-crimson.png',
+      'Velvet Midnight': '/img/midnight-velvet.png',
+      'Obsidian Rose': '/img/rose-obsidian.png'
+    };
+
     scroll.innerHTML = recs.map(function (p) {
-      return '<div class="rec-chip" data-id="' + p.id + '" style="cursor:pointer;display:flex;align-items:center;gap:10px;padding:10px 16px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:12px;min-width:180px;flex-shrink:0;">' +
-        '<span style="font-size:1.4rem;">' + (emojiMap[p.category] || '🌸') + '</span>' +
+      var img = artisticMap[p.name] || '/img/vow-crimson.png';
+      return '<div class="rec-chip" data-id="' + p.id + '">' +
+        '<img src="' + img + '" style="width:36px;height:36px;border-radius:50%;object-fit:cover;" alt="">' +
         '<div><div style="font-weight:600;font-size:0.82rem;">' + p.name + '</div>' +
         '<div style="font-size:0.72rem;color:rgba(255,255,255,0.4);">' + fmt(p.base_price || 0) + '</div></div></div>';
     }).join('');
