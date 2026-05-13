@@ -13,7 +13,7 @@ try {
 
   const navEndIndex = indexHtml.indexOf('</nav>') + 6;
   const headerPart = indexHtml.substring(0, navEndIndex);
-  const footerStartIndex = indexHtml.indexOf('<footer class="bloom-foot"');
+  const footerStartIndex = indexHtml.indexOf('<footer class="bloom-footer"');
   let footerPart = indexHtml.substring(footerStartIndex);
 
   const styleStart = indexHtml.indexOf('<style>');
@@ -469,10 +469,10 @@ try {
 
 
 
-    html = html.replace(/\s*<!-- BLOOM_STYLE_INJECT -->[\s\S]*?<!-- BLOOM_STYLE_END -->\s*/g, '\n');
-    html = html.replace(/\s*<!-- BLOOM_NAV_INJECT -->[\s\S]*?<!-- BLOOM_NAV_END -->\s*/g, '\n');
-    html = html.replace(/\s*<!-- BLOOM_BASE_INJECT -->[\s\S]*?<!-- BLOOM_BASE_END -->\s*/g, '\n');
-    html = html.replace(/\s*<!-- BLOOM_FOOT_INJECT -->[\s\S]*?<!-- BLOOM_FOOT_END -->\s*/g, '\n');
+    html = html.replace(/(<!-- BLOOM_STYLE_INJECT -->)[\s\S]*?(<!-- BLOOM_STYLE_END -->)/g, '$1$2');
+    html = html.replace(/(<!-- BLOOM_NAV_INJECT -->)[\s\S]*?(<!-- BLOOM_NAV_END -->)/g, '$1$2');
+    html = html.replace(/(<!-- BLOOM_BASE_INJECT -->)[\s\S]*?(<!-- BLOOM_BASE_END -->)/g, '$1$2');
+    html = html.replace(/(<!-- BLOOM_FOOT_INJECT -->)[\s\S]*?(<!-- BLOOM_FOOT_END -->)/g, '$1$2');
 
 
 
@@ -483,7 +483,7 @@ try {
 
 
     if (html.includes('<!-- BLOOM_STYLE_INJECT -->')) {
-      html = html.replace('<!-- BLOOM_STYLE_INJECT -->', `<!-- BLOOM_STYLE_INJECT -->\n${indexFonts}\n`);
+      html = html.replace(/(<!-- BLOOM_STYLE_INJECT -->)[\s\S]*?(<!-- BLOOM_STYLE_END -->)/g, styleBlock);
     } else {
       html = html.replace('</head>', `${styleBlock}</head>`);
     }
@@ -491,7 +491,7 @@ try {
 
 
     if (html.includes('<!-- BLOOM_NAV_INJECT -->')) {
-      html = html.replace('<!-- BLOOM_NAV_INJECT -->', `<!-- BLOOM_NAV_INJECT -->\n${indexNavPrefix}\n${storeNav}\n${storeMob}\n`);
+      html = html.replace(/(<!-- BLOOM_NAV_INJECT -->)[\s\S]*?(<!-- BLOOM_NAV_END -->)/g, storeNavBlock);
     } else {
       const bodyMatch = html.match(/<body[^>]*>/i);
       if (bodyMatch) html = html.replace(bodyMatch[0], `${bodyMatch[0]}${storeNavBlock}`);
