@@ -64,8 +64,8 @@ router.post('/:id/message', optionalAuth, (req, res) => {
 
 router.post('/:id/resolve', optionalAuth, (req, res) => {
   try {
-    const { csatScore, npsScore } = req.body;
-    SupportModel.resolve(req.params.id, csatScore, npsScore);
+    const { csatScore, npsScore, feedbackComment } = req.body;
+    SupportModel.resolve(req.params.id, csatScore, npsScore, feedbackComment);
     res.json({ resolved: true });
   } catch (err) {
     res.status(500).json({ error: 'Failed to resolve ticket' });
