@@ -205,13 +205,15 @@
       var canvas3d = qs('#bouquet3DCanvas');
       if (mv) mv.style.display = 'none';
       if (canvas3d) canvas3d.style.display = 'block';
-      setTimeout(function () { queueARPrepare().catch(function () {}); }, 600);
+      refreshARCapability();
+      setTimeout(function () { queueARPrepare().catch(function () {}); }, 500);
     }
+    if (mode === 'ar') { launchAR(); }
   }
 
-  var lastArBlobUrl = null;
-  var arPreparing = false;
+  var arHostedUrl = null;
   var arReadyPromise = null;
+  var arCapability = { mode: null, label: 'Checking…', tone: 'warn' };
 
   function setStatus(msg, autoHide) {
     var s = qs('#modelStatus');
@@ -222,6 +224,37 @@
     if (autoHide) setTimeout(function () { s.style.opacity = '0'; }, 2500);
   }
 
+  function detectARCapability() {
+    var ua = navigator.userAgent;
+    var isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+    var isAndroid = /Android/.test(ua);
+    var isWin = /Windows NT/.test(ua);
+    var hasXR = !!(navigator.xr && navigator.xr.isSessionSupported);
+    if (isIOS) return { mode: 'quick-look', label: 'iOS AR Ready', tone: 'ok', needsUSDZ: true };
+    if (isAndroid) return { mode: 'scene-viewer', label: 'Android AR Ready', tone: 'ok', needsHTTPS: true };
+    if (hasXR) return { mode: 'webxr', label: 'WebXR Capable', tone: 'ok' };
+    if (isWin) return { mode: 'webxr', label: 'Windows — Use Edge/Chrome w/ WebXR', tone: 'warn' };
+    return { mode: null, label: '3D Only — AR unsupported', tone: 'no' };
+  }
+
+  async function refreshARCapability() {
+    arCapability = detectARCapability();
+    if (navigator.xr && navigator.xr.isSessionSupported) {
+      try {
+        var ok = await navigator.xr.isSessionSupported('immersive-ar');
+        if (ok && arCapability.tone !== 'ok') {
+          arCapability = { mode: 'webxr', label: 'WebXR Immersive AR Ready', tone: 'ok' };
+        }
+      } catch (e) {}
+    }
+    var el = qs('#arCapability');
+    if (el) {
+      el.style.display = 'inline-flex';
+      el.className = 'ar-capability ' + arCapability.tone;
+      el.innerHTML = '<span class="dot"></span>' + arCapability.label;
+    }
+  }
+
   async function ensureRendererReady() {
     if (!window.BloomBouquetRenderer) throw new Error('renderer missing');
     await window.BloomBouquetRenderer.init(qs('#bouquet3DCanvas'), buildRendererCfg());
@@ -230,9 +263,23 @@
     await new Promise(function (r) { requestAnimationFrame(function () { requestAnimationFrame(r); }); });
   }
 
+  async function uploadGLBForAR(blobUrl) {
+    var resp = await fetch(blobUrl);
+    var blob = await resp.blob();
+    var fd = new FormData();
+    fd.append('model', blob, 'bouquet.glb');
+    var up = await fetch('/api/customization/ar-model', { method: 'POST', body: fd });
+    if (!up.ok) throw new Error('AR upload failed (' + up.status + ')');
+    var json = await up.json();
+    if (!json.url) throw new Error('AR upload: no URL returned');
+    return json.url;
+  }
+
   async function prepareARModel() {
     await ensureRendererReady();
-    var url = await window.BloomBouquetRenderer.exportGLB();
+    var blobUrl = await window.BloomBouquetRenderer.exportGLB();
+    var hosted = await uploadGLBForAR(blobUrl);
+    try { URL.revokeObjectURL(blobUrl); } catch (e) {}
     var mv = qs('#modelViewer');
     if (!mv) throw new Error('model-viewer missing');
     await new Promise(function (resolve, reject) {
@@ -245,33 +292,28 @@
       };
       mv.addEventListener('load', onLoad, { once: true });
       mv.addEventListener('error', onError, { once: true });
-      if (lastArBlobUrl && lastArBlobUrl !== url) {
-        try { URL.revokeObjectURL(lastArBlobUrl); } catch (e) {}
-      }
-      lastArBlobUrl = url;
-      mv.setAttribute('src', url);
+      arHostedUrl = hosted;
+      mv.setAttribute('src', hosted);
       mv.removeAttribute('ios-src');
-      setTimeout(function () { if (!done) onError(new Error('model-viewer load timeout')); }, 20000);
+      setTimeout(function () { if (!done) onError(new Error('model-viewer load timeout')); }, 25000);
     });
     return mv;
   }
 
   function queueARPrepare() {
     if (arReadyPromise) return arReadyPromise;
-    arPreparing = true;
     setStatus('Preparing AR scene…');
     arReadyPromise = prepareARModel()
       .then(function (mv) {
-        arPreparing = false;
-        setStatus('Tap "View in Your Room" to place', true);
+        setStatus('AR ready — tap “View in Your Room”', true);
+        var slot = qs('#arLaunchSlot');
+        if (slot) slot.disabled = false;
         return mv;
       })
       .catch(function (e) {
-        arPreparing = false;
         arReadyPromise = null;
         console.error('[AR] prepare failed', e);
-        setStatus('AR preparation failed', true);
-        showToast('AR preparation failed — retry', 'error');
+        setStatus('AR prep failed — retrying on next change', true);
         throw e;
       });
     return arReadyPromise;
@@ -279,51 +321,54 @@
 
   function invalidateARModel() {
     arReadyPromise = null;
+    arHostedUrl = null;
     var mv = qs('#modelViewer');
     if (mv) mv.removeAttribute('src');
-    if (lastArBlobUrl) {
-      try { URL.revokeObjectURL(lastArBlobUrl); } catch (e) {}
-      lastArBlobUrl = null;
-    }
+    var slot = qs('#arLaunchSlot');
+    if (slot) slot.disabled = true;
   }
 
-  async function launchAR() {
+  function launchAR() {
     var mv = qs('#modelViewer');
     if (!mv) { showToast('AR not available on this browser', 'error'); return; }
     if (currentMode !== '3d') switchMode('3d');
     var canvas3d = qs('#bouquet3DCanvas');
 
-    try {
-      await queueARPrepare();
+    if (arReadyPromise && arHostedUrl && mv.getAttribute('src')) {
       if (canvas3d) canvas3d.style.display = 'none';
       mv.style.display = 'block';
-
       var canAR = false;
-      try { canAR = !!(await mv.canActivateAR); } catch (e) { canAR = !!mv.canActivateAR; }
-
+      try { canAR = !!mv.canActivateAR; } catch (e) {}
       if (canAR) {
-        try { mv.activateAR(); return; }
-        catch (e) {
-          console.warn('[AR] activateAR threw (gesture likely consumed):', e);
-          var slot = qs('#arLaunchSlot');
-          if (slot) {
-            slot.style.display = 'inline-flex';
-            showToast('Tap "View in Your Room" to enter AR', 'info');
-          }
+        try {
+          mv.activateAR();
           return;
+        } catch (e) {
+          console.warn('[AR] activateAR failed:', e);
         }
       }
-
-      var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-      if (isIOS) {
-        showToast('iOS AR Quick Look needs a USDZ file — server conversion required', 'info');
-      } else {
-        showToast('This device does not support WebXR / Scene Viewer AR', 'info');
+      if (arCapability.tone === 'no') {
+        showToast('This device/browser does not support AR. Use a recent Chrome on Android, Safari on iOS 12+, or Edge/Chrome with WebXR on Windows 11.', 'info');
+        return;
       }
-    } catch (e) {
-      if (canvas3d) canvas3d.style.display = 'block';
-      mv.style.display = 'none';
+      if (arCapability.needsUSDZ) {
+        showToast('iOS Quick Look needs a USDZ file. GLB-only fallback used — open in Safari for AR.', 'info');
+        return;
+      }
+      showToast('Tap the AR button overlay on the model to enter your room.', 'info');
+      return;
     }
+
+    setStatus('Preparing AR — tap again in a moment…');
+    queueARPrepare()
+      .then(function () {
+        if (canvas3d) canvas3d.style.display = 'none';
+        mv.style.display = 'block';
+        showToast('AR ready — tap “View in Your Room” again', 'success');
+      })
+      .catch(function () {
+        showToast('Could not prepare AR. Check connection and retry.', 'error');
+      });
   }
 
 
@@ -336,7 +381,7 @@
       clearTimeout(window.__arDebounce);
       window.__arDebounce = setTimeout(function () {
         if (currentMode === '3d') queueARPrepare().catch(function () {});
-      }, 800);
+      }, 900);
     }
   }
 
@@ -393,6 +438,7 @@
 
     updatePrice();
     updateDefaultPreview();
+    refreshARCapability();
 
     qsa('.config-section-header').forEach(function (header) {
       header.addEventListener('click', function () {
@@ -494,7 +540,32 @@
     if (modeDefaultBtn) modeDefaultBtn.addEventListener('click', function () { switchMode('default'); });
     if (modeAIBtn) modeAIBtn.addEventListener('click', function () { switchMode('ai'); });
     if (mode3DBtn) mode3DBtn.addEventListener('click', function () { switchMode('3d'); });
-    if (modeARBtn) modeARBtn.addEventListener('click', function () { launchAR(); });
+    if (modeARBtn) {
+      modeARBtn.addEventListener('pointerdown', function () {
+        if (currentMode !== '3d') {
+          init3DBouquet();
+          queueARPrepare().catch(function () {});
+        }
+      });
+      modeARBtn.addEventListener('click', function () {
+        var mv = qs('#modelViewer');
+        if (mv && mv.canActivateAR && arHostedUrl) {
+          try { mv.activateAR(); return; } catch (e) {}
+        }
+        launchAR();
+      });
+    }
+    var arSlot = qs('#arLaunchSlot');
+    if (arSlot) {
+      arSlot.disabled = true;
+      arSlot.addEventListener('click', function (ev) {
+        var mv = qs('#modelViewer');
+        if (mv && mv.canActivateAR) {
+          try { mv.activateAR(); }
+          catch (e) { console.warn('[AR] slot activate failed', e); }
+        }
+      });
+    }
 
     var zoomLevel = 1;
     var zoomInBtn = qs('#zoomIn');
