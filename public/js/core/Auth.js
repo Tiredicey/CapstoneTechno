@@ -249,7 +249,7 @@
 
   function injectAuthModal() {
     if (document.getElementById('authMod')) return;
-    var modalHtml = '<div class="overlay" id="authMod" role="dialog" aria-modal="true" aria-labelledby="authTitle" aria-hidden="true">' +
+    var modalHtml = '<div class="modal-overlay" id="authMod" role="dialog" aria-modal="true" aria-labelledby="authTitle" aria-hidden="true">' +
       '<div class="modal">' +
       '<div class="m-hd">' +
       '<h2 id="authTitle" style="font-family:var(--fd);font-size:1.5rem;font-weight:700">Welcome to Bloom</h2>' +
@@ -307,7 +307,7 @@
       '</div>' +
       '</div>' +
       '</div>' +
-      '<div class="overlay" id="fplMod" role="dialog" aria-modal="true" aria-labelledby="fplTitle" aria-hidden="true">' +
+      '<div class="modal-overlay" id="fplMod" role="dialog" aria-modal="true" aria-labelledby="fplTitle" aria-hidden="true">' +
       '<div class="modal">' +
       '<div class="m-hd">' +
       '<h2 id="fplTitle" style="font-family:var(--fd);font-size:1.35rem;font-weight:700">Reset Password</h2>' +
