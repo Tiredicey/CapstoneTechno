@@ -67,7 +67,7 @@
     if (user) {
       btn.textContent = user.name ? user.name.split(' ')[0] : 'Account';
       btn.onclick = function () {
-        window.location.href = '/account.html';
+        window.location.href = '/profile.html';
       };
     } else {
       btn.textContent = 'Sign In';
@@ -247,7 +247,85 @@
     });
   }
 
+  function injectAuthModal() {
+    if (document.getElementById('authMod')) return;
+    var modalHtml = '<div class="overlay" id="authMod" role="dialog" aria-modal="true" aria-labelledby="authTitle" aria-hidden="true">' +
+      '<div class="modal">' +
+      '<div class="m-hd">' +
+      '<h2 id="authTitle" style="font-family:var(--fd);font-size:1.5rem;font-weight:700">Welcome to Bloom</h2>' +
+      '<button class="m-cls" id="closeAuth" aria-label="Close dialog">✕</button>' +
+      '</div>' +
+      '<div class="a-tabs" role="tablist">' +
+      '<button class="a-tab active" data-ftab="login" role="tab" aria-selected="true">Sign In</button>' +
+      '<button class="a-tab" data-ftab="register" role="tab" aria-selected="false">Register</button>' +
+      '<button class="a-tab" data-ftab="guest" role="tab" aria-selected="false">Guest</button>' +
+      '</div>' +
+      '<div class="err-summary" id="loginErrSum" role="alert" aria-live="assertive" style="display:none">' +
+      '<h4>Please fix the following:</h4><ul></ul>' +
+      '</div>' +
+      '<form id="loginF" onsubmit="event.preventDefault();">' +
+      '<button class="btn btn-g sl-btn" id="gBtn">' +
+      '<svg width="16" height="16" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>' +
+      'Continue with Google</button>' +
+      '<div class="div-lbl">or sign in with email</div>' +
+      '<div class="fi">' +
+      '<label class="fi-lbl" for="lEmail">Email</label>' +
+      '<div class="fi-wrap"><input type="email" class="fi-inp" id="lEmail" placeholder="you@example.com" autocomplete="email" required></div>' +
+      '</div>' +
+      '<div class="fi">' +
+      '<label class="fi-lbl" for="lPass">Password</label>' +
+      '<div class="fi-wrap">' +
+      '<input type="password" class="fi-inp" id="lPass" placeholder="••••••••" autocomplete="current-password" required>' +
+      '<button type="button" class="pw-tog" data-for="lPass">show</button>' +
+      '</div>' +
+      '</div>' +
+      '<button type="button" class="fpl-btn" id="fplBtn">Forgot password?</button>' +
+      '<button class="btn btn-p" style="width:100%;justify-content:center;margin-top:6px" id="lSubmit">Sign In →</button>' +
+      '</form>' +
+      '<form id="registerF" style="display:none" onsubmit="event.preventDefault();">' +
+      '<div class="fi">' +
+      '<label class="fi-lbl" for="rName">Name</label>' +
+      '<div class="fi-wrap"><input type="text" class="fi-inp" id="rName" placeholder="Your name" autocomplete="name" required></div>' +
+      '</div>' +
+      '<div class="fi">' +
+      '<label class="fi-lbl" for="rEmail">Email</label>' +
+      '<div class="fi-wrap"><input type="email" class="fi-inp" id="rEmail" placeholder="you@example.com" autocomplete="email" required></div>' +
+      '</div>' +
+      '<div class="fi">' +
+      '<label class="fi-lbl" for="rPass">Password</label>' +
+      '<div class="fi-wrap">' +
+      '<input type="password" class="fi-inp" id="rPass" placeholder="Min 8 characters" autocomplete="new-password" required minlength="8">' +
+      '<button type="button" class="pw-tog" data-for="rPass">show</button>' +
+      '</div>' +
+      '<div id="rStrE" aria-live="polite"><div class="str-bar"><div class="str-fill" id="strFill"></div></div><span class="str-lbl" id="strLbl"></span></div>' +
+      '</div>' +
+      '<button class="btn btn-p" style="width:100%;justify-content:center;margin-top:6px" id="rSubmit">Create Account →</button>' +
+      '</form>' +
+      '<div id="guestF" style="display:none;text-align:center;padding:14px 0">' +
+      '<p class="m-sub">Browse and pre-order without an account.</p>' +
+      '<button class="btn btn-p" style="width:100%;justify-content:center" id="gSubmit">Continue as Guest →</button>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      '<div class="overlay" id="fplMod" role="dialog" aria-modal="true" aria-labelledby="fplTitle" aria-hidden="true">' +
+      '<div class="modal">' +
+      '<div class="m-hd">' +
+      '<h2 id="fplTitle" style="font-family:var(--fd);font-size:1.35rem;font-weight:700">Reset Password</h2>' +
+      '<button class="m-cls" id="closeFpl" aria-label="Close dialog">✕</button>' +
+      '</div>' +
+      '<p class="m-sub">Enter your email. We\'ll send a secure reset link within 60 seconds.</p>' +
+      '<div class="fi">' +
+      '<label class="fi-lbl" for="fplEmail">Email</label>' +
+      '<div class="fi-wrap"><input type="email" class="fi-inp" id="fplEmail" placeholder="you@example.com" required></div>' +
+      '</div>' +
+      '<button class="btn btn-p" style="width:100%;justify-content:center" id="fplSubmit">Send Reset Link →</button>' +
+      '</div>' +
+      '</div>';
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
+    injectAuthModal();
     bindModals();
     bindAuthTabs();
     bindLogin();
