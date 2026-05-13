@@ -13,8 +13,10 @@
   position: sticky;
   top: 100px;
   border-radius: var(--bloom-radius-lg);
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
+  background: radial-gradient(circle at 50% 50%, rgba(26, 10, 46, 0.4), rgba(5, 3, 10, 0.9));
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--ethereal-blur));
+  -webkit-backdrop-filter: blur(var(--ethereal-blur));
   overflow: hidden;
   aspect-ratio: 4/3;
   display: flex;
@@ -22,6 +24,25 @@
   justify-content: center;
   flex-direction: column;
   gap: 16px;
+  box-shadow: 
+    0 40px 100px rgba(0, 0, 0, 0.6),
+    inset 0 0 60px rgba(255, 0, 255, 0.05);
+}
+
+.canvas-panel::after {
+  content: '';
+  position: absolute;
+  width: 140%;
+  height: 140%;
+  background: radial-gradient(circle at 50% 50%, var(--ethereal-glow-pink), transparent 60%);
+  opacity: 0.15;
+  pointer-events: none;
+  animation: auraPulse 8s ease-in-out infinite alternate;
+}
+
+@keyframes auraPulse {
+  0% { transform: scale(1) rotate(0deg); opacity: 0.1; }
+  100% { transform: scale(1.2) rotate(10deg); opacity: 0.25; }
 }
 
 .canvas-preview {
@@ -34,7 +55,13 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  transition: all 0.4s ease;
+  transition: opacity 0.6s var(--bloom-transition), transform 0.8s var(--bloom-spring);
+  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.4));
+}
+
+.canvas-preview img.changing {
+  opacity: 0;
+  transform: scale(0.95);
 }
 
 .canvas-controls {
