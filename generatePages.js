@@ -13,13 +13,42 @@ try {
 
   const navEndIndex = indexHtml.indexOf('</nav>') + 6;
   const headerPart = indexHtml.substring(0, navEndIndex);
-
-
   const footerStartIndex = indexHtml.indexOf('<footer class="bloom-foot"');
-
   let footerPart = indexHtml.substring(footerStartIndex);
 
- 
+  // ---------------- Centralized Layout Component Extraction ----------------
+  const styleStart = indexHtml.indexOf('<style>');
+  const styleEnd = indexHtml.indexOf('</style>') + 8;
+  const indexStyles = indexHtml.substring(styleStart, styleEnd);
+
+  const indexFonts = `<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=Barlow+Condensed:ital,wght@0,700;0,900;1,700;1,900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap">`;
+
+  const bloomBootStart = indexHtml.indexOf('<div id="bloomBoot"');
+  const navStart = indexHtml.indexOf('<nav id="nav"');
+  const indexNavPrefix = indexHtml.substring(bloomBootStart, navStart);
+  const indexNav = indexHtml.substring(navStart, navEndIndex);
+
+  const footerEnd = indexHtml.indexOf('</footer>', footerStartIndex) + 9;
+  const indexFooter = indexHtml.substring(footerStartIndex, footerEnd);
+
+  const overlayStart = indexHtml.indexOf('<div class="overlay" id="exitMod"');
+  const overlayEnd = indexHtml.indexOf('<div class="toast-con" id="toastCon"');
+  const toastConEnd = indexHtml.indexOf('</div>', overlayEnd) + 6;
+  const indexOverlays = indexHtml.substring(overlayStart, toastConEnd);
+
+  const scriptStart = indexHtml.indexOf('<script src="https://cdn.jsdelivr.net/npm/motion@');
+  const iifeStart = indexHtml.indexOf('<script>', scriptStart);
+  const indexBaseScripts = indexHtml.substring(scriptStart, iifeStart);
+  const indexLayoutScript = indexHtml.substring(iifeStart, indexHtml.lastIndexOf('</script>') + 9);
+
+  // Wrap modules in unique idempotent HTML bounded tags
+  const styleBlock = `\n<!-- BLOOM_STYLE_INJECT -->\n${indexFonts}\n${indexStyles}\n<!-- BLOOM_STYLE_END -->\n`;
+  const navBlock = `\n<!-- BLOOM_NAV_INJECT -->\n${indexNavPrefix}\n${indexNav}\n<!-- BLOOM_NAV_END -->\n`;
+  const baseScriptsBlock = `\n<!-- BLOOM_BASE_INJECT -->\n${indexBaseScripts}\n<!-- BLOOM_BASE_END -->\n`;
+  const footBlock = `\n<!-- BLOOM_FOOT_INJECT -->\n${indexFooter}\n${indexOverlays}\n${indexLayoutScript}\n<!-- BLOOM_FOOT_END -->\n`;
 
   const pages = {
     'about.html': `
@@ -265,7 +294,76 @@ try {
     console.log('Generated:', filename);
   }
 
+  // ---------------- Idempotent Layout Synchronization for Special Application Pages ----------------
+  const storePages = [
+    'catalog.html',
+    'customize.html',
+    'cart.html',
+    'checkout.html',
+    'tracking.html',
+    'confirmation.html',
+    'support.html',
+    'profile.html'
+  ];
+
+  function syncPageLayout(filename) {
+    const filePath = path.join(publicDir, filename);
+    if (!fs.existsSync(filePath)) {
+      console.warn(`⚠️  Skipping sync: ${filename} (file not found)`);
+      return;
+    }
+
+    let html = fs.readFileSync(filePath, 'utf-8');
+
+    // 1. Clean previously injected blocks to ensure strict idempotency (swallows surrounding whitespace)
+    html = html.replace(/\s*<!-- BLOOM_STYLE_INJECT -->[\s\S]*?<!-- BLOOM_STYLE_END -->\s*/g, '\n');
+    html = html.replace(/\s*<!-- BLOOM_NAV_INJECT -->[\s\S]*?<!-- BLOOM_NAV_END -->\s*/g, '\n');
+    html = html.replace(/\s*<!-- BLOOM_BASE_INJECT -->[\s\S]*?<!-- BLOOM_BASE_END -->\s*/g, '\n');
+    html = html.replace(/\s*<!-- BLOOM_FOOT_INJECT -->[\s\S]*?<!-- BLOOM_FOOT_END -->\s*/g, '\n');
+
+    // 2. Strip original legacy structures (acts on fresh/legacy copies on first execution)
+    html = html.replace(/<nav\s+class="bloom-nav"[^>]*>([\s\S]*?)<\/nav>/gi, '');
+    html = html.replace(/<div\s+class="toast-container"[^>]*>([\s\S]*?)<\/div>/gi, '');
+    html = html.replace(/<div\s+class="particle-field"[^>]*>([\s\S]*?)<\/div>/gi, '');
+
+    // 3. Inject Styles and Font definitions into the head
+    html = html.replace('</head>', `${styleBlock}</head>`);
+
+    // 4. Inject dynamic loader, cursor systems, and premium navigation at top of body
+    const bodyTagRegex = /<body[^>]*>/i;
+    const bodyMatch = html.match(bodyTagRegex);
+    if (bodyMatch) {
+      html = html.replace(bodyMatch[0], `${bodyMatch[0]}${navBlock}`);
+    }
+
+    // 5. Avoid duplication by removing historical direct imports of scripts now bundled centrally
+    html = html.replace(/<script[^>]*src="\/js\/core\/Store\.js"[^>]*><\/script>/gi, '');
+    html = html.replace(/<script[^>]*src="\/js\/core\/Api\.js"[^>]*><\/script>/gi, '');
+    html = html.replace(/<script[^>]*src="\/js\/core\/Auth\.js"[^>]*><\/script>/gi, '');
+
+    // 6. Inject base infrastructure scripts BEFORE the page-specific controller execution
+    const firstScriptIndex = html.indexOf('<script');
+    if (firstScriptIndex !== -1) {
+      html = html.substring(0, firstScriptIndex) + baseScriptsBlock + html.substring(firstScriptIndex);
+    } else {
+      html = html.replace('</body>', `${baseScriptsBlock}</body>`);
+    }
+
+    // 7. Inject the standard footer, dynamic modals/drawers, and the layout IIFE script before body closing
+    html = html.replace('</body>', `${footBlock}</body>`);
+
+    fs.writeFileSync(filePath, html, 'utf-8');
+    console.log('✅ Synchronized layout:', filename);
+  }
+
+  console.log('\n--- Initiating Global Storefront Layout Synchronization ---');
+  for (const file of storePages) {
+    syncPageLayout(file);
+  }
+  console.log('--- All Application Pages Synchronized! ---\n');
+
 } catch (err) {
+
   console.error('❌ Failed to generate dynamic pages:', err);
   process.exit(1);
 }
