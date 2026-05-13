@@ -265,5 +265,6 @@ try {
   }
 
 } catch (err) {
-  console.error(err);
+  console.error('❌ Failed to generate dynamic pages:', err);
+  process.exit(1);
 }
