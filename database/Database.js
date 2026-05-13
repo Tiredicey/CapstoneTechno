@@ -130,6 +130,7 @@ class DatabaseClass {
         status TEXT DEFAULT 'open',
         csat_score INTEGER,
         nps_score INTEGER,
+        feedback_comment TEXT,
         assigned_agent TEXT,
         created_at INTEGER DEFAULT (unixepoch()),
         updated_at INTEGER DEFAULT (unixepoch())
@@ -228,6 +229,7 @@ class DatabaseClass {
       `ALTER TABLE promo_codes ADD COLUMN discount_type TEXT`,
       `ALTER TABLE promo_codes ADD COLUMN min_order_amount REAL DEFAULT 0`,
       `ALTER TABLE promo_codes ADD COLUMN created_at INTEGER DEFAULT 0`,
+      `ALTER TABLE support_tickets ADD COLUMN feedback_comment TEXT`,
     ];
     for (const sql of migrations) {
       try { this.db.prepare(sql).run(); } catch {}
