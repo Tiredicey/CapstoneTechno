@@ -214,7 +214,7 @@
       if (mv) mv.style.display = 'none';
       if (canvas3d) canvas3d.style.display = 'block';
       refreshARCapability();
-      setTimeout(function () { queueARPrepare().catch(function () {}); }, 500);
+      setTimeout(function () { queueARPrepare().catch(function () { }); }, 500);
     }
     if (mode === 'ar') { launchAR(); }
   }
@@ -247,12 +247,12 @@
   async function refreshARCapability() {
     arCapability = detectARCapability();
     if (arCapability.mode !== 'quick-look' && arCapability.mode !== 'scene-viewer'
-        && navigator.xr?.isSessionSupported) {
+      && navigator.xr?.isSessionSupported) {
       try {
         if (await navigator.xr.isSessionSupported('immersive-ar')) {
           arCapability = { mode: 'webxr', label: 'WebXR AR Ready', tone: 'ok' };
         }
-      } catch (_) {}
+      } catch (_) { }
     }
     const el = qs('#arCapability');
     if (el) {
@@ -296,12 +296,12 @@
     modal.className = 'ar-handoff-modal active';
     modal.innerHTML =
       '<div class="ar-handoff-card">' +
-        '<button class="ar-handoff-close">✕</button>' +
-        '<h3>View in Your Room</h3>' +
-        '<p>AR requires a phone camera. Scan this code with your iPhone or Android to open this exact bouquet and tap View in Your Room.</p>' +
-        '<img src="' + buildQRDataURL(handoffUrl) + '" class="ar-handoff-qr">' +
-        '<div class="ar-handoff-url">' + handoffUrl + '</div>' +
-        '<button class="ar-handoff-copy">Copy link</button>' +
+      '<button class="ar-handoff-close">✕</button>' +
+      '<h3>View in Your Room</h3>' +
+      '<p>AR requires a phone camera. Scan this code with your iPhone or Android to open this exact bouquet and tap View in Your Room.</p>' +
+      '<img src="' + buildQRDataURL(handoffUrl) + '" class="ar-handoff-qr">' +
+      '<div class="ar-handoff-url">' + handoffUrl + '</div>' +
+      '<button class="ar-handoff-copy">Copy link</button>' +
       '</div>';
     document.body.appendChild(modal);
     modal.querySelector('.ar-handoff-close').onclick = () => modal.classList.remove('active');
@@ -336,7 +336,7 @@
     await ensureRendererReady();
     var blobUrl = await window.BloomBouquetRenderer.exportGLB();
     var hosted = await uploadGLBForAR(blobUrl);
-    try { URL.revokeObjectURL(blobUrl); } catch (e) {}
+    try { URL.revokeObjectURL(blobUrl); } catch (e) { }
     var mv = qs('#modelViewer');
     if (!mv) throw new Error('model-viewer missing');
     await new Promise(function (resolve, reject) {
@@ -403,7 +403,7 @@
     mv.style.display = 'block';
 
     let canAR = false;
-    try { canAR = await Promise.resolve(mv.canActivateAR); } catch (_) {}
+    try { canAR = await Promise.resolve(mv.canActivateAR); } catch (_) { }
     if (canAR) {
       try { mv.activateAR(); return; } catch (e) { console.warn('[AR]', e); }
     }
@@ -416,13 +416,13 @@
     scheduleAIPreview();
     try {
       window.history.replaceState(null, '', buildHandoffURL());
-    } catch (_) {}
+    } catch (_) { }
     if (currentMode === '3d') {
       sync3DConfig();
       invalidateARModel();
       clearTimeout(window.__arDebounce);
       window.__arDebounce = setTimeout(function () {
-        if (currentMode === '3d') queueARPrepare().catch(function () {});
+        if (currentMode === '3d') queueARPrepare().catch(function () { });
       }, 900);
     }
   }
@@ -484,7 +484,7 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     var urlParams = new URLSearchParams(window.location.search);
-    
+
     // Parse handoff configurations from URL query parameters
     Object.keys(config).forEach(key => {
       if (urlParams.has(key)) {
@@ -509,7 +509,7 @@
           const t = qs('#productTitle'); if (t) t.textContent = p.name || 'Custom Bouquet';
           updatePrice();
           var pImgs = p.images || [];
-          if (typeof pImgs === 'string') { try { pImgs = JSON.parse(pImgs); } catch (e) {} }
+          if (typeof pImgs === 'string') { try { pImgs = JSON.parse(pImgs); } catch (e) { } }
           var mainImg = Array.isArray(pImgs) && pImgs.length ? pImgs.flat(Infinity)[0] : '';
           if (typeof mainImg === 'string') {
             var cleanStr = mainImg.replace(/[\[\]"\\]/g, '/');
@@ -641,13 +641,13 @@
       modeARBtn.addEventListener('pointerdown', function () {
         if (currentMode !== '3d') {
           init3DBouquet();
-          queueARPrepare().catch(function () {});
+          queueARPrepare().catch(function () { });
         }
       });
       modeARBtn.addEventListener('click', function () {
         var mv = qs('#modelViewer');
         if (mv && mv.canActivateAR && arHostedUrl) {
-          try { mv.activateAR(); return; } catch (e) {}
+          try { mv.activateAR(); return; } catch (e) { }
         }
         launchAR();
       });
