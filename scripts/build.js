@@ -6,6 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { createHash } from 'crypto';
+import { execSync } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -122,6 +123,14 @@ async function build() {
 
   console.log('\n🌸 Bloom Build Pipeline');
   console.log('═══════════════════════════════════\n');
+
+  console.log('⚡ Running dynamic page generator...');
+  try {
+    execSync('node generatePages.js', { stdio: 'inherit', cwd: ROOT });
+  } catch (e) {
+    console.error('❌ Page generation failed! Aborting build.');
+    throw e;
+  }
 
 
   console.log('📁 Cleaning dist/ ...');
