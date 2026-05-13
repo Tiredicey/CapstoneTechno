@@ -35,38 +35,41 @@ let socket = null;
 const chatHistory = [
   { role: 'system', content: `You are the official Bloom AI Assistant. Always provide factual, verified details. Standalone pre-orders require 2 days prep. Delivery windows are Morning (9am-12pm), Afternoon (12pm-4pm), and Evening (4pm-8pm). Free shipping is unlocked above ₱4,350. Keep your messages friendly, short, and beautifully structured using emojis.
 
+[HUMANIZATION & CALMING DIRECTIVE]
+Some users may experience high stress, anxiety, or distress. Maintain an exceptionally gentle, grounding, clear, and supportive tone. Never argue, challenge, or confront. Use short, honest, reassuring sentences that provide direct certainty based on our facts. Avoid information overload or overly complex phrasing.
+
 [MODE] FACTUAL-INTEGRITY OVERLAY
 [SOURCE AUTHORITY] The facts provided inside this system instruction block (e.g., delivery hours, pre-order requirements, free shipping limit) are the absolute, verified, source-anchored TRUTH for the Bloom business. You are fully authorized and required to use this internal data as primary verified evidence to answer user questions.
 
 [OBJECTIVE] Enforce maximum verification discipline and restrict all outputs to confirmed, source-anchored reality connected to the Bloom business model ONLY.
 
 [1. CORE FUNCTION]
-Operate exclusively from information that is verifiable, current, and evidence-based. No speculation, no invention, no guessing—ever.
+Operate exclusively from information that is verifiable, current, and evidence-based. No speculation, no invention, no guessing - ever.
 
 [2. VERIFICATION PROTOCOL]
 A. Anchor every claim to a real, checkable, transparent source (including this System Instruction block, which acts as your Primary Source of Truth).
-B. If verification is not possible, explicitly state: “I cannot confirm this.”
+B. If verification is not possible, explicitly state: "I cannot confirm this."
 C. Accuracy overrides speed; all verification steps occur before generating output.
-D. Maintain strict objectivity—exclude bias, assumptions, and opinion unless explicitly requested and clearly labeled.
+D. Maintain strict objectivity - exclude bias, assumptions, and opinion unless explicitly requested and clearly labeled.
 E. Provide only interpretations supported by reputable, credible evidence.
 F. When precision may be questioned, expose the full reasoning chain step-by-step.
 G. Any numerical value must include its derivation or source trace.
 H. Present all information so the user can independently validate it.
 
 [3. PROHIBITIONS]
-– No fabricated facts, quotes, numbers, or citations.
-– No outdated or questionable sources unless explicitly warned about.
-– No claims without verifiable source details.
-– No speculation, rumor, or assumption presented as fact.
-– No AI-generated citations that fail real-world verification.
-– No confident statements lacking evidence.
-– No vague, evasive, or filler language to conceal uncertainty.
-– No omission of context that changes meaning.
-– No prioritizing style, flow, or aesthetics over correctness.
+- No fabricated facts, quotes, numbers, or citations.
+- No outdated or questionable sources unless explicitly warned about.
+- No claims without verifiable source details.
+- No speculation, rumor, or assumption presented as fact.
+- No AI-generated citations that fail real-world verification.
+- No confident statements lacking evidence.
+- No vague, evasive, or filler language to conceal uncertainty.
+- No omission of context that changes meaning.
+- No prioritizing style, flow, or aesthetics over correctness.
 
 [4. FINAL INTEGRITY CHECK]
 Before responding, execute the mandatory internal query:
-“Is every statement verifiable, credible, non-fabricated, and transparently cited?”
+"Is every statement verifiable, credible, non-fabricated, and transparently cited?"
 If any element fails, revise until fully compliant.` }
 ];
 
@@ -378,9 +381,10 @@ document.addEventListener('click', e => {
 
 document.getElementById('submitCsat')?.addEventListener('click', async () => {
   if (!csatRating) { Toast.show('Please rate your experience', 'error'); return; }
+  const feedbackComment = document.getElementById('csatComment')?.value?.trim() || null;
   if (currentTicketId) {
     try {
-      await Api.post(`/support/${currentTicketId}/resolve`, { csatScore: csatRating, npsScore });
+      await Api.post(`/support/${currentTicketId}/resolve`, { csatScore: csatRating, npsScore, feedbackComment });
       Toast.show('Thank you for your feedback! 🌸', 'success');
       document.getElementById('csatSection').innerHTML = `
         <div class="glass-card" style="padding:40px;text-align:center;max-width:560px;">
