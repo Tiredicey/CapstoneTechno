@@ -50,25 +50,53 @@
 
 .product-card {
   border-radius: var(--bloom-radius);
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--ethereal-blur));
+  -webkit-backdrop-filter: blur(var(--ethereal-blur));
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.4s var(--bloom-transition);
+  transition: all 0.5s var(--bloom-transition);
   position: relative;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.product-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--glass-shine);
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
 }
 
 .product-card:hover {
-  transform: translateY(-12px) scale(1.01);
-  border-color: rgba(230,26,26,.35);
-  box-shadow: 0 30px 80px rgba(168,16,16,.28), 0 0 0 1px rgba(230,26,26,.18);
+  transform: translateY(-12px) rotateX(4deg) rotateY(2deg);
+  border-color: rgba(230, 26, 26, 0.45);
+  box-shadow: 
+    0 40px 100px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(230, 26, 26, 0.2);
+}
+
+.product-card:hover::before {
+  opacity: 1;
 }
 
 .product-img-wrap {
   position: relative;
   height: 240px;
   overflow: hidden;
-  background: linear-gradient(135deg, rgba(139,31,110,0.2), rgba(45,27,94,0.4));
+  background: radial-gradient(circle at 50% 50%, rgba(230, 26, 26, 0.15), rgba(11, 5, 22, 0.4));
+  margin: 12px;
+  border-radius: calc(var(--bloom-radius) - 8px);
+  transform: translateZ(20px);
+  transition: transform 0.5s var(--bloom-transition);
+}
+
+.product-card:hover .product-img-wrap {
+  transform: translateZ(40px);
 }
 
 .product-img-wrap img {
@@ -140,7 +168,7 @@
   line-height: 1.2;
 }
 
-.product-desc { font-size: 0.83rem; color: rgba(255,255,255,0.5); line-height: 1.5; margin-bottom: 14px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.product-desc { font-size: 0.83rem; color: rgba(255,255,255,0.5); line-height: 1.5; margin-bottom: 14px; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
 .product-meta { display: flex; align-items: center; justify-content: space-between; }
 
