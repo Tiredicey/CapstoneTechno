@@ -26,6 +26,20 @@
     return Math.round(Number(usd || 0) * PHP_RATE * 100) / 100;
   }
 
+  function normalizeItem(item, idx) {
+    const lineId = item.lineId || item.line_id ||
+      (item.customization && (item.customization.clientLineId || item.customization.id)) ||
+      item.id || (item.product_id + '_' + idx);
+    const unit = Number(item.unitPricePHP ?? item.price_php ?? item.price ?? 0);
+    return {
+      ...item,
+      lineId: String(lineId),
+      price: unit < 500 ? unit * 56 : unit,
+      qty: item.qty || 1,
+      image: item.image_url || item.image || ''
+    };
+  }
+
   let cartData = null;
 
   function showToast(msg, type) {
@@ -60,14 +74,7 @@
         cartData = await Api.get('/cart');
         apiSuccess = true;
         if (cartData && cartData.items) {
-          cartData.items = cartData.items.map(function (item) {
-            return Object.assign({}, item, {
-              lineId: item.lineId || item.id || item.product_id,
-              price: item.price > 500 ? item.price : phpFromUSD(item.price),
-              qty: item.qty || item.quantity || 1,
-              image: item.image_url || item.image || ''
-            });
-          });
+          cartData.items = cartData.items.map(normalizeItem);
         }
         Store.set('cart', cartData);
         var local = [];
@@ -83,14 +90,7 @@
           localStorage.removeItem('bloom_cart');
           cartData = await Api.get('/cart');
           if (cartData && cartData.items) {
-            cartData.items = cartData.items.map(function (item) {
-              return Object.assign({}, item, {
-                lineId: item.lineId || item.id || item.product_id,
-                price: item.price > 500 ? item.price : phpFromUSD(item.price),
-                qty: item.qty || item.quantity || 1,
-                image: item.image_url || item.image || ''
-              });
-            });
+            cartData.items = cartData.items.map(normalizeItem);
           }
           Store.set('cart', cartData);
         }
@@ -116,15 +116,11 @@
     try {
       var raw = JSON.parse(localStorage.getItem('bloom_cart') || '[]');
       return {
-        items: raw.map(function (item, idx) {
-          return {
-            lineId: item.lineId || item.id || String(idx),
-            name: item.name || 'Product',
-            price: item.price > 500 ? item.price : phpFromUSD(item.price || 0),
-            qty: item.qty || item.quantity || 1,
-            image: item.image || item.image_url || '',
-            customization: item.customization || null
-          };
+        items: raw.map(function(item, idx) {
+          var n = normalizeItem(item, idx);
+          n.name = item.name || 'Product';
+          n.customization = item.customization || null;
+          return n;
         }),
         pricing: null
       };
@@ -192,37 +188,29 @@
   async function updateItem(lineId, qty) {
     var Api = window.__BloomApi;
     var Store = window.__BloomStore;
-    var token = localStorage.getItem('bloom_token');
     try {
-      if (token) {
-        if (qty <= 0) {
-          var result = await Api.delete('/cart/items/' + lineId).catch(function () { return null; });
-          if (result && result.items !== undefined) cartData = result;
-          else cartData.items = cartData.items.filter(function (i) { return i.lineId !== lineId; });
-        } else {
-          var res = await Api.put('/cart/items/' + lineId, { qty: qty }).catch(function () { return null; });
-          if (res && res.items !== undefined) cartData = res;
-          else {
-            var it = cartData.items.find(function (i) { return i.lineId === lineId; });
-            if (it) it.qty = qty;
-          }
-        }
+      const prev = { ...cartData, items: [...(cartData.items || [])] };
+      if (qty <= 0) {
+        cartData.items = cartData.items.filter(i => i.lineId !== lineId);
+        renderCart(); renderSummary();
+        const r = await Api.delete('/cart/items/' + encodeURIComponent(lineId));
+        if (r && Array.isArray(r.items)) cartData = { ...r, items: r.items.map(normalizeItem) };
       } else {
-        if (qty <= 0) cartData.items = cartData.items.filter(function (i) { return i.lineId !== lineId; });
-        else {
-          var found = cartData.items.find(function (i) { return i.lineId === lineId; });
-          if (found) found.qty = qty;
-        }
-        saveLocalCart();
+        const it = cartData.items.find(i => i.lineId === lineId);
+        if (it) it.qty = qty;
+        renderCart(); renderSummary();
+        const r = await Api.put('/cart/items/' + encodeURIComponent(lineId), { qty });
+        if (r && Array.isArray(r.items)) cartData = { ...r, items: r.items.map(normalizeItem) };
       }
+      saveLocalCart();
       Store.set('cart', cartData);
-      var count = cartData.items ? cartData.items.reduce(function (s, i) { return s + (i.qty || 1); }, 0) : 0;
-      Store.updateCartCount(count);
-      updateBadge(count);
-      renderCart();
-      renderSummary();
+      const count = cartData.items.reduce((s, i) => s + (i.qty || 1), 0);
+      Store.updateCartCount(count); updateBadge(count);
+      renderCart(); renderSummary();
     } catch (e) {
-      showToast(e.message || 'Error updating cart', 'error');
+      cartData = prev;
+      renderCart(); renderSummary();
+      showToast(e.message || 'Could not update cart', 'error');
     }
   }
 
