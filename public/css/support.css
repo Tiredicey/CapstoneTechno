@@ -177,4 +177,7 @@
 .nps-btn[aria-checked="true"]{background:linear-gradient(135deg,var(--bloom-primary),var(--bloom-secondary));color:#fff;border-color:transparent}
 
 @media (max-width:720px){.support-hub{grid-template-columns:1fr}}
+@media (max-width:768px){
+  .support-page { padding: 88px 20px 60px; }
+}
 @media (prefers-reduced-motion:reduce){.faq-panel,.faq-arrow,.chat-floating,.faq-skeleton{transition:none!important;animation:none!important}}
