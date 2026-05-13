@@ -129,6 +129,21 @@ app.use('/api/users', userRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/notifications', notificationRoutes);
 
+app.post('/api/newsletter', (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      return res.status(400).json({ error: 'Invalid email format' });
+    }
+    db.run(`CREATE TABLE IF NOT EXISTS newsletter_subscribers (email TEXT UNIQUE, subscribed_at DATETIME DEFAULT CURRENT_TIMESTAMP)`);
+    db.run(`INSERT OR IGNORE INTO newsletter_subscribers (email) VALUES (?)`, [email]);
+    res.json({ success: true, message: 'Subscription saved successfully' });
+  } catch (e) {
+    console.error('[NEWSLETTER-BACKEND]', e);
+    res.status(500).json({ error: 'Failed to subscribe' });
+  }
+});
+
 import multer from 'multer';
 import { writeFileSync, mkdirSync } from 'fs';
 import { randomBytes } from 'crypto';
