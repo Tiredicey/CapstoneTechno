@@ -49,7 +49,7 @@ router.post('/items', optionalAuth, (req, res) => {
       product = {
         id: 'custom',
         name: 'Custom Bloom Arrangement',
-        base_price: 64.99,
+        base_price: 3639.44,
         images: '[]',
         inventory: 999
       };
@@ -69,7 +69,7 @@ router.post('/items', optionalAuth, (req, res) => {
     const item = {
       productId:     pid,
       name:          customization?.flower ? `Custom ${customization.flower.charAt(0).toUpperCase() + customization.flower.slice(1)} Arrangement` : product.name,
-      price:         Number(product.base_price) + Number(customization?.priceDelta || 0),
+      price:         Number(product.base_price) + Number(customization?.priceDeltaPHP || customization?.priceDelta || 0),
       image,
       qty:           count,
       customization: customization || null,
@@ -100,7 +100,7 @@ router.post('/', optionalAuth, (req, res) => {
       product = {
         id: 'custom',
         name: 'Custom Bloom Arrangement',
-        base_price: 64.99,
+        base_price: 3639.44,
         images: '[]',
         inventory: 999
       };
@@ -120,7 +120,7 @@ router.post('/', optionalAuth, (req, res) => {
     const item = {
       productId:     pid,
       name:          customization?.flower ? `Custom ${customization.flower.charAt(0).toUpperCase() + customization.flower.slice(1)} Arrangement` : product.name,
-      price:         Number(product.base_price) + Number(customization?.priceDelta || 0),
+      price:         Number(product.base_price) + Number(customization?.priceDeltaPHP || customization?.priceDelta || 0),
       image,
       qty:           count,
       customization: customization || null,
