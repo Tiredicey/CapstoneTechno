@@ -1013,9 +1013,12 @@
     key.shadow.mapSize.set(1024, 1024);
     key.shadow.camera.near = 0.1; key.shadow.camera.far = 20;
     scene.add(key);
-    scene.add(Object.assign(new THREE.DirectionalLight(0xe8d5ff, 0.52), { position: new THREE.Vector3(-3, 2, -2) }));
-    scene.add(Object.assign(new THREE.PointLight(0xff6b9d, 0.82, 10), { position: new THREE.Vector3(-2, 3, -3) }));
-    scene.add(Object.assign(new THREE.PointLight(0xffd700, 0.32, 8), { position: new THREE.Vector3(0, -2, 1) }));
+    var fill = new THREE.DirectionalLight(0xe8d5ff, 0.52);
+    fill.position.set(-3, 2, -2); scene.add(fill);
+    var p1 = new THREE.PointLight(0xff6b9d, 0.82, 10);
+    p1.position.set(-2, 3, -3); scene.add(p1);
+    var p2 = new THREE.PointLight(0xffd700, 0.32, 8);
+    p2.position.set(0, -2, 1); scene.add(p2);
     scene.add(new THREE.HemisphereLight(0xffeedd, 0x1a0a2e, 0.42));
     var floor = new THREE.Mesh(new THREE.CircleGeometry(3, 36), new THREE.MeshStandardMaterial({ color: '#080412', roughness: 0.96 }));
     floor.rotation.x = -Math.PI * 0.5; floor.position.y = -1.45;
