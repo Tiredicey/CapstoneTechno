@@ -18,7 +18,12 @@ try {
 
   const styleStart = indexHtml.indexOf('<style>');
   const styleEnd = indexHtml.indexOf('</style>') + 8;
-  const indexStyles = indexHtml.substring(styleStart, styleEnd);
+  const indexStyles = indexHtml.substring(styleStart, styleEnd)
+    .replace('.bloom-footer {', '.bloom-footer { z-index: 1000; position: relative;')
+    .replace('nav {', 'nav { z-index: 2000;')
+    .replace('.nl-form svg {', '.nl-form svg { width: 18px; height: 18px; ')
+    .replace('.p-card {', '.p-card { z-index: 1;')
+    .replace('.p-card:hover {', '.p-card:hover { z-index: 10;');
 
   const indexFonts = `<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -476,9 +481,7 @@ try {
 
 
 
-    html = html.replace(/<nav\s+class="bloom-nav"[^>]*>[\s\S]*?<\/nav>/gi, '');
-    html = html.replace(/<footer\s+class="bloom-footer"[^>]*>[\s\S]*?<\/footer>/gi, '');
-    html = html.replace(/<div\s+id="bloomBoot"[^>]*>[\s\S]*?<\/div>\s*<div\s+id="bloomBoot"[^>]*>[\s\S]*?<\/div>/gi, '');
+    html = html.replace(/<div\s+id="bloomBoot"[^>]*>[\s\S]*?<\/div>/gi, '');
 
 
 
