@@ -79,6 +79,16 @@
   --input-bg: rgba(255,255,255,.06);
   --input-border: rgba(255,255,255,.12);
   --shadow-color: rgba(0,0,0,.3);
+
+  /* Ethereal & Artistic Tokens */
+  --ethereal-obsidian: #05020a;
+  --ethereal-neon-pink: #ff00ff;
+  --ethereal-glow-pink: rgba(255, 0, 255, 0.6);
+  --ethereal-glow-red: rgba(230, 26, 26, 0.6);
+  --ethereal-blur: 24px;
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shine: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%);
 }
 
 [data-theme="light"] {
