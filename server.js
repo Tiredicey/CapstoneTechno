@@ -53,9 +53,10 @@ app.use(helmet({
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       imgSrc: ["'self'", "data:", "blob:", "https://picsum.photos", "https://fastly.picsum.photos", "https://images.unsplash.com", "https://images.pexels.com", "https://image.pollinations.ai", "https://media.sketchfab.com", "https://static.sketchfab.com"],
-      connectSrc: ["'self'", "wss:", "ws:", "https://image.pollinations.ai", "https://modelviewer.dev", "https://cdn.jsdelivr.net"],
+      connectSrc: ["'self'", "wss:", "ws:", "blob:", "data:", "https://image.pollinations.ai", "https://modelviewer.dev", "https://cdn.jsdelivr.net", "https://arvr.google.com"],
       mediaSrc: ["'self'", "https://videos.pexels.com", "https://player.vimeo.com"],
-      frameSrc: ["https://sketchfab.com"],
+      frameSrc: ["https://sketchfab.com", "https://arvr.google.com"],
+      workerSrc: ["'self'", "blob:"],
       objectSrc: ["'none'"],
       baseUri: ["'self'"],
       formAction: ["'self'"],
@@ -118,6 +119,29 @@ app.use('/api/promos', promoRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/notifications', notificationRoutes);
+
+import multer from 'multer';
+import { writeFileSync, mkdirSync } from 'fs';
+import { randomBytes } from 'crypto';
+const AR_DIR = path.join(__dirname, 'uploads', 'ar');
+mkdirSync(AR_DIR, { recursive: true });
+const arUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 25 * 1024 * 1024 } });
+
+app.post('/api/customization/ar-model', arUpload.single('model'), (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No model uploaded' });
+    const id = randomBytes(10).toString('hex');
+    const filename = `bouquet-${id}.glb`;
+    writeFileSync(path.join(AR_DIR, filename), req.file.buffer);
+    const proto = req.headers['x-forwarded-proto'] || req.protocol;
+    const host = req.headers['x-forwarded-host'] || req.get('host');
+    res.json({ url: `${proto}://${host}/uploads/ar/${filename}`, id });
+  } catch (e) {
+    console.error('[AR-UPLOAD]', e);
+    res.status(500).json({ error: 'AR upload failed' });
+  }
+});
+
 
 app.get('/api/wishlist', authenticate, (req, res) => {
   try {
