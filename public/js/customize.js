@@ -22,7 +22,8 @@
     cardText: '',
     logoUpload: false,
     customDesign: false,
-    logoUrl: null
+    logoUrl: null,
+    customDesignUrl: null
   };
   var productId = null;
   var customizationId = null;
@@ -142,13 +143,31 @@
     aiDebounce = setTimeout(generateAIPreview, 1200);
   }
 
+  function buildRendererCfg() {
+    return {
+      flower: config.flower,
+      color: config.colorHex,
+      bloomCount: config.bloomCount,
+      wrappingPremium: config.wrapping_premium,
+      wrappingLuxury: config.wrapping_luxury,
+      ribbonSatin: config.ribbon_satin,
+      ribbonVelvet: config.ribbon_velvet,
+      giftBox: config.giftBox,
+      engraving: config.engraving,
+      engravingText: config.engravingText || '',
+      greetingCard: config.greetingCard,
+      cardText: config.cardText || '',
+      logoUpload: config.logoUpload,
+      logoUrl: config.logoUrl,
+      customDesign: config.customDesign,
+      customDesignUrl: config.customDesignUrl || config.logoUrl
+    };
+  }
+
   function init3DBouquet() {
     var container = qs('#bouquet3DCanvas');
     if (!container || !window.BloomBouquetRenderer) return;
-    if (bouquet3DInited) {
-      sync3DConfig();
-      return;
-    }
+    if (bouquet3DInited) { sync3DConfig(); return; }
     bouquet3DInited = true;
     var status = qs('#modelStatus');
     if (status) {
@@ -156,13 +175,7 @@
       status.style.display = 'block';
       status.style.opacity = '1';
     }
-    window.BloomBouquetRenderer.init(container, {
-      flower: config.flower,
-      color: config.colorHex,
-      bloomCount: config.bloomCount,
-      wrapping: config.wrapping_premium,
-      luxury: config.wrapping_luxury
-    }).then(function () {
+    window.BloomBouquetRenderer.init(container, buildRendererCfg()).then(function () {
       if (status) {
         status.textContent = 'Procedural 3D Bouquet — Drag to rotate';
         setTimeout(function () { status.style.opacity = '0'; }, 3000);
@@ -172,13 +185,7 @@
 
   function sync3DConfig() {
     if (!bouquet3DInited || !window.BloomBouquetRenderer) return;
-    window.BloomBouquetRenderer.updateConfig({
-      flower: config.flower,
-      color: config.colorHex,
-      bloomCount: config.bloomCount,
-      wrapping: config.wrapping_premium,
-      luxury: config.wrapping_luxury
-    });
+    window.BloomBouquetRenderer.updateConfig(buildRendererCfg());
   }
 
   function switchMode(mode) {
@@ -217,17 +224,9 @@
 
   async function ensureRendererReady() {
     if (!window.BloomBouquetRenderer) throw new Error('renderer missing');
-    await window.BloomBouquetRenderer.init(qs('#bouquet3DCanvas'), {
-      flower: config.flower, color: config.colorHex,
-      bloomCount: config.bloomCount,
-      wrapping: config.wrapping_premium, luxury: config.wrapping_luxury
-    });
+    await window.BloomBouquetRenderer.init(qs('#bouquet3DCanvas'), buildRendererCfg());
     bouquet3DInited = true;
-    window.BloomBouquetRenderer.updateConfig({
-      flower: config.flower, color: config.colorHex,
-      bloomCount: config.bloomCount,
-      wrapping: config.wrapping_premium, luxury: config.wrapping_luxury
-    });
+    window.BloomBouquetRenderer.updateConfig(buildRendererCfg());
     await new Promise(function (r) { requestAnimationFrame(function () { requestAnimationFrame(r); }); });
   }
 
