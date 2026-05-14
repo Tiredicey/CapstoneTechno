@@ -23,7 +23,7 @@ export class OrderModel {
   }
 
   static getById(id) {
-    const o = db.get('SELECT * FROM orders WHERE id = ? OR qr_code = ?', [id, id]);
+    const o = db.get('SELECT * FROM orders WHERE id = ? OR LOWER(qr_code) = LOWER(?)', [id, id]);
     return o ? OrderModel.parse(o) : null;
   }
 
