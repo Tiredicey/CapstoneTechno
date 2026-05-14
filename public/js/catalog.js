@@ -53,8 +53,9 @@ function renderProductCard(p) {
     'Crimson Vow': '/img/vow-crimson.png',
     'Velvet Midnight': '/img/midnight-velvet.png',
     'Obsidian Rose': '/img/rose-obsidian.png',
-    'Neon Blossom': '/img/midnight-velvet.png',
-    'Phantom Lily': '/img/rose-obsidian.png'
+    'Neon Blossom': '/img/neon-blossom.png',
+    'Phantom Orchid': '/img/orchid-phantom.png',
+    'Executive Crimson': '/img/executive-crimson.png'
   };
   
   if (!image && artisticMap[p.name]) image = artisticMap[p.name];
@@ -251,7 +252,9 @@ async function loadRecs() {
     var artisticMap = {
       'Crimson Vow': '/img/vow-crimson.png',
       'Velvet Midnight': '/img/midnight-velvet.png',
-      'Obsidian Rose': '/img/rose-obsidian.png'
+      'Obsidian Rose': '/img/rose-obsidian.png',
+      'Neon Blossom': '/img/neon-blossom.png',
+      'Phantom Orchid': '/img/orchid-phantom.png'
     };
 
     scroll.innerHTML = recs.map(function (p) {
