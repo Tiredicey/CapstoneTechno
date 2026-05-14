@@ -263,12 +263,12 @@ try {
       .tbl-log td{padding:10px 14px;border:1px solid rgba(255,255,255,.06);color:rgba(255,255,255,.7)}
       </style>
       <main>
-        <section class="hero-ship"><div class="con"><span class="tag-ship">Logistics</span><h1 class="sec-title-s">Shipping & Delivery</h1><p class="sec-sub-s">The platform models comprehensive logistics tracking, demonstrating order progression from preparation to delivery.</p></div></section>
+        <section class="hero-ship"><div class="con"><span class="tag-ship">Logistics</span><h1 class="sec-title-s">Shipping & Delivery</h1><p class="sec-sub-s">The platform models comprehensive logistics tracking, demonstrating order progression from preparation to delivery.</p><div role="note" style="margin:16px auto 0;max-width:560px;padding:10px 16px;border-radius:10px;background:rgba(0,212,170,.06);border:1px solid rgba(0,212,170,.15);font-size:.78rem;color:rgba(255,255,255,.5);line-height:1.6;text-align:center">🎓 <strong style="color:var(--mn)">Capstone Demo</strong> — All delivery areas, lead times, and pricing below are simulated for academic demonstration. No real logistics operations are active.</div></div></section>
         <section><div class="con">
           <div class="sc-box"><h2 class="sh-title">Delivery Areas</h2><p class="sp-desc">We deliver to Metro Manila, Batangas, Cavite, Laguna, Rizal, Bulacan, Pampanga, Cebu City, and Baguio. More regions are being added quarterly.</p></div>
           <div class="sc-box"><h2 class="sh-title">Lead Times</h2><table class="tbl-log"><thead><tr><th>Area</th><th>Standard</th><th>Express</th></tr></thead><tbody><tr><td>Metro Manila</td><td>48 hours</td><td>24 hours (+₱350)</td></tr><tr><td>Batangas / Cavite / Laguna</td><td>48 hours</td><td>24 hours (+₱450)</td></tr><tr><td>Cebu City</td><td>72 hours</td><td>48 hours (+₱500)</td></tr><tr><td>Baguio / Pampanga / Bulacan</td><td>72 hours</td><td>48 hours (+₱450)</td></tr></tbody></table></div>
           <div class="sc-box"><h2 class="sh-title">Delivery Windows</h2><p class="sp-desc">Choose a 1-hour delivery window at checkout, including evening slots (6-9 PM). The selected time is locked at checkout - it's our contract with you.</p></div>
-          <div class="sc-box"><h2 class="sh-title">Cold-Chain Handling</h2><p class="sp-desc">All bouquets are maintained at 0-4°C from harvest through our hub to the delivery vehicle. Insulated packaging ensures temperature compliance throughout transit, per UC Davis postharvest guidelines.</p></div>
+          <div class="sc-box"><h2 class="sh-title">Freshness-First Handling</h2><p class="sp-desc">The platform models temperature-aware logistics based on UC Davis postharvest research guidelines (0-4°C recommended range). This demonstrates how a production system would maintain floral quality during simulated transit.</p></div>
           <div class="sc-box"><h2 class="sh-title">Free Shipping</h2><p class="sp-desc">Orders above ₱4,200 ship free. Below that threshold, a flat ₱560 delivery fee applies. Subscription orders always ship free.</p></div>
           <div class="sc-box"><h2 class="sh-title">Photo Proof of Delivery</h2><p class="sp-desc">Every delivery is documented with a timestamped photo at the recipient's location. You'll receive this in your order confirmation email within 15 minutes of delivery.</p></div>
         </div></section>
@@ -286,7 +286,7 @@ try {
       .rp-desc{font-size:.88rem;color:rgba(255,255,255,.62);line-height:1.75;padding-left:12px}
       </style>
       <main>
-        <section class="hero-ret"><div class="con"><span class="tag-ret">Promise</span><h1 class="sec-title-r">Our Service Promise</h1><p class="sec-sub-r">We don't just deliver flowers. We deliver on our word. If something goes wrong, here's exactly what we do.</p></div></section>
+        <section class="hero-ret"><div class="con"><span class="tag-ret">Promise</span><h1 class="sec-title-r">Our Service Promise</h1><p class="sec-sub-r">This page demonstrates the resolution workflows modeled in the Bloom platform for academic evaluation.</p><div role="note" style="margin:16px auto 0;max-width:580px;padding:10px 16px;border-radius:10px;background:rgba(230,26,26,.06);border:1px solid rgba(230,26,26,.15);font-size:.78rem;color:rgba(255,255,255,.5);line-height:1.6;text-align:center">🎓 <strong style="color:var(--p5l)">Capstone Demo</strong> — All service guarantees, refund policies, and support response times below are simulated workflows designed for BSIT Capstone evaluation.</div></div></section>
         <section><div class="con">
           <div class="rc-box"><h2 class="rh-title">🌹 Tracking Integration</h2><p class="rp-desc">The Bloom platform is designed to track cold-chain logistics from harvest to delivery. Built to demonstrate automated issue resolution and processing for order anomalies.</p></div>
           <div class="rc-box"><h2 class="rh-title">📸 Photo Proof</h2><p class="rp-desc">The system supports timestamped photo proof of delivery uploads. It models discrepancy resolutions to demonstrate end-to-end order accountability.</p></div>
@@ -323,7 +323,7 @@ try {
               <span style="color: var(--p5);">❖</span> Our Privacy Promise
             </h2>
             <p style="font-size: 1.15rem; line-height: 1.8; color: rgba(255,255,255,0.85); text-wrap: pretty;">
-              At Bloom, our relationship with you is rooted in trust. We believe your recipient details, floral gift messages, and custom 3D configurations belong strictly to you. We collect only what is necessary to handcraft, package, and safely deliver your moments of warmth. <span style="color: var(--p5l); font-weight: 600;">You retain complete ownership over your personal data.</span>
+              At Bloom, our relationship with you is rooted in trust. We believe your recipient details, floral gift messages, and custom 3D configurations belong strictly to you. We collect only what is necessary to demonstrate our capstone platform workflows. <span style="color: var(--p5l); font-weight: 600;">Note: This is an academic prototype. Data is stored in a demonstration database and may be reset periodically.</span>
             </p>
           </section>
 
