@@ -61,8 +61,24 @@ router.post('/', optionalAuth, (req, res) => {
   }
 });
 
-router.get('/my', authenticate, (req, res) => {
-  try { res.json(OrderModel.getByUser(req.user.id)); } catch { res.status(500).json({ error: 'Failed to fetch orders' }); }
+router.get('/my', optionalAuth, (req, res) => {
+  try {
+    const userId = req.user?.id;
+    const sessionId = req.headers['x-session-id'];
+    
+    if (userId) {
+      return res.json(OrderModel.getByUser(userId));
+    }
+    
+    if (sessionId) {
+      return res.json(OrderModel.getBySession(sessionId));
+    }
+    
+    res.json([]);
+  } catch (err) {
+    console.error('[ORDERS FETCH ERROR]', err);
+    res.status(500).json({ error: 'Failed to fetch orders' });
+  }
 });
 
 router.get('/:id/track', (req, res) => {
