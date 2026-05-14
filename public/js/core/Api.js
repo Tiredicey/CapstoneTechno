@@ -84,14 +84,21 @@
 
       if (!res.ok) {
         if (res.status === 401) {
-          try {
-            localStorage.removeItem('bloom_token');
-            localStorage.removeItem('bloom_user');
-            if (window.Store) {
-              window.Store.set('token', null);
-              window.Store.set('user', null);
-            }
-          } catch {}
+          // If we get a 401, only clear if it's not a transient issue or if it's a logout/me request
+          const isCritical = path.includes('/auth/me') || path.includes('/auth/logout');
+          const isBackground = !!opts.background;
+          
+          if (isCritical && !isBackground) {
+            try {
+              localStorage.removeItem('bloom_token');
+              localStorage.removeItem('bloom_user');
+              if (window.Store) {
+                window.Store.set('token', null);
+                window.Store.set('user', null);
+              }
+            } catch {}
+          }
+          console.warn('[Api] 401 Unauthorized for:', path);
         }
 
         if (res.status === 429) {
