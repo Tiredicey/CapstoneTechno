@@ -33,7 +33,7 @@ let csatRating = 0;
 let npsScore = null;
 let socket = null;
 const chatHistory = [
-  { role: 'system', content: `You are the official Bloom AI Assistant. Always provide factual, verified details. Standalone pre-orders require 2 days prep. Delivery windows are Morning (9am-12pm), Afternoon (12pm-4pm), and Evening (4pm-8pm). Free shipping is unlocked above ₱4,350. Keep your messages friendly, short, and beautifully structured using emojis.
+  { role: 'system', content: `You are the official Bloom AI Assistant. Always provide factual, verified details. Standalone pre-orders require 2 days prep. Delivery windows are Morning (9am-12pm), Afternoon (12pm-4pm), and Evening (4pm-8pm). Free shipping is unlocked above \u20B14,350. Keep your messages friendly, short, and beautifully structured using emojis.
 
 [HUMANIZATION & CALMING DIRECTIVE]
 Some users may experience high stress, anxiety, or distress. Maintain an exceptionally gentle, grounding, clear, and supportive tone. Never argue, challenge, or confront. Use short, honest, reassuring sentences that provide direct certainty based on our facts. Avoid information overload or overly complex phrasing.
@@ -209,7 +209,7 @@ const FRUSTRATION_KEYWORDS = [
 const LOCAL_ROUTER = [
   { pattern: /\b(human|agent|person|representative|esperanza|talk to someone)\b/i, action: () => {
       document.getElementById('openAgentBtn')?.click();
-      return "Connecting you to an active Live Agent immediately. Please wait a moment... 🌸";
+      return "Connecting you to an active Live Agent immediately. Please wait a moment... \uD83C\uDF38";
   }},
   { pattern: /\b(ticket|complaint|refund|dispute|cancel|issue|open a ticket)\b/i, action: () => {
       document.getElementById('openTicketBtn')?.click();
@@ -217,7 +217,7 @@ const LOCAL_ROUTER = [
   }},
   { pattern: /\b(faq|help|question|guide|policy|shipping|price|cost)\b/i, action: () => {
       document.getElementById('openSelfBtn')?.click();
-      return "I've scrolled to our Frequently Asked Questions (FAQ) and Knowledge Base below for your convenience! 📖";
+      return "I've scrolled to our Frequently Asked Questions (FAQ) and Knowledge Base below for your convenience! \uD83D\uDCD6";
   }},
   { pattern: /\b(cart|order status|track|where is|delivery|status|bloom-)\b/i, action: () => {
       return BOT_RESPONSES.track + " Or enter your Bloom order code directly for instant tracking lookup.";
@@ -240,7 +240,7 @@ function detectFrustrationAndEscalate(msg) {
   if (frustrationCounter >= 2) {
     frustrationCounter = -999;
     setTimeout(() => {
-      appendMessage("🌸 Alert: High urgency detected. Connecting you immediately to Live Human Agent support for dedicated resolution.", 'agent');
+      appendMessage("\uD83C\uDF38 Alert: High urgency detected. Connecting you immediately to Live Human Agent support for dedicated resolution.", 'agent');
       document.getElementById('openAgentBtn')?.click();
     }, 500);
     return true;
@@ -260,7 +260,7 @@ function isLowBandwidth() {
 function updateBandwidthUI() {
   const statusEl = document.querySelector('.chat-agent-info .status');
   if (statusEl && isLowBandwidth()) {
-    statusEl.innerHTML = '⚡ Eco Mode Active (Low Bandwidth)';
+    statusEl.innerHTML = '\u26A1 Eco Mode Active (Low Bandwidth)';
     statusEl.style.color = '#facc15';
   }
 }
@@ -281,7 +281,7 @@ Status: ${navigator.onLine ? 'ONLINE' : 'OFFLINE'}
 Language/Locale: ${lang}
 User: ${user ? `${user.name} (ID: ${user.id || 'active'})` : 'Anonymous Visitor'}
 Network Speed: ${connectionType} (${bandwidthStatus})
-Active Shopping Cart: ${cartCount} products | Cart Total: ₱${cartTotal.toLocaleString()}
+Active Shopping Cart: ${cartCount} products | Cart Total: \u20B1${cartTotal.toLocaleString()}
 Products in Cart: ${cartData.map(p => p.name).join(', ') || 'Empty'}
 Recently Viewed: ${recentlyViewed.map(p => p.name).join(', ') || 'None'}
 [DIRECTIVE] Tailor solutions directly around user session, cart total, or products mentioned.`;
@@ -528,7 +528,7 @@ document.getElementById('submitCsat')?.addEventListener('click', async () => {
   if (currentTicketId) {
     try {
       await Api.post(`/support/${currentTicketId}/resolve`, { csatScore: csatRating, npsScore, feedbackComment });
-      Toast.show('Thank you for your feedback! 🌸', 'success');
+      Toast.show('Thank you for your feedback! \uD83C\uDF38', 'success');
       document.getElementById('csatSection').innerHTML = `
         <div class="glass-card" style="padding:40px;text-align:center;max-width:560px;">
           <h2 class="section-heading csat-heading" style="margin-bottom:12px;">Thank You! 🌸</h2>
@@ -539,7 +539,7 @@ document.getElementById('submitCsat')?.addEventListener('click', async () => {
       Toast.show(e.message || 'Could not submit feedback', 'error');
     }
   } else {
-    Toast.show('Thank you for your feedback! 🌸', 'success');
+    Toast.show('Thank you for your feedback! \uD83C\uDF38', 'success');
     document.getElementById('csatSection')?.classList.add('is-hidden');
   }
 });
