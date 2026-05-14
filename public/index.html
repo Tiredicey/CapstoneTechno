@@ -1583,7 +1583,7 @@ input:-webkit-autofill:focus {
   function on(el, ev, fn, o) { if (el) el.addEventListener(ev, fn, o || false); }
   function reducedMotion() { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
   function escapeHtml(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); }
-  function money(n) { return '₱' + Number(n || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function money(n) { return '\u20B1' + Number(n || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 
   var FALLBACK_IMG = '/uploads/products/crimson-vow.jpg';
   var FALLBACK_CAT_IMG = {
@@ -1612,7 +1612,7 @@ input:-webkit-autofill:focus {
     if (!con) return;
     if (toastCount >= MAX_TOASTS) return;
     toastCount++;
-    var icons = { success: '✔', error: '✕', info: '◆' };
+    var icons = { success: '\u2714', error: '\u2715', info: '\u25C6' };
     var t = document.createElement('div');
     t.className = 'toast toast-' + type;
     t.setAttribute('role', type === 'error' ? 'alert' : 'status');
@@ -2534,7 +2534,7 @@ input:-webkit-autofill:focus {
         if (c[key] !== undefined && c[key] !== null && c[key] !== '') {
            var val = c[key];
            if (key.includes('price') || key.includes('Threshold')) {
-             val = '₱' + Number(val).toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:2});
+             val = '\u20B1' + Number(val).toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:2});
            }
            if (el.tagName === 'INPUT') el.value = val;
            else el.textContent = val;
@@ -3180,7 +3180,7 @@ window.addEventListener('beforeinstallprompt', function (e) {
         '<img src="' + img + '" alt="' + name + '" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover" onerror="this.onerror=null;this.style.display=\'none\'">' +
         '</div>' +
         '<div style="font-weight:600;font-size:.88rem">' + name + '</div>' +
-        '<div style="font-size:.82rem;color:var(--text-muted)">' + (window.I18n ? I18n.formatMoney(p.price) : '₱' + Number(p.price||0).toFixed(2)) + '</div>' +
+        '<div style="font-size:.82rem;color:var(--text-muted)">' + (window.I18n ? I18n.formatMoney(p.price) : '\u20B1' + Number(p.price||0).toFixed(2)) + '</div>' +
         '</div>';
     }).join('');
   }
