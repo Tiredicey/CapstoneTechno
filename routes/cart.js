@@ -54,6 +54,16 @@ router.post('/items', optionalAuth, (req, res) => {
         inventory: 999
       };
     }
+    if (!product && pid && pid.startsWith('sub-')) {
+      const plan = pid.replace('sub-', '');
+      product = {
+        id: pid,
+        name: `${plan.charAt(0).toUpperCase() + plan.slice(1)} Subscription`,
+        base_price: Number(req.body.price) || 2299,
+        images: JSON.stringify([`/uploads/subscriptions/${plan}.jpg`]),
+        inventory: 999
+      };
+    }
     if (!product) return res.status(404).json({ error: 'Product not found' });
     if ((product.inventory || 0) < 1) {
       return res.status(400).json({ error: 'Out of stock' });
@@ -102,6 +112,16 @@ router.post('/', optionalAuth, (req, res) => {
         name: 'Custom Bloom Arrangement',
         base_price: 3639.44,
         images: '[]',
+        inventory: 999
+      };
+    }
+    if (!product && pid && pid.startsWith('sub-')) {
+      const plan = pid.replace('sub-', '');
+      product = {
+        id: pid,
+        name: `${plan.charAt(0).toUpperCase() + plan.slice(1)} Subscription`,
+        base_price: Number(req.body.price) || 2299,
+        images: JSON.stringify([`/uploads/subscriptions/${plan}.jpg`]),
         inventory: 999
       };
     }
