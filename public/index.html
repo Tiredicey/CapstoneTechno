@@ -308,10 +308,10 @@ canvas#ptcl { position: absolute; inset: 0; width: 100%; height: 100%; pointer-e
 .stat-item:not(:last-child)::after { content: ''; position: absolute; right: 0; top: 20%; bottom: 20%; width: 1px; background: var(--glb); }
 .stat-icon { font-size: 1.4rem; margin-bottom: 8px; display: block; }
 .stat-num { font-family: var(--fc); font-style: italic; font-weight: 900; font-size: clamp(1.6rem, 3.4vw, 2.6rem); line-height: 1; margin-bottom: 5px; background: linear-gradient(135deg, #fff, rgba(255,255,255,.68)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-variant-numeric: tabular-nums; }
-.stat-bar { height: 3px; background: rgba(255,255,255,.07); border-radius: 2px; margin: 8px 0 0; overflow: hidden; }
+.stat-bar { height: 3px; max-width: 140px; background: rgba(255,255,255,.07); border-radius: 2px; margin: 12px auto 0; overflow: hidden; }
 .stat-bar-fill { height: 100%; width: 0; border-radius: 2px; background: linear-gradient(90deg, var(--p5), var(--pk)); transition: width 1.8s var(--ease); }
-.stat-lbl { font-family: var(--fc); font-style: italic; font-size: .72rem; letter-spacing: .12em; color: rgba(255,255,255,.4); text-transform: uppercase; margin-top: 6px; }
-.stat-src { font-size: .62rem; color: rgba(255,255,255,.28); margin-top: 4px; letter-spacing: .05em; }
+.stat-lbl { font-family: var(--fc); font-style: italic; font-size: .72rem; letter-spacing: .12em; color: rgba(255,255,255,.4); text-transform: uppercase; margin-top: 10px; }
+.stat-src { font-size: .62rem; color: rgba(255,255,255,.28); margin-top: 6px; letter-spacing: .05em; }
 .stat-src a { color: rgba(255,255,255,.5); border-bottom: 1px dotted rgba(255,255,255,.2); }
 .stat-src a:hover { color: var(--p5l); border-bottom-color: var(--p5); }
 
@@ -1093,31 +1093,31 @@ input:-webkit-autofill:focus {
     <div class="stats-inner">
       <div class="stat-item">
         <span class="stat-icon" aria-hidden="true">❄️</span>
-        <div class="stat-num" id="sCold">100%</div>
-        <div class="stat-bar"><div class="stat-bar-fill" data-w="96"></div></div>
-        <div class="stat-lbl">Cold-chain compliance</div>
-        <div class="stat-src"><a href="https://postharvest.ucdavis.edu/" target="_blank" rel="noopener">UC Davis Postharvest</a></div>
+        <div class="stat-num" id="sCold">Protocol</div>
+        <div class="stat-bar"><div class="stat-bar-fill" data-w="100"></div></div>
+        <div class="stat-lbl">Cold-chain designed</div>
+        <div class="stat-src">Based on UC Davis guidelines</div>
       </div>
       <div class="stat-item">
         <span class="stat-icon" aria-hidden="true">📦</span>
-        <div class="stat-num" id="sOrders">2,400+</div>
-        <div class="stat-bar"><div class="stat-bar-fill" data-w="78"></div></div>
-        <div class="stat-lbl">Orders fulfilled</div>
-        <div class="stat-src">Platform data · 2026</div>
+        <div class="stat-num" id="sOrders">Beta</div>
+        <div class="stat-bar"><div class="stat-bar-fill" data-w="25"></div></div>
+        <div class="stat-lbl">System Prototype</div>
+        <div class="stat-src">Academic build · 2026</div>
       </div>
       <div class="stat-item">
         <span class="stat-icon" aria-hidden="true">♿</span>
         <div class="stat-num" id="sWcag">AA</div>
-        <div class="stat-bar"><div class="stat-bar-fill" data-w="99"></div></div>
-        <div class="stat-lbl">Accessibility conformance</div>
+        <div class="stat-bar"><div class="stat-bar-fill" data-w="95"></div></div>
+        <div class="stat-lbl">Accessibility Focus</div>
         <div class="stat-src"><a href="https://www.w3.org/TR/WCAG21/" target="_blank" rel="noopener">WCAG 2.1</a> AA target</div>
       </div>
       <div class="stat-item">
-        <span class="stat-icon" aria-hidden="true">⭐</span>
-        <div class="stat-num" id="sRating">4.86</div>
-        <div class="stat-bar"><div class="stat-bar-fill" data-w="97"></div></div>
-        <div class="stat-lbl">Average rating</div>
-        <div class="stat-src">487 verified reviews</div>
+        <span class="stat-icon" aria-hidden="true">🎓</span>
+        <div class="stat-num" id="sRating">STI</div>
+        <div class="stat-bar"><div class="stat-bar-fill" data-w="100"></div></div>
+        <div class="stat-lbl">LIPA BSIT Capstone</div>
+        <div class="stat-src">Undergraduate thesis requirement</div>
       </div>
     </div>
   </div>
