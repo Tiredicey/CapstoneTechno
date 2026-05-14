@@ -136,6 +136,14 @@
       img.style.transition = 'opacity 0.6s ease';
       img.style.opacity = '1';
       if (loading) loading.style.display = 'none';
+      var container = img.closest('.preview-mode') || img.parentElement;
+      if (container && !container.querySelector('.ai-gen-label')) {
+        var lbl = document.createElement('div');
+        lbl.className = 'ai-gen-label';
+        lbl.textContent = '\u2728 AI-Generated Visualization';
+        container.style.position = 'relative';
+        container.appendChild(lbl);
+      }
     };
     preload.onerror = function () {
       if (loading) loading.style.display = 'none';
