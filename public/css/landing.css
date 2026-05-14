@@ -565,9 +565,7 @@
 
 .ch-text-3d-matte {
   color: var(--text, #fff);
-  text-shadow:
-    0 10px 30px rgba(255,255,255,.08),
-    0 2px 4px rgba(255,255,255,.04);
+  text-shadow: none !important;
 }
 
 .ch-text-silver-matte {
@@ -576,9 +574,8 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   transform: translateZ(0);
-  filter:
-    drop-shadow(0px 10px 20px rgba(255,255,255,.06))
-    drop-shadow(0px 2px 4px rgba(255,255,255,.04));
+  filter: none !important;
+  text-shadow: none !important;
 }
 
 .ch-text-card-silver {
