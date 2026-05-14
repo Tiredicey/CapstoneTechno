@@ -64,6 +64,29 @@ export class OrderModel {
     return OrderModel.getById(id);
   }
 
+  static setDeliveryPhoto(id, photoUrl, userId) {
+    const row = db.get('SELECT tracking_steps FROM orders WHERE id = ?', [id]);
+    const steps = JSON.parse(row?.tracking_steps || '[]');
+    let deliveredStep = steps.find(s => s.status === 'delivered');
+    if (deliveredStep) {
+      deliveredStep.photo = photoUrl;
+    } else {
+      steps.push({ status: 'delivered', timestamp: Date.now(), photo: photoUrl });
+    }
+    
+    db.run(
+      `UPDATE orders SET
+        delivery_photo = ?,
+        delivery_photo_at = unixepoch(),
+        delivery_photo_by = ?,
+        tracking_steps = ?,
+        updated_at = unixepoch()
+       WHERE id = ?`,
+      [photoUrl, userId, JSON.stringify(steps), id]
+    );
+    return OrderModel.getById(id);
+  }
+
   static updatePayment(id, paymentStatus) {
     db.run(
       'UPDATE orders SET payment_status = ?, updated_at = unixepoch() WHERE id = ?',
