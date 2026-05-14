@@ -242,9 +242,9 @@ async function loadRecs() {
       var img = resolveImage(p.images);
       if (!img) img = '/uploads/products/crimson-vow.jpg';
       return '<div class="rec-chip" data-id="' + p.id + '">' +
-        '<img src="' + img + '" style="width:36px;height:36px;border-radius:50%;object-fit:cover;" alt="">' +
-        '<div><div style="font-weight:600;font-size:0.82rem;">' + p.name + '</div>' +
-        '<div style="font-size:0.72rem;color:rgba(255,255,255,0.4);">' + fmt(p.base_price || 0) + '</div></div></div>';
+        '<img src="' + img + '" alt="">' +
+        '<div><div class="rec-chip-name">' + p.name + '</div>' +
+        '<div class="rec-chip-price">' + fmt(p.base_price || 0) + '</div></div></div>';
     }).join('');
     scroll.querySelectorAll('.rec-chip').forEach(function (chip) {
       chip.addEventListener('click', function () { openProductModal(chip.dataset.id); });
