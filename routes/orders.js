@@ -56,7 +56,8 @@ router.post('/', optionalAuth, (req, res) => {
     try { SocketManager.emitNewOrder(order); } catch {}
     res.status(201).json(order);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to create order' });
+    console.error('[ORDER CREATE ERROR]', err);
+    res.status(500).json({ error: 'Failed to create order: ' + err.message });
   }
 });
 
