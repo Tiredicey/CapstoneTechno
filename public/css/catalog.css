@@ -206,8 +206,8 @@
 .rec-chip {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 18px;
+  gap: 12px;
+  padding: 10px 18px;
   border-radius: 100px;
   background: rgba(255,255,255,0.08);
   border: 1px solid rgba(255,255,255,0.12);
@@ -218,6 +218,31 @@
   color: rgba(255,255,255,0.8);
   font-size: 0.85rem;
   font-weight: 500;
+  flex-shrink: 0;
+  min-width: max-content;
+}
+
+.rec-chip > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  flex: 1;
+}
+
+.rec-chip-name {
+  font-weight: 600;
+  font-size: 0.82rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.rec-chip-price {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.4);
+  margin-top: 2px;
 }
 
 .rec-chip:hover { background: rgba(230,26,26,.18); border-color: var(--p5); color: #fff; transform: translateY(-4px); }
