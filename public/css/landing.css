@@ -561,6 +561,28 @@
     linear-gradient(to bottom, rgba(255,255,255,.05) 1px, transparent 1px);
   mask-image: radial-gradient(ellipse at center, black 0%, transparent 70%);
   -webkit-mask-image: radial-gradient(ellipse at center, black 0%, transparent 70%);
+  z-index: 1;
+}
+
+.ch-ethereal-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-color: var(--ethereal-obsidian, #05020a);
+  background-image: 
+    radial-gradient(circle at 20% 30%, var(--ethereal-glow-pink, rgba(255,0,255,.25)), transparent 50%),
+    radial-gradient(circle at 80% 70%, var(--ethereal-glow-red, rgba(230,26,26,.2)), transparent 50%),
+    radial-gradient(circle at 50% 50%, hsla(272,100%,10%,.4), transparent 60%);
+  filter: blur(40px);
+  opacity: 0.85;
+  animation: chEtherealPulse 20s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes chEtherealPulse {
+  0% { transform: scale(1) translate(0, 0); }
+  50% { transform: scale(1.1) translate(1%, -2%); }
+  100% { transform: scale(1.05) translate(-0.5%, 0.5%); }
 }
 
 .ch-text-3d-matte {
@@ -590,13 +612,14 @@
 }
 
 .ch-depth-card {
-  background: linear-gradient(145deg, #162C6D 0%, #0A101D 100%);
+  background: rgba(10, 16, 29, 0.35);
+  backdrop-filter: blur(var(--ethereal-blur, 24px));
+  -webkit-backdrop-filter: blur(var(--ethereal-blur, 24px));
   box-shadow:
-    0 40px 100px -20px rgba(0,0,0,.9),
-    0 20px 40px -20px rgba(0,0,0,.8),
-    inset 0 1px 2px rgba(255,255,255,.2),
-    inset 0 -2px 4px rgba(0,0,0,.8);
-  border: 1px solid rgba(255,255,255,.04);
+    0 40px 100px -20px rgba(0,0,0,.7),
+    inset 0 1px 3px rgba(255,255,255,.12),
+    inset 0 0 0 1px rgba(255,255,255,.06);
+  border: none;
   position: relative;
 }
 
