@@ -2,8 +2,8 @@ var Api = window.Api || window.__BloomApi;
 var Store = window.Store || window.__BloomStore;
 
 const STATUS_ICONS = {
-  new: '📋', processing: '⚙️', quality_check: '🔍',
-  packed: '📦', shipped: '🚚', out_for_delivery: '🛵', delivered: '✅', cancelled: '❌'
+  new: '\uD83D\uDCCB', processing: '\u2699\uFE0F', quality_check: '\uD83D\uDD0D',
+  packed: '\uD83D\uDCE6', shipped: '\uD83D\uDE9A', out_for_delivery: '\uD83D\uDEF5', delivered: '\u2705', cancelled: '\u274C'
 };
 
 function showTrackToast(msg, type) {
@@ -97,7 +97,7 @@ function subscribeSocket(orderId) {
   Store.joinOrderRoom(orderId);
   Store.on('order_update', function (data) {
     if (!data || data.orderId !== orderId) return;
-    showTrackToast('Order status updated: ' + (data.status || '').replace(/_/g, ' ') + ' 🌸', 'info');
+    showTrackToast('Order status updated: ' + (data.status || '').replace(/_/g, ' ') + ' \uD83C\uDF38', 'info');
     trackOrder(orderId);
   });
 }
@@ -124,7 +124,7 @@ async function loadMyOrders() {
       return '<div class="glass-card" style="padding:20px;cursor:pointer;" data-qr="' + (o.qr_code || o.id) + '">' +
         '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">' +
         '<div><div style="font-weight:700;font-family:var(--font-display);">' + (o.qr_code || o.id) + '</div>' +
-        '<div style="font-size:0.78rem;color:rgba(255,255,255,0.4);margin-top:2px;">' + items.length + ' item(s) · ₱' + Number(pricing.finalTotal || 0).toFixed(2) + '</div></div>' +
+        '<div style="font-size:0.78rem;color:rgba(255,255,255,0.4);margin-top:2px;">' + items.length + ' item(s) \u00B7 \u20B1' + Number(pricing.finalTotal || 0).toFixed(2) + '</div></div>' +
         '<div style="display:flex;align-items:center;gap:12px;">' +
         '<span class="status-pill ' + statusClass + '">' + (o.status || '').replace(/_/g, ' ').toUpperCase() + '</span>' +
         '<span style="font-size:0.78rem;color:rgba(255,255,255,0.35);">' + (o.delivery_date || '—') + '</span>' +
