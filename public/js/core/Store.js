@@ -64,6 +64,9 @@
       _applyTheme(value);
       _broadcast({ type: 'theme', value: value });
     }
+    if (key === 'cartId' || key === 'sessionId' || key === 'lang' || key === 'occasionProfile' || key === 'hasSeenExitIntent') {
+      _persist();
+    }
   }
 
   function get(key) {
@@ -74,6 +77,7 @@
     try {
       localStorage.setItem('bloom_session', JSON.stringify({
         sessionId: state.sessionId,
+        cartId: state.cartId,
         lang: state.lang,
         occasionProfile: state.occasionProfile,
         hasSeenExitIntent: state.hasSeenExitIntent
@@ -239,6 +243,7 @@
       if (stored) {
         var parsed = JSON.parse(stored);
         if (parsed.sessionId) state.sessionId = parsed.sessionId;
+        if (parsed.cartId) state.cartId = parsed.cartId;
         if (parsed.lang) state.lang = parsed.lang;
         if (parsed.occasionProfile) state.occasionProfile = parsed.occasionProfile;
         if (parsed.hasSeenExitIntent) state.hasSeenExitIntent = true;
