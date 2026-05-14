@@ -25,7 +25,7 @@ function resolveImage(raw) {
 }
 
 function fmt(n) {
-  return `₱${Number(n||0).toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+  return `\u20B1${Number(n||0).toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
 }
 
 function stars(n) {
@@ -85,7 +85,7 @@ function showApp(user) {
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('adminApp').style.display='flex';
   const g = document.getElementById('adminGreeting');
-  if (g) g.textContent = `👋 ${user.name||user.email}`;
+  if (g) g.textContent = `\uD83D\uDC4B ${user.name||user.email}`;
 }
 
 async function handleLogin() {
@@ -119,7 +119,7 @@ async function handleLogin() {
     err.textContent = e.message||'Invalid credentials';
     err.style.display='block';
   } finally {
-    btn.disabled=false; btn.textContent='Sign In →';
+    btn.disabled=false; btn.textContent='Sign In \u2192';
   }
 }
 
@@ -247,7 +247,7 @@ function orderRow(o, extended=false) {
     <td>
       <div class="action-btns">
         <button class="btn btn-ghost btn-sm view-order-btn" data-id="${o.id}">View</button>
-        ${next?`<button class="btn btn-primary btn-sm advance-btn" data-id="${o.id}" data-status="${next}" style="font-size:0.72rem;">→ ${next.replace(/_/g,' ')}</button>`:''}
+        ${next?`<button class="btn btn-primary btn-sm advance-btn" data-id="${o.id}" data-status="${next}" style="font-size:0.72rem;">\u2192 ${next.replace(/_/g,' ')}</button>`:''}
       </div>
     </td>
   </tr>`;
@@ -263,12 +263,12 @@ function bindOrderActions(container) {
       btn.disabled=true; btn.textContent='...';
       try {
         await Api.put(`/api/orders/${btn.dataset.id}/status`,{status:btn.dataset.status});
-        showToast(`→ ${btn.dataset.status.replace(/_/g,' ')} ✓`,'success');
+        showToast(`\u2192 ${btn.dataset.status.replace(/_/g,' ')} \u2713`,'success');
         loadDashboard();
       } catch(e) {
         showToast(e.message||'Failed','error');
         btn.disabled=false;
-        btn.textContent=`→ ${btn.dataset.status.replace(/_/g,' ')}`;
+        btn.textContent=`\u2192 ${btn.dataset.status.replace(/_/g,' ')}`;
       }
     });
   });
@@ -310,7 +310,7 @@ async function openOrderDetail(id) {
             <span class="price-cell">${fmt((i.price||0)*(i.qty||1))}</span>
           </div>`).join('')||'<div class="detail-sub">No items</div>'}
       </div>
-      ${o.special_instructions?`<div class="note-box">📝 ${o.special_instructions}</div>`:''}
+      ${o.special_instructions?`<div class="note-box">\uD83D\uDCDD ${o.special_instructions}</div>`:''}
       <div class="detail-section" style="margin-top:20px;">
         <div class="detail-label">ADVANCE STATUS</div>
         <div class="action-btns" style="margin-top:8px;">
@@ -324,7 +324,7 @@ async function openOrderDetail(id) {
         btn.disabled=true; btn.textContent='...';
         try {
           await Api.put(`/api/orders/${btn.dataset.id}/status`,{status:btn.dataset.status});
-          showToast(`Advanced to ${btn.dataset.status.replace(/_/g,' ')} ✓`,'success');
+          showToast(`Advanced to ${btn.dataset.status.replace(/_/g,' ')} \u2713`,'success');
           modal.classList.remove('active');
           loadDashboard();
         } catch(e) {
@@ -387,7 +387,7 @@ async function loadAdminProducts() {
             <div class="product-thumb">
               ${resolveImage(p.images)
                 ?`<img src="${resolveImage(p.images)}" alt="${p.name}" style="width:44px;height:44px;object-fit:cover;border-radius:8px;">`
-                :'<span style="font-size:1.5rem;">🌸</span>'}
+                :'<span style="font-size:1.5rem;">\uD83C\uDF38</span>'}
             </div>
           </td>
           <td>
@@ -509,7 +509,7 @@ async function saveProduct() {
    
     await Api.upload(url, formData, method);
 
-    showToast(id ? 'Product updated ✓' : 'Product created 🌸', 'success');
+    showToast(id ? 'Product updated \u2713' : 'Product created \uD83C\uDF38', 'success');
     document.getElementById('productModal').classList.remove('active');
     if (typeof loadAdminProducts === 'function') loadAdminProducts();
     if (typeof socket !== 'undefined' && socket) socket.emit('admin_updated_catalog');
@@ -557,12 +557,12 @@ async function loadInventory() {
           </div>
           <div class="inv-controls">
             <div class="stock-stepper">
-              <button class="stepper-btn inv-dec" data-id="${p.id}" data-stock="${p.inventory||0}">−</button>
+              <button class="stepper-btn inv-dec" data-id="${p.id}" data-stock="${p.inventory||0}">\u2212</button>
               <span class="stock-val" style="color:${p.inventory<=0?'#ef4444':p.inventory<10?'#fbbf24':'#00D4AA'};">${p.inventory||0}</span>
               <button class="stepper-btn inv-inc" data-id="${p.id}" data-stock="${p.inventory||0}">+</button>
             </div>
             <span class="stock-status" style="color:${p.inventory<=0?'#ef4444':p.inventory<10?'#fbbf24':'rgba(255,255,255,0.3)'};">
-              ${p.inventory<=0?'⚠ Out':p.inventory<10?'⚠ Low':'✓ OK'}
+              ${p.inventory<=0?'\u26A0 Out':p.inventory<10?'\u26A0 Low':'\u2713 OK'}
             </span>
           </div>
         </div>`).join('')
@@ -575,7 +575,7 @@ async function loadInventory() {
         const newStock=isInc?current+1:Math.max(0,current-1);
         try {
           await Api.put(`/api/products/${btn.dataset.id}`,{inventory:newStock});
-          showToast(`Stock → ${newStock}`,'success');
+          showToast(`Stock \u2192 ${newStock}`,'success');
           loadInventory();
         } catch { showToast('Failed to update stock','error'); }
       });
@@ -649,10 +649,10 @@ async function saveFaq() {
   try {
     if (id) {
       await Api.put(`/api/faq/${id}`,payload);
-      showToast('FAQ updated ✓','success');
+      showToast('FAQ updated \u2713','success');
     } else {
       await Api.post('/api/faq',payload);
-      showToast('FAQ created ✓','success');
+      showToast('FAQ created \u2713','success');
     }
     document.getElementById('faqModal').classList.remove('active');
     loadFaqs();
@@ -722,7 +722,7 @@ async function saveContent() {
   btn.disabled=true; btn.textContent='Saving...';
   try {
     await Api.put('/api/content',payload);
-    showToast('Content saved ✓','success');
+    showToast('Content saved \u2713','success');
   } catch(e) {
     showToast(e.message||'Failed to save content','error');
   } finally {
@@ -744,8 +744,8 @@ async function loadSupportTickets() {
               <div style="font-weight:700;margin-bottom:4px;">${t.subject||'No subject'}</div>
               <div style="font-size:0.78rem;color:rgba(255,255,255,0.35);">#${(t.id||'').slice(0,8)} · ${t.channel||'web'} · ${t.messages?.length||0} msg(s)</div>
               ${(t.csat_score || t.nps_score) ? `
-                <div style="font-size:0.85rem;margin-top:6px;color:#FFD700;background:rgba(255,215,0,0.1);display:inline-block;padding:2px 8px;border-radius:4px;">⭐ CSAT: <b>${t.csat_score||'—'}</b>/5 &nbsp;&middot;&nbsp; 📊 NPS: <b>${t.nps_score||'—'}</b>/10</div>
-                ${t.feedback_comment ? `<div style="font-size:0.8rem;color:rgba(255,255,255,0.65);margin-top:6px;font-style:italic;background:rgba(255,255,255,0.03);padding:6px 10px;border-left:2px solid var(--bloom-primary);border-radius:0 4px 4px 0;max-width:400px;word-wrap:break-word;">💬 "${t.feedback_comment}"</div>` : ''}
+                <div style="font-size:0.85rem;margin-top:6px;color:#FFD700;background:rgba(255,215,0,0.1);display:inline-block;padding:2px 8px;border-radius:4px;">\u2B50 CSAT: <b>${t.csat_score||'—'}</b>/5 &nbsp;&middot;&nbsp; \uD83D\uDCCA NPS: <b>${t.nps_score||'—'}</b>/10</div>
+                ${t.feedback_comment ? `<div style="font-size:0.8rem;color:rgba(255,255,255,0.65);margin-top:6px;font-style:italic;background:rgba(255,255,255,0.03);padding:6px 10px;border-left:2px solid var(--bloom-primary);border-radius:0 4px 4px 0;max-width:400px;word-wrap:break-word;">\uD83D\uDCAC "${t.feedback_comment}"</div>` : ''}
               ` : ''}
             </div>
             <div class="action-btns" style="align-items:center;">
@@ -764,7 +764,7 @@ async function loadSupportTickets() {
         btn.disabled=true; btn.textContent='...';
         try {
           await Api.post(`/api/support/${btn.dataset.id}/resolve`,{csatScore:5});
-          showToast('Ticket resolved ✓','success');
+          showToast('Ticket resolved \u2713','success');
           loadSupportTickets();
         } catch(e) {
           showToast(e.message||'Failed','error');
@@ -792,10 +792,10 @@ async function loadAnalytics() {
     const kpi=document.getElementById('analyticsKpi');
     if (kpi) {
       kpi.innerHTML=`
-        <div class="kpi-card" style="--kpi-color:rgba(0,212,170,0.2)"><div class="kpi-icon">😊</div><div class="kpi-label">CSAT Score</div><div class="kpi-value">${data.csat?Number(data.csat).toFixed(1):'—'}<span style="font-size:1rem;font-weight:400">/5</span></div></div>
-        <div class="kpi-card" style="--kpi-color:rgba(99,102,241,0.2)"><div class="kpi-icon">📊</div><div class="kpi-label">NPS Score</div><div class="kpi-value">${data.nps?Number(data.nps).toFixed(1):'—'}<span style="font-size:1rem;font-weight:400">/10</span></div></div>
-        <div class="kpi-card" style="--kpi-color:rgba(232,67,147,0.2)"><div class="kpi-icon">💰</div><div class="kpi-label">Total Revenue</div><div class="kpi-value">${fmt(data.revenue?.total||0)}</div></div>
-        <div class="kpi-card" style="--kpi-color:rgba(255,215,0,0.2)"><div class="kpi-icon">📦</div><div class="kpi-label">Total Orders</div><div class="kpi-value">${data.revenue?.orders||0}</div></div>`;
+        <div class="kpi-card" style="--kpi-color:rgba(0,212,170,0.2)"><div class="kpi-icon">\uD83D\uDE0A</div><div class="kpi-label">CSAT Score</div><div class="kpi-value">${data.csat?Number(data.csat).toFixed(1):'—'}<span style="font-size:1rem;font-weight:400">/5</span></div></div>
+        <div class="kpi-card" style="--kpi-color:rgba(99,102,241,0.2)"><div class="kpi-icon">\uD83D\uDCCA</div><div class="kpi-label">NPS Score</div><div class="kpi-value">${data.nps?Number(data.nps).toFixed(1):'—'}<span style="font-size:1rem;font-weight:400">/10</span></div></div>
+        <div class="kpi-card" style="--kpi-color:rgba(232,67,147,0.2)"><div class="kpi-icon">\uD83D\uDCB0</div><div class="kpi-label">Total Revenue</div><div class="kpi-value">${fmt(data.revenue?.total||0)}</div></div>
+        <div class="kpi-card" style="--kpi-color:rgba(255,215,0,0.2)"><div class="kpi-icon">\uD83D\uDCE6</div><div class="kpi-label">Total Orders</div><div class="kpi-value">${data.revenue?.orders||0}</div></div>`;
     }
     renderBarChart('analyticsChart',data.salesByCategory||[]);
     const events=document.getElementById('eventList');
