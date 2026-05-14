@@ -48,18 +48,7 @@ function resolveImage(raw) {
 function renderProductCard(p) {
   var image = resolveImage(p.images);
   
-  // Artistic Render Mapping
-  var artisticMap = {
-    'Crimson Vow': '/img/vow-crimson.png',
-    'Velvet Midnight': '/img/midnight-velvet.png',
-    'Obsidian Rose': '/img/rose-obsidian.png',
-    'Neon Blossom': '/img/neon-blossom.png',
-    'Phantom Orchid': '/img/orchid-phantom.png',
-    'Executive Crimson': '/img/executive-crimson.png'
-  };
-  
-  if (!image && artisticMap[p.name]) image = artisticMap[p.name];
-  if (!image) image = '/img/vow-crimson.png'; // Global ethereal fallback
+  if (!image) image = '/uploads/products/crimson-vow.jpg'; // Global ethereal fallback (now points to a dynamic asset)
 
   var price = p.base_price || p.basePrice || 0;
   var stars = Array.from({ length: 5 }, function (_, i) {
@@ -249,18 +238,9 @@ async function loadRecs() {
     var recs = data.products || data;
     if (!Array.isArray(recs) || !recs.length) return;
     
-    var artisticMap = {
-      'Crimson Vow': '/img/vow-crimson.png',
-      'Velvet Midnight': '/img/midnight-velvet.png',
-      'Obsidian Rose': '/img/rose-obsidian.png',
-      'Neon Blossom': '/img/neon-blossom.png',
-      'Phantom Orchid': '/img/orchid-phantom.png'
-    };
-
     scroll.innerHTML = recs.map(function (p) {
       var img = resolveImage(p.images);
-      if (!img && artisticMap[p.name]) img = artisticMap[p.name];
-      if (!img) img = '/img/vow-crimson.png';
+      if (!img) img = '/uploads/products/crimson-vow.jpg';
       return '<div class="rec-chip" data-id="' + p.id + '">' +
         '<img src="' + img + '" style="width:36px;height:36px;border-radius:50%;object-fit:cover;" alt="">' +
         '<div><div style="font-weight:600;font-size:0.82rem;">' + p.name + '</div>' +
