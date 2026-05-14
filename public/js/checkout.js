@@ -10,26 +10,90 @@ async function init() {
   const sessionId = Store.get('sessionId');
   const token = Store.get('token');
   if (!token && !sessionId) { window.location.href = '/cart.html'; return; }
-  const urlParams = new URLSearchParams(window.location.search);
-  const subPlan = urlParams.get('subscription');
-  const subPrice = urlParams.get('price');
   
-  if (subPlan && subPrice) {
+  var params = new URLSearchParams(window.location.search);
+  var sub = params.get('subscription');
+  var subPrice = params.get('price');
+
+  if (sub && subPrice) {
+    console.log('[Checkout] Subscription flow detected:', sub, subPrice);
+    try {
+      await Api.post('/api/cart/items', { 
+        productId: 'sub-' + sub, 
+        price: subPrice,
+        qty: 1 
+      });
+    } catch (e) {
+      console.warn('[Checkout] Failed to sync subscription to server:', e.message);
+    }
+    
     cartData = {
-      items: [{ name: subPlan.charAt(0).toUpperCase() + subPlan.slice(1) + ' Subscription', qty: 1, price: Number(subPrice) }],
-      pricing: { subtotal: Number(subPrice), customizationFee: 0, deliveryFee: 0, tax: Number(subPrice) * 0.12, finalTotal: Number(subPrice) * 1.12, promoDiscount: 0 }
+      items: [{
+        productId: 'sub-' + sub,
+        name: sub.charAt(0).toUpperCase() + sub.slice(1) + ' Subscription',
+        price: Number(subPrice),
+        qty: 1,
+        image: '/uploads/subscriptions/' + sub + '.jpg'
+      }],
+      pricing: {
+        subtotal: Number(subPrice),
+        customizationFee: 0,
+        deliveryFee: 0,
+        tax: Number(subPrice) * 0.12,
+        finalTotal: Number(subPrice) * 1.12,
+        promoDiscount: 0
+      }
     };
     renderCheckoutSummary();
     renderCalendar();
-    return;
+  } else {
+    try {
+      var cart = await Api.get('/api/cart');
+      cartData = cart;
+      if (Store) Store.set('cartId', cart.id);
+      
+      if (!cartData || !cartData.items || !cartData.items.length) {
+        try {
+          var local = JSON.parse(localStorage.getItem('bloom_cart') || '[]');
+          if (local.length) {
+            console.log('[Checkout] Rehydrating from localStorage fallback');
+            for (var it of local) {
+              await Api.post('/api/cart/items', it).catch(() => {});
+            }
+            cartData = await Api.get('/api/cart');
+          }
+        } catch (e) {}
+      }
+      
+      if (!cartData || !cartData.items || !cartData.items.length) {
+        window.location.href = '/cart.html?reason=empty';
+        return;
+      }
+      renderCheckoutSummary();
+      renderCalendar();
+    } catch (err) {
+      console.error('[Checkout] Failed to fetch cart:', err);
+      if (err.status === 401) {
+        showToast('Session expired. Please sign in again.', 'error');
+        setTimeout(() => { window.location.href = '/?auth=1'; }, 2000);
+        return;
+      }
+      window.location.href = '/cart.html';
+    }
   }
 
-  try {
-    cartData = await Api.get('/api/cart');
-    if (!cartData.items?.length) { window.location.href = '/cart.html'; return; }
-    renderCheckoutSummary();
-    renderCalendar();
-  } catch { window.location.href = '/cart.html'; }
+  if (typeof initSteps === 'function') initSteps();
+  if (typeof loadSavedAddress === 'function') loadSavedAddress();
+  
+  if (window.Store) {
+    var user = Store.get('user');
+    if (user) {
+      const emailInp = document.getElementById('email');
+      const phoneInp = document.getElementById('phone');
+      if (emailInp) emailInp.value = user.email || '';
+      if (phoneInp) phoneInp.value = user.phone || '';
+    }
+  }
 }
 
 function renderCheckoutSummary() {
