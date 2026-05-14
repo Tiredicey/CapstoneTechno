@@ -311,8 +311,6 @@ async function openOrderDetail(id) {
           </div>`).join('')||'<div class="detail-sub">No items</div>'}
       </div>
       ${o.special_instructions?`<div class="note-box">\uD83D\uDCDD ${o.special_instructions}</div>`:''}
-        </div>
-      </div>
       <div class="detail-section" style="margin-top:20px;">
         <div class="detail-label">DELIVERY VERIFICATION</div>
         ${o.delivery_photo ? `
@@ -323,16 +321,24 @@ async function openOrderDetail(id) {
         ` : `
           <div style="margin-top:8px;background:rgba(255,255,255,0.03);padding:12px;border-radius:12px;border:1px dashed rgba(255,255,255,0.1);">
             <div class="detail-sub" style="margin-bottom:8px;">No photo uploaded yet.</div>
-            <div style="display:flex;gap:8px;">
+            <div style="display:flex;gap:8px;align-items:center;">
               <input type="file" id="deliveryPhotoInp" accept="image/*" style="display:none;">
-              <button class="btn btn-ghost btn-sm" onclick="document.getElementById('deliveryPhotoInp').click()">Select Photo</button>
-              <button class="btn btn-primary btn-sm" id="uploadDeliveryBtn" disabled>Upload Proof</button>
+              <label for="deliveryPhotoInp" class="btn btn-ghost btn-sm" style="cursor:pointer; display:inline-flex; align-items:center; justify-content:center;">Select Photo</label>
+              <button type="button" class="btn btn-primary btn-sm" id="uploadDeliveryBtn" disabled>Upload Proof</button>
             </div>
             <div id="deliveryPhotoPreview" style="margin-top:10px;display:none;">
                <img id="dpPrevImg" style="width:100%;max-height:150px;object-fit:cover;border-radius:8px;">
             </div>
           </div>
         `}
+      </div>
+      <div class="detail-section" style="margin-top:20px;">
+        <div class="detail-label">ADVANCE STATUS</div>
+        <div class="action-btns" style="margin-top:8px;">
+          ${STATUS_ORDER.filter(s=>STATUS_ORDER.indexOf(s)>STATUS_ORDER.indexOf(o.status))
+            .map(s=>`<button class="btn btn-ghost btn-sm modal-advance" data-id="${o.id}" data-status="${s}">${s.replace(/_/g,' ')}</button>`)
+            .join('')||'<span class="detail-sub">Order fully processed</span>'}
+        </div>
       </div>`;
     
     const photoInp = body.querySelector('#deliveryPhotoInp');
@@ -344,11 +350,11 @@ async function openOrderDetail(id) {
       photoInp.addEventListener('change', () => {
         const file = photoInp.files[0];
         if (file) {
+          uploadBtn.disabled = false; // Enable immediately!
           const reader = new FileReader();
           reader.onload = (e) => {
             prevImg.src = e.target.result;
             prevDiv.style.display = 'block';
-            uploadBtn.disabled = false;
           };
           reader.readAsDataURL(file);
         }
