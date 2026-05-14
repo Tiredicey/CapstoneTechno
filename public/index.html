@@ -190,8 +190,6 @@ body.c-hover .c-ring { width: 52px; height: 52px; border-color: rgba(230,26,26,.
 .n-links a:hover, .n-links a:focus-visible { color: #fff; background: var(--gl); }
 .n-links a::after { content: attr(data-label); font-family: var(--fc); font-style: italic; font-weight: 900; font-size: .6rem; color: var(--p5); position: absolute; top: 2px; left: 50%; transform: translateX(-50%); opacity: 0; transition: opacity .2s; pointer-events: none; letter-spacing: .1em; text-transform: uppercase; }
 .n-links a:hover::after, .n-links a:focus-visible::after { opacity: 1; }
-.n-acts { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 9px 18px; border-radius: var(--rs); font-family: var(--fb); font-size: .86rem; font-weight: 600; transition: transform .25s var(--ease), box-shadow .25s var(--ease), background .2s; position: relative; overflow: hidden; white-space: nowrap; }
 .btn::before { content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0); transition: background .2s; pointer-events: none; }
 .btn:hover::before, .btn:focus-visible::before { background: rgba(255,255,255,.06); }
@@ -238,7 +236,7 @@ body.c-hover .c-ring { width: 52px; height: 52px; border-color: rgba(230,26,26,.
 .hero-bg { position: absolute; inset: 0; background: radial-gradient(at 0% 0%, hsla(328,100%,15%,0.3) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(272,100%,15%,0.3) 0, transparent 50%); }
 .hero-bg::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 20% 30%, var(--ethereal-glow-pink), transparent 50%), radial-gradient(circle at 80% 70%, var(--ethereal-glow-red), transparent 50%); filter: blur(80px); opacity: 0.5; animation: etherealPulse 15s ease-in-out infinite alternate; }
 @keyframes etherealPulse { from { transform: scale(1); opacity: 0.4; } to { transform: scale(1.1); opacity: 0.7; } }
-.hero-photo { position: absolute; top: 0; right: 0; width: 62%; height: 100%; background-image: url('/img/hero-flowers.jpg'); background-size: cover; background-position: center center; clip-path: polygon(15% 0, 100% 0, 100% 100%, 0 100%); transform: translate3d(calc(var(--px,0) * 12px), calc(var(--py,0) * 8px), 0) scale(1.04); transition: transform .22s linear; will-change: transform; filter: saturate(1.1) brightness(0.7); }
+.hero-photo { position: absolute; top: 0; right: 0; width: 62%; height: 100%; background-image: url('/img/hero-flowers.jpg'); background-size: cover; background-position: center center; clip-path: polygon(15% 0, 100% 0, 100% 100%, 0 100%); transform: translate3d(calc(var(--px,0) * 12px), calc(var(--py,0) * 8px), 0) scale(1.04); transition: transform .22s linear; will-change: transform; filter: saturate(1.1) brightness(0.8); }
 .hero-photo::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to right, var(--ethereal-obsidian) 0%, rgba(5,2,10,0.95) 35%, rgba(5,2,10,0.6) 60%, transparent 100%); z-index: 1; }
 .hero-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(5,2,10,.6) 0%, transparent 20%, transparent 80%, rgba(5,2,10,.7) 100%); z-index: 1; }
 .hero-slash-1 { position: absolute; left: 42%; top: -5%; width: 4px; height: 110%; background: linear-gradient(to bottom, transparent, var(--p5), var(--pk), transparent); transform: skewX(-8deg) rotate(-3deg); z-index: 3; opacity: .4; pointer-events: none; filter: drop-shadow(0 0 12px var(--p5)); }
@@ -576,7 +574,7 @@ input:-webkit-autofill:focus {
   .n-links { display: none; }
   .hmb { display: flex; }
   .hero-grid { grid-template-columns: 1fr; padding: 40px 0; }
-  .hero-photo { width: 100%; clip-path: none; opacity: .35; }
+  .hero-photo { width: 100%; clip-path: none; opacity: .65; }
   .hero-slash-1 { display: none; }
   .hero-cards { display: none; }
   .stats-inner { grid-template-columns: repeat(2, 1fr); }
