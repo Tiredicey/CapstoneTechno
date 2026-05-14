@@ -21,12 +21,14 @@ const FAQS = [
 ];
 
 const BOT_RESPONSES = {
-  track: 'To track your order, visit the **Track Order** page and enter your order code (starts with BLOOM-). Or tell me your order code and I\'ll look it up!',
+  track: 'To track your order, enter your **BLOOM-** order code directly or visit our tracking page.',
   refund: 'For simulated resolution requests, I would typically need an order ID and photo. Would you like me to demonstrate opening a support ticket?',
   cancel: 'Orders can be cancelled up to 12 hours before the scheduled delivery. What\'s your order code?',
   delivery: 'Delivery times depend on your selected time slot: Morning (9am-12pm), Afternoon (12pm-4pm), or Evening (4pm-8pm).',
   default: 'I\'m happy to help! I can demonstrate order tracking, simulated resolutions, delivery workflows, or platform capabilities. What do you need?'
 };
+
+const BLOOM_CODE_REGEX = /\b(BLOOM-[A-Z0-9]+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\b/i;
 
 let currentTicketId = null;
 let csatRating = 0;
@@ -219,15 +221,50 @@ const LOCAL_ROUTER = [
       document.getElementById('openSelfBtn')?.click();
       return "I've scrolled to our Frequently Asked Questions (FAQ) and Knowledge Base below for your convenience! \uD83D\uDCD6";
   }},
-  { pattern: /\b(cart|order status|track|where is|delivery|status|bloom-)\b/i, action: () => {
-      return BOT_RESPONSES.track + " Or enter your Bloom order code directly for instant tracking lookup.";
+  { pattern: /\b(cart|order status|track|where is|delivery|status)\b/i, action: (msg) => {
+      const codeMatch = msg.match(BLOOM_CODE_REGEX);
+      if (codeMatch) return autoTrackOrder(codeMatch[0]);
+      return BOT_RESPONSES.track;
   }}
 ];
 
+async function autoTrackOrder(code) {
+  showTypingIndicator();
+  try {
+    const order = await Api.get('/orders/' + code + '/track');
+    hideTypingIndicator();
+    const status = (order.status || 'new').replace(/_/g, ' ').toUpperCase();
+    const eta = order.delivery_date || order.deliveryDate || 'TBD';
+    const cardHtml = `
+      <div class="chat-status-card glass-ethereal shimmer">
+        <div class="card-hd">
+          <span class="code">${code.toUpperCase()}</span>
+          <span class="pill status-${order.status}">${status}</span>
+        </div>
+        <div class="card-body">
+          <div class="meta"><span>ETA:</span> <strong>${eta}</strong></div>
+          <div class="meta"><span>Recipient:</span> <strong>${typeof order.recipient === 'string' ? JSON.parse(order.recipient).name : (order.recipient?.name || 'Customer')}</strong></div>
+        </div>
+        <a href="/tracking.html?id=${code}" class="card-link">View Full Timeline \u2192</a>
+      </div>
+    `;
+    appendMessage(cardHtml, 'bot', true);
+    return "I've retrieved your live order details above. \uD83C\uDF38";
+  } catch (e) {
+    hideTypingIndicator();
+    return "I couldn't find an order with code **" + code + "**. Please double-check the ID or try again later.";
+  }
+}
+
 function routeIntentLocally(msg) {
   const m = msg.toLowerCase();
+  // Check for raw code input first
+  if (BLOOM_CODE_REGEX.test(m)) {
+    const code = m.match(BLOOM_CODE_REGEX)[0];
+    return autoTrackOrder(code);
+  }
   for (const route of LOCAL_ROUTER) {
-    if (route.pattern.test(m)) return route.action();
+    if (route.pattern.test(m)) return route.action(msg);
   }
   return null;
 }
@@ -334,6 +371,7 @@ function closeChat() {
 
 function getBotResponse(msg) {
   const m = msg.toLowerCase();
+  if (BLOOM_CODE_REGEX.test(m)) return autoTrackOrder(m.match(BLOOM_CODE_REGEX)[0]);
   if (m.includes('track') || m.includes('where')) return BOT_RESPONSES.track;
   if (m.includes('refund') || m.includes('damaged') || m.includes('wrong')) return BOT_RESPONSES.refund;
   if (m.includes('cancel')) return BOT_RESPONSES.cancel;
@@ -341,18 +379,25 @@ function getBotResponse(msg) {
   return BOT_RESPONSES.default;
 }
 
-function appendMessage(body, type) {
+function appendMessage(body, type, isHtml = false) {
   const container = document.getElementById('chatMessages');
   if (!container) return;
   const div = document.createElement('div');
   div.className = `chat-bubble ${type}`;
-  const safeTxt = String(body || '')
-    .replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))
-    .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
-    .replace(/\n/g, '<br>');
-  div.innerHTML = safeTxt;
+  if (isHtml) {
+    div.innerHTML = body;
+  } else {
+    const safeTxt = String(body || '')
+      .replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))
+      .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+      .replace(/\n/g, '<br>');
+    div.innerHTML = safeTxt;
+  }
   container.appendChild(div);
   container.scrollTop = container.scrollHeight;
+  if (window.Motion && window.Motion.animate) {
+    window.Motion.animate(div, { opacity: [0, 1], y: [10, 0] }, { duration: 0.4 });
+  }
 }
 
 let typingBubble = null;
@@ -395,10 +440,15 @@ async function sendChat() {
 
   const localRoutingReply = routeIntentLocally(msg);
   if (localRoutingReply) {
-    appendMessage(localRoutingReply, 'bot');
-    chatHistory.push({ role: 'assistant', content: localRoutingReply });
-    if (currentTicketId) {
-      Api.post(`/support/${currentTicketId}/message`, { message: localRoutingReply, sender: 'bot' }).catch(() => {});
+    if (localRoutingReply instanceof Promise) {
+      const reply = await localRoutingReply;
+      appendMessage(reply, 'bot');
+      chatHistory.push({ role: 'assistant', content: reply });
+      if (currentTicketId) Api.post(`/support/${currentTicketId}/message`, { message: reply, sender: 'bot' }).catch(() => {});
+    } else {
+      appendMessage(localRoutingReply, 'bot');
+      chatHistory.push({ role: 'assistant', content: localRoutingReply });
+      if (currentTicketId) Api.post(`/support/${currentTicketId}/message`, { message: localRoutingReply, sender: 'bot' }).catch(() => {});
     }
     return;
   }
@@ -432,7 +482,8 @@ async function sendChat() {
     }
   } catch (e) {
     hideTypingIndicator();
-    const fallback = getBotResponse(msg);
+    let fallback = getBotResponse(msg);
+    if (fallback instanceof Promise) fallback = await fallback;
     appendMessage(fallback, 'bot');
     chatHistory.push({ role: 'assistant', content: fallback });
     if (currentTicketId) {
