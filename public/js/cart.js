@@ -14,12 +14,12 @@
     } else {
       console.error('Bloom globals not available');
       var panel = document.getElementById('cartItemsPanel');
-      if (panel) panel.innerHTML = '<div style="color:rgba(255,107,107,0.8);padding:48px;text-align:center;"><div style="font-size:2rem;margin-bottom:12px;">⚠️</div><p>Could not initialize cart. Please refresh.</p></div>';
+      if (panel) panel.innerHTML = '<div style="color:rgba(255,107,107,0.8);padding:48px;text-align:center;"><div style="font-size:2rem;margin-bottom:12px;">\u26A0</div><p>Could not initialize cart. Please refresh.</p></div>';
     }
   }
 
   function fmt(n) {
-    return '₱' + Number(n || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return '\u20B1' + Number(n || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
   function phpFromUSD(usd) {
@@ -108,7 +108,7 @@
       Store.updateCartCount(count);
     } catch (err) {
       console.error('Cart load error:', err);
-      panel.innerHTML = '<div style="color:rgba(255,107,107,0.8);padding:48px;text-align:center;"><div style="font-size:2.5rem;margin-bottom:12px;">⚠️</div><p style="margin-bottom:16px;">Failed to load cart.</p><a href="/catalog.html" class="btn btn-primary">Browse Shop</a></div>';
+      panel.innerHTML = '<div style="color:rgba(255,107,107,0.8);padding:48px;text-align:center;"><div style="font-size:2.5rem;margin-bottom:12px;">\u26A0</div><p style="margin-bottom:16px;">Failed to load cart.</p><a href="/catalog.html" class="btn btn-primary">Browse Shop</a></div>';
     }
   }
 
@@ -139,7 +139,7 @@
     if (!panel) return;
     var checkoutBtn = document.getElementById('checkoutBtn');
     if (!cartData || !cartData.items || !cartData.items.length) {
-      panel.innerHTML = '<div style="text-align:center;padding:64px 24px;"><div style="font-size:3.5rem;margin-bottom:16px;">🛒</div><h2 style="font-size:1.4rem;font-weight:700;margin-bottom:10px;color:#fff;">Your Cart is Empty</h2><p style="color:rgba(255,255,255,0.4);margin-bottom:24px;">Discover our beautiful arrangements.</p><a href="/catalog.html" class="btn btn-primary">Browse Collection →</a></div>';
+      panel.innerHTML = '<div style="text-align:center;padding:64px 24px;"><div style="font-size:3.5rem;margin-bottom:16px;">\uD83D\uDED2</div><h2 style="font-size:1.4rem;font-weight:700;margin-bottom:10px;color:#fff;">Your Cart is Empty</h2><p style="color:rgba(255,255,255,0.4);margin-bottom:24px;">Discover our beautiful arrangements.</p><a href="/catalog.html" class="btn btn-primary">Browse Collection \u2192</a></div>';
       if (checkoutBtn) checkoutBtn.style.display = 'none';
       return;
     }
@@ -148,23 +148,23 @@
       var linePrice = item.price * (item.qty || 1);
       var customText = item.customization
         ? (typeof item.customization === 'object'
-          ? '✏️ ' + Object.entries(item.customization).filter(function (e) { return e[1] && e[0] !== 'priceDelta'; }).slice(0, 3).map(function (e) { return e[0]; }).join(', ')
-          : '✏️ ' + item.customization)
+          ? '\u270F\uFE0F ' + Object.entries(item.customization).filter(function (e) { return e[1] && e[0] !== 'priceDelta'; }).slice(0, 3).map(function (e) { return e[0]; }).join(', ')
+          : '\u270F\uFE0F ' + item.customization)
         : 'Standard arrangement';
       return '<div class="cart-item" data-line="' + item.lineId + '" style="display:flex;gap:16px;align-items:flex-start;padding:20px;border-bottom:1px solid rgba(255,255,255,0.06);">' +
         '<div style="width:80px;height:80px;border-radius:12px;flex-shrink:0;overflow:hidden;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;font-size:2rem;">' +
-        (item.image ? '<img src="' + item.image + '" alt="' + item.name + '" style="width:100%;height:100%;object-fit:cover;">' : '🌺') +
+        (item.image ? '<img src="' + item.image + '" alt="' + item.name + '" style="width:100%;height:100%;object-fit:cover;">' : '\uD83C\uDF3A') +
         '</div>' +
         '<div style="flex:1;min-width:0;">' +
         '<div style="font-weight:600;color:#fff;margin-bottom:4px;font-size:0.95rem;">' + item.name + '</div>' +
         '<div style="font-size:0.77rem;color:rgba(255,255,255,0.32);margin-bottom:10px;">' + customText + '</div>' +
         '<div style="display:flex;align-items:center;gap:10px;">' +
-        '<button class="qty-btn" data-action="dec" data-line="' + item.lineId + '" style="width:28px;height:28px;border-radius:50%;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;">−</button>' +
+        '<button class="qty-btn" data-action="dec" data-line="' + item.lineId + '" style="width:28px;height:28px;border-radius:50%;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;">\u2212</button>' +
         '<span style="color:#fff;font-weight:600;min-width:22px;text-align:center;">' + (item.qty || 1) + '</span>' +
         '<button class="qty-btn" data-action="inc" data-line="' + item.lineId + '" style="width:28px;height:28px;border-radius:50%;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;">+</button>' +
         '</div></div>' +
         '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">' +
-        '<button class="cart-item-remove" data-line="' + item.lineId + '" style="background:none;border:none;color:rgba(255,100,100,0.55);cursor:pointer;font-size:1rem;padding:2px;" title="Remove">✕</button>' +
+        '<button class="cart-item-remove" data-line="' + item.lineId + '" style="background:none;border:none;color:rgba(255,100,100,0.55);cursor:pointer;font-size:1rem;padding:2px;" title="Remove">\u2715</button>' +
         '<div style="color:var(--bloom-accent,#ff6b9d);font-weight:700;font-size:0.95rem;">' + fmt(linePrice) + '</div>' +
         '<div style="font-size:0.74rem;color:rgba(255,255,255,0.3);">' + fmt(item.price) + ' each</div>' +
         '</div></div>';
@@ -227,19 +227,19 @@
     function setEl(id, val) { var el = document.getElementById(id); if (el) el.textContent = val; }
     setEl('summarySubtotal', fmt(p.subtotal));
     setEl('summaryCustom', fmt(p.customizationFee || 0));
-    setEl('summaryShipping', p.deliveryFee === 0 ? '🎉 FREE' : fmt(p.deliveryFee));
+    setEl('summaryShipping', p.deliveryFee === 0 ? '\uD83C\uDF89 FREE' : fmt(p.deliveryFee));
     setEl('summaryTax', fmt(p.tax));
     setEl('summaryTotal', fmt(p.finalTotal));
     var promoRow = document.getElementById('promoRow');
     if (p.promoDiscount > 0 && promoRow) {
       promoRow.style.display = 'flex';
-      setEl('summaryPromo', '−' + fmt(p.promoDiscount));
+      setEl('summaryPromo', '\u2212' + fmt(p.promoDiscount));
     }
     var fill = document.getElementById('freeShipFill');
     var text = document.getElementById('freeShipText');
     var pct = Math.min((p.subtotal / FREE_SHIP_THRESHOLD) * 100, 100);
     if (fill) fill.style.width = pct + '%';
-    if (text) text.textContent = p.deliveryFee === 0 ? '🎉 You have free shipping!' : 'Add ' + fmt(FREE_SHIP_THRESHOLD - p.subtotal) + ' more for free shipping';
+    if (text) text.textContent = p.deliveryFee === 0 ? '\uD83C\uDF89 You have free shipping!' : 'Add ' + fmt(FREE_SHIP_THRESHOLD - p.subtotal) + ' more for free shipping';
   }
 
   function loadLoyaltyInfo() {
