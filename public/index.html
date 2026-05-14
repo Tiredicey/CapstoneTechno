@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Bloom - Handcrafted bouquets, pre-ordered for every moment. Cold-chain fresh, WCAG 2.1 AA accessible, developed by STI LIPA BSIT students.">
+<meta name="description" content="Bloom - Handcrafted bouquets, pre-ordered for every moment. WCAG 2.1 AA accessible. A BSIT Capstone project by STI LIPA students.">
 <meta name="theme-color" content="#0B0516" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#0B0516">
 <meta name="color-scheme" content="dark">
 <meta property="og:title" content="Bloom - Pre-Order Flowers & Gifts">
-<meta property="og:description" content="Custom bouquets delivered exactly when you need them. Cold-chain preserved. Accessible.">
+<meta property="og:description" content="Custom bouquets for every moment. WCAG 2.1 AA accessible. An academic prototype by STI LIPA BSIT students.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="/img/hero-flowers.jpg">
 <meta name="twitter:card" content="summary_large_image">
@@ -27,7 +27,7 @@
 <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=Barlow+Condensed:ital,wght@0,700;0,900;1,700;1,900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" as="style">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=Barlow+Condensed:ital,wght@0,700;0,900;1,700;1,900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Organization","name":"Bloom","url":"/","logo":"/img/hero-flowers.jpg","description":"Handcrafted bouquets, pre-ordered for every moment. Cold-chain fresh, WCAG 2.1 AA accessible. Built by STI LIPA BSIT students.","sameAs":["https://instagram.com/","https://facebook.com/"],"address":{"@type":"PostalAddress","addressCountry":"PH","addressRegion":"Batangas","addressLocality":"Lipa City"},"areaServed":["Metro Manila","Batangas","Cebu"]}
+{"@context":"https://schema.org","@type":"Organization","name":"Bloom","url":"/","logo":"/img/hero-flowers.jpg","description":"Handcrafted bouquets, pre-ordered for every moment. WCAG 2.1 AA accessible. A BSIT Capstone project by STI College Lipa.","sameAs":["https://instagram.com/","https://facebook.com/"],"address":{"@type":"PostalAddress","addressCountry":"PH","addressRegion":"Batangas","addressLocality":"Lipa City"},"areaServed":["Metro Manila","Batangas","Cebu"]}
 </script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"/"},{"@type":"ListItem","position":2,"name":"Catalog","item":"/catalog.html"}]}
@@ -314,6 +314,12 @@ canvas#ptcl { position: absolute; inset: 0; width: 100%; height: 100%; pointer-e
 .stat-src { font-size: .62rem; color: rgba(255,255,255,.28); margin-top: 6px; letter-spacing: .05em; }
 .stat-src a { color: rgba(255,255,255,.5); border-bottom: 1px dotted rgba(255,255,255,.2); }
 .stat-src a:hover { color: var(--p5l); border-bottom-color: var(--p5); }
+
+.bloom-academic-badge { position: fixed; bottom: 0; left: 0; right: 0; z-index: 99998; background: linear-gradient(135deg, rgba(5,2,10,0.95), rgba(30,10,40,0.95)); backdrop-filter: blur(12px); border-top: 1px solid rgba(230,26,26,.2); padding: 8px 16px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: .72rem; color: rgba(255,255,255,.55); letter-spacing: .03em; text-align: center; line-height: 1.5; }
+.bloom-academic-badge span { color: var(--p5l); font-weight: 600; }
+.bloom-academic-badge-close { background: none; border: none; color: rgba(255,255,255,.4); cursor: pointer; font-size: 1rem; padding: 0 4px; margin-left: 8px; }
+.bloom-academic-badge-close:hover { color: #fff; }
+.ai-gen-label { position: absolute; top: 8px; left: 8px; z-index: 5; display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 6px; background: rgba(0,0,0,.65); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,.1); font-size: .62rem; font-weight: 600; color: rgba(255,255,255,.7); letter-spacing: .06em; text-transform: uppercase; pointer-events: none; }
 
 .sec-pad { padding: 96px 0; }
 .sec-hd { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 48px; flex-wrap: wrap; gap: 16px; }
@@ -913,7 +919,7 @@ input:-webkit-autofill:focus {
 
   <div class="ch-cta-wrapper" style="position:absolute;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;width:100vw;padding:0 16px;pointer-events:auto;will-change:transform" aria-hidden="false">
     <h2 class="ch-text-silver-matte" style="font-family:var(--fd);font-size:clamp(2rem,5vw,4.5rem);font-weight:700;margin-bottom:24px;letter-spacing:-.03em;line-height:1.1">Browse gently.</h2>
-    <p style="color:var(--text-muted);font-size:clamp(.9rem,1.2vw,1.25rem);margin-bottom:48px;max-width:520px;margin-left:auto;margin-right:auto;font-weight:300;line-height:1.7">Handcrafted bouquets and floral arrangements. Cold-chain fresh, delivered to the door - no rush, no pressure.</p>
+    <p style="color:var(--text-muted);font-size:clamp(.9rem,1.2vw,1.25rem);margin-bottom:48px;max-width:520px;margin-left:auto;margin-right:auto;font-weight:300;line-height:1.7">Handcrafted bouquets and floral arrangements. Designed with care, delivered gently to the door - no rush, no pressure.</p>
     <div style="display:flex;flex-direction:column;gap:16px;align-items:center">
       <a href="#shop" class="ch-btn-modern-light" style="display:inline-flex;align-items:center;justify-content:center;gap:12px;padding:14px 32px;border-radius:20px;text-decoration:none;font-weight:700;font-size:1rem;font-family:var(--fb)">
         <svg style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 2v6M12 22v-6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M2 12h6M22 12h-6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"/></svg>
@@ -992,7 +998,7 @@ input:-webkit-autofill:focus {
 
             <div class="ch-floating-badge ch-floating-ui-badge" style="position:absolute;display:flex;top:24px;left:-15px;border-radius:12px;padding:12px;align-items:center;gap:12px;z-index:30">
               <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(180deg,rgba(230,26,26,.2),rgba(230,26,26,.1));display:flex;align-items:center;justify-content:center;border:1px solid rgba(230,26,26,.3);box-shadow:inset 0 1px 2px rgba(0,0,0,.3)"><span style="font-size:1rem" aria-hidden="true">🌸</span></div>
-              <div><p style="color:#fff;font-size:12px;font-weight:700;letter-spacing:-.02em">Fresh Today</p><p style="color:rgba(255,107,107,.5);font-size:10px;font-weight:500">Cold-chain verified</p></div>
+              <div><p style="color:#fff;font-size:12px;font-weight:700;letter-spacing:-.02em">Fresh Today</p><p style="color:rgba(255,107,107,.5);font-size:10px;font-weight:500">Freshness modeled</p></div>
             </div>
 
             <div class="ch-floating-badge ch-floating-ui-badge" style="position:absolute;display:flex;bottom:48px;right:-15px;border-radius:12px;padding:12px;align-items:center;gap:12px;z-index:30">
@@ -1033,9 +1039,9 @@ input:-webkit-autofill:focus {
         <div class="hero-countdown" id="cdWrap" aria-live="polite" aria-atomic="true"></div>
         <div class="hero-eyebrow">
           <span class="hero-eyebrow-tag">Pre-order</span>
-          <span class="hero-eyebrow-tag">Cold-chain</span>
-          <span class="hero-eyebrow-tag">1hr windows</span>
-          <span class="hero-eyebrow-sub">Gentle care · Cold-chain fresh · At your pace</span>
+          <span class="hero-eyebrow-tag">Freshness-first</span>
+          <span class="hero-eyebrow-tag">Flexible scheduling</span>
+          <span class="hero-eyebrow-sub">Gentle care · Designed fresh · At your pace</span>
         </div>
         <h1 class="hero-hl">
           <span data-content-key="hero_title_1">A small gesture,</span>
@@ -1117,7 +1123,7 @@ input:-webkit-autofill:focus {
         <div class="stat-num" id="sRating">STI</div>
         <div class="stat-bar"><div class="stat-bar-fill" data-w="100"></div></div>
         <div class="stat-lbl">LIPA BSIT Capstone</div>
-        <div class="stat-src">Undergraduate thesis requirement</div>
+        <div class="stat-src">BSIT Capstone project</div>
       </div>
     </div>
   </div>
@@ -1165,13 +1171,13 @@ input:-webkit-autofill:focus {
     <div class="feat-grid">
       <article class="feat-card anim-in">
         <div class="feat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2v6M12 22v-6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M2 12h6M22 12h-6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"/></svg></div>
-        <h3 class="feat-t">Cold-chain fresh</h3>
-        <p class="feat-d">Proper temperature management during transit helps preserve the quality and longevity of your floral arrangements.</p>
+        <h3 class="feat-t">Freshness-first design</h3>
+        <p class="feat-d">The platform models temperature-aware logistics based on UC Davis postharvest guidelines to preserve floral quality.</p>
       </article>
       <article class="feat-card anim-in">
         <div class="feat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
-        <h3 class="feat-t">Scheduled to the hour</h3>
-        <p class="feat-d">Pick a 1-hour window. Evening slots included. Lead time locked at checkout; the calendar is the contract.</p>
+        <h3 class="feat-t">Flexible scheduling</h3>
+        <p class="feat-d">Choose your preferred delivery window at checkout. The platform models time-slot selection with evening availability.</p>
       </article>
       <article class="feat-card anim-in">
         <div class="feat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg></div>
@@ -1303,7 +1309,7 @@ input:-webkit-autofill:focus {
           <div class="subs-card-feats">
             <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>Free vase, week one</span>
             <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>Skip / pause anytime</span>
-            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>Cold-chain</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>Fresh handling</span>
           </div>
         </button>
         <button type="button" class="subs-card selected" data-sub="biweekly" data-price="2299" role="radio" aria-checked="true">
@@ -1344,7 +1350,7 @@ input:-webkit-autofill:focus {
     <div class="foot-grid">
       <div>
         <div class="foot-brand">Bloom</div>
-        <p class="foot-tag">Handcrafted bouquets, pre-ordered for every moment. Cold-chain fresh, WCAG 2.1 AA accessible, developed by STI LIPA BSIT students.</p>
+        <p class="foot-tag">Academic prototype: Handcrafted bouquets, pre-ordered for every moment. WCAG 2.1 AA accessible. Developed by STI LIPA BSIT students. All prices, transactions, and metrics shown are simulated for capstone demonstration purposes.</p>
         <form class="nl-form" id="nlForm" aria-label="Newsletter signup">
           <input type="email" class="nl-inp" id="nlEmail" placeholder="your@email.com" aria-label="Email address" required>
           <button type="submit" class="btn btn-p btn-sm">Join</button>
@@ -3246,6 +3252,17 @@ window.addEventListener('beforeinstallprompt', function (e) {
       closeExit();
     });
   }
+})();
+</script>
+<script>
+(function(){
+  if(sessionStorage.getItem('bloom_badge_dismissed')) return;
+  var b=document.createElement('div');
+  b.className='bloom-academic-badge';
+  b.setAttribute('role','status');
+  b.innerHTML='🎓 <span>Academic Prototype</span> — This platform is a BSIT Capstone project by STI College Lipa students. All prices, transactions, and metrics are simulated for demonstration purposes only.<button class="bloom-academic-badge-close" aria-label="Dismiss">\u00d7</button>';
+  document.body.appendChild(b);
+  b.querySelector('.bloom-academic-badge-close').addEventListener('click',function(){b.remove();sessionStorage.setItem('bloom_badge_dismissed','1');});
 })();
 </script>
 
