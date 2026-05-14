@@ -311,14 +311,71 @@ async function openOrderDetail(id) {
           </div>`).join('')||'<div class="detail-sub">No items</div>'}
       </div>
       ${o.special_instructions?`<div class="note-box">\uD83D\uDCDD ${o.special_instructions}</div>`:''}
-      <div class="detail-section" style="margin-top:20px;">
-        <div class="detail-label">ADVANCE STATUS</div>
-        <div class="action-btns" style="margin-top:8px;">
-          ${STATUS_ORDER.filter(s=>STATUS_ORDER.indexOf(s)>STATUS_ORDER.indexOf(o.status))
-            .map(s=>`<button class="btn btn-ghost btn-sm modal-advance" data-id="${o.id}" data-status="${s}">${s.replace(/_/g,' ')}</button>`)
-            .join('')||'<span class="detail-sub">Order fully processed</span>'}
         </div>
+      </div>
+      <div class="detail-section" style="margin-top:20px;">
+        <div class="detail-label">DELIVERY VERIFICATION</div>
+        ${o.delivery_photo ? `
+          <div style="margin-top:8px;">
+            <img src="${o.delivery_photo}" style="width:100%;max-height:200px;object-fit:cover;border-radius:12px;border:1px solid rgba(255,255,255,0.1);" alt="Delivery Photo">
+            <div class="detail-sub" style="margin-top:4px;">Uploaded at ${safeDate(o.delivery_photo_at)}</div>
+          </div>
+        ` : `
+          <div style="margin-top:8px;background:rgba(255,255,255,0.03);padding:12px;border-radius:12px;border:1px dashed rgba(255,255,255,0.1);">
+            <div class="detail-sub" style="margin-bottom:8px;">No photo uploaded yet.</div>
+            <div style="display:flex;gap:8px;">
+              <input type="file" id="deliveryPhotoInp" accept="image/*" style="display:none;">
+              <button class="btn btn-ghost btn-sm" onclick="document.getElementById('deliveryPhotoInp').click()">Select Photo</button>
+              <button class="btn btn-primary btn-sm" id="uploadDeliveryBtn" disabled>Upload Proof</button>
+            </div>
+            <div id="deliveryPhotoPreview" style="margin-top:10px;display:none;">
+               <img id="dpPrevImg" style="width:100%;max-height:150px;object-fit:cover;border-radius:8px;">
+            </div>
+          </div>
+        `}
       </div>`;
+    
+    const photoInp = body.querySelector('#deliveryPhotoInp');
+    const uploadBtn = body.querySelector('#uploadDeliveryBtn');
+    const prevDiv = body.querySelector('#deliveryPhotoPreview');
+    const prevImg = body.querySelector('#dpPrevImg');
+
+    if (photoInp) {
+      photoInp.addEventListener('change', () => {
+        const file = photoInp.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            prevImg.src = e.target.result;
+            prevDiv.style.display = 'block';
+            uploadBtn.disabled = false;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    if (uploadBtn) {
+      uploadBtn.addEventListener('click', async () => {
+        const file = photoInp.files[0];
+        if (!file) return;
+        uploadBtn.disabled = true;
+        uploadBtn.textContent = 'Uploading...';
+        try {
+          const fd = new FormData();
+          fd.append('photo', file);
+          await Api.upload(`/api/orders/${o.id}/photo`, fd, 'PUT');
+          showToast('Delivery proof uploaded!', 'success');
+          openOrderDetail(o.id); // Reload
+          loadDashboard();
+        } catch (e) {
+          showToast(e.message || 'Upload failed', 'error');
+          uploadBtn.disabled = false;
+          uploadBtn.textContent = 'Upload Proof';
+        }
+      });
+    }
+
     body.querySelectorAll('.modal-advance').forEach(btn=>{
       btn.addEventListener('click',async()=>{
         btn.disabled=true; btn.textContent='...';
