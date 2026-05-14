@@ -61,7 +61,16 @@ async function trackOrder(identifier) {
     if (resultEl) resultEl.style.display = 'block';
     subscribeSocket(order.id);
   } catch (e) {
-    showTrackToast(e.message || 'Order not found', 'error');
+    var msg = 'Order not found';
+    if (e.status === 404) {
+      msg = 'Order ID not recognized. Please check the ID or QR code.';
+    } else if (e.status === 500) {
+      msg = 'Server error while tracking. Please try again later.';
+    } else {
+      msg = e.message || 'Tracking unavailable at the moment.';
+    }
+    showTrackToast(msg, 'error');
+    console.warn('[Track] Error:', e);
   }
 }
 
@@ -104,8 +113,7 @@ function subscribeSocket(orderId) {
 
 async function loadMyOrders() {
   if (!Store) return;
-  var user = Store.get('user');
-  if (!user || user.isGuest) return;
+  // Support both logged-in users and guests via session matching
   try {
     var orders = await Api.get('/orders/my');
     if (!Array.isArray(orders) || !orders.length) return;
