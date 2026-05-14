@@ -35,13 +35,13 @@ async function trackOrder(identifier) {
     var detailRecipient = document.getElementById('detailRecipient');
     var statusPill = document.getElementById('statusPill');
 
-    if (detailId) detailId.textContent = order.qrCode || order.id || '—';
-    if (detailEta) detailEta.textContent = order.delivery_date || order.deliveryDate || '—';
+    if (detailId) detailId.textContent = order.qrCode || order.id || '\u2014';
+    if (detailEta) detailEta.textContent = order.delivery_date || order.deliveryDate || '\u2014';
     if (detailRecipient) {
       try {
         var rec = typeof order.recipient === 'string' ? JSON.parse(order.recipient) : order.recipient;
-        detailRecipient.textContent = (rec && rec.name) ? rec.name : '—';
-      } catch { detailRecipient.textContent = '—'; }
+        detailRecipient.textContent = (rec && rec.name) ? rec.name : '\u2014';
+      } catch { detailRecipient.textContent = '\u2014'; }
     }
 
     var statusMap = {
@@ -83,7 +83,7 @@ function renderTimeline(steps, currentStatus) {
     div.className = 'timeline-step' + (isCompleted ? ' complete' : '') + (isActive ? ' active' : '');
     var label = step.label || (step.status || '').replace(/_/g, ' ');
     var timeText = step.timestamp ? new Date(typeof step.timestamp === 'number' && step.timestamp < 1e12 ? step.timestamp * 1000 : step.timestamp).toLocaleString() : 'Pending';
-    div.innerHTML = '<div class="timeline-node">' + (STATUS_ICONS[step.status] || '○') + '</div>' +
+    div.innerHTML = '<div class="timeline-node">' + (STATUS_ICONS[step.status] || '\u25CB') + '</div>' +
       '<div class="timeline-content">' +
       '<div class="timeline-label">' + label + '</div>' +
       '<div class="timeline-time">' + timeText + '</div>' +
@@ -127,7 +127,7 @@ async function loadMyOrders() {
         '<div style="font-size:0.78rem;color:rgba(255,255,255,0.4);margin-top:2px;">' + items.length + ' item(s) \u00B7 \u20B1' + Number(pricing.finalTotal || 0).toFixed(2) + '</div></div>' +
         '<div style="display:flex;align-items:center;gap:12px;">' +
         '<span class="status-pill ' + statusClass + '">' + (o.status || '').replace(/_/g, ' ').toUpperCase() + '</span>' +
-        '<span style="font-size:0.78rem;color:rgba(255,255,255,0.35);">' + (o.delivery_date || '—') + '</span>' +
+        '<span style="font-size:0.78rem;color:rgba(255,255,255,0.35);">' + (o.delivery_date || '\u2014') + '</span>' +
         '</div></div></div>';
     }).join('');
 
