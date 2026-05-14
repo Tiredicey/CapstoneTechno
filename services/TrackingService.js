@@ -17,7 +17,8 @@ export class TrackingService {
         status,
         label: TrackingService.label(status),
         completed: !!step,
-        timestamp: step?.timestamp || null
+        timestamp: step?.timestamp || null,
+        photo: (status === 'delivered' && step) ? step.photo : null
       };
     });
   }
