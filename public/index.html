@@ -254,7 +254,9 @@ body.c-hover .c-ring { width: 52px; height: 52px; border-color: rgba(230,26,26,.
 .hero-hl { font-family: var(--fd); font-size: clamp(2.1rem, 5.2vw, 5rem); line-height: 1.15; font-weight: 900; letter-spacing: -.03em; margin-bottom: 24px; padding-bottom: 0.1em; overflow: visible; text-shadow: 0 4px 16px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3); display: flex; flex-direction: column; align-items: flex-start; gap: 0.02em; }
 .hero-hl em { font-style: italic; font-weight: 400; color: rgba(255,255,255,.85); text-shadow: 0 2px 8px rgba(0,0,0,0.4); }
 .g-txt { background: linear-gradient(135deg, #fff 0%, var(--pk) 35%, var(--p5) 70%, var(--pk) 100%); background-size: 250% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: txt-shine 5s linear infinite; padding-bottom: 0.15em; margin-bottom: -0.15em; display: inline-block; text-shadow: none !important; filter: none !important; }
-#typer { display: inline-block; vertical-align: baseline; min-height: 1.2em; width: fit-content; }
+#typer { display: inline-grid; align-items: start; justify-items: start; vertical-align: baseline; }
+#typer .g-txt { grid-area: 1/1; opacity: 0; visibility: hidden; transform: translateY(8px); transition: opacity .3s var(--ease), transform .3s var(--ease); }
+#typer .g-txt.active { opacity: 1; visibility: visible; transform: none; }
 @keyframes txt-shine { to { background-position: 250% center; } }
 .hero-sub { font-size: 1.05rem; line-height: 1.72; color: rgba(255,255,255,0.85); max-width: 480px; margin-bottom: 36px; text-wrap: pretty; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
 .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 36px; }
@@ -1029,7 +1031,14 @@ input:-webkit-autofill:focus {
         </div>
         <h1 class="hero-hl">
           <span data-content-key="hero_title_1">A small gesture,</span>
-          <span class="g-txt" id="typer" aria-live="polite" data-content-key="hero_title_2">a quiet comfort.</span>
+          <span id="typer" aria-live="polite">
+            <span class="g-txt active" aria-hidden="false" data-content-key="hero_title_2">a quiet comfort.</span>
+            <span class="g-txt" aria-hidden="true">a gentle reminder.</span>
+            <span class="g-txt" aria-hidden="true">a little warmth.</span>
+            <span class="g-txt" aria-hidden="true">a soft thought.</span>
+            <span class="g-txt" aria-hidden="true">a peaceful moment.</span>
+            <span class="g-txt" aria-hidden="true">no pressure at all.</span>
+          </span>
           <em>Whenever you're ready.</em>
         </h1>
         <p class="hero-sub" data-content-key="hero_subtitle">You don't need a reason to send flowers. Handcrafted and developed by STI LIPA BSIT students, delivered gently to the door - no rush, no pressure. Just a moment of warmth, whenever it feels right.</p>
@@ -1932,21 +1941,17 @@ input:-webkit-autofill:focus {
   function initTyper() {
     var el = qs('#typer');
     if (!el) return;
-    var words = ['a quiet comfort.', 'a gentle reminder.', 'a little warmth.', 'a soft thought.', 'a peaceful moment.', 'no pressure at all.'];
+    var items = el.querySelectorAll('.g-txt');
+    if (items.length === 0) return;
     var i = 0;
     function swap() {
-      el.style.opacity = '0';
-      el.style.transform = 'translateY(8px)';
-      el.style.transition = 'all .3s var(--ease)';
-      setTimeout(function () {
-        i = (i + 1) % words.length;
-        el.textContent = words[i];
-        el.style.opacity = '1';
-        el.style.transform = 'none';
-      }, 320);
+      items[i].classList.remove('active');
+      items[i].setAttribute('aria-hidden', 'true');
+      i = (i + 1) % items.length;
+      items[i].classList.add('active');
+      items[i].setAttribute('aria-hidden', 'false');
     }
-    el.textContent = words[0];
-    if (!reducedMotion()) setInterval(swap, 3500); // Slowed down from 2800 for a calmer pace
+    if (!reducedMotion()) setInterval(swap, 3500);
   }
 
   function initCountdown() {
