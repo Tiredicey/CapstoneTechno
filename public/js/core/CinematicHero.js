@@ -53,7 +53,7 @@
 
     var introTl = gsap.timeline({ delay: 0.3 });
     introTl
-      .to('.ch-text-track', { duration: 1.8, autoAlpha: 1, y: 0, scale: 1, filter: 'blur(0px)', rotationX: 0, ease: 'expo.out' })
+      .to('.ch-text-track', { duration: 1.8, autoAlpha: 1, y: 0, scale: 1, filter: 'blur(0px)', rotationX: 0, ease: 'expo.out', clearProps: 'filter' })
       .to('.ch-text-days', { duration: 1.4, clipPath: 'inset(0 0% 0 0)', ease: 'power4.inOut' }, '-=1.0');
 
     var scrollTl = gsap.timeline({
@@ -68,7 +68,8 @@
     });
 
     scrollTl
-      .to(['.ch-hero-text-wrapper', '.ch-bg-grid'], { scale: 1.15, filter: 'blur(20px)', opacity: 0.2, ease: 'power2.inOut', duration: 2 }, 0)
+      .to('.ch-bg-grid', { scale: 1.15, filter: 'blur(20px)', opacity: 0.2, ease: 'power2.inOut', duration: 2 }, 0)
+      .to('.ch-hero-text-wrapper', { scale: 1.15, opacity: 0.2, ease: 'power2.inOut', duration: 2 }, 0)
       .to('.ch-main-card', { y: 0, ease: 'power3.inOut', duration: 2 }, 0)
       .to('.ch-main-card', { width: '100%', height: '100%', borderRadius: '0px', ease: 'power3.inOut', duration: 1.5 })
       .fromTo('.ch-mockup-wrapper',
@@ -95,7 +96,7 @@
         ease: 'expo.inOut',
         duration: 1.8
       }, 'pullback')
-      .to('.ch-cta-wrapper', { scale: 1, filter: 'blur(0px)', ease: 'expo.inOut', duration: 1.8 }, 'pullback')
+      .to('.ch-cta-wrapper', { scale: 1, filter: 'blur(0px)', ease: 'expo.inOut', duration: 1.8, clearProps: 'filter' }, 'pullback')
       .to('.ch-main-card', { y: -window.innerHeight - 300, ease: 'power3.in', duration: 1.5 });
   }
 
