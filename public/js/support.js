@@ -363,6 +363,25 @@ document.addEventListener('DOMContentLoaded', () => {
     window.Store.on('faq_update', () => FaqController.refresh());
   }
   syncOfflineChat();
+
+  var supportHero = document.querySelector('.support-hero, .hero-support, main > section:first-child .con');
+  if (supportHero) {
+    var disc = document.createElement('div');
+    disc.setAttribute('role', 'note');
+    disc.setAttribute('aria-label', 'Academic demonstration notice');
+    disc.style.cssText = 'margin:12px 0 0;padding:10px 16px;border-radius:10px;background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);font-size:.78rem;color:rgba(255,255,255,.6);line-height:1.6;text-align:center';
+    disc.innerHTML = '\uD83C\uDF93 <strong style="color:#a78bfa">Academic Demo</strong> \u2014 This support interface is part of a BSIT Capstone project. No real commercial agents monitor these tickets. All interactions are simulated for demonstration.';
+    supportHero.appendChild(disc);
+  }
+
+  var chatMsgs = document.getElementById('chatMessages');
+  if (chatMsgs && !chatMsgs.dataset.disclaimed) {
+    chatMsgs.dataset.disclaimed = '1';
+    var d = document.createElement('div');
+    d.className = 'chat-bubble bot';
+    d.innerHTML = '\uD83C\uDF93 <b>Notice:</b> This is an academic demonstration chatbot powered by Pollinations AI. Responses are generated for capstone evaluation purposes. No real support agents will receive messages sent here.';
+    chatMsgs.appendChild(d);
+  }
 });
 
 function openChat() {
