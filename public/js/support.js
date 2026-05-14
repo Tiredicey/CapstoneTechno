@@ -229,9 +229,10 @@ const LOCAL_ROUTER = [
 ];
 
 async function autoTrackOrder(code) {
+  const finalCode = String(code || '').toUpperCase().trim();
   showTypingIndicator();
   try {
-    const order = await Api.get('/orders/' + code + '/track');
+    const order = await Api.get('/orders/' + finalCode + '/track');
     hideTypingIndicator();
     const status = (order.status || 'new').replace(/_/g, ' ').toUpperCase();
     const eta = order.delivery_date || order.deliveryDate || 'TBD';
@@ -242,7 +243,7 @@ async function autoTrackOrder(code) {
     const cardHtml = `
       <div class="chat-status-card glass-ethereal shimmer">
         <div class="card-hd">
-          <span class="code">${code.toUpperCase()}</span>
+          <span class="code">${finalCode}</span>
           <span class="pill status-${order.status}">${status}</span>
         </div>
         <div class="card-body">
@@ -250,14 +251,14 @@ async function autoTrackOrder(code) {
           <div class="meta"><span>Recipient:</span> <strong>${typeof order.recipient === 'string' ? JSON.parse(order.recipient).name : (order.recipient?.name || 'Customer')}</strong></div>
           ${photoHtml}
         </div>
-        <a href="/tracking.html?id=${code}" class="card-link">View Full Timeline \u2192</a>
+        <a href="/tracking.html?id=${finalCode}" class="card-link">View Full Timeline \u2192</a>
       </div>
     `;
     appendMessage(cardHtml, 'bot', true);
     return "I've retrieved your live order details above. \uD83C\uDF38";
   } catch (e) {
     hideTypingIndicator();
-    return "I couldn't find an order with code **" + code + "**. Please double-check the ID or try again later.";
+    return "I couldn't find an order with code **" + finalCode + "**. Please double-check the ID or try again later.";
   }
 }
 
