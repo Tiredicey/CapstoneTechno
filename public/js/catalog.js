@@ -10,7 +10,7 @@ let currentSort = 'rating';
 let currentTag = '';
 
 function fmt(n) {
-  return '₱' + Number(n || 0).toFixed(2);
+  return '\u20B1' + Number(n || 0).toFixed(2);
 }
 
 function showToast(msg, type) {
