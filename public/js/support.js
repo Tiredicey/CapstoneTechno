@@ -235,6 +235,10 @@ async function autoTrackOrder(code) {
     hideTypingIndicator();
     const status = (order.status || 'new').replace(/_/g, ' ').toUpperCase();
     const eta = order.delivery_date || order.deliveryDate || 'TBD';
+    const photoHtml = order.delivery_photo ? `
+      <div class="card-photo" style="margin-top:10px;">
+        <img src="${order.delivery_photo}" style="width:100%;max-height:120px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,0.1);">
+      </div>` : '';
     const cardHtml = `
       <div class="chat-status-card glass-ethereal shimmer">
         <div class="card-hd">
@@ -244,6 +248,7 @@ async function autoTrackOrder(code) {
         <div class="card-body">
           <div class="meta"><span>ETA:</span> <strong>${eta}</strong></div>
           <div class="meta"><span>Recipient:</span> <strong>${typeof order.recipient === 'string' ? JSON.parse(order.recipient).name : (order.recipient?.name || 'Customer')}</strong></div>
+          ${photoHtml}
         </div>
         <a href="/tracking.html?id=${code}" class="card-link">View Full Timeline \u2192</a>
       </div>
