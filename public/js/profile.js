@@ -37,7 +37,7 @@ async function initProfile() {
         const title = c.config?.flower ? `Custom ${c.config.flower.charAt(0).toUpperCase() + c.config.flower.slice(1)} Design` : 'Custom Design';
         return `
           <div class="glass-card" style="padding:16px;position:relative;">
-            <div style="height:140px;border-radius:8px;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:12px;">🌸</div>
+            <div style="height:140px;border-radius:8px;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:12px;">\uD83C\uDF38</div>
             <div style="font-weight:700;margin-bottom:4px;">${title}</div>
             <div style="font-size:0.8rem;color:rgba(255,255,255,0.4);margin-bottom:12px;">${new Date(c.created_at * 1000).toLocaleDateString()}</div>
             <a href="/customize.html?id=${c.product_id}&cid=${c.id}" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;">Load Design</a>
@@ -69,7 +69,7 @@ async function initProfile() {
             </div>
           </div>
           <div style="display:flex;align-items:center;gap:16px;">
-            <div style="font-weight:700;color:#FFD700;">₱${Number(total).toFixed(2)}</div>
+            <div style="font-weight:700;color:#FFD700;">\u20B1${Number(total).toFixed(2)}</div>
             <span class="status-pill status-${statusClass}">${o.status.replace('_', ' ').toUpperCase()}</span>
             <a href="/tracking.html?id=${o.qr_code || o.id}" class="btn btn-ghost btn-sm">Track</a>
           </div>
