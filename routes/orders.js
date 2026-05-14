@@ -7,6 +7,23 @@ import { SocketManager } from '../sockets/SocketManager.js';
 import { authenticate, optionalAuth, requireAdmin } from '../middleware/auth.js';
 import db from '../database/Database.js';
 import { v4 as uuid } from 'uuid';
+import multer from 'multer';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const storage = multer.diskStorage({
+  destination: path.join(__dirname, '..', 'uploads', 'deliveries'),
+  filename: (req, file, cb) => cb(null, `${uuid()}${path.extname(file.originalname)}`)
+});
+const upload = multer({
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowed = ['.jpg', '.jpeg', '.png', '.webp'];
+    cb(null, allowed.includes(path.extname(file.originalname).toLowerCase()));
+  }
+});
 
 const router = Router();
 const VALID_STATUSES =['new', 'processing', 'quality_check', 'packed', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'];
@@ -85,7 +102,15 @@ router.get('/:id/track', (req, res) => {
   try {
     const order = OrderModel.getById(req.params.id);
     if (!order) return res.status(404).json({ error: 'Order not found' });
-    res.json({ id: order.id, status: order.status, trackingSteps: order.trackingSteps, delivery_date: order.delivery_date, delivery_slot: order.delivery_slot, qrCode: order.qr_code });
+    res.json({ 
+      id: order.id, 
+      status: order.status, 
+      trackingSteps: order.trackingSteps, 
+      delivery_date: order.delivery_date, 
+      delivery_slot: order.delivery_slot, 
+      qrCode: order.qr_code,
+      delivery_photo: order.delivery_photo
+    });
   } catch { res.status(500).json({ error: 'Failed to track order' }); }
 });
 
@@ -120,6 +145,27 @@ router.put('/:id/status', authenticate, requireAdmin, (req, res) => {
 
 router.put('/:id/florist', authenticate, requireAdmin, (req, res) => {
   try { OrderModel.assignFlorist(req.params.id, req.body.floristId); res.json({ ok: true }); } catch { res.status(500).json({ error: 'Failed to assign florist' }); }
+});
+
+router.put('/:id/photo', authenticate, requireAdmin, upload.single('photo'), (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No photo uploaded' });
+    const photoUrl = `/uploads/deliveries/${req.file.filename}`;
+    const order = OrderModel.setDeliveryPhoto(req.params.id, photoUrl, req.user.id);
+    if (!order) return res.status(404).json({ error: 'Order not found' });
+    
+    // Auto-advance to delivered if not already
+    if (order.status !== 'delivered') {
+      OrderModel.updateStatus(order.id, 'delivered');
+    }
+    
+    try { SocketManager.emitOrderUpdate(req.params.id, { status: 'delivered', photoUrl, orderId: req.params.id }); } catch {}
+    
+    res.json({ success: true, photoUrl });
+  } catch (err) {
+    console.error('[ORDER PHOTO UPLOAD ERROR]', err);
+    res.status(500).json({ error: 'Failed to upload photo' });
+  }
 });
 
 export default router;
