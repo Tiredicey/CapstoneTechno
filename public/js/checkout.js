@@ -35,10 +35,10 @@ async function init() {
 function renderCheckoutSummary() {
   const p = cartData.pricing;
   if (!p) return;
-  const fmt = (n) => `₱${Number(n || 0).toFixed(2)}`;
+  const fmt = (n) => `\u20B1${Number(n || 0).toFixed(2)}`;
   document.getElementById('coSubtotal').textContent = fmt(p.subtotal);
   document.getElementById('coCustom').textContent = fmt(p.customizationFee);
-  document.getElementById('coShipping').textContent = p.deliveryFee === 0 ? '🎉 Free' : fmt(p.deliveryFee);
+  document.getElementById('coShipping').textContent = p.deliveryFee === 0 ? '\uD83C\uDF89 Free' : fmt(p.deliveryFee);
   document.getElementById('coTax').textContent = fmt(p.tax);
   document.getElementById('coTotal').textContent = fmt(p.finalTotal);
   document.getElementById('pointsEarned').textContent = Math.floor((p.finalTotal || 0) * 10);
@@ -46,15 +46,15 @@ function renderCheckoutSummary() {
   const promoEl = document.getElementById('coPromo');
   if (p.promoDiscount > 0 && promoRow && promoEl) {
     promoRow.style.display = 'flex';
-    promoEl.textContent = `−₱${Number(p.promoDiscount).toFixed(2)}`;
+    promoEl.textContent = `\u2212\u20B1${Number(p.promoDiscount).toFixed(2)}`;
   }
   const itemsEl = document.getElementById('checkoutItems');
   if (itemsEl) {
     itemsEl.innerHTML = cartData.items.map(i => `
       <div style="display:flex;gap:12px;align-items:center;font-size:0.83rem;">
-        <div style="width:40px;height:40px;border-radius:8px;background:rgba(139,31,110,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">🌸</div>
-        <div style="flex:1;">${i.name}<br><span style="color:rgba(255,255,255,0.4);">×${i.qty || 1}</span></div>
-        <div style="font-weight:600;color:#FFD700;">₱${(i.price * (i.qty || 1)).toFixed(2)}</div>
+        <div style="width:40px;height:40px;border-radius:8px;background:rgba(139,31,110,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">\uD83C\uDF38</div>
+        <div style="flex:1;">${i.name}<br><span style="color:rgba(255,255,255,0.4);">\u00D7${i.qty || 1}</span></div>
+        <div style="font-weight:600;color:#FFD700;">\u20B1${(i.price * (i.qty || 1)).toFixed(2)}</div>
       </div>`).join('');
   }
 }
@@ -188,7 +188,7 @@ document.getElementById('placeOrder')?.addEventListener('click', async () => {
     if (!payload.deliveryDate || !payload.deliverySlot) {
       showToast('Please select delivery date and time slot', 'error');
       btn.disabled = false;
-      btn.textContent = 'Place Order 🌸';
+      btn.textContent = 'Place Order \uD83C\uDF38';
       return;
     }
     const order = await Api.post('/api/orders', payload);
@@ -202,7 +202,7 @@ document.getElementById('placeOrder')?.addEventListener('click', async () => {
   } catch (e) {
     showToast(e.message || 'Order failed. Please try again.', 'error');
     btn.disabled = false;
-    btn.textContent = 'Place Order 🌸';
+    btn.textContent = 'Place Order \uD83C\uDF38';
   }
 });
 
