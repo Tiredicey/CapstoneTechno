@@ -24,10 +24,11 @@ var currentOrderId = null;
 
 async function trackOrder(identifier) {
   if (!identifier) return;
+  var cleanId = String(identifier).trim().toUpperCase();
   var resultEl = document.getElementById('trackingResult');
   if (resultEl) resultEl.style.display = 'none';
   try {
-    var order = await Api.get('/orders/' + identifier + '/track');
+    var order = await Api.get('/orders/' + cleanId + '/track');
     currentOrderId = order.id;
 
     var detailId = document.getElementById('detailId');
