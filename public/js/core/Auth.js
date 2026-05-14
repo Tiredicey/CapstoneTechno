@@ -130,7 +130,7 @@
         Store.set('user', res.user);
         setAuthBtn(res.user);
         closeModal('authMod');
-        showAuthToast('Welcome back, ' + (res.user.name || 'friend') + '! 🌸', 'success');
+        showAuthToast('Welcome back, ' + (res.user.name || 'friend') + '! \uD83C\uDF38', 'success');
       } catch (e) {
         showAuthToast(e.message || 'Login failed', 'error');
       } finally {
@@ -166,7 +166,7 @@
         Store.set('user', res.user);
         setAuthBtn(res.user);
         closeModal('authMod');
-        showAuthToast('Welcome to Bloom, ' + (res.user.name || 'friend') + '! 🌸', 'success');
+        showAuthToast('Welcome to Bloom, ' + (res.user.name || 'friend') + '! \uD83C\uDF38', 'success');
       } catch (e) {
         showAuthToast(e.message || 'Registration failed', 'error');
       } finally {
@@ -181,7 +181,7 @@
     if (!btn) return;
     btn.addEventListener('click', function () {
       closeModal('authMod');
-      showAuthToast('Continuing as guest 👤', 'info');
+      showAuthToast('Continuing as guest \uD83D\uDC64', 'info');
     });
   }
 
@@ -253,7 +253,7 @@
       '<div class="modal">' +
       '<div class="m-hd">' +
       '<h2 id="authTitle" style="font-family:var(--fd);font-size:1.5rem;font-weight:700">Welcome to Bloom</h2>' +
-      '<button class="m-cls" id="closeAuth" aria-label="Close dialog">✕</button>' +
+      '<button class="m-cls" id="closeAuth" aria-label="Close dialog">\u2715</button>' +
       '</div>' +
       '<div class="a-tabs" role="tablist">' +
       '<button class="a-tab active" data-ftab="login" role="tab" aria-selected="true">Sign In</button>' +
@@ -311,7 +311,7 @@
       '<div class="modal">' +
       '<div class="m-hd">' +
       '<h2 id="fplTitle" style="font-family:var(--fd);font-size:1.35rem;font-weight:700">Reset Password</h2>' +
-      '<button class="m-cls" id="closeFpl" aria-label="Close dialog">✕</button>' +
+      '<button class="m-cls" id="closeFpl" aria-label="Close dialog">\u2715</button>' +
       '</div>' +
       '<p class="m-sub">Enter your email. We\'ll send a secure reset link within 60 seconds.</p>' +
       '<div class="fi">' +
