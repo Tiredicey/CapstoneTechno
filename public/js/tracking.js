@@ -58,6 +58,18 @@ async function trackOrder(identifier) {
     if (typeof steps === 'string') { try { steps = JSON.parse(steps); } catch { steps = []; } }
     renderTimeline(steps, order.status);
 
+    var photoArea = document.getElementById('deliveryPhotoArea');
+    if (photoArea) {
+      if (order.delivery_photo) {
+        photoArea.innerHTML = '<img src="' + order.delivery_photo + '" style="width:100%;height:100%;object-fit:cover;border-radius:12px;cursor:pointer;" onclick="window.open(\'' + order.delivery_photo + '\',\'_blank\')">';
+        photoArea.style.border = 'none';
+        photoArea.style.height = '200px';
+      } else {
+        photoArea.innerHTML = 'Photo will appear upon delivery';
+        photoArea.style.height = '120px';
+      }
+    }
+
     if (resultEl) resultEl.style.display = 'block';
     subscribeSocket(order.id);
   } catch (e) {
@@ -92,10 +104,12 @@ function renderTimeline(steps, currentStatus) {
     div.className = 'timeline-step' + (isCompleted ? ' complete' : '') + (isActive ? ' active' : '');
     var label = step.label || (step.status || '').replace(/_/g, ' ');
     var timeText = step.timestamp ? new Date(typeof step.timestamp === 'number' && step.timestamp < 1e12 ? step.timestamp * 1000 : step.timestamp).toLocaleString() : 'Pending';
+    var photoHtml = step.photo ? '<div class="timeline-photo" style="margin-top:12px;"><img src="' + step.photo + '" style="width:100%;max-height:180px;object-fit:cover;border-radius:12px;border:1px solid var(--glb);cursor:pointer;" onclick="window.open(\'' + step.photo + '\',\'_blank\')"></div>' : '';
     div.innerHTML = '<div class="timeline-node">' + (STATUS_ICONS[step.status] || '\u25CB') + '</div>' +
       '<div class="timeline-content">' +
       '<div class="timeline-label">' + label + '</div>' +
       '<div class="timeline-time">' + timeText + '</div>' +
+      photoHtml +
       '</div>';
     container.appendChild(div);
   });
