@@ -301,13 +301,14 @@ body.c-hover .c-ring { width: 52px; height: 52px; border-color: rgba(230,26,26,.
 canvas#ptcl { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
 
 .stats-strip { background: var(--bg2); border-top: 1px solid var(--glb); border-bottom: 1px solid var(--glb); position: relative; overflow: hidden; }
+.stats-strip .con { max-width: none; padding: 0 20px; }
 .stats-strip::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(230,26,26,.04), rgba(188,49,148,.03)); }
 .stats-inner { display: grid; grid-template-columns: repeat(4, 1fr); position: relative; z-index: 1; }
 .stat-item { padding: 36px 20px; text-align: center; position: relative; }
 .stat-item:not(:last-child)::after { content: ''; position: absolute; right: 0; top: 20%; bottom: 20%; width: 1px; background: var(--glb); }
 .stat-icon { font-size: 1.4rem; margin-bottom: 8px; display: block; }
 .stat-num { font-family: var(--fc); font-style: italic; font-weight: 900; font-size: clamp(1.6rem, 3.4vw, 2.6rem); line-height: 1; margin-bottom: 5px; background: linear-gradient(135deg, #fff, rgba(255,255,255,.68)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-variant-numeric: tabular-nums; }
-.stat-bar { height: 3px; background: rgba(255,255,255,.07); border-radius: 2px; margin: 6px 20px 0; overflow: hidden; }
+.stat-bar { height: 3px; background: rgba(255,255,255,.07); border-radius: 2px; margin: 8px 0 0; overflow: hidden; }
 .stat-bar-fill { height: 100%; width: 0; border-radius: 2px; background: linear-gradient(90deg, var(--p5), var(--pk)); transition: width 1.8s var(--ease); }
 .stat-lbl { font-family: var(--fc); font-style: italic; font-size: .72rem; letter-spacing: .12em; color: rgba(255,255,255,.4); text-transform: uppercase; margin-top: 6px; }
 .stat-src { font-size: .62rem; color: rgba(255,255,255,.28); margin-top: 4px; letter-spacing: .05em; }
