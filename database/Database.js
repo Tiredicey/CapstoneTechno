@@ -371,6 +371,10 @@ class DatabaseClass {
     return this.db.prepare(sql).run(...p);
   }
 
+  transaction(fn) {
+    return this.db.transaction(fn);
+  }
+
   runTransaction(operations = []) {
     const txn = this.db.transaction((ops) => {
       for (const op of ops) {
