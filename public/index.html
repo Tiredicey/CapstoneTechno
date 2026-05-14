@@ -251,10 +251,10 @@ body.c-hover .c-ring { width: 52px; height: 52px; border-color: rgba(230,26,26,.
 .hero-eyebrow-tag > * { transform: skewX(6deg); display: inline-block; }
 .hero-eyebrow-tag::after { display: none; }
 .hero-eyebrow-sub { font-size: .78rem; color: rgba(255,255,255,.48); font-weight: 500; padding-left: 6px; white-space: nowrap; }
-.hero-hl { font-family: var(--fd); font-size: clamp(2.8rem, 5.5vw, 5rem); line-height: 1.15; font-weight: 900; letter-spacing: -.03em; margin-bottom: 24px; padding-bottom: 0.1em; overflow: visible; text-shadow: 0 4px 16px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3); }
+.hero-hl { font-family: var(--fd); font-size: clamp(2.1rem, 5.2vw, 5rem); line-height: 1.15; font-weight: 900; letter-spacing: -.03em; margin-bottom: 24px; padding-bottom: 0.1em; overflow: visible; text-shadow: 0 4px 16px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3); display: flex; flex-direction: column; align-items: flex-start; gap: 0.02em; }
 .hero-hl em { font-style: italic; font-weight: 400; color: rgba(255,255,255,.85); text-shadow: 0 2px 8px rgba(0,0,0,0.4); }
 .g-txt { background: linear-gradient(135deg, #fff 0%, var(--pk) 35%, var(--p5) 70%, var(--pk) 100%); background-size: 250% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: txt-shine 5s linear infinite; padding-bottom: 0.15em; margin-bottom: -0.15em; display: inline-block; text-shadow: none !important; filter: none !important; }
-#typer { display: inline-block; vertical-align: baseline; white-space: nowrap; }
+#typer { display: inline-block; vertical-align: baseline; min-height: 1.2em; width: fit-content; }
 @keyframes txt-shine { to { background-position: 250% center; } }
 .hero-sub { font-size: 1.05rem; line-height: 1.72; color: rgba(255,255,255,0.85); max-width: 480px; margin-bottom: 36px; text-wrap: pretty; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
 .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 36px; }
@@ -1028,8 +1028,8 @@ input:-webkit-autofill:focus {
           <span class="hero-eyebrow-sub">Gentle care · Cold-chain fresh · At your pace</span>
         </div>
         <h1 class="hero-hl">
-          <span data-content-key="hero_title_1">A small gesture,</span><br>
-          <span style="white-space: nowrap;"><span class="g-txt" id="typer" aria-live="polite" data-content-key="hero_title_2">a quiet comfort</span>.</span><br>
+          <span data-content-key="hero_title_1">A small gesture,</span>
+          <span class="g-txt" id="typer" aria-live="polite" data-content-key="hero_title_2">a quiet comfort.</span>
           <em>Whenever you're ready.</em>
         </h1>
         <p class="hero-sub" data-content-key="hero_subtitle">You don't need a reason to send flowers. Handcrafted and developed by STI LIPA BSIT students, delivered gently to the door - no rush, no pressure. Just a moment of warmth, whenever it feels right.</p>
@@ -1932,7 +1932,7 @@ input:-webkit-autofill:focus {
   function initTyper() {
     var el = qs('#typer');
     if (!el) return;
-    var words = ['a quiet comfort', 'a gentle reminder', 'a little warmth', 'a soft thought', 'a peaceful moment', 'no pressure at all'];
+    var words = ['a quiet comfort.', 'a gentle reminder.', 'a little warmth.', 'a soft thought.', 'a peaceful moment.', 'no pressure at all.'];
     var i = 0;
     function swap() {
       el.style.opacity = '0';
