@@ -172,7 +172,7 @@ body.c-hover .c-ring { width: 52px; height: 52px; border-color: rgba(230,26,26,.
 .n-links a:hover, .n-links a:focus-visible { color: #fff; background: var(--gl); }
 .n-links a::after { content: attr(data-label); font-family: var(--fc); font-style: italic; font-weight: 900; font-size: .6rem; color: var(--p5); position: absolute; top: 2px; left: 50%; transform: translateX(-50%); opacity: 0; transition: opacity .2s; pointer-events: none; letter-spacing: .1em; text-transform: uppercase; }
 .n-links a:hover::after, .n-links a:focus-visible::after { opacity: 1; }
-.n-acts { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.n-acts { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 9px 18px; border-radius: var(--rs); font-family: var(--fb); font-size: .86rem; font-weight: 600; transition: transform .25s var(--ease), box-shadow .25s var(--ease), background .2s; position: relative; overflow: hidden; white-space: nowrap; }
 .btn::before { content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0); transition: background .2s; pointer-events: none; }
@@ -181,7 +181,7 @@ body.c-hover .c-ring { width: 52px; height: 52px; border-color: rgba(230,26,26,.
 .btn-p:hover, .btn-p:focus-visible { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(230,26,26,.5); }
 .btn-g { background: var(--gl); border: 1px solid var(--glb); color: rgba(255,255,255,.75); }
 .btn-g:hover, .btn-g:focus-visible { background: rgba(255,255,255,.1); color: #fff; }
-.btn-sm { padding: 7px 13px; font-size: .8rem; }
+.btn-sm { padding: 8px 14px; font-size: .8rem; height: 36px; }
 .btn-lg { padding: 13px 30px; font-size: .95rem; border-radius: var(--r); }
 
 .cart-wrap { position: relative; }
