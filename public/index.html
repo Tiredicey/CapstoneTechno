@@ -300,11 +300,11 @@ body.c-hover .c-ring { width: 52px; height: 52px; border-color: rgba(230,26,26,.
 
 canvas#ptcl { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
 
-.stats-strip { background: var(--bg2); border-top: 1px solid var(--glb); border-bottom: 1px solid var(--glb); position: relative; overflow: hidden; }
-.stats-strip .con { max-width: none; padding: 0 20px; }
+.stats-strip { background: var(--bg2); border-top: 1px solid var(--glb); border-bottom: 1px solid var(--glb); position: relative; overflow: hidden; margin-left: 0; margin-right: 0; }
+.stats-strip .con { max-width: 100%; width: 100%; padding: 0; margin: 0; }
 .stats-strip::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(230,26,26,.04), rgba(188,49,148,.03)); }
-.stats-inner { display: grid; grid-template-columns: repeat(4, 1fr); position: relative; z-index: 1; }
-.stat-item { padding: 36px 20px; text-align: center; position: relative; }
+.stats-inner { display: grid; grid-template-columns: repeat(4, 1fr); position: relative; z-index: 1; width: 100%; }
+.stat-item { padding: 36px 24px; text-align: center; position: relative; }
 .stat-item:not(:last-child)::after { content: ''; position: absolute; right: 0; top: 20%; bottom: 20%; width: 1px; background: var(--glb); }
 .stat-icon { font-size: 1.4rem; margin-bottom: 8px; display: block; }
 .stat-num { font-family: var(--fc); font-style: italic; font-weight: 900; font-size: clamp(1.6rem, 3.4vw, 2.6rem); line-height: 1; margin-bottom: 5px; background: linear-gradient(135deg, #fff, rgba(255,255,255,.68)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-variant-numeric: tabular-nums; }
