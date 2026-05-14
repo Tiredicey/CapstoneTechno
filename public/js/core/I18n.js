@@ -202,7 +202,7 @@
     try {
       return new Intl.NumberFormat(lang, { style: 'currency', currency: currency }).format(amount);
     } catch {
-      return '₱' + Number(amount).toFixed(2);
+      return '\u20B1' + Number(amount).toFixed(2);
     }
   }
 
