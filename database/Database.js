@@ -99,6 +99,9 @@ class DatabaseClass {
         status TEXT DEFAULT 'new',
         qr_code TEXT,
         tracking_steps TEXT DEFAULT '[]',
+        delivery_photo TEXT,
+        delivery_photo_at INTEGER,
+        delivery_photo_by TEXT,
         florist_id TEXT,
         special_instructions TEXT,
         created_at INTEGER DEFAULT (unixepoch()),
@@ -230,6 +233,9 @@ class DatabaseClass {
       `ALTER TABLE promo_codes ADD COLUMN min_order_amount REAL DEFAULT 0`,
       `ALTER TABLE promo_codes ADD COLUMN created_at INTEGER DEFAULT 0`,
       `ALTER TABLE support_tickets ADD COLUMN feedback_comment TEXT`,
+      `ALTER TABLE orders ADD COLUMN delivery_photo TEXT`,
+      `ALTER TABLE orders ADD COLUMN delivery_photo_at INTEGER`,
+      `ALTER TABLE orders ADD COLUMN delivery_photo_by TEXT`,
     ];
     for (const sql of migrations) {
       try { this.db.prepare(sql).run(); } catch {}
