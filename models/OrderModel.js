@@ -23,7 +23,7 @@ export class OrderModel {
   }
 
   static getById(id) {
-    const o = db.get('SELECT * FROM orders WHERE id = ?', [id]);
+    const o = db.get('SELECT * FROM orders WHERE id = ? OR qr_code = ?', [id, id]);
     return o ? OrderModel.parse(o) : null;
   }
 
@@ -31,6 +31,13 @@ export class OrderModel {
     return db.all(
       'SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC LIMIT ?',
       [userId, limit]
+    ).map(OrderModel.parse);
+  }
+  
+  static getBySession(sessionId, limit = 20) {
+    return db.all(
+      'SELECT * FROM orders WHERE session_id = ? AND user_id IS NULL ORDER BY created_at DESC LIMIT ?',
+      [sessionId, limit]
     ).map(OrderModel.parse);
   }
 
