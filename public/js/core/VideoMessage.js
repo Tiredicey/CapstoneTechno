@@ -112,13 +112,14 @@
     recorder = new MediaRecorder(stream, mimeType ? { mimeType: mimeType } : undefined);
     recorder.ondataavailable = function (e) { if (e.data && e.data.size > 0) chunks.push(e.data); };
     recorder.onstop = function () {
-      var resolvedMime = (recorder && recorder.mimeType) ? recorder.mimeType : (mimeType || 'video/webm');
-      videoBlob = new Blob(chunks, { type: resolvedMime });
+      var blobType = 'video/webm';
+      if (mimeType.indexOf('mp4') !== -1) blobType = 'video/mp4';
+      videoBlob = new Blob(chunks, { type: blobType });
       stopStream();
       updatePreview();
       showControls('review');
     };
-    recorder.start(200);
+    recorder.start();
     elapsed = 0;
     updateTimer();
     recordingTimer = setInterval(function () {
