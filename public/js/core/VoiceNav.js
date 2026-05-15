@@ -4,10 +4,12 @@
   if (!SpeechRecognition) return;
   var recognition = null;
   var listening = false;
+  var wantListening = false;
   var fab = null;
   var panel = null;
   var transcript = null;
   var statusEl = null;
+  var restartTimeout = null;
   var ROUTES = [
     { patterns: ['home', 'main', 'landing'], url: '/', label: 'Home' },
     { patterns: ['shop', 'browse', 'catalog', 'catalogue', 'flowers', 'bouquets'], url: '/catalog.html', label: 'Catalog' },
@@ -61,79 +63,129 @@
   function showToast(msg) {
     if (window.showToast) window.showToast(msg, 'info');
   }
-  function startListening() {
-    if (listening) return;
-    recognition = new SpeechRecognition();
-    recognition.continuous = false;
-    recognition.interimResults = true;
-    recognition.lang = 'en-US'; 
-    recognition.maxAlternatives = 1;
-    recognition.onstart = function () {
+  function createRecognition() {
+    var rec = new SpeechRecognition();
+    rec.continuous = true;
+    rec.interimResults = true;
+    rec.lang = navigator.language || 'en-US';
+    rec.maxAlternatives = 1;
+    rec.onstart = function () {
       listening = true;
-      fab.classList.add('vn-active');
+      if (fab) fab.classList.add('vn-active');
       var navBtn = document.getElementById('voiceNavBtn');
       if (navBtn) {
         navBtn.classList.add('listening');
         navBtn.setAttribute('aria-pressed', 'true');
       }
-      panel.classList.add('vn-panel-open');
+      if (panel) panel.classList.add('vn-panel-open');
       setStatus('Listening\u2026', 'listening');
       setTranscript('');
     };
-    recognition.onresult = function (e) {
+    rec.onresult = function (e) {
       var interim = '';
-      var final = '';
+      var finalText = '';
       for (var i = e.resultIndex; i < e.results.length; i++) {
         if (e.results[i].isFinal) {
-          final += e.results[i][0].transcript;
+          finalText += e.results[i][0].transcript;
         } else {
           interim += e.results[i][0].transcript;
         }
       }
-      setTranscript(final || interim);
-      if (final) processCommand(final);
+      setTranscript(finalText || interim);
+      if (finalText) processCommand(finalText);
     };
-    recognition.onerror = function (e) {
+    rec.onerror = function (e) {
       var err = e.error || 'unknown';
+      if (err === 'aborted') return;
       if (err === 'no-speech') {
-        setStatus('No speech detected', 'warn');
+        setStatus('No speech detected — try again', 'warn');
+        if (wantListening) scheduleRestart();
       } else if (err === 'not-allowed') {
         setStatus('Microphone access denied', 'error');
+        wantListening = false;
+        updateUIState(false);
       } else if (err === 'network') {
-        setStatus('Network error. Speech API unavailable in this browser.', 'error');
+        setStatus('Network error — speech recognition requires a connection', 'error');
+        wantListening = false;
+        updateUIState(false);
       } else {
         setStatus('Error: ' + err, 'error');
+        if (wantListening) scheduleRestart();
       }
-      setTimeout(stopListening, 2000);
     };
-    recognition.onend = function () {
+    rec.onend = function () {
       listening = false;
-      fab.classList.remove('vn-active');
-      var navBtn = document.getElementById('voiceNavBtn');
-      if (navBtn) {
+      if (wantListening) {
+        scheduleRestart();
+      } else {
+        updateUIState(false);
+        setTimeout(function () {
+          if (!wantListening && panel) {
+            panel.classList.remove('vn-panel-open');
+          }
+        }, 3000);
+      }
+    };
+    return rec;
+  }
+  function scheduleRestart() {
+    clearTimeout(restartTimeout);
+    restartTimeout = setTimeout(function () {
+      if (!wantListening) return;
+      try {
+        if (recognition) {
+          try { recognition.stop(); } catch (_) {}
+        }
+        recognition = createRecognition();
+        recognition.start();
+      } catch (err) {
+        setStatus('Could not restart — tap mic to retry', 'warn');
+        wantListening = false;
+        updateUIState(false);
+      }
+    }, 300);
+  }
+  function updateUIState(active) {
+    if (fab) {
+      if (active) fab.classList.add('vn-active');
+      else fab.classList.remove('vn-active');
+    }
+    var navBtn = document.getElementById('voiceNavBtn');
+    if (navBtn) {
+      if (active) {
+        navBtn.classList.add('listening');
+        navBtn.setAttribute('aria-pressed', 'true');
+      } else {
         navBtn.classList.remove('listening');
         navBtn.setAttribute('aria-pressed', 'false');
       }
-      setTimeout(function () {
-        if (!listening) {
-          panel.classList.remove('vn-panel-open');
-        }
-      }, 3000);
-    };
-    recognition.start();
+    }
+  }
+  function startListening() {
+    if (wantListening) return;
+    wantListening = true;
+    clearTimeout(restartTimeout);
+    try {
+      if (recognition) {
+        try { recognition.stop(); } catch (_) {}
+      }
+      recognition = createRecognition();
+      recognition.start();
+    } catch (err) {
+      setStatus('Could not start speech recognition', 'error');
+      wantListening = false;
+      updateUIState(false);
+    }
   }
   function stopListening() {
+    wantListening = false;
+    clearTimeout(restartTimeout);
     if (recognition) {
       try { recognition.stop(); } catch (_) {}
     }
     listening = false;
-    fab.classList.remove('vn-active');
-    var navBtn = document.getElementById('voiceNavBtn');
-    if (navBtn) {
-      navBtn.classList.remove('listening');
-      navBtn.setAttribute('aria-pressed', 'false');
-    }
-    panel.classList.remove('vn-panel-open');
+    updateUIState(false);
+    if (panel) panel.classList.remove('vn-panel-open');
   }
   function processCommand(text) {
     var match = matchCommand(text);
@@ -145,6 +197,7 @@
     if (match.type === 'route') {
       setStatus('Navigating to ' + match.item.label + '\u2026', 'success');
       showToast('\uD83C\uDF99\uFE0F Navigating to ' + match.item.label);
+      stopListening();
       setTimeout(function () { window.location.href = match.item.url; }, 600);
     } else if (match.type === 'action') {
       var result = match.item.action(text);
@@ -178,18 +231,20 @@
     transcript = document.getElementById('vnTranscript');
     statusEl = document.getElementById('vnStatus');
     fab.addEventListener('click', function () {
-      if (listening) { stopListening(); } else { startListening(); }
+      if (wantListening) { stopListening(); } else { startListening(); }
     });
     var navBtn = document.getElementById('voiceNavBtn');
     if (navBtn) {
       navBtn.hidden = false;
       navBtn.addEventListener('click', function () {
-        if (listening) { stopListening(); } else { startListening(); }
+        if (wantListening) { stopListening(); } else { startListening(); }
       });
     }
   }
   function injectStyles() {
+    if (document.getElementById('vnStyles')) return;
     var s = document.createElement('style');
+    s.id = 'vnStyles';
     s.textContent =
       '.vn-fab{position:fixed;bottom:88px;right:28px;width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--p5d,#A81010),var(--p5,#E61A1A));color:#fff;border:none;display:flex;align-items:center;justify-content:center;z-index:999;box-shadow:0 6px 24px rgba(230,26,26,.35);transition:all .3s cubic-bezier(.23,1,.32,1);cursor:pointer}' +
       '.vn-fab svg{width:22px;height:22px}' +
