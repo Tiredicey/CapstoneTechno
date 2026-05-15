@@ -279,11 +279,11 @@ try {
       </main>
     `,
     'privacy.html': `
-      <main class="con sec-pad" style="padding-top: 140px; position: relative; min-height: 100vh; overflow: hidden;">
+      <main style="position: relative; min-height: 100vh; overflow: hidden; padding-top: 140px;">
         <div class="hero-orb hero-orb-1" style="opacity: 0.15;"></div>
         <div class="hero-orb hero-orb-2" style="opacity: 0.1;"></div>
         <div class="p5-glow" style="top: 20%; right: 10%; opacity: 0.3;"></div>
-        <div style="position: relative; z-index: 10;">
+        <div class="con sec-pad" style="position: relative; z-index: 10; padding-top: 0;">
           <header style="text-align: center; margin-bottom: 64px;">
             <span class="tag tag-p shimmer" style="letter-spacing: 0.2em;">COMMERCE TRANSPARENCY</span>
             <h1 class="sec-title" style="font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; margin-bottom: 16px; background: linear-gradient(135deg, #fff 30%, var(--p5) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 4px 20px rgba(230,26,26,0.1);">
