@@ -2957,72 +2957,7 @@ input:-webkit-autofill:focus {
     on(learnBtn, 'click', function () { window.location.href = '/subscriptions.html'; });
   }
 
-  var VOICE_COMMANDS = [
-    { match: /(open|show|go to)?\s*(shop|store|catalog)/i, action: function () { var t = qs('#shop'); if (t) t.scrollIntoView({ behavior: 'smooth' }); } },
-    { match: /(subscribe|subscription|recurring|weekly|monthly)/i, action: function () { var t = qs('#subs'); if (t) t.scrollIntoView({ behavior: 'smooth' }); } },
-    { match: /(cart|basket)/i, action: function () { window.location.href = '/cart.html'; } },
-    { match: /(checkout|pay)/i, action: function () { window.location.href = '/checkout.html'; } },
-    { match: /(wishlist|favorites|saved)/i, action: function () { var b = qs('#wlBtnNav'); if (b) b.click(); } },
-    { match: /(corporate|teams|business)/i, action: function () { var t = qs('#corp'); if (t) t.scrollIntoView({ behavior: 'smooth' }); } },
-    { match: /(features|why|trust)/i, action: function () { var t = qs('#features'); if (t) t.scrollIntoView({ behavior: 'smooth' }); } },
-    { match: /(top|home|hero|start)/i, action: function () { window.scrollTo({ top: 0, behavior: 'smooth' }); } },
-    { match: /(sign in|login|account)/i, action: function () { var b = qs('#authBtn'); if (b) b.click(); } },
-    { match: /(search)\s+(.+)/i, action: function (m) { var v = m[2].trim(); var t = qs('#srchTog'); if (t) t.click(); var inp = qs('#srchInp'); if (inp) { inp.value = v; inp.dispatchEvent(new Event('input')); } } },
-    { match: /(theme|dark|light|toggle)/i, action: function () { var b = qs('#themeToggle'); if (b) b.click(); } },
-    { match: /(help|commands)/i, action: function () { showToast('Try: shop, subscribe, cart, wishlist, corporate, sign in, search roses', 'info'); } }
-  ];
-  function initVoice() {
-    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    var fab = qs('#voiceFab');
-    var navBtn = qs('#voiceNavBtn');
-    var status = qs('#voiceStatus');
-    var statusText = qs('#voiceText');
-    if (!SR || !fab || !navBtn) return;
-    fab.hidden = false;
-    fab.classList.add('show');
-    navBtn.hidden = false;
-    var rec = new SR();
-    rec.lang = (document.documentElement.lang || 'en-US');
-    rec.continuous = false;
-    rec.interimResults = true;
-    rec.maxAlternatives = 1;
-    var listening = false;
-    function start() {
-      if (listening) return;
-      try { rec.start(); listening = true; fab.classList.add('listening'); navBtn.classList.add('listening'); navBtn.setAttribute('aria-pressed', 'true'); fab.setAttribute('aria-pressed', 'true'); status.classList.add('show'); if (statusText) statusText.textContent = 'Listening¦'; bloomTrack('voice_start'); } catch (e) {}
-    }
-    function stop() {
-      try { rec.stop(); } catch (e) {}
-      listening = false;
-      fab.classList.remove('listening');
-      navBtn.classList.remove('listening');
-      navBtn.setAttribute('aria-pressed', 'false');
-      fab.setAttribute('aria-pressed', 'false');
-      setTimeout(function () { status.classList.remove('show'); }, 1800);
-    }
-    function handle(text) {
-      var matched = false;
-      for (var i = 0; i < VOICE_COMMANDS.length; i++) {
-        var cmd = VOICE_COMMANDS[i];
-        var m = text.match(cmd.match);
-        if (m) { cmd.action(m); bloomTrack('voice_match', { command: text, intent: cmd.match.source }); matched = true; break; }
-      }
-      if (!matched) showToast('Didn\'t catch that - try "shop" or "subscribe"', 'info');
-    }
-    rec.onresult = function (e) {
-      var last = e.results[e.results.length - 1];
-      var transcript = last[0].transcript.trim();
-      if (statusText) statusText.textContent = '"' + transcript + '"';
-      if (last.isFinal) handle(transcript);
-    };
-    rec.onerror = function (e) { showToast('Voice: ' + (e.error || 'error'), 'error'); stop(); };
-    rec.onend = function () { stop(); };
-    on(fab, 'click', function () { listening ? stop() : start(); });
-    on(navBtn, 'click', function () { listening ? stop() : start(); });
-    on(document, 'keydown', function (e) {
-      if ((e.altKey || e.metaKey) && (e.key === 'v' || e.key === 'V')) { e.preventDefault(); listening ? stop() : start(); }
-    });
-  }
+
 
   function buildVideoMessageBlock(productId) {
     var html = '<div class="vid-msg-block">' +
