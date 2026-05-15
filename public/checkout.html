@@ -1002,6 +1002,7 @@ input:-webkit-autofill:focus {
         </div>
       </div>
       <div class="pci-badge">🔒 PCI DSS Compliant · 256-bit SSL · Your card data is never stored</div>
+      <div id="videoGreetingHost" style="margin-top:24px;"></div>
       <div style="display:flex;gap:12px;margin-top:28px;">
         <button class="btn btn-ghost" id="step3Back" style="flex:1;justify-content:center;">← Back</button>
         <button class="btn btn-primary btn-lg" id="placeOrder" style="flex:2;justify-content:center;">Place Order 🌸</button>
@@ -1057,7 +1058,9 @@ input:-webkit-autofill:focus {
 <!-- BLOOM_BASE_END -->
 <script src="/js/core/FormValidator.js"></script>
 <script src="/js/core/WebVitals.js"></script>
-<script type="module" src="/js/checkout.js"></script>
+<script src="/js/core/VideoMessage.js"></script>
+<script src="/js/checkout.js"></script>
+<script>if(window.BloomVideoMessage)BloomVideoMessage.attachTo('videoGreetingHost');</script>
 
 <!-- BLOOM_FOOT_INJECT -->
 <footer class="bloom-foot" role="contentinfo">
