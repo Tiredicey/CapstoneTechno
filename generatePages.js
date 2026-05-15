@@ -286,7 +286,7 @@ try {
         <div class="con sec-pad" style="position: relative; z-index: 10; padding-top: 0;">
           <header style="text-align: center; margin-bottom: 64px;">
             <span class="tag tag-p shimmer" style="letter-spacing: 0.2em;">COMMERCE TRANSPARENCY</span>
-            <h1 class="sec-title" style="font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; margin-bottom: 16px; background: linear-gradient(135deg, #fff 30%, var(--p5) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 4px 20px rgba(230,26,26,0.1);">
+            <h1 class="sec-title" style="font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; margin-bottom: 16px; background: linear-gradient(135deg, #fff 30%, var(--p5) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; text-shadow: 0 4px 20px rgba(230,26,26,0.1);">
               Privacy Policy
             </h1>
             <p style="font-family: var(--fc); font-style: italic; color: var(--p5l); letter-spacing: 0.1em; font-size: 0.9rem; text-transform: uppercase; margin-bottom: 24px;">
