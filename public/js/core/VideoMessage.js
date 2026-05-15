@@ -1,8 +1,6 @@
 (function () {
   'use strict';
-
   if (!window.MediaRecorder || !navigator.mediaDevices) return;
-
   var stream = null;
   var recorder = null;
   var chunks = [];
@@ -10,11 +8,10 @@
   var recordingTimer = null;
   var elapsed = 0;
   var MAX_SECONDS = 30;
-
+  var currentObjectUrl = null;
   window.BloomVideoMessage = {
     getBlob: function () { return videoBlob; },
-    reset: function () { videoBlob = null; updatePreview(); },
-
+    reset: function () { videoBlob = null; revokeUrl(); updatePreview(); },
     attachTo: function (containerId) {
       var host = document.getElementById(containerId);
       if (!host || host.dataset.vmInit) return;
@@ -24,7 +21,12 @@
       bindEvents(host);
     }
   };
-
+  function revokeUrl() {
+    if (currentObjectUrl) {
+      URL.revokeObjectURL(currentObjectUrl);
+      currentObjectUrl = null;
+    }
+  }
   function buildUI() {
     return '<div class="vm-wrap">' +
       '<div class="vm-hd">' +
@@ -52,17 +54,16 @@
       '</div>' +
     '</div>';
   }
-
   function bindEvents(host) {
     var startBtn = host.querySelector('#vmStart');
     var stopBtn = host.querySelector('#vmStop');
     var retakeBtn = host.querySelector('#vmRetake');
     var acceptBtn = host.querySelector('#vmAccept');
-
     startBtn.addEventListener('click', startRecording);
     stopBtn.addEventListener('click', stopRecording);
     retakeBtn.addEventListener('click', function () {
       videoBlob = null;
+      revokeUrl();
       updatePreview();
       showControls('start');
     });
@@ -73,54 +74,50 @@
       document.dispatchEvent(event);
     });
   }
-
   function showControls(state) {
     var startBtn = document.getElementById('vmStart');
     var stopBtn = document.getElementById('vmStop');
     var retakeBtn = document.getElementById('vmRetake');
     var acceptBtn = document.getElementById('vmAccept');
     if (!startBtn) return;
-
     startBtn.style.display = state === 'start' ? '' : 'none';
     stopBtn.style.display = state === 'recording' ? '' : 'none';
     retakeBtn.style.display = (state === 'review' || state === 'done') ? '' : 'none';
     acceptBtn.style.display = state === 'review' ? '' : 'none';
   }
-
   async function startRecording() {
     var preview = document.getElementById('vmPreview');
     var placeholder = document.getElementById('vmPlaceholder');
     var overlay = document.getElementById('vmOverlay');
     var playback = document.getElementById('vmPlayback');
-
     try {
       stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }, audio: true });
     } catch (e) {
       if (window.showToast) window.showToast('Camera access denied or unavailable', 'error');
       return;
     }
-
+    videoBlob = null;
+    revokeUrl();
     preview.srcObject = stream;
     preview.style.display = 'block';
-    preview.play();
-    if (playback) playback.style.display = 'none';
+    preview.play().catch(function () {});
+    if (playback) { playback.style.display = 'none'; playback.removeAttribute('src'); playback.load(); }
     if (placeholder) placeholder.style.display = 'none';
     if (overlay) overlay.style.display = 'flex';
-
     chunks = [];
     var mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus') ? 'video/webm;codecs=vp9,opus' :
                    MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus') ? 'video/webm;codecs=vp8,opus' :
+                   MediaRecorder.isTypeSupported('video/webm') ? 'video/webm' :
                    MediaRecorder.isTypeSupported('video/mp4') ? 'video/mp4' : '';
-
     recorder = new MediaRecorder(stream, mimeType ? { mimeType: mimeType } : undefined);
-    recorder.ondataavailable = function (e) { if (e.data.size > 0) chunks.push(e.data); };
+    recorder.ondataavailable = function (e) { if (e.data && e.data.size > 0) chunks.push(e.data); };
     recorder.onstop = function () {
-      videoBlob = new Blob(chunks, { type: recorder.mimeType || 'video/webm' });
+      var resolvedMime = (recorder && recorder.mimeType) ? recorder.mimeType : (mimeType || 'video/webm');
+      videoBlob = new Blob(chunks, { type: resolvedMime });
       stopStream();
       updatePreview();
       showControls('review');
     };
-
     recorder.start(200);
     elapsed = 0;
     updateTimer();
@@ -129,17 +126,14 @@
       updateTimer();
       if (elapsed >= MAX_SECONDS) stopRecording();
     }, 1000);
-
     showControls('recording');
   }
-
   function stopRecording() {
     clearInterval(recordingTimer);
     if (recorder && recorder.state !== 'inactive') recorder.stop();
     var overlay = document.getElementById('vmOverlay');
     if (overlay) overlay.style.display = 'none';
   }
-
   function stopStream() {
     if (stream) {
       stream.getTracks().forEach(function (t) { t.stop(); });
@@ -148,7 +142,6 @@
     var preview = document.getElementById('vmPreview');
     if (preview) { preview.srcObject = null; preview.style.display = 'none'; }
   }
-
   function updateTimer() {
     var el = document.getElementById('vmTimer');
     if (!el) return;
@@ -157,27 +150,34 @@
     el.textContent = m + ':' + (s < 10 ? '0' : '') + s;
     var remaining = MAX_SECONDS - elapsed;
     if (remaining <= 5) el.style.color = 'rgba(230,26,26,.9)';
+    else el.style.color = '#fff';
   }
-
   function updatePreview() {
     var playback = document.getElementById('vmPlayback');
     var placeholder = document.getElementById('vmPlaceholder');
     var preview = document.getElementById('vmPreview');
     if (!playback) return;
-
     if (videoBlob) {
-      playback.src = URL.createObjectURL(videoBlob);
+      revokeUrl();
+      currentObjectUrl = URL.createObjectURL(videoBlob);
+      playback.onloadeddata = function () {
+        playback.currentTime = 0;
+      };
+      playback.src = currentObjectUrl;
+      playback.load();
       playback.style.display = 'block';
       if (preview) preview.style.display = 'none';
       if (placeholder) placeholder.style.display = 'none';
     } else {
-      playback.style.display = 'none';
+      playback.pause();
       playback.removeAttribute('src');
+      playback.load();
+      playback.style.display = 'none';
+      revokeUrl();
       if (preview) preview.style.display = 'none';
       if (placeholder) placeholder.style.display = 'flex';
     }
   }
-
   function injectStyles() {
     if (document.getElementById('vmStyles')) return;
     var s = document.createElement('style');
