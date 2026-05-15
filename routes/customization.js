@@ -6,15 +6,18 @@ import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const uploadDir = path.join(__dirname, '..', 'uploads', 'products');
 fs.mkdirSync(uploadDir, { recursive: true });
+
 const storage = multer.diskStorage({
   destination: uploadDir,
   filename: (req, file, cb) => cb(null, `custom_${uuid()}${path.extname(file.originalname)}`)
 });
 const upload = multer({ storage, limits: { fileSize: 8 * 1024 * 1024 } });
 const router = Router();
+
 function calculatePriceDelta(config = {}) {
   let delta = 0;
   if (config.wrapping === 'premium' || config.wrapping_premium) delta += 8;
@@ -29,6 +32,7 @@ function calculatePriceDelta(config = {}) {
   if (config.extraBlooms) delta += Number(config.extraBlooms) * 2;
   return delta;
 }
+
 router.post('/', optionalAuth, (req, res) => {
   try {
     const { productId, config } = req.body;
@@ -45,13 +49,14 @@ router.post('/', optionalAuth, (req, res) => {
     res.status(500).json({ error: 'Failed to create customization' });
   }
 });
+
 router.put('/:id', optionalAuth, (req, res) => {
   try {
     const { config } = req.body;
     if (!config) return res.status(400).json({ error: 'config required' });
     const priceDelta = calculatePriceDelta(config);
     Database.run(
-      'UPDATE customizations SET config = ?, price_delta = ? WHERE id = ?',
+      'UPDATE customizations SET config = ?, price_delta = ?, created_at = unixepoch() WHERE id = ?',
       [JSON.stringify(config), priceDelta, req.params.id]
     );
     res.json({ priceDelta });
@@ -60,6 +65,7 @@ router.put('/:id', optionalAuth, (req, res) => {
     res.status(500).json({ error: 'Failed to update customization' });
   }
 });
+
 router.post('/:id/save', authenticate, (req, res) => {
   try {
     Database.run(
@@ -72,12 +78,14 @@ router.post('/:id/save', authenticate, (req, res) => {
     res.status(500).json({ error: 'Failed to save customization' });
   }
 });
+
 router.get('/saved', authenticate, (req, res) => {
   try {
     const saved = Database.all(
       'SELECT c.*, p.name as product_name, p.base_price FROM customizations c LEFT JOIN products p ON c.product_id = p.id WHERE c.user_id = ? AND c.saved = 1 ORDER BY c.created_at DESC',
       [req.user.id]
     );
+    res.set('Cache-Control', 'no-store');
     res.json(saved.map(c => ({
       ...c,
       config: typeof c.config === 'string' ? JSON.parse(c.config || '{}') : c.config
@@ -87,6 +95,7 @@ router.get('/saved', authenticate, (req, res) => {
     res.status(500).json({ error: 'Failed to fetch saved customizations' });
   }
 });
+
 router.post('/upload', upload.single('design'), (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
@@ -96,4 +105,5 @@ router.post('/upload', upload.single('design'), (req, res) => {
     res.status(500).json({ error: 'Upload failed' });
   }
 });
+
 export default router;
