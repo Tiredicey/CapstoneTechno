@@ -42,13 +42,13 @@
 {"@context":"https://schema.org","@type":"LocalBusiness","name":"Bloom Florist","image":"/img/hero-flowers.jpg","priceRange":"₱₱","telephone":"+63","address":{"@type":"PostalAddress","addressCountry":"PH","addressRegion":"Batangas","addressLocality":"Lipa City"},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],"opens":"08:00","closes":"20:00"}],"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.86","reviewCount":"487"}}
 </script>
 <link rel="stylesheet" href="/css/landing.css">
+<link rel="stylesheet" href="/css/phase8.css">
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/img/hero-flowers.jpg">
 <style>
 @property --sh { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
 @property --px { syntax: '<number>'; inherits: true; initial-value: 0; }
 @property --py { syntax: '<number>'; inherits: true; initial-value: 0; }
-
 :root {
   --p5: #E61A1A;
   --p5d: #A81010;
@@ -81,7 +81,6 @@
   --text-muted: rgba(255,255,255,.6);
   --text-dim: rgba(255,255,255,.35);
 }
-
 [data-theme="light"] {
   --bg: #FEFCF9;
   --bg2: #F5F0EB;
@@ -101,7 +100,6 @@
   --input-border: rgba(0,0,0,.12);
   --shadow-color: rgba(0,0,0,.08);
 }
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
 *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; color-scheme: dark; interpolate-size: allow-keywords; scrollbar-width: none; -ms-overflow-style: none; }
@@ -234,32 +232,25 @@ button { font-family: var(--fb); background: none; border: none; color: inherit;
 input, textarea, select { font-family: var(--fb); }
 img { max-width: 100%; display: block; }
 :focus-visible { outline: 2px solid var(--p5l); outline-offset: 3px; border-radius: 4px; }
-
 .sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
-
 .c-dot { width: 8px; height: 8px; background: #fff; border-radius: 50%; position: fixed; pointer-events: none; z-index: 99999; transform: translate3d(-50%,-50%,0); transition: width .2s, height .2s, background .2s; will-change: transform; }
 .c-ring { width: 36px; height: 36px; border: 1.5px solid rgba(255,255,255,.45); border-radius: 50%; position: fixed; pointer-events: none; z-index: 99998; transform: translate3d(-50%,-50%,0); transition: transform .16s var(--ease), width .28s, height .28s, border-color .28s; will-change: transform; }
 body.c-hover .c-dot { width: 14px; height: 14px; background: var(--p5); }
 body.c-hover .c-ring { width: 52px; height: 52px; border-color: rgba(230,26,26,.7); }
 @media (pointer: coarse), (hover: none) { .c-dot, .c-ring { display: none !important; } }
-
 #sbar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--p5), var(--pk), var(--mn)); transform-origin: 0 50%; width: 100%; z-index: 9999; box-shadow: 0 0 10px rgba(230,26,26,.5); transform: scaleX(0); }
 @supports (animation-timeline: scroll()) {
   #sbar { animation: sb-grow linear both; animation-timeline: scroll(root); }
   @keyframes sb-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 }
-
 .skip { position: fixed; top: -80px; left: 20px; z-index: 99990; padding: 10px 20px; background: var(--p5); color: #fff; border-radius: 8px; font-weight: 700; transition: top .2s; text-decoration: none; }
 .skip:focus { top: 20px; }
 .con { max-width: 1280px; margin: 0 auto; padding: 0 40px; }
 @media (max-width: 768px) { .con { padding: 0 20px; } }
-
 .p5-slash { position: absolute; width: 3px; background: var(--p5); border-radius: 2px; transform: rotate(-18deg); pointer-events: none; }
 .p5-diamond { position: absolute; width: 8px; height: 8px; background: var(--p5); transform: rotate(45deg); pointer-events: none; }
 .p5-label { font-family: var(--fc); font-weight: 900; font-style: italic; font-size: .7rem; letter-spacing: .15em; text-transform: uppercase; color: var(--p5); }
-
 .p5-splat { position: absolute; pointer-events: none; width: 120px; height: 120px; filter: drop-shadow(0 0 10px rgba(230,26,26,.4)); }
-
 #nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 0 40px; transition: background .4s, backdrop-filter .4s; }
 #nav::after { content: ''; position: absolute; bottom: 0; left: -2%; right: -2%; height: 2px; background: linear-gradient(90deg, transparent, var(--p5), var(--pk), transparent); opacity: 0; transition: opacity .4s; transform: skewY(-0.8deg); filter: drop-shadow(0 0 4px rgba(230,26,26,.4)); }
 #nav.sc { background: rgba(11,5,22,.88); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
@@ -281,10 +272,8 @@ body.c-hover .c-ring { width: 52px; height: 52px; border-color: rgba(230,26,26,.
 .btn-g:hover, .btn-g:focus-visible { background: rgba(255,255,255,.1); color: #fff; }
 .btn-sm { padding: 8px 14px; font-size: .8rem; height: 36px; }
 .btn-lg { padding: 13px 30px; font-size: .95rem; border-radius: var(--r); }
-
 .cart-wrap { position: relative; }
 .cart-badge { position: absolute; top: -6px; right: -6px; background: var(--p5); color: #fff; font-size: .62rem; font-weight: 700; min-width: 16px; height: 16px; border-radius: 100px; display: inline-flex; align-items: center; justify-content: center; padding: 0 4px; }
-
 .n-srch-wrap { position: relative; }
 .n-srch-panel { position: absolute; top: 120%; right: 0; width: min(340px, 90vw); background: rgba(11,5,22,.97); border: 1px solid var(--glb); border-radius: var(--r); padding: 12px; z-index: 200; opacity: 0; pointer-events: none; transform: translateY(-8px) scale(.97); transition: all .22s var(--ease); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
 .n-srch-panel.open { opacity: 1; pointer-events: all; transform: none; }
@@ -293,12 +282,10 @@ body.c-hover .c-ring { width: 52px; height: 52px; border-color: rgba(230,26,26,.
 .srch-item { display: flex; align-items: center; gap: 10px; padding: 9px 11px; border-radius: var(--rs); color: #fff; transition: background .15s; width: 100%; text-align: left; font-size: .85rem; }
 .srch-item:hover, .srch-item:focus-visible { background: var(--gl); }
 .srch-item mark { background: rgba(230,26,26,.3); color: #fff; border-radius: 3px; padding: 0 2px; }
-
 .lang-dd { position: absolute; top: 110%; right: 0; background: rgba(16,7,30,.97); border: 1px solid var(--glb); border-radius: var(--rs); min-width: 168px; z-index: 100; opacity: 0; pointer-events: none; transform: translateY(-5px) scale(.96); transition: all .18s var(--ease); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); overflow: hidden; list-style: none; }
 .lang-dd.open { opacity: 1; pointer-events: all; transform: none; }
 .lang-opt { padding: 11px 14px; font-size: .86rem; color: rgba(255,255,255,.72); transition: background .15s; display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; }
 .lang-opt:hover, .lang-opt:focus-visible { background: rgba(230,26,26,.14); color: #fff; }
-
 .hmb { display: none; flex-direction: column; gap: 5px; padding: 6px; border-radius: var(--rx); }
 .hmb span { display: block; width: 20px; height: 2px; background: #fff; border-radius: 2px; transition: all .3s var(--ease); }
 .hmb[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
@@ -313,7 +300,6 @@ body.c-hover .c-ring { width: 52px; height: 52px; border-color: rgba(230,26,26,.
 .mob-acts { display: flex; flex-direction: column; gap: 10px; }
 .mob-close { position: absolute; top: 22px; right: 22px; background: var(--gl); border: 1px solid var(--glb); color: #fff; font-size: 1.1rem; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all .2s; }
 .mob-close:hover, .mob-close:focus-visible { background: rgba(230,26,26,.2); }
-
 .hero { min-height: 100dvh; display: flex; align-items: center; position: relative; overflow: hidden; padding-top: 68px; perspective: 1400px; perspective-origin: 50% 50%; background: var(--ethereal-obsidian); }
 .hero-bg { position: absolute; inset: 0; background: radial-gradient(at 0% 0%, hsla(328,100%,15%,0.3) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(272,100%,15%,0.3) 0, transparent 50%); }
 .hero-bg::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 20% 30%, var(--ethereal-glow-pink), transparent 50%), radial-gradient(circle at 80% 70%, var(--ethereal-glow-red), transparent 50%); filter: blur(80px); opacity: 0.5; animation: etherealPulse 15s ease-in-out infinite alternate; }
@@ -324,7 +310,6 @@ body.c-hover .c-ring { width: 52px; height: 52px; border-color: rgba(230,26,26,.
 .hero-slash-1 { position: absolute; left: 42%; top: -5%; width: 4px; height: 110%; background: linear-gradient(to bottom, transparent, var(--p5), var(--pk), transparent); transform: skewX(-8deg) rotate(-3deg); z-index: 3; opacity: .4; pointer-events: none; filter: drop-shadow(0 0 12px var(--p5)); }
 .hero-scanlines { position: absolute; inset: 0; z-index: 5; pointer-events: none; opacity: .08; background: repeating-linear-gradient(0deg, transparent 0, transparent 3px, rgba(255,255,255,.5) 3px, rgba(255,255,255,.5) 4px); mix-blend-mode: overlay; }
 .hero-noise { position: absolute; inset: 0; z-index: 4; pointer-events: none; opacity: .06; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E"); }
-
 .hero-grid { position: relative; z-index: 4; width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; padding: 80px 0 60px; transform-style: preserve-3d; }
 .hero-left { transform: translate3d(calc(var(--px,0) * -6px), calc(var(--py,0) * -4px), 0); transition: transform .22s linear; will-change: transform; }
 .hero-eyebrow { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; }
@@ -344,14 +329,12 @@ body.c-hover .c-ring { width: 52px; height: 52px; border-color: rgba(230,26,26,.
 .trust { display: flex; flex-wrap: wrap; gap: 18px; }
 .trust-item { display: flex; align-items: center; gap: 7px; font-size: .75rem; font-weight: 500; color: rgba(255,255,255,.42); }
 .trust-item svg { width: 14px; height: 14px; flex-shrink: 0; color: var(--mn); }
-
 .hero-countdown { display: inline-flex; align-items: center; gap: 14px; margin-bottom: 28px; background: rgba(230,26,26,.1); border: 1px solid rgba(230,26,26,.28); border-radius: 100px; padding: 7px 18px; }
 .cd-lbl { font-family: var(--fc); font-style: italic; font-weight: 700; font-size: .72rem; letter-spacing: .1em; color: rgba(255,255,255,.5); text-transform: uppercase; }
 .cd-units { display: flex; align-items: center; gap: 5px; }
 .cd-num { font-family: var(--fc); font-weight: 900; font-size: 1.1rem; color: var(--p5); min-width: 1.4em; text-align: center; font-variant-numeric: tabular-nums; }
 .cd-sub { font-size: .6rem; color: rgba(255,255,255,.35); display: block; line-height: 1; letter-spacing: .05em; text-transform: uppercase; text-align: center; }
 .cd-sep { color: var(--p5); font-weight: 900; font-family: var(--fc); }
-
 .hero-cards { position: relative; height: 520px; transform-style: preserve-3d; perspective: 1200px; }
 .h-card { position: absolute; background: linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,.02)); border: 1px solid rgba(255,255,255,.15); border-radius: 24px; backdrop-filter: blur(24px) saturate(1.2); -webkit-backdrop-filter: blur(24px) saturate(1.2); padding: 22px; transition: box-shadow .4s var(--ease), border-color .4s; transform-style: preserve-3d; will-change: transform; overflow: visible; box-shadow: 0 16px 40px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.1); }
 .h-card::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 20px rgba(230,26,26,.05); pointer-events: none; }
@@ -377,9 +360,7 @@ body.c-hover .c-ring { width: 52px; height: 52px; border-color: rgba(230,26,26,.
 .hc-status { font-size: .8rem; font-weight: 600; color: var(--mn); margin-top: 6px; display: flex; align-items: center; gap: 6px; transform: translateZ(15px); line-height: 1.4; }
 .hc-status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--mn); box-shadow: 0 0 10px var(--mn); animation: ping2 2s ease-out infinite; flex-shrink: 0; }
 @keyframes ping2 { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(0.8)} }
-
 canvas#ptcl { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
-
 .stats-strip { background: var(--bg2); border-top: 1px solid var(--glb); border-bottom: 1px solid var(--glb); position: relative; overflow: hidden; margin-left: 0; margin-right: 0; }
 .stats-strip .con { max-width: 100%; width: 100%; padding: 0; margin: 0; }
 .stats-strip::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(230,26,26,.04), rgba(188,49,148,.03)); }
@@ -394,13 +375,11 @@ canvas#ptcl { position: absolute; inset: 0; width: 100%; height: 100%; pointer-e
 .stat-src { font-size: .62rem; color: rgba(255,255,255,.28); margin-top: 6px; letter-spacing: .05em; }
 .stat-src a { color: rgba(255,255,255,.5); border-bottom: 1px dotted rgba(255,255,255,.2); }
 .stat-src a:hover { color: var(--p5l); border-bottom-color: var(--p5); }
-
 .bloom-academic-badge { position: fixed; bottom: 0; left: 0; right: 0; z-index: 99998; background: linear-gradient(135deg, rgba(5,2,10,0.95), rgba(30,10,40,0.95)); backdrop-filter: blur(12px); border-top: 1px solid rgba(230,26,26,.2); padding: 8px 16px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: .72rem; color: rgba(255,255,255,.55); letter-spacing: .03em; text-align: center; line-height: 1.5; }
 .bloom-academic-badge span { color: var(--p5l); font-weight: 600; }
 .bloom-academic-badge-close { background: none; border: none; color: rgba(255,255,255,.4); cursor: pointer; font-size: 1rem; padding: 0 4px; margin-left: 8px; }
 .bloom-academic-badge-close:hover { color: #fff; }
 .ai-gen-label { position: absolute; top: 8px; left: 8px; z-index: 5; display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 6px; background: rgba(0,0,0,.65); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,.1); font-size: .62rem; font-weight: 600; color: rgba(255,255,255,.7); letter-spacing: .06em; text-transform: uppercase; pointer-events: none; }
-
 .sec-pad { padding: 96px 0; }
 .sec-hd { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 48px; flex-wrap: wrap; gap: 16px; }
 .sec-title { font-family: var(--fd); font-size: clamp(1.7rem, 3.2vw, 2.6rem); font-weight: 900; line-height: 1.1; letter-spacing: -.03em; text-wrap: balance; }
@@ -409,7 +388,6 @@ canvas#ptcl { position: absolute; inset: 0; width: 100%; height: 100%; pointer-e
 .tag-p { background: rgba(230,26,26,.15); border: 1px solid rgba(230,26,26,.3); color: var(--p5l); }
 .tag-m { background: rgba(0,212,170,.12); border: 1px solid rgba(0,212,170,.25); color: var(--mn); }
 .tag-a { background: rgba(124,58,237,.14); border: 1px solid rgba(124,58,237,.3); color: #a78bfa; }
-
 .cat-wrap { display: flex; align-items: center; gap: 8px; margin-bottom: 46px; }
 .cat-tabs { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; padding: 3px 0; scroll-behavior: smooth; }
 .cat-tabs::-webkit-scrollbar { display: none; }
@@ -420,7 +398,6 @@ canvas#ptcl { position: absolute; inset: 0; width: 100%; height: 100%; pointer-e
 .cat-arrow { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: var(--gl); border: 1px solid var(--glb); color: #fff; flex-shrink: 0; transition: all .2s; font-size: 1rem; }
 .cat-arrow:hover, .cat-arrow:focus-visible { background: rgba(255,255,255,.14); }
 .cat-arrow:disabled { opacity: .3; }
-
 .p-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; min-height: 280px; perspective: 1000px; }
 .p-card { background: var(--gl); border: 1px solid var(--glb); border-radius: var(--r); padding: 20px; position: relative; transform-style: preserve-3d; opacity: 0; transition: box-shadow .5s var(--spring), border-color .4s, opacity .5s, transform .5s var(--spring); }
 .p-card.vis { opacity: 1; }
@@ -456,7 +433,6 @@ canvas#ptcl { position: absolute; inset: 0; width: 100%; height: 100%; pointer-e
 .p-skel-t { height: 14px; border-radius: 4px; background: var(--gl); animation: sk 1.4s ease-in-out infinite; background-size: 200% 100%; background-image: linear-gradient(90deg, var(--gl) 0%, rgba(255,255,255,.08) 50%, var(--gl) 100%); margin-bottom: 8px; width: 70%; }
 .p-skel-s { height: 10px; border-radius: 4px; background: var(--gl); animation: sk 1.4s ease-in-out infinite; background-size: 200% 100%; background-image: linear-gradient(90deg, var(--gl) 0%, rgba(255,255,255,.08) 50%, var(--gl) 100%); width: 40%; }
 @keyframes sk { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-
 .feat-sec { background: var(--bg2); position: relative; overflow: hidden; perspective: 1200px; }
 .feat-sec::before { content: ''; position: absolute; top: -100px; left: 50%; transform: translateX(-50%); width: 700px; height: 700px; background: radial-gradient(circle, rgba(230,26,26,.08), transparent 60%); pointer-events: none; mix-blend-mode: screen; animation: p5GlowPulse 8s ease-in-out infinite; }
 .feat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; position: relative; z-index: 1; }
@@ -470,7 +446,6 @@ canvas#ptcl { position: absolute; inset: 0; width: 100%; height: 100%; pointer-e
 .feat-card:hover .feat-t { transform: translateZ(30px); text-shadow: 0 2px 4px rgba(0,0,0,.3); }
 .feat-d { font-size: .88rem; color: rgba(255,255,255,.6); line-height: 1.7; transform: translateZ(5px); transition: transform .4s var(--spring), color .4s; }
 .feat-card:hover .feat-d { transform: translateZ(20px); color: rgba(255,255,255,.8); }
-
 .rev-sec { background: var(--bg); }
 .rev-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .rev-card { background: var(--gl); border: 1px solid var(--glb); border-radius: var(--r); padding: 28px; position: relative; opacity: 0; transform: translateY(16px); transition: opacity .5s var(--ease), transform .5s var(--ease); }
@@ -487,7 +462,6 @@ canvas#ptcl { position: absolute; inset: 0; width: 100%; height: 100%; pointer-e
 .rev-dots { display: flex; gap: 6px; }
 .rev-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--glb); transition: background .2s, width .2s; }
 .rev-dot.active { background: var(--p5); width: 24px; border-radius: 4px; }
-
 .facts-sec { background: var(--bg3); border-top: 1px solid var(--glb); border-bottom: 1px solid var(--glb); position: relative; }
 .facts-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
 .fact-card { padding: 28px 28px 28px 32px; border-radius: var(--r); background: var(--gl); border: 1px solid var(--glb); position: relative; overflow: hidden; }
@@ -498,7 +472,6 @@ canvas#ptcl { position: absolute; inset: 0; width: 100%; height: 100%; pointer-e
 .fact-src { font-size: .7rem; color: rgba(255,255,255,.4); }
 .fact-src a { color: rgba(255,255,255,.58); border-bottom: 1px dotted rgba(255,255,255,.2); }
 .fact-src a:hover, .fact-src a:focus-visible { color: var(--p5l); border-bottom-color: var(--p5); }
-
 .corp-sec { background: var(--bg); }
 .corp-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 60px; align-items: start; }
 .corp-photo { border-radius: var(--r); overflow: hidden; aspect-ratio: 4/3; position: relative; background: var(--gl); min-height: 320px; }
@@ -507,7 +480,6 @@ canvas#ptcl { position: absolute; inset: 0; width: 100%; height: 100%; pointer-e
 .corp-list { list-style: none; display: flex; flex-direction: column; gap: 14px; margin-top: 24px; margin-bottom: 28px; }
 .corp-list li { display: flex; align-items: flex-start; gap: 12px; font-size: .9rem; color: rgba(255,255,255,.72); line-height: 1.6; }
 .corp-list svg { width: 18px; height: 18px; flex-shrink: 0; color: var(--mn); margin-top: 3px; }
-
 .bloom-foot { background: var(--ink); padding: 72px 0 32px; border-top: 1px solid var(--glb); }
 .foot-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 48px; }
 .foot-brand { font-family: var(--fd); font-size: 1.4rem; font-weight: 900; margin-bottom: 14px; background: linear-gradient(135deg, #fff 0%, var(--pk) 60%, var(--p5) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
@@ -525,11 +497,9 @@ canvas#ptcl { position: absolute; inset: 0; width: 100%; height: 100%; pointer-e
 .foot-soc a { width: 34px; height: 34px; border-radius: 50%; background: var(--gl); border: 1px solid var(--glb); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.6); transition: all .2s; }
 .foot-soc a:hover, .foot-soc a:focus-visible { background: rgba(230,26,26,.16); color: #fff; border-color: rgba(230,26,26,.4); }
 .foot-soc svg { width: 14px; height: 14px; }
-
 .btt { position: fixed; bottom: 28px; right: 28px; width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, var(--p5d), var(--p5)); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; opacity: 0; pointer-events: none; transition: all .3s var(--ease); z-index: 900; box-shadow: 0 6px 20px rgba(230,26,26,.35); }
 .btt.vis { opacity: 1; pointer-events: all; }
 .btt:hover, .btt:focus-visible { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(230,26,26,.55); }
-
 .overlay { position: fixed; inset: 0; z-index: 2000; background: rgba(6,2,14,.82); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); display: none; align-items: center; justify-content: center; padding: 20px; }
 .overlay.open { display: flex; animation: ofade .22s var(--ease); }
 @keyframes ofade { from{opacity:0} to{opacity:1} }
@@ -539,14 +509,12 @@ canvas#ptcl { position: absolute; inset: 0; width: 100%; height: 100%; pointer-e
 .m-cls { background: var(--gl); border: 1px solid var(--glb); color: #fff; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .9rem; transition: all .2s; }
 .m-cls:hover, .m-cls:focus-visible { background: rgba(230,26,26,.2); }
 .m-sub { font-size: .9rem; color: rgba(255,255,255,.6); margin-bottom: 22px; line-height: 1.6; }
-
 .sl-btn { width: 100%; justify-content: center; margin-bottom: 16px; background: #fff; color: var(--ink); }
 .sl-btn:hover { background: rgba(255,255,255,.92); }
 .div-lbl { text-align: center; font-size: .75rem; color: rgba(255,255,255,.4); margin: 16px 0; position: relative; letter-spacing: .1em; text-transform: uppercase; }
 .div-lbl::before, .div-lbl::after { content: ''; position: absolute; top: 50%; width: calc(50% - 30px); height: 1px; background: var(--glb); }
 .div-lbl::before { left: 0; }
 .div-lbl::after { right: 0; }
-
 .fi { margin-bottom: 14px; }
 .fi-lbl { display: block; font-size: .78rem; color: rgba(255,255,255,.64); margin-bottom: 6px; font-weight: 500; }
 .fi-wrap { position: relative; }
@@ -561,17 +529,14 @@ canvas#ptcl { position: absolute; inset: 0; width: 100%; height: 100%; pointer-e
 .str-bar { height: 3px; background: var(--gl); border-radius: 2px; overflow: hidden; margin-top: 6px; margin-bottom: 4px; }
 .str-fill { height: 100%; width: 0; transition: width .3s, background .3s; }
 .str-lbl { font-size: .7rem; color: rgba(255,255,255,.5); }
-
 .a-tabs { display: flex; gap: 3px; background: var(--gl); border-radius: var(--rs); padding: 3px; margin-bottom: 22px; }
 .a-tab { flex: 1; padding: 8px 14px; border-radius: 9px; font-size: .82rem; font-weight: 600; color: rgba(255,255,255,.55); transition: all .2s; }
 .a-tab.active { background: linear-gradient(135deg, var(--p5d), var(--p5)); color: #fff; box-shadow: 0 4px 14px rgba(230,26,26,.3); }
-
 .occ-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
 .occ-btn { padding: 18px 14px; border-radius: var(--rs); border: 1.5px solid var(--glb); background: var(--gl); color: rgba(255,255,255,.8); font-size: .9rem; font-weight: 600; transition: all .24s var(--spring); text-align: center; line-height: 1.3; }
 .occ-btn:hover, .occ-btn:focus-visible { border-color: rgba(230,26,26,.45); background: rgba(230,26,26,.1); color: #fff; transform: translateY(-2px); }
 .occ-btn.selected { border-color: var(--p5); background: linear-gradient(135deg, rgba(230,26,26,.18), rgba(168,16,16,.1)); color: #fff; box-shadow: 0 0 0 3px rgba(230,26,26,.18); }
 .occ-emj { font-size: 1.4rem; display: block; margin-bottom: 6px; }
-
 .toast-con { position: fixed; top: 88px; right: 24px; z-index: 3000; display: flex; flex-direction: column; gap: 10px; max-width: 360px; pointer-events: none; }
 .toast { background: rgba(16,7,30,.96); border: 1px solid var(--glb); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-radius: var(--rs); padding: 14px 18px; font-size: .85rem; color: #fff; box-shadow: 0 10px 40px rgba(0,0,0,.4); animation: tslide .3s var(--spring); display: flex; align-items: flex-start; gap: 10px; pointer-events: all; }
 .toast-success { border-left: 3px solid var(--mn); transform: skewX(-1deg); }
@@ -579,48 +544,35 @@ canvas#ptcl { position: absolute; inset: 0; width: 100%; height: 100%; pointer-e
 .toast-info { border-left: 3px solid var(--p5l); transform: skewX(-1deg); }
 .toast-ico { flex-shrink: 0; }
 @keyframes tslide { from{transform:translateX(60px);opacity:0} to{transform:none;opacity:1} }
-
 .anim-in { opacity: 0; transform: translateY(20px); transition: opacity .6s var(--ease), transform .6s var(--ease); }
 .anim-in.vis { opacity: 1; transform: none; }
-
 @supports (animation-timeline: view()) {
   .anim-auto { animation: reveal linear both; animation-timeline: view(); animation-range: entry 10% cover 30%; }
   @keyframes reveal { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: none; } }
 }
-
 @starting-style { .overlay.open { opacity: 0; } }
-
 .p5-sec-div { position: relative; height: 80px; overflow: visible; display: flex; align-items: center; justify-content: center; opacity: 1; margin: 0; }
 .p5-sec-div::before { content: ''; position: absolute; left: -5%; top: 50%; width: 110%; height: 3px; background: linear-gradient(90deg, transparent 0%, rgba(230,26,26,0.15) 10%, var(--p5) 30%, var(--pk) 50%, var(--p5) 70%, rgba(230,26,26,0.15) 90%, transparent 100%); transform: skewY(-1.8deg); filter: drop-shadow(0 0 6px rgba(230,26,26,.45)); }
 .p5-sec-div::after { content: ''; position: absolute; left: 50%; top: 50%; width: 10px; height: 10px; background: var(--p5); transform: translate(-50%, -50%) rotate(45deg) skewY(-1.8deg); box-shadow: 0 0 18px 4px rgba(230,26,26,.6), 0 0 40px 8px rgba(230,26,26,.2); }
-
 .p5-glow { position: absolute; width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle, rgba(230,26,26,.12), transparent 70%); pointer-events: none; filter: blur(40px); animation: p5GlowPulse 4s ease-in-out infinite; }
 @keyframes p5GlowPulse { 0%,100% { opacity: .4; transform: scale(1); } 50% { opacity: .7; transform: scale(1.15); } }
-
 .p5-tilt { transform-style: preserve-3d; transition: transform .4s var(--spring); }
 .p5-tilt:hover { transform: perspective(800px) rotateX(var(--tiltX, 0deg)) rotateY(var(--tiltY, 0deg)) scale(1.02); }
 .p5-tilt-inner { transform: translateZ(30px); }
-
 .magnetic-btn { position: relative; transition: transform .3s var(--spring); }
 .magnetic-btn:hover { transform: translate(var(--magX, 0), var(--magY, 0)) scale(1.04); }
 .magnetic-btn::after { content: ''; position: absolute; inset: -2px; border-radius: inherit; background: linear-gradient(135deg, var(--p5), var(--pk), var(--p5)); opacity: 0; z-index: -1; filter: blur(8px); transition: opacity .3s; }
 .magnetic-btn:hover::after { opacity: .6; }
-
 .ripple-effect { position: relative; overflow: hidden; }
 .ripple-effect .ripple { position: absolute; border-radius: 50%; background: rgba(230,26,26,.35); transform: scale(0); animation: rippleAnim .6s ease-out forwards; pointer-events: none; }
 @keyframes rippleAnim { to { transform: scale(4); opacity: 0; } }
-
 .glass-ethereal { background: linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border: 1px solid rgba(255,255,255,.1); backdrop-filter: blur(24px) saturate(1.4); -webkit-backdrop-filter: blur(24px) saturate(1.4); box-shadow: 0 8px 32px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.1); }
-
 .shimmer { position: relative; overflow: hidden; }
 .shimmer::after { content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent); animation: shimmerSlide 3s ease-in-out infinite; }
 @keyframes shimmerSlide { 0% { left: -100%; } 100% { left: 200%; } }
-
 .float-y { animation: floatY 6s ease-in-out infinite; }
 @keyframes floatY { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
-
 .hero-3d-scene { perspective: 1200px; perspective-origin: 50% 40%; }
-
 .stagger-1 { transition-delay: .05s; }
 .stagger-2 { transition-delay: .1s; }
 .stagger-3 { transition-delay: .15s; }
@@ -629,19 +581,15 @@ canvas#ptcl { position: absolute; inset: 0; width: 100%; height: 100%; pointer-e
 .stagger-6 { transition-delay: .3s; }
 .stagger-7 { transition-delay: .35s; }
 .stagger-8 { transition-delay: .4s; }
-
 .p5-line-h { height: 3px; background: linear-gradient(90deg, transparent, var(--p5), var(--pk), transparent); margin: 0 auto; transform: skewY(-1.8deg); filter: drop-shadow(0 0 4px rgba(230,26,26,.3)); }
 .p5-line-v { width: 3px; background: linear-gradient(to bottom, transparent, var(--p5), transparent); transform: skewX(-4deg); }
-
 .hero-orb { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; will-change: transform; }
 .hero-orb-1 { width: 600px; height: 600px; background: radial-gradient(circle, rgba(230,26,26,.15), transparent 70%); top: -200px; right: -150px; animation: orbDrift1 22s ease-in-out infinite; mix-blend-mode: screen; filter: blur(40px); pointer-events: none; }
 .hero-orb-2 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(188,49,148,.12), transparent 70%); bottom: -150px; left: 5%; animation: orbDrift2 26s ease-in-out infinite; mix-blend-mode: screen; filter: blur(50px); pointer-events: none; }
 @keyframes orbDrift1 { 0%,100% { transform: translate3d(0,0,0) scale(1) rotate(0deg); opacity: 0.7; } 33% { transform: translate3d(60px,-50px,40px) scale(1.15) rotate(10deg); opacity: 1; filter: blur(30px); } 66% { transform: translate3d(-30px,40px,-20px) scale(.9) rotate(-5deg); opacity: 0.6; filter: blur(50px); } }
 @keyframes orbDrift2 { 0%,100% { transform: translate3d(0,0,0) scale(1); opacity: 0.6; } 50% { transform: translate3d(-50px,-40px,30px) scale(1.2); opacity: 0.9; filter: blur(35px); } }
-
 .p5-card-enter { opacity: 0; transform: translateY(40px) rotateX(8deg); transition: opacity .7s var(--ease), transform .7s var(--ease); }
 .p5-card-enter.vis { opacity: 1; transform: translateY(0) rotateX(0); }
-
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus {
@@ -649,13 +597,11 @@ input:-webkit-autofill:focus {
   -webkit-box-shadow: 0 0 0 1000px var(--bg2) inset;
   transition: background-color 5000s ease-in-out 0s;
 }
-
 @supports (padding: env(safe-area-inset-bottom)) {
   .bloom-foot { padding-bottom: calc(32px + env(safe-area-inset-bottom)); }
   .btt { bottom: calc(28px + env(safe-area-inset-bottom)); }
   #nav { padding-left: max(40px, env(safe-area-inset-left)); padding-right: max(40px, env(safe-area-inset-right)); }
 }
-
 @media (max-width: 1100px) {
   .p-grid { grid-template-columns: repeat(3, 1fr); }
   .feat-grid { grid-template-columns: repeat(2, 1fr); }
@@ -691,7 +637,6 @@ input:-webkit-autofill:focus {
   .foot-grid { grid-template-columns: 1fr; }
   .stat-num { font-size: 1.5rem; }
 }
-
 #bloomBoot { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, oklch(13% .07 292) 0%, var(--bg) 70%); z-index: 100000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px; transition: opacity .6s var(--ease), visibility .6s; }
 #bloomBoot.gone { opacity: 0; visibility: hidden; pointer-events: none; }
 .bloom-flower { position: relative; width: 140px; height: 140px; transform-style: preserve-3d; animation: bloomSpin 8s linear infinite; }
@@ -714,14 +659,12 @@ input:-webkit-autofill:focus {
 .bloom-boot-bar { width: 220px; height: 2px; background: rgba(255,255,255,.06); border-radius: 1px; overflow: hidden; }
 .bloom-boot-bar i { display: block; width: 30%; height: 100%; background: linear-gradient(90deg, var(--p5), var(--pk), var(--p5)); animation: bootSlide 1.6s ease-in-out infinite; }
 @keyframes bootSlide { 0% { transform: translateX(-100%); } 100% { transform: translateX(380%); } }
-
 .p-skel { background: var(--gl); border: 1px solid var(--glb); border-radius: var(--r); padding: 20px; position: relative; overflow: hidden; }
 .p-skel-img { height: 180px; border-radius: 14px; background: radial-gradient(circle at 50% 50%, rgba(230,26,26,.18), rgba(11,5,22,.4)); position: relative; overflow: hidden; margin-bottom: 14px; }
 .p-skel-img::before { content: ''; position: absolute; inset: 0; background: conic-gradient(from 0deg, transparent 0%, rgba(230,26,26,.12) 25%, transparent 50%); animation: skelSpin 1.6s linear infinite; }
 .p-skel-img::after { content: '\1F339'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: rgba(230,26,26,.45); font-size: 2.2rem; animation: skelBloom 1.8s ease-in-out infinite; }
 @keyframes skelSpin { to { transform: rotate(360deg); } }
 @keyframes skelBloom { 0%,100% { transform: scale(.85); opacity: .35; } 50% { transform: scale(1.1); opacity: .9; } }
-
 .delivery-bar { position: sticky; top: 68px; z-index: 990; background: linear-gradient(90deg, oklch(15% .08 292 / .96), oklch(11% .06 292 / .92)); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 2px solid rgba(230,26,26,.22); padding: 10px 0; transition: transform .3s var(--ease); }
 .delivery-bar.hide { transform: translateY(-100%); }
 .delivery-inner { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: center; }
@@ -742,7 +685,6 @@ input:-webkit-autofill:focus {
   .dlv-fld { padding: 5px 10px; }
   .dlv-fld label { display: none; }
 }
-
 .subs-sec { background: var(--bg2); position: relative; overflow: hidden; }
 .subs-sec::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--p5), var(--pk), transparent); opacity: .4; }
 .subs-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 56px; align-items: center; }
@@ -771,7 +713,6 @@ input:-webkit-autofill:focus {
   #scGridWrap { grid-template-columns: 1fr !important; }
   .subs-photo { aspect-ratio: 16/9; }
 }
-
 .wl-drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(420px, 100vw); background: rgba(11,5,22,.97); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px); border-left: 1px solid rgba(230,26,26,.22); transform: translateX(100%); transition: transform .42s var(--ease); z-index: 1400; display: flex; flex-direction: column; }
 .wl-drawer.open { transform: none; }
 .wl-drawer-hd { padding: 22px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--glb); }
@@ -792,7 +733,6 @@ input:-webkit-autofill:focus {
 .wl-row-x { background: var(--gl); border: 1px solid var(--glb); border-radius: 50%; width: 28px; height: 28px; color: rgba(255,255,255,.5); display: flex; align-items: center; justify-content: center; transition: all .2s; flex-shrink: 0; font-size: .8rem; }
 .wl-row-x:hover { background: rgba(230,26,26,.2); color: #fff; }
 .wl-drawer-ft { padding: 18px 24px; border-top: 1px solid var(--glb); }
-
 .voice-fab { position: fixed; bottom: 86px; right: 24px; width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--p5d), var(--p5)); color: #fff; border: 2px solid rgba(255,255,255,.18); box-shadow: 0 12px 36px rgba(230,26,26,.45); z-index: 990; display: flex; align-items: center; justify-content: center; transition: transform .3s var(--spring), box-shadow .3s, opacity .3s, visibility .3s; opacity: 0; visibility: hidden; }
 .voice-fab.show { opacity: 1; visibility: visible; }
 .voice-fab:hover, .voice-fab:focus-visible { transform: translateY(-3px) scale(1.08); box-shadow: 0 18px 50px rgba(230,26,26,.55); }
@@ -806,7 +746,6 @@ input:-webkit-autofill:focus {
   .voice-fab { bottom: 74px; right: 14px; width: 48px; height: 48px; }
   .voice-status { right: 14px; bottom: 132px; }
 }
-
 .vid-msg-block { background: var(--gl); border: 1px dashed var(--glb); border-radius: var(--rs); padding: 16px; margin-top: 16px; }
 .vid-msg-hd { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
 .vid-msg-hd h4 { font-family: var(--fd); font-weight: 700; font-size: .92rem; }
@@ -819,7 +758,6 @@ input:-webkit-autofill:focus {
 @keyframes vidPulse { 50% { opacity: .35; } }
 .vid-msg-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .vid-msg-actions .btn { flex: 1; min-width: 110px; justify-content: center; padding: 8px 12px; font-size: .78rem; }
-
 .err-summary { background: rgba(245,77,77,.08); border: 1px solid rgba(245,77,77,.32); border-left: 4px solid var(--cr); border-radius: var(--rs); padding: 14px 16px; margin-bottom: 16px; display: none; }
 .err-summary.on { display: block; animation: errShake .4s ease-out; }
 .err-summary h4 { font-family: var(--fd); font-weight: 700; font-size: .88rem; color: var(--cr); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
@@ -828,7 +766,6 @@ input:-webkit-autofill:focus {
 .err-summary li a { color: var(--cr); border-bottom: 1px dotted rgba(245,77,77,.35); }
 .err-summary li a:hover, .err-summary li a:focus-visible { color: #fff; border-bottom-color: #fff; }
 @keyframes errShake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-
 .funnel-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(11,5,22,.94); backdrop-filter: blur(18px); border-top: 1px solid rgba(230,26,26,.2); z-index: 985; padding: 8px 16px; transform: translateY(100%); transition: transform .3s var(--ease); display: none; }
 .funnel-bar.show { transform: none; }
 .funnel-track { display: flex; align-items: center; justify-content: space-between; gap: 12px; max-width: 720px; margin: 0 auto; }
@@ -838,21 +775,16 @@ input:-webkit-autofill:focus {
 .funnel-step::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 0 currentColor; }
 .funnel-step.active::before { animation: ping 1.4s ease-out infinite; }
 .funnel-conn { flex: 1; height: 2px; background: linear-gradient(90deg, currentColor, transparent); opacity: .3; }
-
 .btn-voice-toggle { position: relative; }
 .btn-voice-toggle.listening::after { content: ''; position: absolute; inset: -3px; border: 2px solid var(--p5); border-radius: var(--rs); animation: voicePulse 1.2s ease-in-out infinite; }
-
 .subs-card-feats span svg { width: 11px; height: 11px; color: var(--mn); display: inline-block; vertical-align: -2px; margin-right: 3px; }
-
 .search-results-virt { max-height: 60vh; overflow-y: auto; }
 .search-results-virt::-webkit-scrollbar { width: 4px; }
-
 @media (max-width: 768px) {
   .delivery-bar { top: 68px; padding: 8px 0; }
   .funnel-bar { padding: 6px 10px; }
   .funnel-step { font-size: .6rem; }
 }
-
 @media (max-width: 720px) {
   #voiceNavBtn { display: none !important; }
 }
@@ -862,7 +794,6 @@ input:-webkit-autofill:focus {
 </style>
 </head>
 <body>
-
 <div id="bloomBoot" role="status" aria-live="polite" aria-label="Bloom is loading">
   <div class="bloom-flower" aria-hidden="true">
     <span class="bloom-petal"></span><span class="bloom-petal"></span><span class="bloom-petal"></span><span class="bloom-petal"></span>
@@ -872,14 +803,11 @@ input:-webkit-autofill:focus {
   <div class="bloom-boot-bar" aria-hidden="true"><i></i></div>
   <div class="bloom-boot-txt">Crafting your bouquet</div>
 </div>
-
 <a href="#main" class="skip">Skip to content</a>
 <a href="#shop" class="skip" style="left: 160px">Skip to shop</a>
-
 <div class="c-ring" id="cRing" aria-hidden="true"></div>
 <div class="c-dot" id="cDot" aria-hidden="true"></div>
 <div id="sbar" aria-hidden="true"></div>
-
 <nav id="nav" role="navigation" aria-label="Main navigation">
   <a href="/" class="n-logo">Bloom</a>
   <button class="hmb" id="hmb" aria-label="Open menu" aria-expanded="false" aria-controls="mobMenu">
@@ -931,7 +859,6 @@ input:-webkit-autofill:focus {
     <button class="btn btn-p btn-sm" id="authBtn" data-i18n="nav.signin">Sign In</button>
   </div>
 </nav>
-
 <div class="mob-menu" id="mobMenu" aria-hidden="true" role="dialog" aria-label="Mobile navigation">
   <div class="mob-inner">
     <button class="mob-close" id="mobClose" aria-label="Close menu">✕</button>
@@ -942,13 +869,11 @@ input:-webkit-autofill:focus {
       <li><a href="/#corp" data-i18n="nav.corporate">Corporate</a></li>
       <li><a href="/#features" data-i18n="nav.why">Why Bloom</a></li>
     </ul>
-
     <div class="mob-acts">
       <button class="btn btn-p" id="authBtnMob" style="justify-content:center">Sign In</button>
     </div>
   </div>
 </div>
-
 <div class="delivery-bar" id="dlvBar" role="region" aria-label="Pre-select your delivery">
   <div class="con">
     <div class="delivery-inner">
@@ -979,9 +904,7 @@ input:-webkit-autofill:focus {
     </div>
   </div>
 </div>
-
 <main id="main">
-
 <section id="cinematicHero" aria-label="Cinematic Hero" style="position:relative;width:100vw;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#05020a;font-family:var(--fb);-webkit-font-smoothing:antialiased;perspective:1500px">
   <div class="ch-ethereal-bg" aria-hidden="true">
     <div class="ch-bg-frame frame-1" style="background-image: url('/img/ch-frame-1.png');"></div>
@@ -992,12 +915,10 @@ input:-webkit-autofill:focus {
   </div>
   <div class="ch-film-grain" aria-hidden="true"></div>
   <div class="ch-bg-grid" style="position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5" aria-hidden="true"></div>
-
   <div class="ch-hero-text-wrapper" style="position:absolute;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;width:100vw;padding:0 16px;will-change:transform">
     <h1 class="ch-text-track ch-gsap-reveal ch-text-3d-matte" style="font-family:var(--fd);font-size:clamp(2.4rem,5.5vw,6rem);font-weight:700;letter-spacing:-.03em;margin-bottom:8px;line-height:1.1">A small gesture,</h1>
     <h1 class="ch-text-days ch-gsap-reveal ch-text-silver-matte" style="font-family:var(--fd);font-size:clamp(2.4rem,5.5vw,6rem);font-weight:900;letter-spacing:-.04em;line-height:1.1">a quiet comfort.</h1>
   </div>
-
   <div class="ch-cta-wrapper" style="position:absolute;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;width:100vw;padding:0 16px;pointer-events:auto;will-change:transform" aria-hidden="false">
     <h2 class="ch-text-silver-matte" style="font-family:var(--fd);font-size:clamp(2rem,5vw,4.5rem);font-weight:700;margin-bottom:24px;letter-spacing:-.03em;line-height:1.1">Browse gently.</h2>
     <p style="color:var(--text-muted);font-size:clamp(.9rem,1.2vw,1.25rem);margin-bottom:48px;max-width:520px;margin-left:auto;margin-right:auto;font-weight:300;line-height:1.7">Handcrafted bouquets and floral arrangements. Designed with care, delivered gently to the door - no rush, no pressure.</p>
@@ -1012,17 +933,13 @@ input:-webkit-autofill:focus {
       </a>
     </div>
   </div>
-
   <div style="position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;pointer-events:none;perspective:1500px">
     <div class="ch-main-card ch-depth-card ch-gsap-reveal" style="position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;pointer-events:auto;width:92vw;height:92vh;border-radius:32px" role="complementary" aria-label="Bloom Preview">
       <div class="ch-card-sheen" aria-hidden="true"></div>
-
       <div style="position:relative;width:100%;height:100%;max-width:1280px;margin:0 auto;padding:16px;display:flex;flex-direction:column;justify-content:space-evenly;align-items:center;z-index:10">
-
         <div class="ch-card-right-text ch-gsap-reveal" style="display:flex;justify-content:center;z-index:20;width:100%;order:1">
           <h2 class="ch-text-card-silver" style="font-family:var(--fc);font-size:clamp(3rem,8vw,8rem);font-weight:900;text-transform:uppercase;letter-spacing:-.06em;line-height:1">Bloom</h2>
         </div>
-
         <div class="ch-mockup-wrapper" style="order:2;position:relative;width:100%;height:380px;display:flex;align-items:center;justify-content:center;z-index:10;perspective:1000px">
           <div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;transform:scale(.65)">
             <div class="ch-mockup-bezel ch-iphone-bezel" style="position:relative;width:280px;height:580px;border-radius:3rem;display:flex;flex-direction:column;will-change:transform;transform-style:preserve-3d">
@@ -1030,14 +947,11 @@ input:-webkit-autofill:focus {
               <div class="ch-hw-btn" style="position:absolute;top:160px;left:-3px;width:3px;height:45px;border-radius:4px 0 0 4px;z-index:0" aria-hidden="true"></div>
               <div class="ch-hw-btn" style="position:absolute;top:220px;left:-3px;width:3px;height:45px;border-radius:4px 0 0 4px;z-index:0" aria-hidden="true"></div>
               <div class="ch-hw-btn" style="position:absolute;top:170px;right:-3px;width:3px;height:70px;border-radius:0 4px 4px 0;z-index:0;transform:scaleX(-1)" aria-hidden="true"></div>
-
               <div style="position:absolute;inset:7px;background:#050914;border-radius:2.5rem;overflow:hidden;box-shadow:inset 0 0 15px rgba(0,0,0,1);color:#fff;z-index:10">
                 <div class="ch-screen-glare" style="position:absolute;inset:0;z-index:40;pointer-events:none" aria-hidden="true"></div>
-
                 <div style="position:absolute;top:5px;left:50%;transform:translateX(-50%);width:100px;height:28px;background:#000;border-radius:9999px;z-index:50;display:flex;align-items:center;justify-content:flex-end;padding:0 12px;box-shadow:inset 0 -1px 2px rgba(255,255,255,.1)">
                   <div style="width:6px;height:6px;border-radius:50%;background:#22c55e;box-shadow:0 0 8px rgba(34,197,94,.8);animation:ping2 2s ease-out infinite"></div>
                 </div>
-
                 <div style="position:relative;width:100%;height:100%;padding:48px 20px 32px;display:flex;flex-direction:column">
                   <div class="ch-phone-widget" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:32px">
                     <div style="display:flex;flex-direction:column">
@@ -1046,7 +960,6 @@ input:-webkit-autofill:focus {
                     </div>
                     <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.05);color:#e4e4e7;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;border:1px solid rgba(255,255,255,.1);box-shadow:0 4px 12px rgba(0,0,0,.5)">B</div>
                   </div>
-
                   <div class="ch-phone-widget" style="position:relative;width:176px;height:176px;margin:0 auto 32px;filter:drop-shadow(0 15px 25px rgba(0,0,0,.8))">
                     <svg style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true">
                       <circle cx="88" cy="88" r="64" fill="none" stroke="rgba(255,255,255,.03)" stroke-width="12"/>
@@ -1057,7 +970,6 @@ input:-webkit-autofill:focus {
                       <span style="font-size:8px;color:rgba(255,107,107,.5);text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-top:2px">Orders</span>
                     </div>
                   </div>
-
                   <div style="display:flex;flex-direction:column;gap:12px">
                     <div class="ch-phone-widget ch-widget-depth" style="border-radius:16px;padding:12px;display:flex;align-items:center">
                       <div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,rgba(230,26,26,.2),rgba(230,26,26,.05));display:flex;align-items:center;justify-content:center;margin-right:12px;border:1px solid rgba(230,26,26,.2);box-shadow:inset 0 1px 2px rgba(0,0,0,.3)">
@@ -1076,29 +988,24 @@ input:-webkit-autofill:focus {
                 </div>
               </div>
             </div>
-
             <div class="ch-floating-badge ch-floating-ui-badge" style="position:absolute;display:flex;top:24px;left:-15px;border-radius:12px;padding:12px;align-items:center;gap:12px;z-index:30">
               <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(180deg,rgba(230,26,26,.2),rgba(230,26,26,.1));display:flex;align-items:center;justify-content:center;border:1px solid rgba(230,26,26,.3);box-shadow:inset 0 1px 2px rgba(0,0,0,.3)"><span style="font-size:1rem" aria-hidden="true">🌸</span></div>
               <div><p style="color:#fff;font-size:12px;font-weight:700;letter-spacing:-.02em">Fresh Today</p><p style="color:rgba(255,107,107,.5);font-size:10px;font-weight:500">Freshness modeled</p></div>
             </div>
-
             <div class="ch-floating-badge ch-floating-ui-badge" style="position:absolute;display:flex;bottom:48px;right:-15px;border-radius:12px;padding:12px;align-items:center;gap:12px;z-index:30">
               <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(180deg,rgba(124,58,237,.2),rgba(124,58,237,.1));display:flex;align-items:center;justify-content:center;border:1px solid rgba(124,58,237,.3);box-shadow:inset 0 1px 2px rgba(0,0,0,.3)"><span style="font-size:1rem" aria-hidden="true">📦</span></div>
               <div><p style="color:#fff;font-size:12px;font-weight:700;letter-spacing:-.02em">Delivered</p><p style="color:rgba(255,107,107,.5);font-size:10px;font-weight:500">Photo confirmed</p></div>
             </div>
           </div>
         </div>
-
         <div class="ch-card-left-text ch-gsap-reveal" style="order:3;display:flex;flex-direction:column;justify-content:center;text-align:center;z-index:20;width:100%;padding:0 16px">
           <h3 style="color:#fff;font-family:var(--fd);font-size:clamp(1.2rem,2.5vw,2.2rem);font-weight:700;margin-bottom:0;letter-spacing:-.03em">Handcrafted with care.</h3>
           <p style="display:none;color:rgba(147,197,253,.7);font-size:clamp(.82rem,.9vw,1rem);font-weight:400;line-height:1.7;max-width:400px;margin:16px auto 0" class="ch-card-desc-desktop">Bloom empowers every flower moment with carefully crafted custom bouquets, built with passion by STI LIPA BSIT students.</p>
         </div>
-
       </div>
     </div>
   </div>
 </section>
-
 <section class="hero" aria-label="Hero" id="heroSec">
   <div class="hero-bg" aria-hidden="true" style="position:absolute;inset:0;background: radial-gradient(circle at 10% 20%, rgba(230,26,26,0.12) 0%, transparent 60%), radial-gradient(circle at 90% 80%, rgba(124,58,237,0.1) 0%, transparent 60%), var(--bg); animation: ethereal 20s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate; transform-style: preserve-3d; will-change: filter, transform;"></div>
   <style>
@@ -1113,7 +1020,6 @@ input:-webkit-autofill:focus {
   <div class="hero-slash-1" aria-hidden="true"></div>
   <div class="hero-orb hero-orb-1" aria-hidden="true"></div>
   <div class="hero-orb hero-orb-2" aria-hidden="true"></div>
-
   <div class="con" style="width:100%">
     <div class="hero-grid">
       <div class="hero-left">
@@ -1147,7 +1053,6 @@ input:-webkit-autofill:focus {
           <span class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> We'll make it right</span>
         </div>
       </div>
-
       <div class="hero-cards" id="heroCards" aria-label="Featured picks preview">
         <article class="h-card hc-1" id="hc1">
           <div class="hc-pulse" aria-hidden="true"></div>
@@ -1172,9 +1077,7 @@ input:-webkit-autofill:focus {
     </div>
   </div>
 </section>
-
 <div class="p5-sec-div" aria-hidden="true"></div>
-
 <section class="stats-strip" aria-label="Service facts">
   <div class="con">
     <div class="stats-inner">
@@ -1209,9 +1112,7 @@ input:-webkit-autofill:focus {
     </div>
   </div>
 </section>
-
 <div class="p5-sec-div" aria-hidden="true"></div>
-
 <section class="sec-pad" id="shop" aria-label="Shop featured products">
   <div class="con">
     <div class="sec-hd">
@@ -1222,7 +1123,6 @@ input:-webkit-autofill:focus {
       </div>
       <a href="/catalog.html" class="btn btn-g">View all →</a>
     </div>
-
     <div class="cat-wrap">
       <button class="cat-arrow" id="catL" aria-label="Scroll categories left" disabled>‹</button>
       <div class="cat-tabs" id="catTabs" role="tablist" aria-label="Product categories">
@@ -1235,13 +1135,10 @@ input:-webkit-autofill:focus {
       </div>
       <button class="cat-arrow" id="catR" aria-label="Scroll categories right">›</button>
     </div>
-
     <div class="p-grid" id="pGrid" role="tabpanel" aria-labelledby="tab-all" aria-live="polite" aria-busy="true"></div>
   </div>
 </section>
-
 <div class="p5-sec-div" aria-hidden="true"></div>
-
 <section class="feat-sec sec-pad" id="features" aria-label="Why Bloom">
   <div class="con">
     <div class="sec-hd" style="flex-direction:column;align-items:flex-start;text-align:left">
@@ -1273,9 +1170,7 @@ input:-webkit-autofill:focus {
     </div>
   </div>
 </section>
-
 <div class="p5-sec-div" aria-hidden="true"></div>
-
 <section class="sec-pad" id="traceability" aria-label="Supply chain traceability" style="background:var(--bg)">
   <div class="con">
     <div class="sec-hd">
@@ -1291,9 +1186,7 @@ input:-webkit-autofill:focus {
     </div>
   </div>
 </section>
-
 <div class="p5-sec-div" aria-hidden="true"></div>
-
 <section class="rev-sec sec-pad" aria-label="Customer stories">
   <div class="con">
     <div class="sec-hd">
@@ -1311,9 +1204,7 @@ input:-webkit-autofill:focus {
     </div>
   </div>
 </section>
-
 <div class="p5-sec-div" aria-hidden="true"></div>
-
 <section class="facts-sec sec-pad" aria-label="Verified facts">
   <div class="con">
     <div class="sec-hd" style="flex-direction:column;align-items:flex-start">
@@ -1360,9 +1251,7 @@ input:-webkit-autofill:focus {
     </div>
   </div>
 </section>
-
 <div class="p5-sec-div" aria-hidden="true"></div>
-
 <section class="corp-sec sec-pad" id="corp" aria-label="For teams and groups">
   <div class="con">
     <div class="corp-grid">
@@ -1384,9 +1273,7 @@ input:-webkit-autofill:focus {
     </div>
   </div>
 </section>
-
 <div class="p5-sec-div" aria-hidden="true"></div>
-
 <section class="subs-sec sec-pad" id="subs" aria-label="Flower subscriptions">
   <div class="con">
     <div class="sec-hd" style="flex-direction:column;align-items:flex-start;text-align:left;margin-bottom:36px">
@@ -1443,7 +1330,6 @@ input:-webkit-autofill:focus {
     </div>
   </div>
 </section>
-
 <footer class="bloom-foot" role="contentinfo">
   <div class="con">
     <div class="foot-grid">
@@ -1473,7 +1359,6 @@ input:-webkit-autofill:focus {
           <li><a href="/contact.html">Contact</a></li>
         </ul>
       </div>
-
       <div class="foot-col">
         <h4>Support</h4>
         <ul role="list">
@@ -1494,7 +1379,6 @@ input:-webkit-autofill:focus {
     </div>
   </div>
 </footer>
-
 <section class="sec-pad section-lazy" id="recentSec" style="display:none" aria-label="Recently Viewed">
   <div class="con">
     <div class="sec-hd">
@@ -1506,10 +1390,8 @@ input:-webkit-autofill:focus {
     <div class="p-grid" id="recentGrid" role="list" aria-live="polite" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))"></div>
   </div>
 </section>
-
 <button class="btt" id="btt" aria-label="Back to top">↑</button>
 </main>
-
 <div class="overlay" id="exitMod" role="dialog" aria-modal="true" aria-labelledby="exitTitle" aria-hidden="true" style="display:none">
   <div class="modal" style="max-width:440px;text-align:center;padding:40px 32px">
     <button class="m-cls" id="closeExit" aria-label="Close">✕</button>
@@ -1523,7 +1405,6 @@ input:-webkit-autofill:focus {
     <button class="btn btn-g btn-sm" style="width:100%;justify-content:center" id="exitDismiss" data-i18n="exit.dismiss">No thanks</button>
   </div>
 </div>
-
 <div class="overlay" id="authMod" role="dialog" aria-modal="true" aria-labelledby="authTitle" aria-hidden="true">
   <div class="modal">
     <div class="m-hd">
@@ -1595,7 +1476,6 @@ input:-webkit-autofill:focus {
     </div>
   </div>
 </div>
-
 <div class="overlay" id="profMod" role="dialog" aria-modal="true" aria-labelledby="profTitle" aria-hidden="true">
   <div class="modal">
     <div class="m-hd">
@@ -1621,7 +1501,6 @@ input:-webkit-autofill:focus {
     </div>
   </div>
 </div>
-
 <div class="overlay" id="qvMod" role="dialog" aria-modal="true" aria-labelledby="qvTitle" aria-hidden="true">
   <div class="modal" style="max-width:560px">
     <div class="m-hd">
@@ -1631,7 +1510,6 @@ input:-webkit-autofill:focus {
     <div id="qvContent"></div>
   </div>
 </div>
-
 <div class="overlay" id="fplMod" role="dialog" aria-modal="true" aria-labelledby="fplTitle" aria-hidden="true">
   <div class="modal">
     <div class="m-hd">
@@ -1647,7 +1525,6 @@ input:-webkit-autofill:focus {
     <button class="btn btn-p" style="width:100%;justify-content:center" id="fplSubmit">Send Reset Link →</button>
   </div>
 </div>
-
 <div class="wl-drawer" id="wlDrawer" role="dialog" aria-modal="true" aria-labelledby="wlDrawerTitle" aria-hidden="true">
   <div class="wl-drawer-hd">
     <div>
@@ -1667,12 +1544,10 @@ input:-webkit-autofill:focus {
     <button type="button" class="btn btn-p" id="wlClear" style="width:100%;justify-content:center" hidden>Clear all</button>
   </div>
 </div>
-
 <button type="button" class="voice-fab" id="voiceFab" aria-label="Voice navigation - press and speak" aria-pressed="false" hidden>
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 1 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><path d="M12 18v4"/><path d="M8 22h8"/></svg>
 </button>
 <div class="voice-status" id="voiceStatus" aria-live="polite" role="status"><small>Listening</small><span id="voiceText">Try: "Show bouquets" or "Open cart"</span></div>
-
 <div class="funnel-bar" id="funnelBar" aria-label="Browsing progress" role="status">
   <div class="funnel-track">
     <span class="funnel-step active" data-step="hero">Hero</span>
@@ -1686,29 +1561,28 @@ input:-webkit-autofill:focus {
     <span class="funnel-step" data-step="checkout">Checkout</span>
   </div>
 </div>
-
 <div class="toast-con" id="toastCon" aria-live="polite" aria-atomic="false" role="status"></div>
-
 <script src="https://cdn.jsdelivr.net/npm/motion@11.18.2/dist/motion.js"></script>
 <script src="/js/core/Api.js"></script>
 <script src="/js/core/Store.js"></script>
 <script src="/js/core/Auth.js"></script>
+<script src="/js/core/AmbientAudio.js"></script>
+<script src="/js/core/GrainOverlay.js"></script>
+<script src="/js/core/BloomCursor.js"></script>
+<script src="/js/core/ExhibitTicketing.js"></script>
+<script src="/js/core/ExpoGallery.js"></script>
 <script src="/js/core/Motion.js"></script>
-
 <script>
 (function () {
   'use strict';
-
   var Api = window.Api;
   var Store = window.Store;
-
   function qs(s, r) { return (r || document).querySelector(s); }
   function qsa(s, r) { return Array.from((r || document).querySelectorAll(s)); }
   function on(el, ev, fn, o) { if (el) el.addEventListener(ev, fn, o || false); }
   function reducedMotion() { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
   function escapeHtml(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); }
   function money(n) { return '\u20B1' + Number(n || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
-
   var FALLBACK_IMG = '/uploads/products/crimson-vow.jpg';
   var FALLBACK_CAT_IMG = {
     bouquets: '/uploads/products/crimson-vow.jpg',
@@ -1717,9 +1591,7 @@ input:-webkit-autofill:focus {
     dried: '/uploads/products/obsidian-rose.jpg',
     corporate: '/uploads/products/executive-crimson.jpg'
   };
-
   var FALLBACK_PRODUCTS = [];
-
   var FEATURED_REVIEWS = [
     { name: 'Valentina, Makati', rating: 5, body: "I pre-ordered a Crimson Vow for my mother's 60th. The silk wrap was exquisite and the evening slot worked perfectly - I got the photo proof exactly when I was finishing dinner with her.", role: 'Birthday · Makati City' },
     { name: 'Hiroki, BGC', rating: 5, body: 'Corporate gifting for our product launch - 40 branded bouquets, every single one perfect, single invoice, CSV export for accounting. The coordinator on Viber replied within the hour.', role: 'Corporate · 40 units' },
@@ -1727,7 +1599,6 @@ input:-webkit-autofill:focus {
     { name: 'Aiko, Cebu', rating: 5, body: 'Sympathy arrangement for a friend who lost her father. Bloom handled the note with care and the whole thing arrived within the window - exactly what the day needed.', role: 'Sympathy · Cebu City' },
     { name: 'Diego, Taguig', rating: 5, body: 'Just-because flowers for my partner on a random Tuesday. Pre-ordered Saturday, delivered Tuesday at 7pm sharp. Cold-chain made it - still fresh a week later.', role: 'Just because · Taguig' }
   ];
-
   var toastCount = 0;
   var MAX_TOASTS = 5;
   window.showToast = function (msg, type) {
@@ -1750,7 +1621,6 @@ input:-webkit-autofill:focus {
     }, 3800);
   };
   var showToast = window.showToast;
-
   function initCursor() {
     if (window.matchMedia('(pointer: coarse)').matches || window.matchMedia('(hover: none)').matches) return;
     var dot = qs('#cDot');
@@ -1774,7 +1644,408 @@ input:-webkit-autofill:focus {
     });
     mo.observe(document.body, { childList: true, subtree: true });
   }
-
+  function initParticles() {
+    var c = qs('#ptcl');
+    if (!c || reducedMotion()) return;
+    var ctx = c.getContext('2d', { alpha: true });
+    var parts = [];
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var cores = navigator.hardwareConcurrency || 4;
+    var mem = navigator.deviceMemory || 4;
+    var isMobile = window.matchMedia('(max-width: 768px)').matches;
+    var perfTier = (cores >= 8 && mem >= 8) ? 'high' : (cores >= 4 && mem >= 4) ? 'mid' : 'low';
+    var baseCount = isMobile ? 18 : (perfTier === 'high' ? 80 : perfTier === 'mid' ? 48 : 24);
+    var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (connection && (connection.saveData || /2g|slow-2g/.test(connection.effectiveType || ''))) baseCount = Math.min(baseCount, 14);
+    if (window.matchMedia('(prefers-reduced-data: reduce)').matches) baseCount = Math.min(baseCount, 14);
+    var connectDist = isMobile ? 100 : 140;
+    var mouseX = -9999, mouseY = -9999, mouseActive = false;
+    on(c.parentElement || c, 'mousemove', function (e) {
+      var r = c.getBoundingClientRect();
+      mouseX = (e.clientX - r.left) * dpr;
+      mouseY = (e.clientY - r.top) * dpr;
+      mouseActive = true;
+    });
+    on(c.parentElement || c, 'mouseleave', function () { mouseActive = false; });
+    function size() {
+      var hero = qs('#heroSec');
+      if (!hero) return;
+      var r = hero.getBoundingClientRect();
+      c.width = r.width * dpr;
+      c.height = r.height * dpr;
+      c.style.width = r.width + 'px';
+      c.style.height = r.height + 'px';
+    }
+    size();
+    on(window, 'resize', size);
+    var depthLayers = [
+      { speed: 0.3, sizeMin: 0.4, sizeMax: 1.2, opacity: 0.15, count: Math.floor(baseCount * 0.35) },
+      { speed: 0.6, sizeMin: 0.8, sizeMax: 2.0, opacity: 0.35, count: Math.floor(baseCount * 0.4) },
+      { speed: 1.0, sizeMin: 1.4, sizeMax: 3.0, opacity: 0.55, count: Math.floor(baseCount * 0.25) }
+    ];
+    var hueChoices = ['p5', 'pk', 'mn', 'gd', 'w'];
+    depthLayers.forEach(function (layer, li) {
+      for (var i = 0; i < layer.count; i++) {
+        var h = hueChoices[Math.floor(Math.random() * hueChoices.length)];
+        parts.push({
+          x: Math.random() * (c.width || 1920), y: Math.random() * (c.height || 1080),
+          r: Math.random() * (layer.sizeMax - layer.sizeMin) + layer.sizeMin,
+          vx: (Math.random() - 0.5) * 0.4 * layer.speed,
+          vy: -(Math.random() * 0.5 + 0.08) * layer.speed,
+          o: Math.random() * layer.opacity + 0.1,
+          baseO: layer.opacity,
+          hue: h,
+          layer: li,
+          phase: Math.random() * Math.PI * 2,
+          pulseSpeed: Math.random() * 0.02 + 0.008,
+          wobbleAmp: Math.random() * 0.3 + 0.1
+        });
+      }
+    });
+    var auroraPhase = 0;
+    var time = 0;
+    var raf;
+    var visible = true;
+    var io = new IntersectionObserver(function (es) { es.forEach(function (e) { visible = e.isIntersecting; }); }, { threshold: 0.01 });
+    io.observe(c);
+    function getColor(hue, alpha) {
+      if (hue === 'p5') return 'rgba(230,26,26,' + alpha + ')';
+      if (hue === 'pk') return 'rgba(238,90,160,' + alpha + ')';
+      if (hue === 'mn') return 'rgba(0,212,170,' + alpha + ')';
+      if (hue === 'gd') return 'rgba(255,215,0,' + alpha + ')';
+      return 'rgba(255,255,255,' + (alpha * 0.7) + ')';
+    }
+    function frame() {
+      raf = requestAnimationFrame(frame);
+      if (!visible) return;
+      time += 0.016;
+      auroraPhase += 0.003;
+      ctx.clearRect(0, 0, c.width, c.height);
+      if (!isMobile || perfTier !== 'low') {
+        ctx.save();
+        ctx.globalCompositeOperation = 'screen';
+        for (var aw = 0; aw < 3; aw++) {
+          var auroraY = c.height * (0.25 + aw * 0.2);
+          var gradient = ctx.createLinearGradient(0, auroraY - 80 * dpr, 0, auroraY + 80 * dpr);
+          var auroraColors = [
+            ['rgba(230,26,26,0.025)', 'rgba(238,90,160,0.04)', 'rgba(230,26,26,0.025)'],
+            ['rgba(124,58,237,0.02)', 'rgba(0,212,170,0.03)', 'rgba(124,58,237,0.02)'],
+            ['rgba(238,90,160,0.018)', 'rgba(255,215,0,0.025)', 'rgba(238,90,160,0.018)']
+          ];
+          gradient.addColorStop(0, auroraColors[aw][0]);
+          gradient.addColorStop(0.5, auroraColors[aw][1]);
+          gradient.addColorStop(1, auroraColors[aw][2]);
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.moveTo(0, auroraY);
+          for (var ax = 0; ax <= c.width; ax += 4) {
+            var waveY = auroraY + Math.sin(ax * 0.003 + auroraPhase + aw * 1.8) * 40 * dpr
+              + Math.sin(ax * 0.007 - auroraPhase * 0.7 + aw) * 20 * dpr
+              + Math.cos(ax * 0.0015 + time * 0.5) * 30 * dpr;
+            ctx.lineTo(ax, waveY);
+          }
+          ctx.lineTo(c.width, c.height);
+          ctx.lineTo(0, c.height);
+          ctx.closePath();
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+      if (mouseActive && !isMobile) {
+        ctx.save();
+        ctx.globalCompositeOperation = 'screen';
+        var glowRad = 180 * dpr;
+        var mg = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, glowRad);
+        mg.addColorStop(0, 'rgba(230,26,26,0.08)');
+        mg.addColorStop(0.3, 'rgba(238,90,160,0.04)');
+        mg.addColorStop(0.6, 'rgba(124,58,237,0.02)');
+        mg.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = mg;
+        ctx.fillRect(mouseX - glowRad, mouseY - glowRad, glowRad * 2, glowRad * 2);
+        ctx.restore();
+      }
+      if (perfTier !== 'low') {
+        ctx.save();
+        ctx.globalCompositeOperation = 'screen';
+        var cd2 = connectDist * connectDist * dpr * dpr;
+        for (var ci = 0; ci < parts.length; ci++) {
+          for (var cj = ci + 1; cj < parts.length; cj++) {
+            if (parts[ci].layer !== parts[cj].layer) continue;
+            var dx = parts[ci].x - parts[cj].x;
+            var dy = parts[ci].y - parts[cj].y;
+            var d2 = dx * dx + dy * dy;
+            if (d2 < cd2) {
+              var dist = Math.sqrt(d2);
+              var lineAlpha = (1 - dist / (connectDist * dpr)) * 0.12 * Math.min(parts[ci].o, parts[cj].o);
+              ctx.beginPath();
+              ctx.moveTo(parts[ci].x, parts[ci].y);
+              ctx.lineTo(parts[cj].x, parts[cj].y);
+              ctx.strokeStyle = getColor(parts[ci].hue, lineAlpha);
+              ctx.lineWidth = 0.5 * dpr;
+              ctx.stroke();
+            }
+          }
+        }
+        ctx.restore();
+      }
+      for (var k = 0; k < parts.length; k++) {
+        var p = parts[k];
+        p.phase += p.pulseSpeed;
+        var pulse = 0.7 + Math.sin(p.phase) * 0.3;
+        p.x += (p.vx + Math.sin(time * 0.5 + p.phase) * p.wobbleAmp) * dpr;
+        p.y += p.vy * dpr;
+        if (mouseActive && !isMobile && p.layer === 2) {
+          var mdx = mouseX - p.x;
+          var mdy = mouseY - p.y;
+          var md = Math.sqrt(mdx * mdx + mdy * mdy);
+          if (md < 200 * dpr && md > 0) {
+            var force = (1 - md / (200 * dpr)) * 0.4;
+            p.x += (mdx / md) * force * dpr;
+            p.y += (mdy / md) * force * dpr;
+          }
+        }
+        if (p.y < -10) { p.y = c.height + 10; p.x = Math.random() * c.width; }
+        if (p.x < -10) p.x = c.width + 10;
+        if (p.x > c.width + 10) p.x = -10;
+        var drawO = p.o * pulse;
+        if (p.layer >= 1 && p.r > 1.2) {
+          ctx.save();
+          ctx.globalCompositeOperation = 'screen';
+          var gr = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 4 * dpr);
+          gr.addColorStop(0, getColor(p.hue, drawO * 0.3));
+          gr.addColorStop(0.5, getColor(p.hue, drawO * 0.08));
+          gr.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.fillStyle = gr;
+          ctx.fillRect(p.x - p.r * 4 * dpr, p.y - p.r * 4 * dpr, p.r * 8 * dpr, p.r * 8 * dpr);
+          ctx.restore();
+        }
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r * dpr * (0.9 + pulse * 0.1), 0, Math.PI * 2);
+        ctx.fillStyle = getColor(p.hue, drawO);
+        ctx.fill();
+      }
+    }
+    frame();
+    document.addEventListener('visibilitychange', function () { if (document.hidden) cancelAnimationFrame(raf); else frame(); });
+  }
+  function initHeroParallax() {
+    if (reducedMotion()) return;
+    var hero = qs('#heroSec');
+    if (!hero) return;
+    var tx = 0, ty = 0, cx = 0, cy = 0;
+    on(hero, 'mousemove', function (e) {
+      var r = hero.getBoundingClientRect();
+      tx = ((e.clientX - r.left) / r.width - 0.5) * 2;
+      ty = ((e.clientY - r.top) / r.height - 0.5) * 2;
+    });
+    on(hero, 'mouseleave', function () { tx = 0; ty = 0; });
+    (function frame() {
+      cx += (tx - cx) * 0.08;
+      cy += (ty - cy) * 0.08;
+      hero.style.setProperty('--px', cx.toFixed(3));
+      hero.style.setProperty('--py', cy.toFixed(3));
+      requestAnimationFrame(frame);
+    })();
+    qsa('.h-card').forEach(function (card) {
+      var lx = 0, ly = 0, rx = 0, ry = 0;
+      on(card, 'mousemove', function (e) {
+        var r = card.getBoundingClientRect();
+        lx = ((e.clientX - r.left) / r.width - 0.5) * 2;
+        ly = ((e.clientY - r.top) / r.height - 0.5) * 2;
+        card.style.setProperty('--mx', ((lx + 1) * 50) + '%');
+        card.style.setProperty('--my', ((ly + 1) * 50) + '%');
+      });
+      on(card, 'mouseleave', function () { lx = 0; ly = 0; });
+      (function f() {
+        rx += (lx - rx) * 0.14;
+        ry += (ly - ry) * 0.14;
+        var z = card.classList.contains('hc-1') ? 40 : (card.classList.contains('hc-2') ? 10 : 25);
+        var tf = 'translateZ(' + z + 'px) rotateY(' + (rx * 6) + 'deg) rotateX(' + (-ry * 6) + 'deg)';
+        if (card.classList.contains('hc-1')) tf = 'translateX(-50%) ' + tf;
+        card.style.transform = tf;
+        requestAnimationFrame(f);
+      })();
+    });
+  }
+  function initNav() {
+    var nav = qs('#nav');
+    var last = 0;
+    function onScroll() {
+      var y = window.scrollY || window.pageYOffset;
+      if (y > 12) nav.classList.add('sc'); else nav.classList.remove('sc');
+      last = y;
+    }
+    onScroll();
+    on(window, 'scroll', onScroll, { passive: true });
+    var hmb = qs('#hmb');
+    var mob = qs('#mobMenu');
+    var mobCls = qs('#mobClose');
+    on(hmb, 'click', function () {
+      var open = mob.classList.toggle('open');
+      hmb.setAttribute('aria-expanded', String(open));
+      mob.setAttribute('aria-hidden', String(!open));
+      document.body.classList.toggle('modal-open', open);
+    });
+    on(mobCls, 'click', function () {
+      mob.classList.remove('open');
+      hmb.setAttribute('aria-expanded', 'false');
+      mob.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('modal-open');
+    });
+    qsa('.mob-inner a').forEach(function (a) {
+      on(a, 'click', function () {
+        mob.classList.remove('open');
+        hmb.setAttribute('aria-expanded', 'false');
+        mob.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('modal-open');
+      });
+    });
+    on(window, 'resize', function () {
+      if (window.innerWidth > 900 && mob.classList.contains('open')) {
+        mob.classList.remove('open');
+        hmb.setAttribute('aria-expanded', 'false');
+        mob.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('modal-open');
+      }
+    });
+  }
+  function initTyper() {
+    var el = qs('#typer');
+    if (!el) return;
+    var items = el.querySelectorAll('.g-txt');
+    if (items.length === 0) return;
+    var i = 0;
+    function swap() {
+      items[i].classList.remove('active');
+      items[i].setAttribute('aria-hidden', 'true');
+      i = (i + 1) % items.length;
+      items[i].classList.add('active');
+      items[i].setAttribute('aria-hidden', 'false');
+    }
+    if (!reducedMotion()) setInterval(swap, 3500);
+  }
+  function initCountdown() {
+    var el = qs('#cdWrap');
+    if (!el) return;
+    var target = new Date();
+    target.setDate(target.getDate() + 7);
+    target.setHours(23, 59, 59, 999);
+    var cdInterval = null;
+    function tick() {
+      var diff = target - new Date();
+      if (diff <= 0) { el.textContent = 'This week\'s batch is closed - next opens Monday.'; if (cdInterval) { clearInterval(cdInterval); cdInterval = null; } return; }
+      var d = Math.floor(diff / 864e5);
+      var h = Math.floor((diff % 864e5) / 36e5);
+      var m = Math.floor((diff % 36e5) / 6e4);
+      var s = Math.floor((diff % 6e4) / 1e3);
+      el.innerHTML = '<span class="cd-lbl">Next batch closes in</span><span class="cd-units">' +
+        '<span class="cd-num">' + d + '<span class="cd-sub">d</span></span><span class="cd-sep">:</span>' +
+        '<span class="cd-num">' + String(h).padStart(2, '0') + '<span class="cd-sub">h</span></span><span class="cd-sep">:</span>' +
+        '<span class="cd-num">' + String(m).padStart(2, '0') + '<span class="cd-sub">m</span></span><span class="cd-sep">:</span>' +
+        '<span class="cd-num">' + String(s).padStart(2, '0') + '<span class="cd-sub">s</span></span></span>';
+    }
+    tick();
+    cdInterval = setInterval(tick, 1000);
+  }
+  function initSearch() {
+    var wrap = qs('#srchWrap');
+    var tog = qs('#srchTog');
+    var panel = qs('#srchPanel');
+    var inp = qs('#srchInp');
+    var res = qs('#srchRes');
+    if (!wrap || !tog || !panel || !inp || !res) return;
+    var deb = null;
+    function openP() { panel.classList.add('open'); panel.setAttribute('aria-hidden', 'false'); tog.setAttribute('aria-expanded', 'true'); setTimeout(function () { inp.focus(); }, 80); }
+    function closeP() { panel.classList.remove('open'); panel.setAttribute('aria-hidden', 'true'); tog.setAttribute('aria-expanded', 'false'); }
+    on(tog, 'click', function (e) { e.stopPropagation(); panel.classList.contains('open') ? closeP() : openP(); });
+    on(document, 'click', function (e) { if (wrap && !wrap.contains(e.target)) closeP(); });
+    on(document, 'keydown', function (e) { if (e.key === 'Escape') closeP(); });
+    on(inp, 'input', function () {
+      clearTimeout(deb);
+      var v = inp.value.trim();
+      if (!v) { res.innerHTML = ''; return; }
+      deb = setTimeout(function () { doSearch(v); }, 220);
+    });
+    async function doSearch(q) {
+      res.innerHTML = '<div style="padding:10px;color:rgba(255,255,255,.4);font-size:.82rem">Searching¦</div>';
+      try {
+        var d = Api ? await Api.get('/products?search=' + encodeURIComponent(q) + '&limit=6') : { products: filterFallback(q) };
+        var list = (d && d.products) || d || [];
+        if (!list.length) { res.innerHTML = '<div style="padding:10px;color:rgba(255,255,255,.4);font-size:.82rem">No matches</div>'; return; }
+        res.innerHTML = list.map(function (p) {
+          var n = escapeHtml(p.name || '');
+          var hl = n.replace(new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\
+(function () {
+  'use strict';
+  var Api = window.Api;
+  var Store = window.Store;
+  function qs(s, r) { return (r || document).querySelector(s); }
+  function qsa(s, r) { return Array.from((r || document).querySelectorAll(s)); }
+  function on(el, ev, fn, o) { if (el) el.addEventListener(ev, fn, o || false); }
+  function reducedMotion() { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+  function escapeHtml(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); }
+  function money(n) { return '\u20B1' + Number(n || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  var FALLBACK_IMG = '/uploads/products/crimson-vow.jpg';
+  var FALLBACK_CAT_IMG = {
+    bouquets: '/uploads/products/crimson-vow.jpg',
+    arrangements: '/uploads/products/neon-blossom.jpg',
+    fresh: '/uploads/products/velvet-midnight.jpg',
+    dried: '/uploads/products/obsidian-rose.jpg',
+    corporate: '/uploads/products/executive-crimson.jpg'
+  };
+  var FALLBACK_PRODUCTS = [];
+  var FEATURED_REVIEWS = [
+    { name: 'Valentina, Makati', rating: 5, body: "I pre-ordered a Crimson Vow for my mother's 60th. The silk wrap was exquisite and the evening slot worked perfectly - I got the photo proof exactly when I was finishing dinner with her.", role: 'Birthday · Makati City' },
+    { name: 'Hiroki, BGC', rating: 5, body: 'Corporate gifting for our product launch - 40 branded bouquets, every single one perfect, single invoice, CSV export for accounting. The coordinator on Viber replied within the hour.', role: 'Corporate · 40 units' },
+    { name: 'Marisol, QC', rating: 5, body: 'Surprise anniversary delivery for my wife. The evening slot + the timestamped photo at the door was such a thoughtful touch. Re-ordering for her birthday next month.', role: 'Anniversary · Quezon City' },
+    { name: 'Aiko, Cebu', rating: 5, body: 'Sympathy arrangement for a friend who lost her father. Bloom handled the note with care and the whole thing arrived within the window - exactly what the day needed.', role: 'Sympathy · Cebu City' },
+    { name: 'Diego, Taguig', rating: 5, body: 'Just-because flowers for my partner on a random Tuesday. Pre-ordered Saturday, delivered Tuesday at 7pm sharp. Cold-chain made it - still fresh a week later.', role: 'Just because · Taguig' }
+  ];
+  var toastCount = 0;
+  var MAX_TOASTS = 5;
+  window.showToast = function (msg, type) {
+    type = type || 'info';
+    var con = qs('#toastCon');
+    if (!con) return;
+    if (toastCount >= MAX_TOASTS) return;
+    toastCount++;
+    var icons = { success: '\u2714', error: '\u2715', info: '\u25C6' };
+    var t = document.createElement('div');
+    t.className = 'toast toast-' + type;
+    t.setAttribute('role', type === 'error' ? 'alert' : 'status');
+    t.innerHTML = '<span class="toast-ico" aria-hidden="true">' + icons[type] + '</span><span>' + escapeHtml(msg) + '</span>';
+    con.appendChild(t);
+    setTimeout(function () {
+      t.style.opacity = '0';
+      t.style.transform = 'translateX(80px)';
+      t.style.transition = 'all .3s var(--ease)';
+      setTimeout(function () { t.remove(); toastCount--; }, 320);
+    }, 3800);
+  };
+  var showToast = window.showToast;
+  function initCursor() {
+    if (window.matchMedia('(pointer: coarse)').matches || window.matchMedia('(hover: none)').matches) return;
+    var dot = qs('#cDot');
+    var ring = qs('#cRing');
+    if (!dot || !ring) return;
+    var mx = window.innerWidth / 2, my = window.innerHeight / 2;
+    var rx = mx, ry = my;
+    on(window, 'mousemove', function (e) { mx = e.clientX; my = e.clientY; dot.style.transform = 'translate3d(' + mx + 'px,' + my + 'px,0) translate(-50%,-50%)'; });
+    (function frame() { rx += (mx - rx) * 0.18; ry += (my - ry) * 0.18; ring.style.transform = 'translate3d(' + rx + 'px,' + ry + 'px,0) translate(-50%,-50%)'; requestAnimationFrame(frame); })();
+    qsa('a, button, input, textarea, select, [role="button"], [role="tab"], [role="option"]').forEach(function (el) {
+      on(el, 'pointerenter', function () { document.body.classList.add('c-hover'); });
+      on(el, 'pointerleave', function () { document.body.classList.remove('c-hover'); });
+    });
+    var mo = new MutationObserver(function () {
+      qsa('a, button, input, textarea, select, [role="button"], [role="tab"], [role="option"]').forEach(function (el) {
+        if (el._cbnd) return;
+        el._cbnd = 1;
+        on(el, 'pointerenter', function () { document.body.classList.add('c-hover'); });
+        on(el, 'pointerleave', function () { document.body.classList.remove('c-hover'); });
+      });
+    });
+    mo.observe(document.body, { childList: true, subtree: true });
+  }
   function initParticles() {
     var c = qs('#ptcl');
     if (!c || reducedMotion()) return;
@@ -1965,7 +2236,6 @@ input:-webkit-autofill:focus {
     frame();
     document.addEventListener('visibilitychange', function () { if (document.hidden) cancelAnimationFrame(raf); else frame(); });
   }
-
   function initHeroParallax() {
     if (reducedMotion()) return;
     var hero = qs('#heroSec');
@@ -1984,7 +2254,6 @@ input:-webkit-autofill:focus {
       hero.style.setProperty('--py', cy.toFixed(3));
       requestAnimationFrame(frame);
     })();
-
     qsa('.h-card').forEach(function (card) {
       var lx = 0, ly = 0, rx = 0, ry = 0;
       on(card, 'mousemove', function (e) {
@@ -2006,7 +2275,6 @@ input:-webkit-autofill:focus {
       })();
     });
   }
-
   function initNav() {
     var nav = qs('#nav');
     var last = 0;
@@ -2017,7 +2285,6 @@ input:-webkit-autofill:focus {
     }
     onScroll();
     on(window, 'scroll', onScroll, { passive: true });
-
     var hmb = qs('#hmb');
     var mob = qs('#mobMenu');
     var mobCls = qs('#mobClose');
@@ -2050,7 +2317,6 @@ input:-webkit-autofill:focus {
       }
     });
   }
-
   function initTyper() {
     var el = qs('#typer');
     if (!el) return;
@@ -2066,7 +2332,6 @@ input:-webkit-autofill:focus {
     }
     if (!reducedMotion()) setInterval(swap, 3500);
   }
-
   function initCountdown() {
     var el = qs('#cdWrap');
     if (!el) return;
@@ -2090,7 +2355,6 @@ input:-webkit-autofill:focus {
     tick();
     cdInterval = setInterval(tick, 1000);
   }
-
   function initSearch() {
     var wrap = qs('#srchWrap');
     var tog = qs('#srchTog');
@@ -2099,7 +2363,6 @@ input:-webkit-autofill:focus {
     var res = qs('#srchRes');
     if (!wrap || !tog || !panel || !inp || !res) return;
     var deb = null;
-
     function openP() { panel.classList.add('open'); panel.setAttribute('aria-hidden', 'false'); tog.setAttribute('aria-expanded', 'true'); setTimeout(function () { inp.focus(); }, 80); }
     function closeP() { panel.classList.remove('open'); panel.setAttribute('aria-hidden', 'true'); tog.setAttribute('aria-expanded', 'false'); }
     on(tog, 'click', function (e) { e.stopPropagation(); panel.classList.contains('open') ? closeP() : openP(); });
@@ -2111,7 +2374,6 @@ input:-webkit-autofill:focus {
       if (!v) { res.innerHTML = ''; return; }
       deb = setTimeout(function () { doSearch(v); }, 220);
     });
-
     async function doSearch(q) {
       res.innerHTML = '<div style="padding:10px;color:rgba(255,255,255,.4);font-size:.82rem">Searching¦</div>';
       try {
@@ -2135,7 +2397,6 @@ input:-webkit-autofill:focus {
       return FALLBACK_PRODUCTS.filter(function (p) { return (p.name || '').toLowerCase().indexOf(q) !== -1 || (p.category || '').toLowerCase().indexOf(q) !== -1; }).slice(0, 6);
     }
   }
-
   function initLang() {
     var btn = qs('#langBtn');
     var dd = qs('#langDd');
@@ -2165,7 +2426,6 @@ input:-webkit-autofill:focus {
       });
     });
   }
-
   var modalStack = [];
   function openModal(sel) {
     var m = typeof sel === 'string' ? qs(sel) : sel;
@@ -2191,7 +2451,6 @@ input:-webkit-autofill:focus {
   qsa('.overlay').forEach(function (o) {
     on(o, 'click', function (e) { if (e.target === o) closeModal(o); });
   });
-
   function initAuth() {
     var authBtn = qs('#authBtn');
     var authBtnMob = qs('#authBtnMob');
@@ -2203,7 +2462,6 @@ input:-webkit-autofill:focus {
       openModal(authMod);
     });
     on(qs('#closeAuth'), 'click', function () { closeModal(authMod); });
-
     qsa('.a-tab', authMod).forEach(function (t) {
       on(t, 'click', function () {
         qsa('.a-tab', authMod).forEach(function (x) { x.classList.remove('active'); x.setAttribute('aria-selected', 'false'); });
@@ -2214,7 +2472,6 @@ input:-webkit-autofill:focus {
         qs('#guestF').style.display = f === 'guest' ? 'block' : 'none';
       });
     });
-
     qsa('.pw-tog').forEach(function (b) {
       on(b, 'click', function () {
         var inp = qs('#' + b.dataset.for);
@@ -2224,7 +2481,6 @@ input:-webkit-autofill:focus {
         b.textContent = shown ? 'show' : 'hide';
       });
     });
-
     on(qs('#rPass'), 'input', function () {
       var v = this.value;
       var s = 0;
@@ -2240,10 +2496,8 @@ input:-webkit-autofill:focus {
       if (fill) { fill.style.width = pct + '%'; fill.style.background = cols[s]; }
       if (lbl) lbl.textContent = v ? txt[s] : '';
     });
-
     function setErr(id, msg) { var el = qs('#' + id); if (el) el.textContent = msg || ''; var inp = qs('#' + id.replace('E', '')); if (inp) inp.setAttribute('aria-invalid', msg ? 'true' : 'false'); }
     function clearErrs() { qsa('.fe', authMod).forEach(function (x) { x.textContent = ''; }); qsa('.fi-inp', authMod).forEach(function (x) { x.setAttribute('aria-invalid', 'false'); }); }
-
     on(qs('#lSubmit'), 'click', async function () {
       clearErrs();
       var em = qs('#lEmail').value.trim();
@@ -2266,7 +2520,6 @@ input:-webkit-autofill:focus {
         showToast('Sign-in failed', 'error');
       } finally { btn.disabled = false; btn.textContent = 'Sign In →'; }
     });
-
     on(qs('#rSubmit'), 'click', async function () {
       clearErrs();
       var n = qs('#rName').value.trim();
@@ -2291,14 +2544,11 @@ input:-webkit-autofill:focus {
         showToast('Could not create account', 'error');
       } finally { btn.disabled = false; btn.textContent = 'Create Account →'; }
     });
-
     on(qs('#gSubmit'), 'click', function () { showToast('Continuing as guest', 'info'); closeModal(authMod); });
-
     on(qs('#gBtn'), 'click', function () {
       if (Api && Api.baseUrl) window.location.href = Api.baseUrl + '/auth/google';
       else showToast('Google sign-in unavailable', 'error');
     });
-
     on(qs('#fplBtn'), 'click', function () { closeModal(authMod); openModal('#fplMod'); });
     on(qs('#closeFpl'), 'click', function () { closeModal('#fplMod'); });
     on(qs('#fplSubmit'), 'click', async function () {
@@ -2315,7 +2565,6 @@ input:-webkit-autofill:focus {
         showToast('Could not send reset link', 'error');
       } finally { btn.disabled = false; btn.textContent = 'Send Reset Link →'; }
     });
-
     try {
       var u = JSON.parse(localStorage.getItem('bloom_user') || 'null');
       if (u && u.name) {
@@ -2325,7 +2574,6 @@ input:-webkit-autofill:focus {
       }
     } catch (e) {}
   }
-
   function initProfiling() {
     var openBtn = qs('#profilingBtn');
     var mod = qs('#profMod');
@@ -2348,14 +2596,12 @@ input:-webkit-autofill:focus {
       window.location.href = '/catalog.html?occasion=' + encodeURIComponent(sel.dataset.occ);
     });
   }
-
   function renderStars(rating) {
     var r = Number(rating) || 0;
     var out = '';
     for (var i = 0; i < 5; i++) out += '<span style="color:' + (i < Math.round(r) ? 'var(--gd)' : 'rgba(255,255,255,.18)') + '" aria-hidden="true">★</span>';
     return out;
   }
-
   function renderProduct(p) {
     var img = (p.images && p.images[0]) || p.image_url || FALLBACK_CAT_IMG[p.category] || FALLBACK_IMG;
     var price = p.base_price || p.price || 0;
@@ -2374,13 +2620,11 @@ input:-webkit-autofill:focus {
       '<div class="p-foot"><div class="p-price">' + money(price) + '</div><button class="p-add" data-id="' + escapeHtml(p.id) + '">+ Cart</button></div>' +
       '</article>';
   }
-
   function renderSkeletons(n) {
     var out = '';
     for (var i = 0; i < n; i++) out += '<div class="p-skel"><div class="p-skel-img"></div><div class="p-skel-t"></div><div class="p-skel-s"></div></div>';
     return out;
   }
-
   async function loadFeatured(cat) {
     cat = cat || 'all';
     var grid = qs('#pGrid');
@@ -2400,12 +2644,10 @@ input:-webkit-autofill:focus {
     if (!list.length) { grid.innerHTML = '<div class="p-empty">No products in this category yet.</div>'; grid.setAttribute('aria-busy', 'false'); return; }
     grid.innerHTML = list.map(renderProduct).join('');
     grid.setAttribute('aria-busy', 'false');
-
     var cards = qsa('.p-card', grid);
     cards.forEach(function (c, i) {
       setTimeout(function () { c.classList.add('vis'); }, i * 60);
     });
-
     qsa('.p-add', grid).forEach(function (b) {
       on(b, 'click', async function (e) {
         e.stopPropagation();
@@ -2432,7 +2674,6 @@ input:-webkit-autofill:focus {
         } finally { b.disabled = false; b.textContent = orig; }
       });
     });
-
     qsa('.wl-btn', grid).forEach(function (b) {
       on(b, 'click', async function (e) {
         e.stopPropagation();
@@ -2453,7 +2694,6 @@ input:-webkit-autofill:focus {
         } catch (err) { showToast(added ? 'Saved locally' : 'Removed', 'info'); }
       });
     });
-
     qsa('.p-card', grid).forEach(function (c) {
       var openQv = function (e) {
         if (e.target.closest('button')) return;
@@ -2465,7 +2705,6 @@ input:-webkit-autofill:focus {
       });
     });
   }
-
   async function openQuickView(id) {
     var mod = qs('#qvMod');
     var title = qs('#qvTitle');
@@ -2511,7 +2750,6 @@ input:-webkit-autofill:focus {
     });
     on(qs('#closeQv'), 'click', function () { closeModal(mod); });
   }
-
   function initCategories() {
     var tabs = qsa('.cat-tab');
     var tabsWrap = qs('#catTabs');
@@ -2536,7 +2774,6 @@ input:-webkit-autofill:focus {
     on(catR, 'click', function () { tabsWrap.scrollBy({ left: 220, behavior: 'smooth' }); });
     if (tabsWrap) { on(tabsWrap, 'scroll', updateArrows, { passive: true }); setTimeout(updateArrows, 200); }
   }
-
   function renderReviews() {
     var grid = qs('#revGrid');
     var dots = qs('#revDots');
@@ -2566,7 +2803,6 @@ input:-webkit-autofill:focus {
     qsa('.rev-dot').forEach(function (d, k) { d.classList.toggle('active', k === revIdx); d.setAttribute('aria-selected', k === revIdx ? 'true' : 'false'); });
   }
   function changeRev(d) { setActiveReview(revIdx + d); }
-
   function initStats() {
     qsa('.stat-bar-fill').forEach(function (el) {
       var obs = new IntersectionObserver(function (ents) {
@@ -2575,7 +2811,6 @@ input:-webkit-autofill:focus {
       obs.observe(el);
     });
   }
-
   function initReveal() {
     if (!('IntersectionObserver' in window)) { qsa('.anim-in').forEach(function (el) { el.classList.add('vis'); }); return; }
     var obs = new IntersectionObserver(function (ents) {
@@ -2585,7 +2820,6 @@ input:-webkit-autofill:focus {
     }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
     qsa('.anim-in').forEach(function (el) { obs.observe(el); });
   }
-
   function initBtt() {
     var b = qs('#btt');
     if (!b) return;
@@ -2594,7 +2828,6 @@ input:-webkit-autofill:focus {
     }, { passive: true });
     on(b, 'click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
   }
-
   function initNewsletter() {
     on(qs('#nlForm'), 'submit', async function (e) {
       e.preventDefault();
@@ -2609,7 +2842,6 @@ input:-webkit-autofill:focus {
       } catch (err) { showToast('Could not subscribe right now', 'error'); } finally { sub.disabled = false; sub.textContent = 'Join'; }
     });
   }
-
   async function loadCart() {
     if (!Api) return;
     try {
@@ -2620,7 +2852,6 @@ input:-webkit-autofill:focus {
       if (badge) { badge.textContent = cnt; badge.style.display = cnt > 0 ? 'inline-flex' : 'none'; }
     } catch (e) {}
   }
-
   async function loadCounts() {
     var cats = ['bouquets', 'arrangements', 'fresh', 'dried', 'corporate'];
     if (!Api) {
@@ -2643,7 +2874,6 @@ input:-webkit-autofill:focus {
       });
     } catch (e) {}
   }
-
   async function loadSiteContent() {
     if (!Api) return;
     try {
@@ -2666,7 +2896,6 @@ input:-webkit-autofill:focus {
       }
     } catch (e) {}
   }
-
   function initSocket() {
     if (!Store || !Store.on) return;
     Store.on('catalog_update', function () {
@@ -2677,7 +2906,6 @@ input:-webkit-autofill:focus {
     Store.on('content_update', loadSiteContent);
     Store.on('cart_update', loadCart);
   }
-
   function initTilt() {
     if (reducedMotion()) return;
     qsa('.p5-tilt, .feat-card, .fact-card, .rev-card').forEach(function (card) {
@@ -2692,7 +2920,6 @@ input:-webkit-autofill:focus {
       });
     });
   }
-
   function initMagnetic() {
     if (reducedMotion()) return;
     qsa('.btn-p.btn-lg, .magnetic-btn').forEach(function (btn) {
@@ -2707,7 +2934,6 @@ input:-webkit-autofill:focus {
       });
     });
   }
-
   function initRipple() {
     on(document, 'click', function (e) {
       var btn = e.target.closest('.btn-p, .p-add');
@@ -2725,7 +2951,6 @@ input:-webkit-autofill:focus {
       setTimeout(function () { rip.remove(); }, 600);
     });
   }
-
   var FUNNEL_ORDER = ['hero', 'shop', 'subs', 'cart', 'checkout'];
   var funnelState = { hero: false, shop: false, subs: false, cart: false, checkout: false };
   function bloomTrack(name, payload) {
@@ -2736,7 +2961,6 @@ input:-webkit-autofill:focus {
     try { if (window.gtag && typeof window.gtag === 'function') window.gtag('event', name, payload); } catch (e) {}
   }
   window.bloomTrack = bloomTrack;
-
   function initFunnelTracking() {
     var bar = qs('#funnelBar');
     var sections = [
@@ -2779,7 +3003,6 @@ input:-webkit-autofill:focus {
       el.classList.toggle('done', i < idx);
     });
   }
-
   function initBloomBoot() {
     var boot = qs('#bloomBoot');
     if (!boot) return;
@@ -2791,7 +3014,6 @@ input:-webkit-autofill:focus {
     else window.addEventListener('load', function () { setTimeout(hide, 400); });
     setTimeout(hide, 4500);
   }
-
   var DELIVERY_LEAD = {
     'metro-manila': { hours: 48, label: '48h' },
     'batangas': { hours: 48, label: '48h' },
@@ -2837,7 +3059,6 @@ input:-webkit-autofill:focus {
       lastY = y;
     }, { passive: true });
   }
-
   function getWishlist() {
     try { return JSON.parse(localStorage.getItem('bloom_wishlist') || '[]'); } catch (e) { return []; }
   }
@@ -2920,7 +3141,6 @@ input:-webkit-autofill:focus {
       showToast(added ? 'Saved to wishlist' : 'Removed from wishlist', added ? 'success' : 'info');
     });
   }
-
   function initSubscriptions() {
     var sec = qs('#subs');
     if (!sec) return;
@@ -2956,9 +3176,6 @@ input:-webkit-autofill:focus {
     });
     on(learnBtn, 'click', function () { window.location.href = '/subscriptions.html'; });
   }
-
-
-
   function buildVideoMessageBlock(productId) {
     return '<div id="vmContainer_' + productId + '" style="margin-top: 24px;"></div>';
   }
@@ -2966,13 +3183,11 @@ input:-webkit-autofill:focus {
     // Ensure the new robust VideoMessage.js module handles the UI
     if (window.BloomVideoMessage) {
       window.BloomVideoMessage.attachTo('vmContainer_' + productId);
-      
       // Listen for the genuinely recorded Blob and attach it via IndexedDB
       // This ensures real persistence across the site without needing a mock backend
       document.addEventListener('bloom:video-attached', function (e) {
         var blob = e.detail.blob;
         if (!blob) return;
-        
         try {
           var dbReq = indexedDB.open('BloomDB', 1);
           dbReq.onupgradeneeded = function(e) { 
@@ -2992,7 +3207,6 @@ input:-webkit-autofill:focus {
   }
   window.buildVideoMessageBlock = buildVideoMessageBlock;
   window.attachVideoMessageHandlers = attachVideoMessageHandlers;
-
   function summarizeFormErrors(formEl, summaryEl) {
     var errs = [];
     qsa('.fe', formEl).forEach(function (e) {
@@ -3004,7 +3218,6 @@ input:-webkit-autofill:focus {
       var label = inp ? ((labelEl && labelEl.textContent.trim()) || inp.id) : '';
       errs.push({ id: inp ? inp.id : '', label: label, msg: msg });
     });
-
     var ul = summaryEl.querySelector('ul');
     if (!ul) return;
     if (!errs.length) { summaryEl.classList.remove('on'); ul.innerHTML = ''; return; }
@@ -3019,7 +3232,6 @@ input:-webkit-autofill:focus {
     });
   }
   window.summarizeFormErrors = summarizeFormErrors;
-
   function initFormErrSummaries() {
     var loginBtn = qs('#lSubmit');
     var regBtn = qs('#rSubmit');
@@ -3035,7 +3247,6 @@ input:-webkit-autofill:focus {
     patch(loginBtn, 'loginF', loginSum);
     patch(regBtn, 'registerF', regSum);
   }
-
   function initVirtualization() {
     if (!('IntersectionObserver' in window)) return;
     var grids = ['pGrid', 'recentGrid'];
@@ -3066,10 +3277,6 @@ input:-webkit-autofill:focus {
       mo.observe(grid, { childList: true });
     });
   }
-
-  
-
-
   function loadHeatmaps() {
     var clarityId = (document.querySelector('meta[name="clarity-id"]') || {}).content;
     if (clarityId) {
@@ -3080,20 +3287,16 @@ input:-webkit-autofill:focus {
       (function (h, o, t, j, a, r) { h.hj = h.hj || function () { (h.hj.q = h.hj.q || []).push(arguments); }; h._hjSettings = { hjid: Number(hjId), hjsv: 6 }; a = o.getElementsByTagName('head')[0]; r = o.createElement('script'); r.async = 1; r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv; a.appendChild(r); })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=');
     }
   }
-
   function initYear() {
     var y = qs('#yr');
     if (y) y.textContent = new Date().getFullYear();
   }
-
   window.addEventListener('unhandledrejection', function (e) {
     console.warn('[Bloom] Unhandled promise rejection:', e.reason);
   });
-
   window.addEventListener('error', function (e) {
     console.warn('[Bloom] Runtime error:', e.message);
   });
-
   document.addEventListener('DOMContentLoaded', function () {
     initBloomBoot();
     initYear();
@@ -3103,7 +3306,955 @@ input:-webkit-autofill:focus {
     initCountdown();
     initParticles();
     initHeroParallax();
-    
+    initSearch();
+    initLang();
+    initAuth();
+    initProfiling();
+    initCategories();
+    loadFeatured('all');
+    loadCounts();
+    loadCart();
+    loadSiteContent();
+    renderReviews();
+    initStats();
+    initReveal();
+    initBtt();
+    initNewsletter();
+    initSocket();
+    initTilt();
+    initMagnetic();
+    initRipple();
+    initDelivery();
+    initWishlist();
+    initSubscriptions();
+    initVoice();
+    initFunnelTracking();
+    initVirtualization();
+    initFormErrSummaries();
+    loadHeatmaps();
+  });
+})();
+') + ')', 'ig'), '<mark>$1</mark>');
+          return '<button class="srch-item" data-id="' + escapeHtml(p.id) + '"><span style="flex:1">' + hl + '</span><span style="font-size:.76rem;color:var(--gd)">' + money(p.base_price || p.price) + '</span></button>';
+        }).join('');
+        qsa('.srch-item', res).forEach(function (b) {
+          on(b, 'click', function () { window.location.href = '/catalog.html?id=' + encodeURIComponent(b.dataset.id); });
+        });
+      } catch (e) {
+        res.innerHTML = '<div style="padding:10px;color:var(--cr);font-size:.82rem">Search unavailable</div>';
+      }
+    }
+    function filterFallback(q) {
+      q = q.toLowerCase();
+      return FALLBACK_PRODUCTS.filter(function (p) { return (p.name || '').toLowerCase().indexOf(q) !== -1 || (p.category || '').toLowerCase().indexOf(q) !== -1; }).slice(0, 6);
+    }
+  }
+  function initLang() {
+    var btn = qs('#langBtn');
+    var dd = qs('#langDd');
+    var flag = qs('#langFlag');
+    var lbl = qs('#langLbl');
+    if (!btn || !dd) return;
+    on(btn, 'click', function (e) {
+      e.stopPropagation();
+      var open = dd.classList.toggle('open');
+      dd.setAttribute('aria-hidden', String(!open));
+      if (open) dd.removeAttribute('inert'); else dd.setAttribute('inert', '');
+      btn.setAttribute('aria-expanded', String(open));
+    });
+    on(document, 'click', function () { dd.classList.remove('open'); dd.setAttribute('aria-hidden', 'true'); dd.setAttribute('inert', ''); btn.setAttribute('aria-expanded', 'false'); });
+    qsa('.lang-opt', dd).forEach(function (o) {
+      on(o, 'click', function (e) {
+        e.stopPropagation();
+        flag.textContent = o.dataset.flag;
+        lbl.textContent = o.dataset.lbl;
+        dd.classList.remove('open');
+        dd.setAttribute('aria-hidden', 'true');
+        dd.setAttribute('inert', '');
+        btn.setAttribute('aria-expanded', 'false');
+        if (Store && Store.setLang) Store.setLang(o.dataset.lang);
+        if (window.I18n) I18n.setLang(o.dataset.lang);
+        showToast('Language set to ' + o.textContent.trim(), 'info');
+      });
+    });
+  }
+  var modalStack = [];
+  function openModal(sel) {
+    var m = typeof sel === 'string' ? qs(sel) : sel;
+    if (!m) return;
+    m.classList.add('open');
+    m.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+    modalStack.push(m);
+    var focusable = m.querySelector('input, button, [tabindex]:not([tabindex="-1"])');
+    if (focusable) setTimeout(function () { focusable.focus(); }, 80);
+  }
+  function closeModal(sel) {
+    var m = typeof sel === 'string' ? qs(sel) : sel;
+    if (!m) return;
+    m.classList.remove('open');
+    m.setAttribute('aria-hidden', 'true');
+    modalStack = modalStack.filter(function (x) { return x !== m; });
+    if (!modalStack.length) document.body.classList.remove('modal-open');
+  }
+  on(document, 'keydown', function (e) {
+    if (e.key === 'Escape' && modalStack.length) closeModal(modalStack[modalStack.length - 1]);
+  });
+  qsa('.overlay').forEach(function (o) {
+    on(o, 'click', function (e) { if (e.target === o) closeModal(o); });
+  });
+  function initAuth() {
+    var authBtn = qs('#authBtn');
+    var authBtnMob = qs('#authBtnMob');
+    var authMod = qs('#authMod');
+    on(authBtn, 'click', function () { openModal(authMod); });
+    on(authBtnMob, 'click', function () {
+      qs('#mobMenu').classList.remove('open');
+      qs('#hmb').setAttribute('aria-expanded', 'false');
+      openModal(authMod);
+    });
+    on(qs('#closeAuth'), 'click', function () { closeModal(authMod); });
+    qsa('.a-tab', authMod).forEach(function (t) {
+      on(t, 'click', function () {
+        qsa('.a-tab', authMod).forEach(function (x) { x.classList.remove('active'); x.setAttribute('aria-selected', 'false'); });
+        t.classList.add('active'); t.setAttribute('aria-selected', 'true');
+        var f = t.dataset.ftab;
+        qs('#loginF').style.display = f === 'login' ? 'block' : 'none';
+        qs('#registerF').style.display = f === 'register' ? 'block' : 'none';
+        qs('#guestF').style.display = f === 'guest' ? 'block' : 'none';
+      });
+    });
+    qsa('.pw-tog').forEach(function (b) {
+      on(b, 'click', function () {
+        var inp = qs('#' + b.dataset.for);
+        if (!inp) return;
+        var shown = inp.type === 'text';
+        inp.type = shown ? 'password' : 'text';
+        b.textContent = shown ? 'show' : 'hide';
+      });
+    });
+    on(qs('#rPass'), 'input', function () {
+      var v = this.value;
+      var s = 0;
+      if (v.length >= 8) s++;
+      if (/[a-z]/.test(v) && /[A-Z]/.test(v)) s++;
+      if (/\d/.test(v)) s++;
+      if (/[^a-zA-Z0-9]/.test(v)) s++;
+      var pct = (s / 4) * 100;
+      var fill = qs('#strFill');
+      var lbl = qs('#strLbl');
+      var cols = ['var(--cr)', 'var(--cr)', 'var(--gd)', 'var(--mn)', 'var(--mn)'];
+      var txt = ['Too short', 'Weak', 'Okay', 'Good', 'Strong'];
+      if (fill) { fill.style.width = pct + '%'; fill.style.background = cols[s]; }
+      if (lbl) lbl.textContent = v ? txt[s] : '';
+    });
+    function setErr(id, msg) { var el = qs('#' + id); if (el) el.textContent = msg || ''; var inp = qs('#' + id.replace('E', '')); if (inp) inp.setAttribute('aria-invalid', msg ? 'true' : 'false'); }
+    function clearErrs() { qsa('.fe', authMod).forEach(function (x) { x.textContent = ''; }); qsa('.fi-inp', authMod).forEach(function (x) { x.setAttribute('aria-invalid', 'false'); }); }
+    on(qs('#lSubmit'), 'click', async function () {
+      clearErrs();
+      var em = qs('#lEmail').value.trim();
+      var pw = qs('#lPass').value;
+      var ok = true;
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) { setErr('lEmailE', 'Enter a valid email'); ok = false; }
+      if (pw.length < 1) { setErr('lPassE', 'Enter your password'); ok = false; }
+      if (!ok) return;
+      var btn = this; btn.disabled = true; btn.textContent = 'Signing in¦';
+      try {
+        if (!Api) throw new Error('offline');
+        var r = await Api.post('/auth/login', { email: em, password: pw });
+        try { localStorage.setItem('bloom_token', r.token); localStorage.setItem('bloom_user', JSON.stringify(r.user)); } catch (e) {}
+        if (Store) { Store.set('token', r.token); Store.set('user', r.user); }
+        showToast('Welcome back, ' + (r.user && r.user.name || 'friend') + '!', 'success');
+        closeModal(authMod);
+        setTimeout(function () { location.reload(); }, 700);
+      } catch (e) {
+        setErr('lPassE', (e && e.message) || 'Sign-in failed');
+        showToast('Sign-in failed', 'error');
+      } finally { btn.disabled = false; btn.textContent = 'Sign In →'; }
+    });
+    on(qs('#rSubmit'), 'click', async function () {
+      clearErrs();
+      var n = qs('#rName').value.trim();
+      var e = qs('#rEmail').value.trim();
+      var p = qs('#rPass').value;
+      var ok = true;
+      if (n.length < 2) { setErr('rNameE', 'Name required'); ok = false; }
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)) { setErr('rEmailE', 'Enter a valid email'); ok = false; }
+      if (p.length < 8) { setErr('rPassE', 'Min 8 characters'); ok = false; }
+      if (!ok) return;
+      var btn = this; btn.disabled = true; btn.textContent = 'Creating¦';
+      try {
+        if (!Api) throw new Error('offline');
+        var r = await Api.post('/auth/register', { name: n, email: e, password: p });
+        try { localStorage.setItem('bloom_token', r.token); localStorage.setItem('bloom_user', JSON.stringify(r.user)); } catch (e) {}
+        if (Store) { Store.set('token', r.token); Store.set('user', r.user); }
+        showToast('Welcome to Bloom, ' + (r.user && r.user.name || 'friend') + '!', 'success');
+        closeModal(authMod);
+        setTimeout(function () { location.reload(); }, 700);
+      } catch (err) {
+        setErr('rEmailE', (err && err.message) || 'Registration failed');
+        showToast('Could not create account', 'error');
+      } finally { btn.disabled = false; btn.textContent = 'Create Account →'; }
+    });
+    on(qs('#gSubmit'), 'click', function () { showToast('Continuing as guest', 'info'); closeModal(authMod); });
+    on(qs('#gBtn'), 'click', function () {
+      if (Api && Api.baseUrl) window.location.href = Api.baseUrl + '/auth/google';
+      else showToast('Google sign-in unavailable', 'error');
+    });
+    on(qs('#fplBtn'), 'click', function () { closeModal(authMod); openModal('#fplMod'); });
+    on(qs('#closeFpl'), 'click', function () { closeModal('#fplMod'); });
+    on(qs('#fplSubmit'), 'click', async function () {
+      var e = qs('#fplEmail').value.trim();
+      var ee = qs('#fplEmailE');
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)) { ee.textContent = 'Enter a valid email'; return; }
+      ee.textContent = '';
+      var btn = this; btn.disabled = true; btn.textContent = 'Sending¦';
+      try {
+        if (Api) await Api.post('/auth/forgot-password', { email: e });
+        showToast('If an account exists, a reset link is on its way.', 'success');
+        closeModal('#fplMod');
+      } catch (err) {
+        showToast('Could not send reset link', 'error');
+      } finally { btn.disabled = false; btn.textContent = 'Send Reset Link →'; }
+    });
+    try {
+      var u = JSON.parse(localStorage.getItem('bloom_user') || 'null');
+      if (u && u.name) {
+        var first = (u.name || '').split(' ')[0];
+        if (authBtn) authBtn.textContent = 'Hi, ' + first;
+        if (authBtnMob) authBtnMob.textContent = 'Hi, ' + first;
+      }
+    } catch (e) {}
+  }
+  function initProfiling() {
+    var openBtn = qs('#profilingBtn');
+    var mod = qs('#profMod');
+    var cls = qs('#closeProf');
+    on(openBtn, 'click', function () { openModal(mod); });
+    on(cls, 'click', function () { closeModal(mod); });
+    qsa('.occ-btn').forEach(function (b) {
+      on(b, 'click', function () {
+        qsa('.occ-btn').forEach(function (x) { x.classList.remove('selected'); x.setAttribute('aria-checked', 'false'); });
+        b.classList.add('selected');
+        b.setAttribute('aria-checked', 'true');
+      });
+    });
+    on(qs('#profSkip'), 'click', function () { closeModal(mod); });
+    on(qs('#profSubmit'), 'click', function () {
+      var sel = qs('.occ-btn.selected');
+      if (!sel) { showToast('Pick an occasion first', 'info'); return; }
+      if (Store && Store.setOccasion) Store.setOccasion(sel.dataset.occ);
+      closeModal(mod);
+      window.location.href = '/catalog.html?occasion=' + encodeURIComponent(sel.dataset.occ);
+    });
+  }
+  function renderStars(rating) {
+    var r = Number(rating) || 0;
+    var out = '';
+    for (var i = 0; i < 5; i++) out += '<span style="color:' + (i < Math.round(r) ? 'var(--gd)' : 'rgba(255,255,255,.18)') + '" aria-hidden="true">★</span>';
+    return out;
+  }
+  function renderProduct(p) {
+    var img = (p.images && p.images[0]) || p.image_url || FALLBACK_CAT_IMG[p.category] || FALLBACK_IMG;
+    var price = p.base_price || p.price || 0;
+    var cat = (p.category || '').replace(/^./, function (c) { return c.toUpperCase(); });
+    var name = escapeHtml(p.name || 'Unnamed');
+    var badge = p.badge ? '<span class="p-badge">' + escapeHtml(p.badge) + '</span>' : '';
+    return '<article class="p-card" data-id="' + escapeHtml(p.id) + '" tabindex="0" role="button" aria-label="' + name + ', ' + money(price) + '">' +
+      '<div class="p-shine" aria-hidden="true"></div>' +
+      '<div class="p5-corner" aria-hidden="true"></div>' +
+      badge +
+      '<button class="wl-btn" aria-label="Add to wishlist" data-id="' + escapeHtml(p.id) + '">♡</button>' +
+      '<div class="p-img"><img src="' + escapeHtml(img) + '" alt="' + name + '" loading="lazy" decoding="async" width="300" height="180" onerror="this.onerror=null;this.style.display=\'none\';this.parentElement.innerHTML=\'<div class=p-img-ph>🌸</div>\'"></div>' +
+      '<div class="p-name">' + name + '</div>' +
+      '<div class="p-cat">' + escapeHtml(cat) + '</div>' +
+      '<div class="p-stars" aria-label="' + (p.rating || 0) + ' out of 5">' + renderStars(p.rating) + '</div>' +
+      '<div class="p-foot"><div class="p-price">' + money(price) + '</div><button class="p-add" data-id="' + escapeHtml(p.id) + '">+ Cart</button></div>' +
+      '</article>';
+  }
+  function renderSkeletons(n) {
+    var out = '';
+    for (var i = 0; i < n; i++) out += '<div class="p-skel"><div class="p-skel-img"></div><div class="p-skel-t"></div><div class="p-skel-s"></div></div>';
+    return out;
+  }
+  async function loadFeatured(cat) {
+    cat = cat || 'all';
+    var grid = qs('#pGrid');
+    if (!grid) return;
+    grid.setAttribute('aria-busy', 'true');
+    grid.innerHTML = renderSkeletons(8);
+    var list = [];
+    try {
+      if (Api) {
+        var q = cat !== 'all' ? '?category=' + encodeURIComponent(cat) + '&limit=8' : '?limit=8';
+        var d = await Api.get('/products' + q);
+        list = (d && d.products) || d || [];
+      } else { throw new Error('no-api'); }
+    } catch (e) {
+      list = [];
+    }
+    if (!list.length) { grid.innerHTML = '<div class="p-empty">No products in this category yet.</div>'; grid.setAttribute('aria-busy', 'false'); return; }
+    grid.innerHTML = list.map(renderProduct).join('');
+    grid.setAttribute('aria-busy', 'false');
+    var cards = qsa('.p-card', grid);
+    cards.forEach(function (c, i) {
+      setTimeout(function () { c.classList.add('vis'); }, i * 60);
+    });
+    qsa('.p-add', grid).forEach(function (b) {
+      on(b, 'click', async function (e) {
+        e.stopPropagation();
+        var orig = b.textContent;
+        b.disabled = true; b.textContent = '¦';
+        try {
+          if (Api) {
+            await Api.post('/cart/items', { productId: b.dataset.id, qty: 1 });
+            var cart = await Api.get('/cart');
+            if (Store) {
+              Store.set('cart', cart);
+              if (Store.updateCartCount) Store.updateCartCount((cart.items || []).reduce(function (s, i) { return s + (i.qty || 1); }, 0));
+            }
+            var badge = qs('#cartBadge');
+            if (badge) {
+              var cnt = (cart.items || []).reduce(function (s, i) { return s + (i.qty || 1); }, 0);
+              badge.textContent = cnt;
+              badge.style.display = cnt > 0 ? 'inline-flex' : 'none';
+            }
+          }
+          showToast('Added to cart', 'success');
+        } catch (err) {
+          showToast('Could not add to cart', 'error');
+        } finally { b.disabled = false; b.textContent = orig; }
+      });
+    });
+    qsa('.wl-btn', grid).forEach(function (b) {
+      on(b, 'click', async function (e) {
+        e.stopPropagation();
+        var card = b.closest('.p-card');
+        var nameEl = card && card.querySelector('.p-name');
+        var priceEl = card && card.querySelector('.p-price');
+        var img = card && card.querySelector('.p-img img');
+        var item = { id: b.dataset.id, name: nameEl ? nameEl.textContent.trim() : 'Bouquet', price: priceEl ? Number(String(priceEl.textContent).replace(/[^\d.]/g, '')) : 0, image: img ? img.src : '/img/hero-flowers.jpg' };
+        var added = window.addToWishlist ? window.addToWishlist(item) : true;
+        b.classList.add('wl-pop');
+        setTimeout(function () { b.classList.remove('wl-pop'); }, 420);
+        try {
+          if (Api) {
+            if (added) await Api.post('/wishlist', { productId: b.dataset.id });
+            else await Api.delete('/wishlist/' + encodeURIComponent(b.dataset.id));
+          }
+          showToast(added ? 'Saved to wishlist' : 'Removed from wishlist', added ? 'success' : 'info');
+        } catch (err) { showToast(added ? 'Saved locally' : 'Removed', 'info'); }
+      });
+    });
+    qsa('.p-card', grid).forEach(function (c) {
+      var openQv = function (e) {
+        if (e.target.closest('button')) return;
+        openQuickView(c.dataset.id);
+      };
+      on(c, 'click', openQv);
+      on(c, 'keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openQv(e); }
+      });
+    });
+  }
+  async function openQuickView(id) {
+    var mod = qs('#qvMod');
+    var title = qs('#qvTitle');
+    var body = qs('#qvContent');
+    if (!mod || !body) return;
+    title.textContent = 'Loading¦';
+    body.innerHTML = '<div style="padding:20px;text-align:center;color:rgba(255,255,255,.4)">Loading¦</div>';
+    openModal(mod);
+    var p = null;
+    try {
+      if (Api) p = await Api.get('/products/' + encodeURIComponent(id));
+    } catch (e) {}
+    if (!p) p = FALLBACK_PRODUCTS.find(function (x) { return x.id === id; });
+    if (!p) { body.innerHTML = '<p>Could not load this product.</p>'; return; }
+    title.textContent = p.name;
+    var img = (p.images && p.images[0]) || FALLBACK_CAT_IMG[p.category] || FALLBACK_IMG;
+    var lt = (Api ? '48h-14d pre-order window' : '48h minimum lead time');
+    body.innerHTML =
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">' +
+      '<div style="border-radius:14px;overflow:hidden;aspect-ratio:1;background:var(--gl)"><img src="' + escapeHtml(img) + '" alt="' + escapeHtml(p.name) + '" style="width:100%;height:100%;object-fit:cover"></div>' +
+      '<div>' +
+      '<div class="p-cat" style="margin-bottom:8px">' + escapeHtml(p.category || '') + '</div>' +
+      '<div class="p-stars" aria-label="' + (p.rating || 0) + ' out of 5">' + renderStars(p.rating) + ' <span style="font-size:.78rem;color:rgba(255,255,255,.5);margin-left:6px">' + (p.review_count || 0) + ' reviews</span></div>' +
+      '<p style="font-size:.88rem;color:rgba(255,255,255,.68);line-height:1.7;margin:14px 0">' + escapeHtml(p.description || 'Handcrafted by Bloom florists. Developed by STI LIPA BSIT students.') + '</p>' +
+      '<div style="display:flex;align-items:center;gap:6px;font-size:.74rem;color:var(--mn);margin-bottom:14px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>' + lt + '</div>' +
+      '<div style="font-family:var(--fc);font-weight:900;font-size:1.8rem;color:var(--gd);margin-bottom:14px">' + money(p.base_price || p.price) + '</div>' +
+      '<button class="btn btn-p" style="width:100%;justify-content:center" id="qvAdd">Add to cart →</button>' +
+      '<a href="/catalog.html?id=' + encodeURIComponent(p.id) + '" class="btn btn-g" style="width:100%;justify-content:center;margin-top:8px">View full details</a>' +
+      '</div></div>' +
+      buildVideoMessageBlock(p.id);
+    attachVideoMessageHandlers(p.id);
+    on(qs('#qvAdd'), 'click', async function () {
+      var btn = this; btn.disabled = true; btn.textContent = 'Adding¦';
+      try {
+        if (Api) {
+          await Api.post('/cart/items', { productId: p.id, qty: 1 });
+          var cart = await Api.get('/cart');
+          if (Store) { Store.set('cart', cart); if (Store.updateCartCount) Store.updateCartCount((cart.items || []).reduce(function (s, i) { return s + (i.qty || 1); }, 0)); }
+        }
+        showToast('Added to cart', 'success');
+        closeModal(mod);
+      } catch (e) { showToast('Could not add', 'error'); } finally { btn.disabled = false; btn.textContent = 'Add to cart →'; }
+    });
+    on(qs('#closeQv'), 'click', function () { closeModal(mod); });
+  }
+  function initCategories() {
+    var tabs = qsa('.cat-tab');
+    var tabsWrap = qs('#catTabs');
+    var catL = qs('#catL');
+    var catR = qs('#catR');
+    tabs.forEach(function (t) {
+      on(t, 'click', function () {
+        tabs.forEach(function (x) { x.classList.remove('active'); x.setAttribute('aria-selected', 'false'); });
+        t.classList.add('active');
+        t.setAttribute('aria-selected', 'true');
+        loadFeatured(t.dataset.cat);
+      });
+    });
+    function updateArrows() {
+      if (!tabsWrap) return;
+      var sl = tabsWrap.scrollLeft;
+      var max = tabsWrap.scrollWidth - tabsWrap.clientWidth;
+      if (catL) catL.disabled = sl < 4;
+      if (catR) catR.disabled = sl >= max - 4;
+    }
+    on(catL, 'click', function () { tabsWrap.scrollBy({ left: -220, behavior: 'smooth' }); });
+    on(catR, 'click', function () { tabsWrap.scrollBy({ left: 220, behavior: 'smooth' }); });
+    if (tabsWrap) { on(tabsWrap, 'scroll', updateArrows, { passive: true }); setTimeout(updateArrows, 200); }
+  }
+  function renderReviews() {
+    var grid = qs('#revGrid');
+    var dots = qs('#revDots');
+    if (!grid) return;
+    grid.innerHTML = FEATURED_REVIEWS.slice(0, 3).map(function (r, i) {
+      return '<article class="rev-card anim-in ' + (i === 0 ? 'mob-active' : '') + '">' +
+        '<div class="rev-stars" aria-label="' + r.rating + ' out of 5">' + renderStars(r.rating) + '</div>' +
+        '<p class="rev-body">' + escapeHtml(r.body) + '</p>' +
+        '<div class="rev-foot"><div><div class="rev-name">' + escapeHtml(r.name) + '</div><div class="rev-role">' + escapeHtml(r.role) + '</div></div></div>' +
+        '</article>';
+    }).join('');
+    if (dots) {
+      dots.innerHTML = FEATURED_REVIEWS.slice(0, 3).map(function (_, i) {
+        return '<button class="rev-dot ' + (i === 0 ? 'active' : '') + '" role="tab" aria-selected="' + (i === 0 ? 'true' : 'false') + '" aria-label="Review ' + (i + 1) + '" data-i="' + i + '"></button>';
+      }).join('');
+      qsa('.rev-dot', dots).forEach(function (d) {
+        on(d, 'click', function () { setActiveReview(Number(d.dataset.i)); });
+      });
+    }
+    on(qs('#revPrev'), 'click', function () { changeRev(-1); });
+    on(qs('#revNext'), 'click', function () { changeRev(1); });
+  }
+  var revIdx = 0;
+  function setActiveReview(i) {
+    revIdx = ((i % 3) + 3) % 3;
+    qsa('.rev-card').forEach(function (c, k) { c.classList.toggle('mob-active', k === revIdx); });
+    qsa('.rev-dot').forEach(function (d, k) { d.classList.toggle('active', k === revIdx); d.setAttribute('aria-selected', k === revIdx ? 'true' : 'false'); });
+  }
+  function changeRev(d) { setActiveReview(revIdx + d); }
+  function initStats() {
+    qsa('.stat-bar-fill').forEach(function (el) {
+      var obs = new IntersectionObserver(function (ents) {
+        if (ents[0].isIntersecting) { el.style.width = (el.dataset.w || '85') + '%'; obs.disconnect(); }
+      }, { threshold: 0.4 });
+      obs.observe(el);
+    });
+  }
+  function initReveal() {
+    if (!('IntersectionObserver' in window)) { qsa('.anim-in').forEach(function (el) { el.classList.add('vis'); }); return; }
+    var obs = new IntersectionObserver(function (ents) {
+      ents.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('vis'); obs.unobserve(e.target); }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    qsa('.anim-in').forEach(function (el) { obs.observe(el); });
+  }
+  function initBtt() {
+    var b = qs('#btt');
+    if (!b) return;
+    on(window, 'scroll', function () {
+      if (window.scrollY > 520) b.classList.add('vis'); else b.classList.remove('vis');
+    }, { passive: true });
+    on(b, 'click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  }
+  function initNewsletter() {
+    on(qs('#nlForm'), 'submit', async function (e) {
+      e.preventDefault();
+      var em = qs('#nlEmail').value.trim();
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) { showToast('Enter a valid email', 'error'); return; }
+      var sub = e.target.querySelector('button');
+      sub.disabled = true; sub.textContent = '¦';
+      try {
+        if (Api) await Api.post('/newsletter', { email: em });
+        showToast('Subscribed. Welcome aboard.', 'success');
+        qs('#nlEmail').value = '';
+      } catch (err) { showToast('Could not subscribe right now', 'error'); } finally { sub.disabled = false; sub.textContent = 'Join'; }
+    });
+  }
+  async function loadCart() {
+    if (!Api) return;
+    try {
+      var cart = await Api.get('/cart');
+      if (Store) Store.set('cart', cart);
+      var cnt = (cart.items || []).reduce(function (s, i) { return s + (i.qty || 1); }, 0);
+      var badge = qs('#cartBadge');
+      if (badge) { badge.textContent = cnt; badge.style.display = cnt > 0 ? 'inline-flex' : 'none'; }
+    } catch (e) {}
+  }
+  async function loadCounts() {
+    var cats = ['bouquets', 'arrangements', 'fresh', 'dried', 'corporate'];
+    if (!Api) {
+      cats.forEach(function (c) {
+        var el = qs('#cnt-' + c);
+        if (el) el.textContent = '(' + FALLBACK_PRODUCTS.filter(function (p) { return p.category === c; }).length + ')';
+      });
+      var all = qs('#cnt-all'); if (all) all.textContent = '(' + FALLBACK_PRODUCTS.length + ')';
+      return;
+    }
+    try {
+      var d = await Api.get('/products?limit=200');
+      var list = (d && d.products) || d || [];
+      var total = list.length;
+      var all = qs('#cnt-all'); if (all) all.textContent = total ? '(' + total + ')' : '';
+      cats.forEach(function (c) {
+        var n = list.filter(function (p) { return (p.category || '').toLowerCase() === c; }).length;
+        var el = qs('#cnt-' + c);
+        if (el) el.textContent = n ? '(' + n + ')' : '';
+      });
+    } catch (e) {}
+  }
+  async function loadSiteContent() {
+    if (!Api) return;
+    try {
+      var c = await Api.get('/content');
+      if (!c) return;
+      document.querySelectorAll('[data-content-key]').forEach(el => {
+        var key = el.getAttribute('data-content-key');
+        if (c[key] !== undefined && c[key] !== null && c[key] !== '') {
+           var val = c[key];
+           if (key.includes('price') || key.includes('Threshold')) {
+             val = '\u20B1' + Number(val).toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:2});
+           }
+           if (el.tagName === 'INPUT') el.value = val;
+           else el.textContent = val;
+        }
+      });
+      if (c.bannerActive !== undefined) {
+        var banner = document.getElementById('promoBanner');
+        if (banner) banner.style.display = c.bannerActive ? 'flex' : 'none';
+      }
+    } catch (e) {}
+  }
+  function initSocket() {
+    if (!Store || !Store.on) return;
+    Store.on('catalog_update', function () {
+      var act = qs('.cat-tab.active');
+      loadFeatured(act ? act.dataset.cat : 'all');
+      loadCounts();
+    });
+    Store.on('content_update', loadSiteContent);
+    Store.on('cart_update', loadCart);
+  }
+  function initTilt() {
+    if (reducedMotion()) return;
+    qsa('.p5-tilt, .feat-card, .fact-card, .rev-card').forEach(function (card) {
+      on(card, 'mousemove', function (e) {
+        var r = card.getBoundingClientRect();
+        var x = (e.clientX - r.left) / r.width - 0.5;
+        var y = (e.clientY - r.top) / r.height - 0.5;
+        card.style.transform = 'perspective(800px) rotateY(' + (x * 8) + 'deg) rotateX(' + (-y * 8) + 'deg) scale(1.02)';
+      });
+      on(card, 'mouseleave', function () {
+        card.style.transform = '';
+      });
+    });
+  }
+  function initMagnetic() {
+    if (reducedMotion()) return;
+    qsa('.btn-p.btn-lg, .magnetic-btn').forEach(function (btn) {
+      on(btn, 'mousemove', function (e) {
+        var r = btn.getBoundingClientRect();
+        var x = e.clientX - r.left - r.width / 2;
+        var y = e.clientY - r.top - r.height / 2;
+        btn.style.transform = 'translate(' + (x * 0.15) + 'px,' + (y * 0.15) + 'px) scale(1.04)';
+      });
+      on(btn, 'mouseleave', function () {
+        btn.style.transform = '';
+      });
+    });
+  }
+  function initRipple() {
+    on(document, 'click', function (e) {
+      var btn = e.target.closest('.btn-p, .p-add');
+      if (!btn) return;
+      var r = btn.getBoundingClientRect();
+      var rip = document.createElement('span');
+      rip.className = 'ripple';
+      var sz = Math.max(r.width, r.height);
+      rip.style.width = rip.style.height = sz + 'px';
+      rip.style.left = (e.clientX - r.left - sz / 2) + 'px';
+      rip.style.top = (e.clientY - r.top - sz / 2) + 'px';
+      btn.style.position = 'relative';
+      btn.style.overflow = 'hidden';
+      btn.appendChild(rip);
+      setTimeout(function () { rip.remove(); }, 600);
+    });
+  }
+  var FUNNEL_ORDER = ['hero', 'shop', 'subs', 'cart', 'checkout'];
+  var funnelState = { hero: false, shop: false, subs: false, cart: false, checkout: false };
+  function bloomTrack(name, payload) {
+    payload = payload || {};
+    try { (window.dataLayer = window.dataLayer || []).push({ event: name, ts: Date.now(), ...payload }); } catch (e) {}
+    try { if (window.clarity && typeof window.clarity === 'function') window.clarity('event', name); } catch (e) {}
+    try { if (window.hj && typeof window.hj === 'function') window.hj('event', name); } catch (e) {}
+    try { if (window.gtag && typeof window.gtag === 'function') window.gtag('event', name, payload); } catch (e) {}
+  }
+  window.bloomTrack = bloomTrack;
+  function initFunnelTracking() {
+    var bar = qs('#funnelBar');
+    var sections = [
+      { id: 'heroSec', step: 'hero' },
+      { id: 'shop', step: 'shop' },
+      { id: 'subs', step: 'subs' }
+    ];
+    if (!('IntersectionObserver' in window)) return;
+    var obs = new IntersectionObserver(function (ents) {
+      ents.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        var sec = sections.find(function (s) { return s.id === e.target.id; });
+        if (!sec) return;
+        if (!funnelState[sec.step]) {
+          funnelState[sec.step] = true;
+          bloomTrack('funnel_' + sec.step + '_view');
+        }
+        var idx = FUNNEL_ORDER.indexOf(sec.step);
+        qsa('.funnel-step').forEach(function (el) {
+          var i = FUNNEL_ORDER.indexOf(el.dataset.step);
+          el.classList.toggle('active', i === idx);
+          el.classList.toggle('done', i < idx && funnelState[el.dataset.step]);
+        });
+        if (bar && idx > 0) bar.classList.add('show');
+      });
+    }, { threshold: 0.45 });
+    sections.forEach(function (s) { var el = qs('#' + s.id); if (el) obs.observe(el); });
+    on(document, 'click', function (e) {
+      var add = e.target.closest('.p-add, #qvAdd');
+      if (add) { funnelState.cart = true; bloomTrack('funnel_cart_add'); markFunnel('cart'); }
+      var checkout = e.target.closest('[href*="checkout" i], #checkoutBtn');
+      if (checkout) { funnelState.checkout = true; bloomTrack('funnel_checkout_start'); markFunnel('checkout'); }
+    });
+  }
+  function markFunnel(step) {
+    var idx = FUNNEL_ORDER.indexOf(step);
+    qsa('.funnel-step').forEach(function (el) {
+      var i = FUNNEL_ORDER.indexOf(el.dataset.step);
+      el.classList.toggle('active', i === idx);
+      el.classList.toggle('done', i < idx);
+    });
+  }
+  function initBloomBoot() {
+    var boot = qs('#bloomBoot');
+    if (!boot) return;
+    function hide() {
+      boot.classList.add('gone');
+      setTimeout(function () { boot.style.display = 'none'; }, 700);
+    }
+    if (document.readyState === 'complete') setTimeout(hide, 400);
+    else window.addEventListener('load', function () { setTimeout(hide, 400); });
+    setTimeout(hide, 4500);
+  }
+  var DELIVERY_LEAD = {
+    'metro-manila': { hours: 48, label: '48h' },
+    'batangas': { hours: 48, label: '48h' },
+    'cebu': { hours: 96, label: '4 days' },
+    'laguna': { hours: 72, label: '3 days' },
+    'cavite': { hours: 72, label: '3 days' },
+    'rizal': { hours: 72, label: '3 days' },
+    'bulacan': { hours: 72, label: '3 days' },
+    'pampanga': { hours: 96, label: '4 days' },
+    'baguio': { hours: 120, label: '5 days' }
+  };
+  function initDelivery() {
+    var dateInp = qs('#dlvDate');
+    var locSel = qs('#dlvLoc');
+    var etaEl = qs('#dlvEta');
+    var bar = qs('#dlvBar');
+    if (!dateInp || !locSel || !etaEl || !bar) return;
+    var saved = {};
+    try { saved = JSON.parse(localStorage.getItem('bloom_delivery') || '{}'); } catch (e) {}
+    var minH = DELIVERY_LEAD[saved.loc || locSel.value]?.hours || 48;
+    var minDate = new Date(Date.now() + minH * 36e5);
+    dateInp.min = minDate.toISOString().slice(0, 10);
+    if (saved.date && new Date(saved.date) >= minDate) dateInp.value = saved.date;
+    else dateInp.value = minDate.toISOString().slice(0, 10);
+    if (saved.loc && DELIVERY_LEAD[saved.loc]) locSel.value = saved.loc;
+    function updateEta() {
+      var info = DELIVERY_LEAD[locSel.value] || DELIVERY_LEAD['metro-manila'];
+      var newMin = new Date(Date.now() + info.hours * 36e5);
+      dateInp.min = newMin.toISOString().slice(0, 10);
+      if (new Date(dateInp.value) < newMin) dateInp.value = newMin.toISOString().slice(0, 10);
+      etaEl.innerHTML = 'Lead time: <strong>' + info.label + '</strong>';
+      try { localStorage.setItem('bloom_delivery', JSON.stringify({ date: dateInp.value, loc: locSel.value })); } catch (e) {}
+      bloomTrack('delivery_set', { location: locSel.value, date: dateInp.value });
+    }
+    on(locSel, 'change', updateEta);
+    on(dateInp, 'change', updateEta);
+    updateEta();
+    var lastY = window.scrollY;
+    on(window, 'scroll', function () {
+      var y = window.scrollY;
+      if (y > 600 && y > lastY) bar.classList.add('hide');
+      else bar.classList.remove('hide');
+      lastY = y;
+    }, { passive: true });
+  }
+  function getWishlist() {
+    try { return JSON.parse(localStorage.getItem('bloom_wishlist') || '[]'); } catch (e) { return []; }
+  }
+  function saveWishlist(items) {
+    try { localStorage.setItem('bloom_wishlist', JSON.stringify(items)); } catch (e) {}
+    updateWlUi();
+  }
+  function updateWlUi() {
+    var items = getWishlist();
+    var badge = qs('#wlBadge');
+    var count = qs('#wlCount');
+    var clear = qs('#wlClear');
+    if (badge) { badge.textContent = items.length; badge.style.display = items.length ? 'inline-flex' : 'none'; }
+    if (count) count.textContent = items.length;
+    if (clear) clear.hidden = !items.length;
+    qsa('.wl-btn').forEach(function (b) {
+      var on = items.some(function (x) { return x.id === b.dataset.id; });
+      b.classList.toggle('on', on);
+      b.textContent = on ? '♥' : '♡';
+    });
+    var body = qs('#wlDrawerBody');
+    var empty = qs('#wlEmpty');
+    if (!body) return;
+    qsa('.wl-row', body).forEach(function (r) { r.remove(); });
+    if (!items.length) { if (empty) empty.style.display = ''; return; }
+    if (empty) empty.style.display = 'none';
+    items.forEach(function (it) {
+      var row = document.createElement('div');
+      row.className = 'wl-row';
+      row.innerHTML = '<a class="wl-row-img" href="/catalog.html?id=' + encodeURIComponent(it.id) + '"><img src="' + escapeHtml(it.image || '/img/hero-flowers.jpg') + '" alt=""></a>' +
+        '<div class="wl-row-body"><div class="wl-row-name">' + escapeHtml(it.name || 'Bouquet') + '</div><div class="wl-row-price">' + money(it.price || 0) + '</div></div>' +
+        '<button type="button" class="wl-row-x" aria-label="Remove from wishlist" data-rm="' + escapeHtml(it.id) + '">✕</button>';
+      body.appendChild(row);
+    });
+    qsa('.wl-row-x', body).forEach(function (x) {
+      on(x, 'click', function () {
+        var id = x.dataset.rm;
+        var next = getWishlist().filter(function (i) { return i.id !== id; });
+        saveWishlist(next);
+        bloomTrack('wishlist_remove', { id: id });
+      });
+    });
+  }
+  window.addToWishlist = function (item) {
+    var items = getWishlist();
+    if (items.some(function (i) { return i.id === item.id; })) {
+      saveWishlist(items.filter(function (i) { return i.id !== item.id; }));
+      return false;
+    }
+    items.unshift(item);
+    saveWishlist(items.slice(0, 100));
+    bloomTrack('wishlist_add', { id: item.id });
+    return true;
+  };
+  function initWishlist() {
+    var drawer = qs('#wlDrawer');
+    var openBtn = qs('#wlBtnNav');
+    var clsBtn = qs('#wlDrawerCls');
+    var clear = qs('#wlClear');
+    if (!drawer) return;
+    function openD() { drawer.classList.add('open'); drawer.setAttribute('aria-hidden', 'false'); document.body.classList.add('modal-open'); updateWlUi(); bloomTrack('wishlist_open'); }
+    function closeD() { drawer.classList.remove('open'); drawer.setAttribute('aria-hidden', 'true'); document.body.classList.remove('modal-open'); }
+    on(openBtn, 'click', openD);
+    on(clsBtn, 'click', closeD);
+    on(document, 'keydown', function (e) { if (e.key === 'Escape' && drawer.classList.contains('open')) closeD(); });
+    on(clear, 'click', function () { saveWishlist([]); showToast('Wishlist cleared', 'info'); });
+    updateWlUi();
+    on(document, 'click', function (e) {
+      var b = e.target.closest('.wl-btn');
+      if (!b) return;
+      e.stopPropagation();
+      var card = b.closest('.p-card');
+      var nameEl = card && card.querySelector('.p-name');
+      var priceEl = card && card.querySelector('.p-price');
+      var img = card && card.querySelector('.p-img img');
+      var item = { id: b.dataset.id, name: nameEl ? nameEl.textContent.trim() : 'Bouquet', price: priceEl ? Number(String(priceEl.textContent).replace(/[^\d.]/g, '')) : 0, image: img ? img.src : '/img/hero-flowers.jpg' };
+      var added = window.addToWishlist(item);
+      b.classList.add('wl-pop');
+      setTimeout(function () { b.classList.remove('wl-pop'); }, 420);
+      showToast(added ? 'Saved to wishlist' : 'Removed from wishlist', added ? 'success' : 'info');
+    });
+  }
+  function initSubscriptions() {
+    var sec = qs('#subs');
+    if (!sec) return;
+    var cards = qsa('.subs-card', sec);
+    var startBtn = qs('#subsStart');
+    var learnBtn = qs('#subsLearn');
+    var previewImg = qs('#subsPreviewImg');
+    cards.forEach(function (c) {
+      on(c, 'click', function () {
+        cards.forEach(function (x) { x.classList.remove('selected'); x.setAttribute('aria-checked', 'false'); });
+        c.classList.add('selected');
+        c.setAttribute('aria-checked', 'true');
+        var plan = c.dataset.sub;
+        if (previewImg && plan) {
+          previewImg.style.opacity = '0';
+          setTimeout(function() {
+            previewImg.src = '/uploads/subscriptions/' + plan + '.jpg';
+            previewImg.style.opacity = '1';
+          }, 200);
+        }
+        bloomTrack('subscription_select', { plan: plan, price: c.dataset.price });
+      });
+      on(c, 'keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); c.click(); } });
+    });
+    on(startBtn, 'click', async function () {
+      var sel = qs('.subs-card.selected', sec);
+      if (!sel) { showToast('Pick a cadence first', 'info'); return; }
+      var plan = sel.dataset.sub;
+      var price = sel.dataset.price;
+      bloomTrack('subscription_start', { plan: plan, price: price });
+      showToast('Redirecting to secure checkout...', 'success');
+      window.location.href = '/checkout.html?subscription=' + encodeURIComponent(plan) + '&price=' + encodeURIComponent(price);
+    });
+    on(learnBtn, 'click', function () { window.location.href = '/subscriptions.html'; });
+  }
+  function buildVideoMessageBlock(productId) {
+    return '<div id="vmContainer_' + productId + '" style="margin-top: 24px;"></div>';
+  }
+  function attachVideoMessageHandlers(productId) {
+    if (window.BloomVideoMessage) {
+      window.BloomVideoMessage.attachTo('vmContainer_' + productId);
+      document.addEventListener('bloom:video-attached', function (e) {
+        var blob = e.detail.blob;
+        if (!blob) return;
+        try {
+          var dbReq = indexedDB.open('BloomDB', 1);
+          dbReq.onupgradeneeded = function(e) { 
+            e.target.result.createObjectStore('videos'); 
+          };
+          dbReq.onsuccess = function(e) {
+            var db = e.target.result;
+            var tx = db.transaction('videos', 'readwrite');
+            tx.objectStore('videos').put(blob, 'vm_' + productId);
+            bloomTrack('video_message_attached', { productId: productId, size: blob.size });
+          };
+        } catch (err) {
+          console.warn('Could not save video to IndexedDB', err);
+        }
+      });
+    }
+  }
+  window.buildVideoMessageBlock = buildVideoMessageBlock;
+  window.attachVideoMessageHandlers = attachVideoMessageHandlers;
+  function summarizeFormErrors(formEl, summaryEl) {
+    var errs = [];
+    qsa('.fe', formEl).forEach(function (e) {
+      var msg = (e.textContent || '').trim();
+      if (!msg) return;
+      var fi = e.closest('.fi') || formEl;
+      var inp = fi.querySelector('input,textarea,select');
+      var labelEl = inp ? formEl.querySelector('label[for="' + inp.id + '"]') : null;
+      var label = inp ? ((labelEl && labelEl.textContent.trim()) || inp.id) : '';
+      errs.push({ id: inp ? inp.id : '', label: label, msg: msg });
+    });
+    var ul = summaryEl.querySelector('ul');
+    if (!ul) return;
+    if (!errs.length) { summaryEl.classList.remove('on'); ul.innerHTML = ''; return; }
+    ul.innerHTML = errs.map(function (e) {
+      var anchor = e.id ? '<a href="#' + e.id + '" data-fid="' + e.id + '">' + escapeHtml(e.label || e.id) + '</a>: ' : '';
+      return '<li>' + anchor + escapeHtml(e.msg) + '</li>';
+    }).join('');
+    summaryEl.classList.add('on');
+    summaryEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    qsa('a[data-fid]', summaryEl).forEach(function (a) {
+      on(a, 'click', function (ev) { ev.preventDefault(); var t = qs('#' + a.dataset.fid); if (t) { t.focus(); t.scrollIntoView({ behavior: 'smooth', block: 'center' }); } });
+    });
+  }
+  window.summarizeFormErrors = summarizeFormErrors;
+  function initFormErrSummaries() {
+    var loginBtn = qs('#lSubmit');
+    var regBtn = qs('#rSubmit');
+    var loginSum = qs('#loginErrSum');
+    var regSum = qs('#regErrSum');
+    function patch(btn, formId, sumEl) {
+      if (!btn || !sumEl) return;
+      var origClick = btn.onclick;
+      on(btn, 'click', function () {
+        setTimeout(function () { var f = qs('#' + formId); if (f) summarizeFormErrors(f, sumEl); }, 60);
+      });
+    }
+    patch(loginBtn, 'loginF', loginSum);
+    patch(regBtn, 'registerF', regSum);
+  }
+  function initVirtualization() {
+    if (!('IntersectionObserver' in window)) return;
+    var grids = ['pGrid', 'recentGrid'];
+    grids.forEach(function (id) {
+      var grid = qs('#' + id);
+      if (!grid) return;
+      var obs = new IntersectionObserver(function (ents) {
+        ents.forEach(function (e) {
+          var img = e.target.querySelector ? e.target.querySelector('img') : null;
+          if (e.isIntersecting) {
+            e.target.style.contentVisibility = 'visible';
+            if (img && img.dataset.src && !img.src) img.src = img.dataset.src;
+          } else {
+            e.target.style.contentVisibility = 'auto';
+            e.target.style.containIntrinsicSize = '320px';
+          }
+        });
+      }, { rootMargin: '600px 0px', threshold: 0 });
+      var mo = new MutationObserver(function () {
+        qsa('.p-card', grid).forEach(function (c) {
+          if (c._virt) return;
+          c._virt = 1;
+          c.style.contentVisibility = 'auto';
+          c.style.containIntrinsicSize = '320px';
+          obs.observe(c);
+        });
+      });
+      mo.observe(grid, { childList: true });
+    });
+  }
+  function loadHeatmaps() {
+    var clarityId = (document.querySelector('meta[name="clarity-id"]') || {}).content;
+    if (clarityId) {
+      (function (c, l, a, r, i, t, y) { c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments); }; t = l.createElement(r); t.async = 1; t.src = 'https://www.clarity.ms/tag/' + i; y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y); })(window, document, 'clarity', 'script', clarityId);
+    }
+    var hjId = (document.querySelector('meta[name="hotjar-id"]') || {}).content;
+    if (hjId) {
+      (function (h, o, t, j, a, r) { h.hj = h.hj || function () { (h.hj.q = h.hj.q || []).push(arguments); }; h._hjSettings = { hjid: Number(hjId), hjsv: 6 }; a = o.getElementsByTagName('head')[0]; r = o.createElement('script'); r.async = 1; r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv; a.appendChild(r); })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=');
+    }
+  }
+  function initYear() {
+    var y = qs('#yr');
+    if (y) y.textContent = new Date().getFullYear();
+  }
+  window.addEventListener('unhandledrejection', function (e) {
+    console.warn('[Bloom] Unhandled promise rejection:', e.reason);
+  });
+  window.addEventListener('error', function (e) {
+    console.warn('[Bloom] Runtime error:', e.message);
+  });
+  document.addEventListener('DOMContentLoaded', function () {
+    initBloomBoot();
+    initYear();
+    initCursor();
+    initNav();
+    initTyper();
+    initCountdown();
+    initParticles();
+    initHeroParallax();
     initSearch();
     initLang();
     initAuth();
@@ -3137,7 +4288,6 @@ input:-webkit-autofill:focus {
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function () {
-    // navigator.serviceWorker.register('/sw.js').catch(function () {});
   });
 }
 var _deferredInstall = null;
@@ -3145,7 +4295,6 @@ window.addEventListener('beforeinstallprompt', function (e) {
   e.preventDefault();
   _deferredInstall = e;
 });
-
 (function () {
   var thBtn = document.getElementById('themeToggle');
   if (thBtn) {
@@ -3153,7 +4302,6 @@ window.addEventListener('beforeinstallprompt', function (e) {
       if (window.Store) Store.toggleTheme();
     });
   }
-
   function renderRecent() {
     if (!window.Store) return;
     var items = Store.get('recentlyViewed') || [];
@@ -3176,7 +4324,6 @@ window.addEventListener('beforeinstallprompt', function (e) {
   }
   if (window.Store) Store.on('recentlyViewed', renderRecent);
   document.addEventListener('DOMContentLoaded', renderRecent);
-
   var _exitShown = false;
   document.addEventListener('mouseleave', function (e) {
     if (e.clientY > 10) return;
@@ -3208,7 +4355,6 @@ window.addEventListener('beforeinstallprompt', function (e) {
     document.body.classList.remove('modal-open');
     if (window.Store && typeof Store.markExitIntent === 'function') Store.markExitIntent();
   }
-
   if (exitClose) exitClose.addEventListener('click', closeExit);
   if (exitDismiss) exitDismiss.addEventListener('click', closeExit);
   var exitCta = document.getElementById('exitCta');
@@ -3234,7 +4380,6 @@ window.addEventListener('beforeinstallprompt', function (e) {
   b.querySelector('.bloom-academic-badge-close').addEventListener('click',function(){b.remove();sessionStorage.setItem('bloom_badge_dismissed','1');});
 })();
 </script>
-
 <script src="/js/core/Wishlist.js" defer></script>
 <script src="/js/core/WebVitals.js" defer></script>
 <script src="/js/core/TouchGestures.js" defer></script>
@@ -3253,7 +4398,5 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 });
 </script>
-
 </body>
 </html>
-
