@@ -1,36 +1,27 @@
 #!/usr/bin/env node
-
-
 import * as esbuild from 'esbuild';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { createHash } from 'crypto';
 import { execSync } from 'child_process';
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT = path.resolve(__dirname, '..');
 const PUBLIC = path.join(ROOT, 'public');
 const DIST = path.join(ROOT, 'dist');
-
-
-
 function ensureDir(dir) {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 }
-
 function fileHash(filePath) {
   const content = fs.readFileSync(filePath);
   return createHash('sha256').update(content).digest('hex').slice(0, 8);
 }
-
 function formatBytes(bytes) {
   if (bytes < 1024) return bytes + ' B';
   if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
   return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
 }
-
 function copyRecursive(src, dest) {
   ensureDir(dest);
   const entries = fs.readdirSync(src, { withFileTypes: true });
@@ -44,13 +35,9 @@ function copyRecursive(src, dest) {
     }
   }
 }
-
-
-
 const MOTION_CDN = 'https://cdn.jsdelivr.net/npm/motion@11.18.2/dist/motion.js';
 const GSAP_CDN = 'https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js';
 const GSAP_ST_CDN = 'https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js';
-
 const CORE_MODULES = [
   'public/js/core/Store.js',
   'public/js/core/Api.js',
@@ -66,7 +53,6 @@ const CORE_MODULES = [
   'public/js/core/VideoMessage.js',
   'public/js/core/SupplyChain.js',
 ];
-
 const PAGE_SCRIPTS = [
   'public/js/landing.js',
   'public/js/catalog.js',
@@ -81,7 +67,6 @@ const PAGE_SCRIPTS = [
   'public/js/BouquetRenderer.js',
   'public/js/MerchandisePersonalizer.js',
 ];
-
 const CSS_FILES = [
   'public/css/vars.css',
   'public/css/main.css',
@@ -94,13 +79,11 @@ const CSS_FILES = [
   'public/css/tracking.css',
   'public/css/admin.css',
 ];
-
 const STATIC_COPY = [
   'public/manifest.json',
   'public/sw.js',
   'public/robots.txt',
 ];
-
 const HTML_FILES = [
   'public/index.html',
   'public/catalog.html',
@@ -117,16 +100,11 @@ const HTML_FILES = [
   'public/returns.html',
   'public/privacy.html',
 ];
-
-
-
 async function build() {
   const startTime = Date.now();
   const manifest = { timestamp: new Date().toISOString(), files: {} };
-
   console.log('\n🌸 Bloom Build Pipeline');
   console.log('═══════════════════════════════════\n');
-
   console.log('⚡ Running dynamic page generator...');
   try {
     execSync('node generatePages.js', { stdio: 'inherit', cwd: ROOT });
@@ -134,18 +112,13 @@ async function build() {
     console.error('❌ Page generation failed! Aborting build.');
     throw e;
   }
-
-
   console.log('📁 Cleaning dist/ ...');
   if (fs.existsSync(DIST)) fs.rmSync(DIST, { recursive: true });
   ensureDir(DIST);
   ensureDir(path.join(DIST, 'js'));
   ensureDir(path.join(DIST, 'js', 'core'));
   ensureDir(path.join(DIST, 'css'));
-
-
   console.log('📦 Bundling core modules → core.bundle.min.js');
-
   let coreConcat = '';
   for (const mod of CORE_MODULES) {
     const fullPath = path.join(ROOT, mod);
@@ -155,7 +128,6 @@ async function build() {
       console.warn(`  ⚠ Missing: ${mod}`);
     }
   }
-
   const coreResult = await esbuild.transform(coreConcat, {
     minify: true,
     sourcemap: true,
@@ -163,10 +135,9 @@ async function build() {
     target: ['es2020'],
     legalComments: 'none',
   });
-
   const coreBundlePath = path.join(DIST, 'js', 'core.bundle.min.js');
   const coreMapPath = coreBundlePath + '.map';
-  const coreWithMap = coreResult.code + `\n//# sourceMappingURL=core.bundle.min.js.map\n`;
+  const coreWithMap = coreResult.code + `\n//# sourceMappingURL=core.bundle.min.js.map`;
   fs.writeFileSync(coreBundlePath, coreWithMap);
   fs.writeFileSync(coreMapPath, coreResult.map);
   manifest.files['js/core.bundle.min.js'] = {
@@ -175,8 +146,6 @@ async function build() {
     modules: CORE_MODULES.map(m => path.basename(m)),
   };
   console.log(`   ✓ ${formatBytes(fs.statSync(coreBundlePath).size)} (${CORE_MODULES.length} modules)`);
-
-  // 3. Minify each page-level script
   console.log('\n📄 Minifying page scripts...');
   for (const script of PAGE_SCRIPTS) {
     const fullPath = path.join(ROOT, script);
@@ -188,7 +157,6 @@ async function build() {
     const baseName = path.basename(script, '.js');
     const outName = `${baseName}.min.js`;
     const outPath = path.join(DIST, 'js', outName);
-
     const result = await esbuild.transform(code, {
       minify: true,
       sourcemap: true,
@@ -196,10 +164,8 @@ async function build() {
       target: ['es2020'],
       legalComments: 'none',
     });
-
-    fs.writeFileSync(outPath, result.code + `\n//# sourceMappingURL=${outName}.map\n`);
+    fs.writeFileSync(outPath, result.code + `\n//# sourceMappingURL=${outName}.map`);
     fs.writeFileSync(outPath + '.map', result.map);
-
     const originalSize = Buffer.byteLength(code);
     const minifiedSize = fs.statSync(outPath).size;
     const savings = ((1 - minifiedSize / originalSize) * 100).toFixed(0);
@@ -211,8 +177,6 @@ async function build() {
     };
     console.log(`   ✓ ${baseName}.js → ${outName}  (${formatBytes(originalSize)} → ${formatBytes(minifiedSize)}, −${savings}%)`);
   }
-
-
   console.log('\n🎨 Minifying CSS...');
   for (const cssFile of CSS_FILES) {
     const fullPath = path.join(ROOT, cssFile);
@@ -224,17 +188,14 @@ async function build() {
     const baseName = path.basename(cssFile, '.css');
     const outName = `${baseName}.min.css`;
     const outPath = path.join(DIST, 'css', outName);
-
     const result = await esbuild.transform(code, {
       minify: true,
       sourcemap: true,
       sourcefile: path.basename(cssFile),
       loader: 'css',
     });
-
-    fs.writeFileSync(outPath, result.code + `\n/*# sourceMappingURL=${outName}.map */\n`);
+    fs.writeFileSync(outPath, result.code + `\n\n`);
     fs.writeFileSync(outPath + '.map', result.map);
-
     const originalSize = Buffer.byteLength(code);
     const minifiedSize = fs.statSync(outPath).size;
     const savings = ((1 - minifiedSize / originalSize) * 100).toFixed(0);
@@ -246,8 +207,6 @@ async function build() {
     };
     console.log(`   ✓ ${baseName}.css → ${outName}  (${formatBytes(originalSize)} → ${formatBytes(minifiedSize)}, −${savings}%)`);
   }
-
-
   console.log('\n📋 Copying static assets...');
   for (const staticFile of STATIC_COPY) {
     const src = path.join(ROOT, staticFile);
@@ -258,27 +217,18 @@ async function build() {
       console.log(`   ✓ ${path.basename(staticFile)}`);
     }
   }
-
-
   const uploadsDir = path.join(ROOT, 'uploads');
   if (fs.existsSync(uploadsDir)) {
     copyRecursive(uploadsDir, path.join(DIST, '..', 'uploads'));
     console.log('   ✓ uploads/');
   }
-
-
   console.log('\n🔧 Transforming HTML files...');
   for (const htmlFile of HTML_FILES) {
     const fullPath = path.join(ROOT, htmlFile);
     if (!fs.existsSync(fullPath)) continue;
-
     let html = fs.readFileSync(fullPath, 'utf-8');
-
-
     html = html.replace(/<script\s+src="https:\/\/cdn\.jsdelivr\.net\/npm\/motion@[^"]*\/dist\/motion\.js"\s*><\/script>\s*/g, '');
     html = html.replace(/<script\s+src="https:\/\/cdn\.jsdelivr\.net\/npm\/gsap@[^"]*\/dist\/[^"]*\.min\.js"\s*><\/script>\s*/g, '');
-
-
     const coreScriptPattern = /<script\s+src="\/js\/core\/(?:Store|Api|Auth|I18n|Wishlist|WebVitals|TouchGestures|FormValidator|Motion|CinematicHero)\.js"(?:\s+defer)?\s*><\/script>\s*/g;
     const coreMatches = html.match(coreScriptPattern);
     if (coreMatches && coreMatches.length > 0) {
@@ -291,8 +241,6 @@ async function build() {
         return '';
       });
     }
-
-
     html = html.replace(
       /<script(\s+type="module")?\s+src="\/js\/(\w+)\.js"\s*><\/script>/g,
       (match, typeAttr, name) => {
@@ -303,8 +251,6 @@ async function build() {
         return match;
       }
     );
-
-
     html = html.replace(
       /<link\s+rel="stylesheet"\s+href="\/css\/(\w+)\.css"\s*>/g,
       (match, name) => {
@@ -315,14 +261,11 @@ async function build() {
         return match;
       }
     );
-
     const outPath = path.join(DIST, path.relative('public', htmlFile));
     ensureDir(path.dirname(outPath));
     fs.writeFileSync(outPath, html);
     console.log(`   ✓ ${path.basename(htmlFile)}`);
   }
-
-
   const totalOriginal = Object.values(manifest.files).reduce((s, f) => s + (f.originalSize || f.size), 0);
   const totalMinified = Object.values(manifest.files).reduce((s, f) => s + f.size, 0);
   manifest.summary = {
@@ -332,9 +275,7 @@ async function build() {
     totalSavings: `${((1 - totalMinified / totalOriginal) * 100).toFixed(1)}%`,
     buildTime: `${Date.now() - startTime}ms`,
   };
-
   fs.writeFileSync(path.join(DIST, 'build-manifest.json'), JSON.stringify(manifest, null, 2));
-
   console.log('\n═══════════════════════════════════');
   console.log(`✅ Build complete in ${manifest.summary.buildTime}`);
   console.log(`   Files: ${manifest.summary.totalFiles}`);
@@ -342,7 +283,6 @@ async function build() {
   console.log(`   Output: ${DIST}`);
   console.log('═══════════════════════════════════\n');
 }
-
 build().catch(err => {
   console.error('❌ Build failed:', err);
   process.exit(1);
