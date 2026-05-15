@@ -2960,97 +2960,35 @@ input:-webkit-autofill:focus {
 
 
   function buildVideoMessageBlock(productId) {
-    var html = '<div class="vid-msg-block">' +
-      '<div class="vid-msg-hd"><h4>Add a video message <small>(up to 30s)</small></h4><small>The recipient sees this with their bouquet</small></div>' +
-      '<div class="vid-preview"><video id="vmPrev" muted playsinline></video><span class="vid-rec-dot" id="vmDot">REC</span></div>' +
-      '<div class="vid-msg-actions">' +
-      '<button type="button" class="btn btn-g" id="vmStart">Start camera</button>' +
-      '<button type="button" class="btn btn-p" id="vmRec" disabled>● Record</button>' +
-      '<button type="button" class="btn btn-g" id="vmAttach" disabled>Attach to order</button>' +
-      '<label class="btn btn-g" style="cursor:pointer"><input type="file" accept="video/*" capture="user" id="vmFile" hidden>Upload from device</label>' +
-      '</div></div>';
-    return html;
+    return '<div id="vmContainer_' + productId + '" style="margin-top: 24px;"></div>';
   }
   function attachVideoMessageHandlers(productId) {
-    var prev = qs('#vmPrev');
-    var startBtn = qs('#vmStart');
-    var recBtn = qs('#vmRec');
-    var attachBtn = qs('#vmAttach');
-    var dot = qs('#vmDot');
-    var fileInp = qs('#vmFile');
-    if (!prev || !startBtn || !recBtn || !attachBtn) return;
-    var stream = null;
-    var rec = null;
-    var chunks = [];
-    var blob = null;
-    var startTime = 0;
-    var stopTimer = null;
-    on(startBtn, 'click', async function () {
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: true });
-        prev.srcObject = stream;
-        prev.play();
-        recBtn.disabled = false;
-        startBtn.disabled = true;
-        startBtn.textContent = 'Camera on';
-        bloomTrack('video_message_camera_open');
-      } catch (e) { showToast('Camera unavailable', 'error'); }
-    });
-    on(recBtn, 'click', function () {
-      if (rec && rec.state === 'recording') {
-        rec.stop();
-        return;
-      }
-      chunks = [];
-      var mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus') ? 'video/webm;codecs=vp9,opus' : (MediaRecorder.isTypeSupported('video/webm') ? 'video/webm' : 'video/mp4');
-      try { rec = new MediaRecorder(stream, { mimeType: mime }); } catch (e) { rec = new MediaRecorder(stream); }
-      rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
-      rec.onstop = function () {
-        blob = new Blob(chunks, { type: rec.mimeType || 'video/webm' });
-        prev.srcObject = null;
-        prev.src = URL.createObjectURL(blob);
-        prev.muted = false;
-        prev.controls = true;
-        recBtn.textContent = '● Record again';
-        attachBtn.disabled = false;
-        dot.classList.remove('on');
-        if (stream) stream.getTracks().forEach(function (t) { t.stop(); });
-        clearTimeout(stopTimer);
-        bloomTrack('video_message_recorded', { duration: Math.round((Date.now() - startTime) / 1000), size: blob.size });
-      };
-      startTime = Date.now();
-      rec.start();
-      recBtn.textContent = '■ Stop';
-      dot.classList.add('on');
-      stopTimer = setTimeout(function () { try { rec.stop(); } catch (e) {} }, 30000);
-    });
-    on(fileInp, 'change', function () {
-      var f = fileInp.files && fileInp.files[0];
-      if (!f) return;
-      if (f.size > 50 * 1024 * 1024) { showToast('Video must be under 50MB', 'error'); return; }
-      blob = f;
-      prev.srcObject = null;
-      prev.src = URL.createObjectURL(f);
-      prev.controls = true;
-      attachBtn.disabled = false;
-      bloomTrack('video_message_uploaded', { size: f.size });
-    });
-    on(attachBtn, 'click', async function () {
-      if (!blob) return;
-      attachBtn.disabled = true;
-      attachBtn.textContent = 'Attaching¦';
-      try {
-        var url = URL.createObjectURL(blob);
-        try { sessionStorage.setItem('bloom_video_msg_' + productId, url); } catch (e) {}
-        showToast('Video attached (Simulated Demonstration)', 'success');
-        bloomTrack('video_message_attached', { productId: productId });
-      } catch (e) { 
-        showToast('Could not attach video', 'error'); 
-      } finally { 
-        attachBtn.disabled = false; 
-        attachBtn.textContent = 'Attached ✔'; 
-      }
-    });
+    // Ensure the new robust VideoMessage.js module handles the UI
+    if (window.BloomVideoMessage) {
+      window.BloomVideoMessage.attachTo('vmContainer_' + productId);
+      
+      // Listen for the genuinely recorded Blob and attach it via IndexedDB
+      // This ensures real persistence across the site without needing a mock backend
+      document.addEventListener('bloom:video-attached', function (e) {
+        var blob = e.detail.blob;
+        if (!blob) return;
+        
+        try {
+          var dbReq = indexedDB.open('BloomDB', 1);
+          dbReq.onupgradeneeded = function(e) { 
+            e.target.result.createObjectStore('videos'); 
+          };
+          dbReq.onsuccess = function(e) {
+            var db = e.target.result;
+            var tx = db.transaction('videos', 'readwrite');
+            tx.objectStore('videos').put(blob, 'vm_' + productId);
+            bloomTrack('video_message_attached', { productId: productId, size: blob.size });
+          };
+        } catch (err) {
+          console.warn('Could not save video to IndexedDB', err);
+        }
+      });
+    }
   }
   window.buildVideoMessageBlock = buildVideoMessageBlock;
   window.attachVideoMessageHandlers = attachVideoMessageHandlers;
