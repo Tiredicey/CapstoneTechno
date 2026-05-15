@@ -135,7 +135,13 @@
           var recipient;
           try {
             var r = typeof o.recipient === 'string' ? JSON.parse(o.recipient) : o.recipient;
-            recipient = (r && r.name) ? r.name : 'Unknown';
+            if (r) {
+              if (r.name) recipient = r.name;
+              else if (r.firstName || r.lastName) recipient = (r.firstName || '') + ' ' + (r.lastName || '');
+              else recipient = 'Unknown';
+            } else {
+              recipient = 'Unknown';
+            }
           } catch { recipient = 'Unknown'; }
           var trackUrl = window.location.origin + '/tracking.html?id=' + encodeURIComponent(qr);
           return '<div class="qr-card" data-idx="' + i + '">' +
