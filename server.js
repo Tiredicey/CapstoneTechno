@@ -32,11 +32,8 @@ import notificationRoutes from './routes/notifications.js';
 import { SocketManager } from './sockets/SocketManager.js';
 import { authenticate } from './middleware/auth.js';
 import db from './database/Database.js';
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-
 try {
   console.log('🧬 Running Pre-Boot Page Generation...');
   execSync('node generatePages.js', { cwd: __dirname, stdio: 'inherit' });
@@ -44,17 +41,13 @@ try {
 } catch (e) {
   console.error('❌ Pre-Boot Page Generation FAILED:', e.message);
 }
-
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: { origin: '*', methods: ['GET', 'POST'] }
 });
-
 app.set('trust proxy', 1);
-
 const IS_PROD = process.env.NODE_ENV === 'production';
-
 app.use(helmet({
   contentSecurityPolicy: IS_PROD ? {
     directives: {
@@ -64,7 +57,7 @@ app.use(helmet({
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       imgSrc: ["'self'", "data:", "blob:", "https://picsum.photos", "https://fastly.picsum.photos", "https://images.unsplash.com", "https://images.pexels.com", "https://image.pollinations.ai", "https://media.sketchfab.com", "https://static.sketchfab.com", "https://api.qrserver.com"],
       connectSrc: ["'self'", "wss:", "ws:", "blob:", "data:", "https://image.pollinations.ai", "https://text.pollinations.ai", "https://gen.pollinations.ai", "https://modelviewer.dev", "https://cdn.jsdelivr.net", "https://arvr.google.com"],
-      mediaSrc: ["'self'", "https://videos.pexels.com", "https://player.vimeo.com"],
+      mediaSrc: ["'self'", "blob:", "https://videos.pexels.com", "https://player.vimeo.com"],
       frameSrc: ["https://sketchfab.com", "https://arvr.google.com"],
       workerSrc: ["'self'", "blob:"],
       objectSrc: ["'none'"],
@@ -74,7 +67,6 @@ app.use(helmet({
     }
   } : false
 }));
-
 app.use(cors({ origin: '*' }));
 app.use(compression());
 app.use(express.json({ limit: '10mb' }));
@@ -82,30 +74,24 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(rateLimiter);
 app.use(inputSanitizer);
 app.use(cookieParser());
-
-
 import { existsSync } from 'fs';
 const DIST_DIR = path.join(__dirname, 'dist');
 const PUBLIC_DIR = path.join(__dirname, 'public');
 const STATIC_ROOT = IS_PROD && existsSync(DIST_DIR) ? DIST_DIR : PUBLIC_DIR;
-
 app.use(express.static(STATIC_ROOT, {
   maxAge: IS_PROD ? '1y' : 0,
   etag: true,
   lastModified: true,
   setHeaders: (res, filePath) => {
-    
     if (IS_PROD && (filePath.endsWith('.min.js') || filePath.endsWith('.min.css'))) {
       res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
     }
   },
 }));
-
 if (IS_PROD && existsSync(DIST_DIR)) {
   app.use(express.static(PUBLIC_DIR));
 }
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
@@ -120,7 +106,6 @@ app.use('/api/admin/promos', promoRoutes);
 app.use('/api/admin/reviews', reviewRoutes);
 app.use('/api/admin/content', contentRoutes);
 app.use('/api/admin/faqs', faqRoutes);
-
 app.use('/api/faq', faqRoutes);
 app.use('/api/content', contentRoutes);
 app.use('/api/banners', bannerRoutes);
@@ -128,7 +113,6 @@ app.use('/api/promos', promoRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/notifications', notificationRoutes);
-
 app.post('/api/newsletter', (req, res) => {
   try {
     const { email } = req.body;
@@ -143,14 +127,12 @@ app.post('/api/newsletter', (req, res) => {
     res.status(500).json({ error: 'Failed to subscribe' });
   }
 });
-
 import multer from 'multer';
 import { writeFileSync, mkdirSync } from 'fs';
 import { randomBytes } from 'crypto';
 const AR_DIR = path.join(__dirname, 'uploads', 'ar');
 mkdirSync(AR_DIR, { recursive: true });
 const arUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 25 * 1024 * 1024 } });
-
 app.post('/api/customization/ar-model', arUpload.single('model'), (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No model uploaded' });
@@ -165,8 +147,6 @@ app.post('/api/customization/ar-model', arUpload.single('model'), (req, res) => 
     res.status(500).json({ error: 'AR upload failed' });
   }
 });
-
-
 app.get('/api/wishlist', authenticate, (req, res) => {
   try {
     const items = db.all(
@@ -182,7 +162,6 @@ app.get('/api/wishlist', authenticate, (req, res) => {
     res.json([]);
   }
 });
-
 app.post('/api/wishlist/:productId', authenticate, (req, res) => {
   try {
     db.run(`INSERT OR IGNORE INTO wishlists (user_id, product_id) VALUES (?, ?)`,
@@ -190,7 +169,6 @@ app.post('/api/wishlist/:productId', authenticate, (req, res) => {
     res.json({ success: true });
   } catch { res.status(500).json({ error: 'Failed' }); }
 });
-
 app.delete('/api/wishlist/:productId', authenticate, (req, res) => {
   try {
     db.run(`DELETE FROM wishlists WHERE user_id = ? AND product_id = ?`,
@@ -198,16 +176,13 @@ app.delete('/api/wishlist/:productId', authenticate, (req, res) => {
     res.json({ success: true });
   } catch { res.status(500).json({ error: 'Failed' }); }
 });
-
 try {
   const executableSchema = makeExecutableSchema({ typeDefs: schema, resolvers });
   app.use('/graphql', createHandler({ schema: executableSchema }));
 } catch (e) {
   console.warn('[GRAPHQL] Schema load failed — skipping GraphQL endpoint:', e.message);
 }
-
 SocketManager.init(io);
-
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
@@ -221,11 +196,9 @@ app.get('/health', (req, res) => {
     ]
   });
 });
-
 app.get('/admin.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
-
 app.get('/sitemap.xml', async (req, res) => {
   const host = req.protocol + '://' + req.get('host');
   const staticPages = ['/', '/catalog.html', '/cart.html', '/customize.html', '/support.html', '/about.html', '/blog.html', '/contact.html', '/shipping.html', '/returns.html', '/privacy.html'];
@@ -243,23 +216,19 @@ app.get('/sitemap.xml', async (req, res) => {
   xml += '</urlset>';
   res.set('Content-Type', 'application/xml').send(xml);
 });
-
 app.get('/admin/*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
-
 app.get('*', (req, res) => {
   if (req.path.startsWith('/api')) {
     return res.status(404).json({ error: 'API endpoint not found' });
   }
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
-
 app.use((err, req, res, next) => {
   console.error('[SERVER ERROR]', err.stack);
   res.status(err.status || 500).json({ error: err.message || 'Internal Server Error' });
 });
-
 const PORT = process.env.PORT || 3000;
 httpServer.listen(PORT, () => {
   console.log(`🌸 Bloom running on http://localhost:${PORT}`);
