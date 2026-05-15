@@ -19,6 +19,11 @@
       host.innerHTML = buildUI();
       injectStyles();
       bindEvents(host);
+    },
+    forceStop: function () {
+      if (recorder && recorder.state !== 'inactive') {
+        stopRecording();
+      }
     }
   };
   function revokeUrl() {
