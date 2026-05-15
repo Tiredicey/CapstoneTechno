@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Bloom - Handcrafted bouquets, pre-ordered for every moment. WCAG 2.1 AA accessible. A BSIT Capstone project by STI LIPA students.">
+<meta name="description" content="Bloom - Handcrafted bouquets, pre-ordered for every moment. WCAG 2.1 AA accessible. ">
 <meta name="theme-color" content="#0B0516" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#0B0516">
 <meta name="color-scheme" content="dark">
 <meta property="og:title" content="Bloom - Pre-Order Flowers & Gifts">
-<meta property="og:description" content="Custom bouquets for every moment. WCAG 2.1 AA accessible. An academic prototype by STI LIPA BSIT students.">
+<meta property="og:description" content="Custom bouquets for every moment. WCAG 2.1 AA accessible. ">
 <meta property="og:type" content="website">
 <meta property="og:image" content="/img/hero-flowers.jpg">
 <meta name="twitter:card" content="summary_large_image">
@@ -1177,12 +1177,11 @@ input:-webkit-autofill:focus {
       <div>
         <span class="tag tag-m">Transparency</span>
         <h2 class="sec-title" style="max-width:680px">Farm to door, every step visible.</h2>
-        <p class="sec-sub" style="max-width:680px">Scan the QR code on any bouquet to trace its full journey. View grower sources and temperature logs.</p>
+        <p class="sec-sub" style="max-width:680px">Scan the QR code on any bouquet to trace its full journey through temperature-monitored milestones.</p>
       </div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start" id="scGridWrap">
+    <div style="max-width:800px;margin:0 auto" id="scGridWrap">
       <div id="supplyChainTrace"></div>
-      <div id="growerFeeds"></div>
     </div>
   </div>
 </section>
@@ -1335,7 +1334,7 @@ input:-webkit-autofill:focus {
     <div class="foot-grid">
       <div>
         <div class="foot-brand">Bloom</div>
-        <p class="foot-tag">Academic prototype: Handcrafted bouquets, pre-ordered for every moment. WCAG 2.1 AA accessible. Developed by STI LIPA BSIT students. All prices, transactions, and metrics shown are simulated for capstone demonstration purposes.</p>
+        <p class="foot-tag">Handcrafted bouquets, pre-ordered for every moment. WCAG 2.1 AA accessible.</p>
         <form class="nl-form" id="nlForm" aria-label="Newsletter signup">
           <input type="email" class="nl-inp" id="nlEmail" placeholder="your@email.com" aria-label="Email address" required>
           <button type="submit" class="btn btn-p btn-sm">Join</button>
@@ -1421,11 +1420,6 @@ input:-webkit-autofill:focus {
       <ul></ul>
     </div>
     <form id="loginF" onsubmit="event.preventDefault();">
-      <button class="btn btn-g sl-btn" id="gBtn">
-        <svg width="16" height="16" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-        Continue with Google
-      </button>
-      <div class="div-lbl">or sign in with email</div>
       <div class="fi">
         <label class="fi-lbl" for="lEmail">Email</label>
         <div class="fi-wrap">
@@ -2925,7 +2919,7 @@ input:-webkit-autofill:focus {
     initDelivery();
     initWishlist();
     initSubscriptions();
-    initVoice();
+    
     initFunnelTracking();
     initVirtualization();
     initFormErrSummaries();
@@ -3043,7 +3037,6 @@ window.addEventListener('beforeinstallprompt', function (e) {
 document.addEventListener('DOMContentLoaded', function () {
   if (window.BloomSupplyChain) {
     window.BloomSupplyChain.renderTraceability('supplyChainTrace', 'BLOOM-DEMO');
-    window.BloomSupplyChain.renderFarmFeeds('growerFeeds');
   }
 });
 </script>
