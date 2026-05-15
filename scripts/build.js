@@ -62,6 +62,9 @@ const CORE_MODULES = [
   'public/js/core/FormValidator.js',
   'public/js/core/Motion.js',
   'public/js/core/CinematicHero.js',
+  'public/js/core/VoiceNav.js',
+  'public/js/core/VideoMessage.js',
+  'public/js/core/SupplyChain.js',
 ];
 
 const PAGE_SCRIPTS = [
