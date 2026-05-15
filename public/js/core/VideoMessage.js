@@ -10,6 +10,20 @@
   var MAX_SECONDS = 30;
   var currentObjectUrl = null;
   window.BloomVideoMessage = {
+    getBlobAsync: function () {
+      return new Promise(function (resolve) {
+        if (recorder && recorder.state !== 'inactive') {
+          var originalOnStop = recorder.onstop;
+          recorder.onstop = function (e) {
+            if (originalOnStop) originalOnStop(e);
+            resolve(videoBlob);
+          };
+          stopRecording();
+        } else {
+          resolve(videoBlob);
+        }
+      });
+    },
     getBlob: function () { return videoBlob; },
     reset: function () { videoBlob = null; revokeUrl(); updatePreview(); },
     attachTo: function (containerId) {
