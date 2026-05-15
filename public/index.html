@@ -768,6 +768,7 @@ input:-webkit-autofill:focus {
 .subs-cta .btn { flex: 1; justify-content: center; }
 @media (max-width: 900px) {
   .subs-grid { grid-template-columns: 1fr; gap: 32px; }
+  #scGridWrap { grid-template-columns: 1fr !important; }
   .subs-photo { aspect-ratio: 16/9; }
 }
 
@@ -1269,6 +1270,24 @@ input:-webkit-autofill:focus {
         <h3 class="feat-t">Photo proof, honestly</h3>
         <p class="feat-d">We provide clear delivery confirmations. If there is an issue with your order, we will work with you to resolve it.</p>
       </article>
+    </div>
+  </div>
+</section>
+
+<div class="p5-sec-div" aria-hidden="true"></div>
+
+<section class="sec-pad" id="traceability" aria-label="Supply chain traceability" style="background:var(--bg)">
+  <div class="con">
+    <div class="sec-hd">
+      <div>
+        <span class="tag tag-m">Transparency</span>
+        <h2 class="sec-title" style="max-width:680px">Farm to door, every step visible.</h2>
+        <p class="sec-sub" style="max-width:680px">Scan the QR code on any bouquet to trace its full journey. View grower sources and temperature logs.</p>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start" id="scGridWrap">
+      <div id="supplyChainTrace"></div>
+      <div id="growerFeeds"></div>
     </div>
   </div>
 </section>
@@ -3353,6 +3372,17 @@ window.addEventListener('beforeinstallprompt', function (e) {
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
 <script src="/js/core/CinematicHero.js" defer></script>
+<script src="/js/core/VoiceNav.js" defer></script>
+<script src="/js/core/VideoMessage.js" defer></script>
+<script src="/js/core/SupplyChain.js" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  if (window.BloomSupplyChain) {
+    window.BloomSupplyChain.renderTraceability('supplyChainTrace', 'BLOOM-DEMO');
+    window.BloomSupplyChain.renderFarmFeeds('growerFeeds');
+  }
+});
+</script>
 
 </body>
 </html>
