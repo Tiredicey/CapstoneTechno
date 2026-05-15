@@ -1,16 +1,13 @@
 (function () {
   'use strict';
-
   var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) return;
-
   var recognition = null;
   var listening = false;
   var fab = null;
   var panel = null;
   var transcript = null;
   var statusEl = null;
-
   var ROUTES = [
     { patterns: ['home', 'main', 'landing'], url: '/', label: 'Home' },
     { patterns: ['shop', 'browse', 'catalog', 'catalogue', 'flowers', 'bouquets'], url: '/catalog.html', label: 'Catalog' },
@@ -26,7 +23,6 @@
     { patterns: ['profile', 'account', 'settings'], url: '/profile.html', label: 'Profile' },
     { patterns: ['subscribe', 'subscription'], url: '/#subs', label: 'Subscriptions' }
   ];
-
   var ACTIONS = [
     { patterns: ['scroll down', 'go down'], action: function () { window.scrollBy({ top: 400, behavior: 'smooth' }); return 'Scrolling down'; } },
     { patterns: ['scroll up', 'go up', 'top'], action: function () { window.scrollTo({ top: 0, behavior: 'smooth' }); return 'Scrolling to top'; } },
@@ -36,7 +32,6 @@
     { patterns: ['sign in', 'log in', 'login'], action: function () { var btn = document.querySelector('#signInBtn, [data-auth="login"]'); if (btn) btn.click(); return 'Opening sign-in'; } },
     { patterns: ['close', 'stop', 'cancel', 'nevermind'], action: function () { stopListening(); return 'Voice navigation closed'; } }
   ];
-
   function matchCommand(text) {
     var lower = text.toLowerCase().trim();
     for (var i = 0; i < ACTIONS.length; i++) {
@@ -55,37 +50,36 @@
     }
     return null;
   }
-
   function setStatus(msg, type) {
     if (!statusEl) return;
     statusEl.textContent = msg;
     statusEl.className = 'vn-status vn-status-' + (type || 'info');
   }
-
   function setTranscript(text) {
     if (transcript) transcript.textContent = text || '\u2026';
   }
-
   function showToast(msg) {
     if (window.showToast) window.showToast(msg, 'info');
   }
-
   function startListening() {
     if (listening) return;
     recognition = new SpeechRecognition();
     recognition.continuous = false;
     recognition.interimResults = true;
-    recognition.lang = 'en-US'; // Force valid BCP-47 tag to prevent network errors
+    recognition.lang = 'en-US'; 
     recognition.maxAlternatives = 1;
-
     recognition.onstart = function () {
       listening = true;
       fab.classList.add('vn-active');
+      var navBtn = document.getElementById('voiceNavBtn');
+      if (navBtn) {
+        navBtn.classList.add('listening');
+        navBtn.setAttribute('aria-pressed', 'true');
+      }
       panel.classList.add('vn-panel-open');
       setStatus('Listening\u2026', 'listening');
       setTranscript('');
     };
-
     recognition.onresult = function (e) {
       var interim = '';
       var final = '';
@@ -99,7 +93,6 @@
       setTranscript(final || interim);
       if (final) processCommand(final);
     };
-
     recognition.onerror = function (e) {
       var err = e.error || 'unknown';
       if (err === 'no-speech') {
@@ -113,29 +106,35 @@
       }
       setTimeout(stopListening, 2000);
     };
-
     recognition.onend = function () {
       listening = false;
       fab.classList.remove('vn-active');
+      var navBtn = document.getElementById('voiceNavBtn');
+      if (navBtn) {
+        navBtn.classList.remove('listening');
+        navBtn.setAttribute('aria-pressed', 'false');
+      }
       setTimeout(function () {
         if (!listening) {
           panel.classList.remove('vn-panel-open');
         }
       }, 3000);
     };
-
     recognition.start();
   }
-
   function stopListening() {
     if (recognition) {
       try { recognition.stop(); } catch (_) {}
     }
     listening = false;
     fab.classList.remove('vn-active');
+    var navBtn = document.getElementById('voiceNavBtn');
+    if (navBtn) {
+      navBtn.classList.remove('listening');
+      navBtn.setAttribute('aria-pressed', 'false');
+    }
     panel.classList.remove('vn-panel-open');
   }
-
   function processCommand(text) {
     var match = matchCommand(text);
     if (!match) {
@@ -153,7 +152,6 @@
       showToast('\uD83C\uDF99\uFE0F ' + result);
     }
   }
-
   function createUI() {
     fab = document.createElement('button');
     fab.id = 'voiceNavFab';
@@ -161,7 +159,6 @@
     fab.setAttribute('aria-label', 'Voice navigation');
     fab.setAttribute('title', 'Voice navigation \u2014 W3C Web Speech API');
     fab.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>';
-
     panel = document.createElement('div');
     panel.className = 'vn-panel';
     panel.setAttribute('role', 'status');
@@ -176,18 +173,21 @@
       '<div class="vn-cmds">' +
         '<span>shop</span><span>cart</span><span>customize</span><span>track</span><span>support</span><span>search \u2026</span><span>dark mode</span><span>scroll up</span>' +
       '</div>';
-
     document.body.appendChild(panel);
     document.body.appendChild(fab);
-
     transcript = document.getElementById('vnTranscript');
     statusEl = document.getElementById('vnStatus');
-
     fab.addEventListener('click', function () {
       if (listening) { stopListening(); } else { startListening(); }
     });
+    var navBtn = document.getElementById('voiceNavBtn');
+    if (navBtn) {
+      navBtn.hidden = false;
+      navBtn.addEventListener('click', function () {
+        if (listening) { stopListening(); } else { startListening(); }
+      });
+    }
   }
-
   function injectStyles() {
     var s = document.createElement('style');
     s.textContent =
@@ -217,7 +217,6 @@
       '@media(max-width:480px){.vn-panel{right:12px;left:12px;width:auto;bottom:140px}.vn-fab{bottom:80px;right:16px;width:44px;height:44px}}';
     document.head.appendChild(s);
   }
-
   document.addEventListener('DOMContentLoaded', function () {
     injectStyles();
     createUI();
