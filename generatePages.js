@@ -1,55 +1,42 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const publicDir = path.join(__dirname, 'public');
 const indexPath = path.join(publicDir, 'index.html');
-
 try {
   const indexHtml = fs.readFileSync(indexPath, 'utf-8');
-
-
   const navEndIndex = indexHtml.indexOf('</nav>') + 6;
   const headerPart = indexHtml.substring(0, navEndIndex);
   const footerStartIndex = indexHtml.indexOf('<footer class="bloom-foot"');
   let footerPart = indexHtml.substring(footerStartIndex);
-
   const styleStart = indexHtml.indexOf('<style>');
   const styleEnd = indexHtml.indexOf('</style>') + 8;
   const indexStyles = indexHtml.substring(styleStart, styleEnd);
-
   const indexFonts = `<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="dns-prefetch" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=Barlow+Condensed:ital,wght@0,700;0,900;1,700;1,900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap">`;
-
   const bloomBootStart = indexHtml.indexOf('<div id="bloomBoot"');
   const navStart = indexHtml.indexOf('<nav id="nav"');
   const indexNavPrefix = indexHtml.substring(bloomBootStart, navStart);
   const indexNav = indexHtml.substring(navStart, navEndIndex);
-
   const mobMenuStart = indexHtml.indexOf('<div class="mob-menu"');
   const dlvBarStart = indexHtml.indexOf('<div class="delivery-bar"');
   const indexMobMenu = indexHtml.substring(mobMenuStart, dlvBarStart);
-
   const footerEnd = indexHtml.indexOf('</footer>', footerStartIndex) + 9;
   const indexFooter = indexHtml.substring(footerStartIndex, footerEnd);
-
   const overlayStart = indexHtml.indexOf('<div class="overlay" id="exitMod"');
   const overlayEnd = indexHtml.indexOf('<div class="toast-con" id="toastCon"');
   const toastConEnd = indexHtml.indexOf('</div>', overlayEnd) + 6;
   const indexOverlays = indexHtml.substring(overlayStart, toastConEnd);
-
   const scriptStart = indexHtml.indexOf('<script src="https://cdn.jsdelivr.net/npm/motion@');
   const iifeStart = indexHtml.indexOf('<script>', scriptStart);
   const indexBaseScripts = indexHtml.substring(scriptStart, iifeStart);
   const indexLayoutScript = indexHtml.substring(iifeStart, indexHtml.lastIndexOf('</script>') + 9);
-
   const styleBlock = `\n<!-- BLOOM_STYLE_INJECT -->\n${indexFonts}\n${indexStyles}\n<!-- BLOOM_STYLE_END -->\n`;
   const navBlock = `\n<!-- BLOOM_NAV_INJECT -->\n${indexNavPrefix}\n${indexNav}\n${indexMobMenu}\n<!-- BLOOM_NAV_END -->\n`;
-
   const storeNavLinks = `
   <ul class="n-links" role="list">
     <li><a href="/catalog.html" data-label="shop" data-i18n="nav.shop">Shop</a></li>
@@ -57,7 +44,6 @@ try {
     <li><a href="/tracking.html" data-label="track" data-i18n="nav.track">Track</a></li>
     <li><a href="/support.html" data-label="support" data-i18n="nav.support">Support</a></li>
   </ul>`;
-
   const storeMobLinks = `
     <ul role="list">
       <li><a href="/catalog.html" data-i18n="nav.shop">Shop</a></li>
@@ -65,14 +51,11 @@ try {
       <li><a href="/tracking.html" data-i18n="nav.track">Track</a></li>
       <li><a href="/support.html" data-i18n="nav.support">Support</a></li>
     </ul>`;
-
   const storeNav = indexNav.replace(/<ul class="n-links"[\s\S]*?<\/ul>/, storeNavLinks);
   const storeMob = indexMobMenu.replace(/<ul role="list">[\s\S]*?<\/ul>/, storeMobLinks);
   const storeNavBlock = `\n<!-- BLOOM_NAV_INJECT -->\n${indexNavPrefix}\n${storeNav}\n${storeMob}\n<!-- BLOOM_NAV_END -->\n`;
-
   const baseScriptsBlock = `\n<!-- BLOOM_BASE_INJECT -->\n${indexBaseScripts}\n<!-- BLOOM_BASE_END -->\n`;
   const footBlock = `\n<!-- BLOOM_FOOT_INJECT -->\n${indexFooter}\n${indexOverlays}\n${indexLayoutScript}\n<!-- BLOOM_FOOT_END -->\n`;
-
   const pages = {
     'about.html': `
       <style>
@@ -103,7 +86,6 @@ try {
             <p class="sec-sub-about">Bloom is a capstone project by BSIT students of STI College Lipa. Every pixel, every line of code, and every platform workflow was built from scratch - with the intent to ship a real product, not a classroom demo.</p>
           </div>
         </section>
-
         <section style="padding:0 0 80px">
           <div class="con">
             <div class="team-grid">
@@ -134,7 +116,6 @@ try {
             </div>
           </div>
         </section>
-
         <section style="padding:0 0 80px">
           <div class="con">
             <div style="text-align:center;margin-bottom:48px">
@@ -182,7 +163,7 @@ try {
         <section class="hero-b"><div class="con"><span class="tag-j">Journal</span><h1 class="sec-title-b">Stories from the studio.</h1><p class="sec-sub-b">Behind-the-scenes, care guides, and the craft of making flowers mean something.</p></div></section>
         <section><div class="con"><div class="blog-grid">
           <article class="bc-card"><div class="bi-img">🌹</div><div class="bb-body"><div class="bt-tag">Care Guide</div><h2 class="bn-title">How to keep your bouquet fresh for 14 days</h2><p class="bd-desc">Cold water, diagonal cuts, and the 0-4°C rule. Our florists share the exact postharvest science behind lasting arrangements.</p><div class="bm-meta">April 2026 · 4 min read</div></div></article>
-          <article class="bc-card"><div class="bi-img">❄️</div><div class="bb-body"><div class="bt-tag">Behind the Scenes</div><h2 class="bn-title">Logistics tracking: Modeling the supply chain</h2><p class="bd-desc">A look at how the Bloom platform models order tracking across simulated supply chain hubs.</p><div class="bm-meta">March 2026 · 6 min read</div></div></article>
+          <article class="bc-card"><div class="bi-img">❄️</div><div class="bb-body"><div class="bt-tag">Behind the Scenes</div><h2 class="bn-title">Logistics tracking: Supply chain visibility</h2><p class="bd-desc">A look at how the Bloom platform tracks orders transparently across our supply chain hubs.</p><div class="bm-meta">March 2026 · 6 min read</div></div></article>
           <article class="bc-card"><div class="bi-img">💼</div><div class="bb-body"><div class="bt-tag">Corporate</div><h2 class="bn-title">Why companies are switching to flower subscriptions</h2><p class="bd-desc">40 branded bouquets, one invoice. How Bloom corporate orders simplify team appreciation at scale.</p><div class="bm-meta">March 2026 · 3 min read</div></div></article>
           <article class="bc-card"><div class="bi-img">♿</div><div class="bb-body"><div class="bt-tag">Accessibility</div><h2 class="bn-title">Building an e-commerce site for everyone</h2><p class="bd-desc">How we achieved WCAG 2.1 AA conformance - keyboard navigation, screen readers, and reduced-motion support.</p><div class="bm-meta">February 2026 · 5 min read</div></div></article>
           <article class="bc-card"><div class="bi-img">🌸</div><div class="bb-body"><div class="bt-tag">Craft</div><h2 class="bn-title">The art of the hand-tied bouquet</h2><p class="bd-desc">A spiral technique passed down through generations. Our florists explain the mechanics behind every wrap.</p><div class="bm-meta">January 2026 · 4 min read</div></div></article>
@@ -263,12 +244,12 @@ try {
       .tbl-log td{padding:10px 14px;border:1px solid rgba(255,255,255,.06);color:rgba(255,255,255,.7)}
       </style>
       <main>
-        <section class="hero-ship"><div class="con"><span class="tag-ship">Logistics</span><h1 class="sec-title-s">Shipping & Delivery</h1><p class="sec-sub-s">The platform models comprehensive logistics tracking, demonstrating order progression from preparation to delivery.</p><div role="note" style="margin:16px auto 0;max-width:560px;padding:10px 16px;border-radius:10px;background:rgba(0,212,170,.06);border:1px solid rgba(0,212,170,.15);font-size:.78rem;color:rgba(255,255,255,.5);line-height:1.6;text-align:center">🎓 <strong style="color:var(--mn)">Capstone Demo</strong> — All delivery areas, lead times, and pricing below are simulated for academic demonstration. No real logistics operations are active.</div></div></section>
+        <section class="hero-ship"><div class="con"><span class="tag-ship">Logistics</span><h1 class="sec-title-s">Shipping & Delivery</h1><p class="sec-sub-s">Comprehensive logistics tracking, showing your order progression from preparation to delivery.</p></div></section>
         <section><div class="con">
           <div class="sc-box"><h2 class="sh-title">Delivery Areas</h2><p class="sp-desc">We deliver to Metro Manila, Batangas, Cavite, Laguna, Rizal, Bulacan, Pampanga, Cebu City, and Baguio. More regions are being added quarterly.</p></div>
           <div class="sc-box"><h2 class="sh-title">Lead Times</h2><table class="tbl-log"><thead><tr><th>Area</th><th>Standard</th><th>Express</th></tr></thead><tbody><tr><td>Metro Manila</td><td>48 hours</td><td>24 hours (+₱350)</td></tr><tr><td>Batangas / Cavite / Laguna</td><td>48 hours</td><td>24 hours (+₱450)</td></tr><tr><td>Cebu City</td><td>72 hours</td><td>48 hours (+₱500)</td></tr><tr><td>Baguio / Pampanga / Bulacan</td><td>72 hours</td><td>48 hours (+₱450)</td></tr></tbody></table></div>
           <div class="sc-box"><h2 class="sh-title">Delivery Windows</h2><p class="sp-desc">Choose a 1-hour delivery window at checkout, including evening slots (6-9 PM). The selected time is locked at checkout - it's our contract with you.</p></div>
-          <div class="sc-box"><h2 class="sh-title">Freshness-First Handling</h2><p class="sp-desc">The platform models temperature-aware logistics based on UC Davis postharvest research guidelines (0-4°C recommended range). This demonstrates how a production system would maintain floral quality during simulated transit.</p></div>
+          <div class="sc-box"><h2 class="sh-title">Freshness-First Handling</h2><p class="sp-desc">We use temperature-aware logistics based on UC Davis postharvest research guidelines (0-4°C recommended range). This ensures we maintain floral quality during transit.</p></div>
           <div class="sc-box"><h2 class="sh-title">Free Shipping</h2><p class="sp-desc">Orders above ₱4,200 ship free. Below that threshold, a flat ₱560 delivery fee applies. Subscription orders always ship free.</p></div>
           <div class="sc-box"><h2 class="sh-title">Photo Proof of Delivery</h2><p class="sp-desc">Every delivery is documented with a timestamped photo at the recipient's location. You'll receive this in your order confirmation email within 15 minutes of delivery.</p></div>
         </div></section>
@@ -286,13 +267,13 @@ try {
       .rp-desc{font-size:.88rem;color:rgba(255,255,255,.62);line-height:1.75;padding-left:12px}
       </style>
       <main>
-        <section class="hero-ret"><div class="con"><span class="tag-ret">Promise</span><h1 class="sec-title-r">Our Service Promise</h1><p class="sec-sub-r">This page demonstrates the resolution workflows modeled in the Bloom platform for academic evaluation.</p><div role="note" style="margin:16px auto 0;max-width:580px;padding:10px 16px;border-radius:10px;background:rgba(230,26,26,.06);border:1px solid rgba(230,26,26,.15);font-size:.78rem;color:rgba(255,255,255,.5);line-height:1.6;text-align:center">🎓 <strong style="color:var(--p5l)">Capstone Demo</strong> — All service guarantees, refund policies, and support response times below are simulated workflows designed for BSIT Capstone evaluation.</div></div></section>
+        <section class="hero-ret"><div class="con"><span class="tag-ret">Promise</span><h1 class="sec-title-r">Our Service Promise</h1><p class="sec-sub-r">Clear, accountable resolution workflows for a reliable Bloom experience.</p></div></section>
         <section><div class="con">
-          <div class="rc-box"><h2 class="rh-title">🌹 Tracking Integration</h2><p class="rp-desc">The Bloom platform is designed to track cold-chain logistics from harvest to delivery. Built to demonstrate automated issue resolution and processing for order anomalies.</p></div>
-          <div class="rc-box"><h2 class="rh-title">📸 Photo Proof</h2><p class="rp-desc">The system supports timestamped photo proof of delivery uploads. It models discrepancy resolutions to demonstrate end-to-end order accountability.</p></div>
-          <div class="rc-box"><h2 class="rh-title">⏰ On-Time Delivery</h2><p class="rp-desc">The platform tracks chosen 1-hour delivery windows. It models compensation workflows for simulated late deliveries to demonstrate robust customer service logic.</p></div>
+          <div class="rc-box"><h2 class="rh-title">🌹 Tracking Integration</h2><p class="rp-desc">The Bloom platform tracks cold-chain logistics from harvest to delivery, powering automated issue resolution.</p></div>
+          <div class="rc-box"><h2 class="rh-title">📸 Photo Proof</h2><p class="rp-desc">We require timestamped photo proof of delivery to ensure end-to-end order accountability.</p></div>
+          <div class="rc-box"><h2 class="rh-title">⏰ On-Time Delivery</h2><p class="rp-desc">We track chosen 1-hour delivery windows and have clear compensation workflows for any late deliveries.</p></div>
           <div class="rc-box"><h2 class="rh-title">💬 Responsive Support</h2><p class="rp-desc">Reach us via live chat, email, or Viber. Our support team responds within 2 hours during operating hours (8 AM-8 PM PHT, 7 days a week). Urgent delivery issues are escalated immediately.</p></div>
-          <div class="rc-box"><h2 class="rh-title">↩️ Issue Resolution</h2><p class="rp-desc">The platform integrates support ticketing to facilitate issue resolution models, including automated remakes and refund workflows. We handle the return logistics if needed.</p></div>
+          <div class="rc-box"><h2 class="rh-title">↩️ Issue Resolution</h2><p class="rp-desc">We provide integrated support ticketing to facilitate seamless issue resolution, including automated remakes and refund workflows.</p></div>
           <div class="rc-box"><h2 class="rh-title">🔒 Secure Transactions</h2><p class="rp-desc">All payments are processed over HTTPS with transport-layer encryption. Passwords are hashed with bcrypt. Sessions use HTTP-only JWT cookies with CSRF protection. Your data is never shared with third parties.</p></div>
         </div></section>
       </main>
@@ -302,7 +283,6 @@ try {
         <div class="hero-orb hero-orb-1" style="opacity: 0.15;"></div>
         <div class="hero-orb hero-orb-2" style="opacity: 0.1;"></div>
         <div class="p5-glow" style="top: 20%; right: 10%; opacity: 0.3;"></div>
-        
         <div style="position: relative; z-index: 10;">
           <header style="text-align: center; margin-bottom: 64px;">
             <span class="tag tag-p shimmer" style="letter-spacing: 0.2em;">COMMERCE TRANSPARENCY</span>
@@ -314,7 +294,6 @@ try {
             </p>
             <div class="p5-line-h" style="max-width: 120px;"></div>
           </header>
-
           <section class="glass-ethereal shimmer" style="border-radius: 24px; padding: clamp(24px, 5vw, 48px); margin-bottom: 48px; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); background: linear-gradient(135deg, rgba(230,26,26,0.05), rgba(255,255,255,0.03)); backdrop-filter: blur(24px);">
             <div style="position: absolute; top: -30px; right: -30px; font-size: 12rem; opacity: 0.03; font-family: var(--fd); font-weight: 900; font-style: italic; user-select: none; pointer-events: none; color: var(--p5);">
               Promise
@@ -326,9 +305,7 @@ try {
               At Bloom, our relationship with you is rooted in trust. We believe your recipient details, floral gift messages, and custom 3D configurations belong strictly to you. We collect only what is necessary to demonstrate our capstone platform workflows. <span style="color: var(--p5l); font-weight: 600;">Note: This is an academic prototype. Data is stored in a demonstration database and may be reset periodically.</span>
             </p>
           </section>
-
           <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 64px;">
-            
             <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: clamp(20px, 4vw, 32px); transition: transform 0.3s var(--spring), border-color 0.3s;">
               <header style="margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--glb); padding-bottom: 12px;">
                 <span style="font-family: var(--fc); font-size: 1.5rem; font-weight: 900; color: var(--p5); font-style: italic;">01.</span>
@@ -341,7 +318,6 @@ try {
                 <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Financial Security:</strong> Payments are securely processed via PayMongo (PCI-DSS compliant). Bloom never ingests or stores card numbers.</li>
               </ul>
             </article>
-
             <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: clamp(20px, 4vw, 32px);">
               <header style="margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--glb); padding-bottom: 12px;">
                 <span style="font-family: var(--fc); font-size: 1.5rem; font-weight: 900; color: var(--p5); font-style: italic;">02.</span>
@@ -354,7 +330,6 @@ try {
                 <li><strong style="color: #fff; display: block; margin-bottom: 4px;">PH Localization:</strong> Our database infrastructure complies with Philippine statutory data localization protocols.</li>
               </ul>
             </article>
-
             <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: clamp(20px, 4vw, 32px);">
               <header style="margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--glb); padding-bottom: 12px;">
                 <span style="font-family: var(--fc); font-size: 1.5rem; font-weight: 900; color: var(--p5); font-style: italic;">03.</span>
@@ -364,7 +339,6 @@ try {
                 To deliver a sub-second, low-latency 3D arrangement experience, Bloom utilizes local browser caching (IndexedDB) to store lightweight flower geometry and textures. These visual assets reside strictly on your local device and are never compiled into cross-platform advertising profiles.
               </p>
             </article>
-
             <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: clamp(20px, 4vw, 32px);">
               <header style="margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--glb); padding-bottom: 12px;">
                 <span style="font-family: var(--fc); font-size: 1.5rem; font-weight: 900; color: var(--p5); font-style: italic;">04.</span>
@@ -376,7 +350,6 @@ try {
                 <li><strong style="color: #fff; display: block; margin-bottom: 4px;">Regulatory Backups:</strong> Transactional records are securely maintained as mandated by BIR accounting regulations.</li>
               </ul>
             </article>
-
             <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: clamp(20px, 4vw, 32px);">
               <header style="margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--glb); padding-bottom: 12px;">
                 <span style="font-family: var(--fc); font-size: 1.5rem; font-weight: 900; color: var(--p5); font-style: italic;">05.</span>
@@ -386,7 +359,6 @@ try {
                 We will never sell, lease, or share your personal contact lists or recipient information with third-party marketing services. We share data exclusively with verified logistics partners solely to execute physical fulfillment.
               </p>
             </article>
-
             <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: clamp(20px, 4vw, 32px);">
               <header style="margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--glb); padding-bottom: 12px;">
                 <span style="font-family: var(--fc); font-size: 1.5rem; font-weight: 900; color: var(--p5); font-style: italic;">06.</span>
@@ -396,7 +368,6 @@ try {
                 We employ strictly essential session cookies to facilitate cart memory, maintain persistent login authorization, and honor your localized language selection. No advertising or tracking pixels are installed.
               </p>
             </article>
-
             <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: clamp(20px, 4vw, 32px);">
               <header style="margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--glb); padding-bottom: 12px;">
                 <span style="font-family: var(--fc); font-size: 1.5rem; font-weight: 900; color: var(--p5); font-style: italic;">07.</span>
@@ -409,7 +380,6 @@ try {
                 Contact: <a href="mailto:hello@bloom.ph" style="color: var(--p5l); font-weight: 600; border-bottom: 1px dotted var(--p5); transition: color 0.2s;">hello@bloom.ph</a>
               </p>
             </article>
-
             <article class="glass-ethereal p5-tilt" style="border-radius: 20px; padding: clamp(20px, 4vw, 32px); border: 1.5px solid rgba(230,26,26,0.2); background: linear-gradient(135deg, rgba(230,26,26,0.08), rgba(255,255,255,0.03));">
               <header style="margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid rgba(230,26,26,0.2); padding-bottom: 12px;">
                 <span style="font-family: var(--fc); font-size: 1.5rem; font-weight: 900; color: var(--p5); font-style: italic;">08.</span>
@@ -422,7 +392,6 @@ try {
               </ul>
             </article>
           </section>
-
           <footer style="text-align: center; margin-top: 64px; padding: clamp(24px, 5vw, 32px); border-top: 1px solid var(--glb);">
             <h4 style="font-family: var(--fd); font-size: 1.4rem; font-weight: 900; letter-spacing: 0.05em; color: #fff; text-transform: uppercase; margin-bottom: 12px;">
               BLOOM BOTANICAL COMMERCE
@@ -440,13 +409,11 @@ try {
       </main>
     `
   };
-
   for (const [filename, content] of Object.entries(pages)) {
     const fullHtml = headerPart + indexMobMenu + content + footerPart;
     fs.writeFileSync(path.join(publicDir, filename), fullHtml, 'utf-8');
     console.log('Generated:', filename);
   }
-
   const storePages = [
     'catalog.html',
     'customize.html',
@@ -457,58 +424,45 @@ try {
     'support.html',
     'profile.html'
   ];
-
   function syncPageLayout(filename) {
     const filePath = path.join(publicDir, filename);
     if (!fs.existsSync(filePath)) {
       console.warn(`⚠️  Skipping sync: ${filename} (file not found)`);
       return;
     }
-
     let html = fs.readFileSync(filePath, 'utf-8');
-
     html = html.replace(/\s*<!-- BLOOM_STYLE_INJECT -->[\s\S]*?<!-- BLOOM_STYLE_END -->\s*/g, '\n');
     html = html.replace(/\s*<!-- BLOOM_NAV_INJECT -->[\s\S]*?<!-- BLOOM_NAV_END -->\s*/g, '\n');
     html = html.replace(/\s*<!-- BLOOM_BASE_INJECT -->[\s\S]*?<!-- BLOOM_BASE_END -->\s*/g, '\n');
     html = html.replace(/\s*<!-- BLOOM_FOOT_INJECT -->[\s\S]*?<!-- BLOOM_FOOT_END -->\s*/g, '\n');
-
     html = html.replace(/<nav\s+class="bloom-nav"[^>]*>([\s\S]*?)<\/nav>/gi, '');
     html = html.replace(/<div\s+class="toast-container"[^>]*>([\s\S]*?)<\/div>/gi, '');
     html = html.replace(/<div\s+class="particle-field"[^>]*>([\s\S]*?)<\/div>/gi, '');
-
     html = html.replace('</head>', `${styleBlock}</head>`);
-
     const bodyTagRegex = /<body[^>]*>/i;
     const bodyMatch = html.match(bodyTagRegex);
     if (bodyMatch) {
       html = html.replace(bodyMatch[0], `${bodyMatch[0]}${storeNavBlock}`);
     }
-
     html = html.replace(/<script[^>]*src="\/js\/core\/Store\.js"[^>]*><\/script>/gi, '');
     html = html.replace(/<script[^>]*src="\/js\/core\/Api\.js"[^>]*><\/script>/gi, '');
     html = html.replace(/<script[^>]*src="\/js\/core\/Auth\.js"[^>]*><\/script>/gi, '');
-
     const firstScriptIndex = html.indexOf('<script');
     if (firstScriptIndex !== -1) {
       html = html.substring(0, firstScriptIndex) + baseScriptsBlock + html.substring(firstScriptIndex);
     } else {
       html = html.replace('</body>', `${baseScriptsBlock}</body>`);
     }
-
     html = html.replace('</body>', `${footBlock}</body>`);
-
     fs.writeFileSync(filePath, html, 'utf-8');
     console.log('✅ Synchronized layout:', filename);
   }
-
   console.log('\n--- Initiating Global Storefront Layout Synchronization ---');
   for (const file of storePages) {
     syncPageLayout(file);
   }
   console.log('--- All Application Pages Synchronized! ---\n');
-
 } catch (err) {
-
   console.error('❌ Failed to generate dynamic pages:', err);
   process.exit(1);
 }
