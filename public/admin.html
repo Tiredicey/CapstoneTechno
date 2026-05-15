@@ -8,7 +8,6 @@
 <link rel="stylesheet" href="/css/admin.css">
 </head>
 <body>
-
 <div id="loginScreen" class="login-screen">
   <div class="login-card">
     <div class="login-logo">🌸 Bloom Admin</div>
@@ -25,7 +24,6 @@
     <button id="loginBtn" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px;">Sign In →</button>
   </div>
 </div>
-
 <div id="adminApp" class="admin-layout" style="display:none">
   <aside class="admin-sidebar">
     <div class="admin-logo">🌸 <span>Bloom</span></div>
@@ -39,6 +37,7 @@
       <button class="admin-nav-item" data-panel="orders"><span class="nav-icon">📦</span>Orders</button>
       <button class="admin-nav-item" data-panel="queue"><span class="nav-icon">🗂</span>Order Queue</button>
       <button class="admin-nav-item" data-panel="inventory"><span class="nav-icon">🏷</span>Inventory</button>
+      <a href="/qr-dashboard.html" class="admin-nav-item" style="text-decoration:none;"><span class="nav-icon">📱</span>Video QR Cards</a>
       <div class="admin-nav-section">Content</div>
       <button class="admin-nav-item" data-panel="banners"><span class="nav-icon">🖼</span>Banners</button>
       <button class="admin-nav-item" data-panel="faqs"><span class="nav-icon">❓</span>FAQs</button>
@@ -55,9 +54,7 @@
       </div>
     </nav>
   </aside>
-
   <main class="admin-main">
-
     <div id="panel-dashboard" class="panel active">
       <div class="admin-header">
         <div>
@@ -113,7 +110,6 @@
         </div>
       </div>
     </div>
-
     <div id="panel-products" class="panel" style="display:none">
       <div class="admin-header">
         <div class="admin-title">Products</div>
@@ -138,7 +134,6 @@
         </table>
       </div>
     </div>
-
     <div id="panel-orders" class="panel" style="display:none">
       <div class="admin-header">
         <div class="admin-title">Orders</div>
@@ -164,7 +159,6 @@
         </table>
       </div>
     </div>
-
     <div id="panel-queue" class="panel" style="display:none">
       <div class="admin-header">
         <div class="admin-title">Order Queue</div>
@@ -209,7 +203,6 @@
         </div>
       </div>
     </div>
-
     <div id="panel-inventory" class="panel" style="display:none">
       <div class="admin-header">
         <div class="admin-title">Inventory</div>
@@ -236,7 +229,6 @@
         <div id="inventoryList"></div>
       </div>
     </div>
-
     <div id="panel-banners" class="panel" style="display:none">
       <div class="admin-header">
         <div class="admin-title">Banners</div>
@@ -244,7 +236,6 @@
       </div>
       <div id="bannersList" style="display:flex;flex-direction:column;gap:16px;"></div>
     </div>
-
     <div id="panel-faqs" class="panel" style="display:none">
       <div class="admin-header">
         <div class="admin-title">FAQs</div>
@@ -252,7 +243,6 @@
       </div>
       <div id="faqsList" style="display:flex;flex-direction:column;gap:12px;"></div>
     </div>
-
     <div id="panel-content" class="panel" style="display:none">
       <div class="admin-header">
         <div class="admin-title">Site Content</div>
@@ -345,7 +335,6 @@
         </div>
       </div>
     </div>
-
     <div id="panel-users" class="panel" style="display:none">
       <div class="admin-header">
         <div class="admin-title">Users</div>
@@ -366,7 +355,6 @@
         </table>
       </div>
     </div>
-
     <div id="panel-support" class="panel" style="display:none">
       <div class="admin-header">
         <div class="admin-title">Support Tickets</div>
@@ -379,7 +367,6 @@
       </div>
       <div id="ticketsList" style="display:flex;flex-direction:column;gap:12px;"></div>
     </div>
-
     <div id="panel-reviews" class="panel" style="display:none">
       <div class="admin-header">
         <div class="admin-title">Reviews</div>
@@ -398,7 +385,6 @@
         </table>
       </div>
     </div>
-
     <div id="panel-promos" class="panel" style="display:none">
       <div class="admin-header">
         <div class="admin-title">Promo Codes</div>
@@ -411,7 +397,6 @@
         </table>
       </div>
     </div>
-
     <div id="panel-analytics" class="panel" style="display:none">
       <div class="admin-header">
         <div class="admin-title">Analytics</div>
@@ -431,7 +416,6 @@
         </div>
       </div>
     </div>
-
     <div id="panel-broadcast" class="panel" style="display:none">
       <div class="admin-header">
         <div class="admin-title">Broadcast Notification</div>
@@ -457,10 +441,8 @@
         <div id="broadcastResult" class="broadcast-result"></div>
       </div>
     </div>
-
   </main>
 </div>
-
 <div id="orderDetailModal" class="modal-overlay">
   <div class="modal-box">
     <div class="modal-head">
@@ -470,7 +452,6 @@
     <div id="orderDetailBody"></div>
   </div>
 </div>
-
 <div id="productModal" class="modal-overlay">
   <div class="modal-box" style="max-width:680px;">
     <div class="modal-head">
@@ -538,7 +519,6 @@
     </div>
   </div>
 </div>
-
 <div id="faqModal" class="modal-overlay">
   <div class="modal-box" style="max-width:560px;">
     <div class="modal-head">
@@ -575,7 +555,6 @@
     </div>
   </div>
 </div>
-
 <div id="promoModal" class="modal-overlay">
   <div class="modal-box" style="max-width:500px;">
     <div class="modal-head">
@@ -619,7 +598,6 @@
     </div>
   </div>
 </div>
-
 <div id="bannerModal" class="modal-overlay">
   <div class="modal-box" style="max-width:540px;">
     <div class="modal-head">
@@ -654,7 +632,6 @@
     </div>
   </div>
 </div>
-
 <div id="userDetailModal" class="modal-overlay">
   <div class="modal-box" style="max-width:500px;">
     <div class="modal-head">
@@ -664,9 +641,7 @@
     <div id="userDetailBody"></div>
   </div>
 </div>
-
 <div id="toastContainer" class="toast-container"></div>
-
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/core/Store.js"></script>
 <script src="/js/core/Api.js"></script>
