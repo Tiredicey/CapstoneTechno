@@ -2,7 +2,7 @@
   'use strict';
   if (typeof THREE === 'undefined') {
     var s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.min.js';
+    s.src = 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js';
     s.onload = init;
     document.head.appendChild(s);
   } else {
@@ -24,9 +24,8 @@
         '<div class="sec-hd" style="flex-direction:column;align-items:flex-start">' +
         '<span class="tag tag-m">\u2728 3D Gallery</span>' +
         '<h2 class="sec-title" style="max-width:680px">Expo Box</h2>' +
-        '<p class="sec-sub" style="max-width:640px">Interactive 3D showcase of limited-edition artisan containers. ' +
-        'Rendered in real-time using Three.js v0.170.0 (MIT license). ' +
-        'Rotate with mouse or touch. All geometry is procedurally generated.</p>' +
+        '<p class="sec-sub" style="max-width:640px">Interactive 3D showcase of artisan containers. ' +
+        'Rendered in real-time using Three.js v0.170.0. Rotate with mouse or touch.</p>' +
         '</div>' +
         '<div id="bloomExpoGallery" class="expo-canvas-wrap" role="img" aria-label="Interactive 3D artisan container showcase"></div>' +
         '</div>';
@@ -108,7 +107,6 @@
     gridHelper.position.y = -1.2;
     scene.add(gridHelper);
 
-    var mouseX = 0, mouseY = 0;
     var targetRotY = 0, targetRotX = 0;
     var isDragging = false, prevX = 0, prevY = 0;
     var autoRotate = true;
@@ -171,7 +169,6 @@
       if (!visible) return;
       var t = clock.getElapsedTime();
       if (autoRotate) targetRotY += 0.003;
-      var pivotGroup = scene;
       meshes.forEach(function (m, i) {
         m.rotation.y = targetRotY + i * 0.2;
         m.rotation.x = targetRotX;
