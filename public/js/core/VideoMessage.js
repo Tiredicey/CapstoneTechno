@@ -131,7 +131,10 @@
   }
   function stopRecording() {
     clearInterval(recordingTimer);
-    if (recorder && recorder.state !== 'inactive') recorder.stop();
+    if (recorder && recorder.state !== 'inactive') {
+      try { recorder.requestData(); } catch (e) {}
+      recorder.stop();
+    }
     var overlay = document.getElementById('vmOverlay');
     if (overlay) overlay.style.display = 'none';
   }
@@ -189,7 +192,8 @@
       '.vm-title{font-weight:700;font-size:.82rem}' +
       '.vm-api-tag{font-size:.58rem;padding:2px 7px;border-radius:4px;background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.2);color:rgba(56,189,248,.8);font-weight:600;letter-spacing:.04em}' +
       '.vm-stage{position:relative;aspect-ratio:4/3;background:#000;overflow:hidden}' +
-      '.vm-preview,.vm-playback{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}' +
+      '.vm-preview{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}' +
+      '.vm-playback{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:5}' +
       '.vm-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:rgba(255,255,255,.5);font-size:.82rem;text-align:center;padding:20px}' +
       '.vm-note{font-size:.68rem;color:rgba(255,255,255,.3)}' +
       '.vm-overlay{position:absolute;top:12px;right:12px;display:none;align-items:center;gap:6px;padding:4px 10px;border-radius:8px;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);z-index:2}' +
