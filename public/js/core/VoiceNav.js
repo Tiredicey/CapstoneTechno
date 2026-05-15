@@ -75,7 +75,7 @@
     recognition = new SpeechRecognition();
     recognition.continuous = false;
     recognition.interimResults = true;
-    recognition.lang = document.documentElement.lang || 'en-US';
+    recognition.lang = 'en-US'; // Force valid BCP-47 tag to prevent network errors
     recognition.maxAlternatives = 1;
 
     recognition.onstart = function () {
@@ -107,19 +107,11 @@
       } else if (err === 'not-allowed') {
         setStatus('Microphone access denied', 'error');
       } else if (err === 'network') {
-        setStatus('Network error. Speech API requires internet/HTTPS.', 'error');
+        setStatus('Network error. Speech API unavailable in this browser.', 'error');
       } else {
         setStatus('Error: ' + err, 'error');
       }
-      
-      // Graceful fallback for academic prototype
-      setTimeout(function() {
-        stopListening();
-        if (err !== 'no-speech') {
-          var fallbackText = prompt('Voice input unavailable (' + err + ').\nType your command (e.g., "shop", "dark mode"):');
-          if (fallbackText) processCommand(fallbackText);
-        }
-      }, 1000);
+      setTimeout(stopListening, 2000);
     };
 
     recognition.onend = function () {
