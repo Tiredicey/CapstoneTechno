@@ -3105,19 +3105,16 @@ input:-webkit-autofill:focus {
       attachBtn.disabled = true;
       attachBtn.textContent = 'Attaching¦';
       try {
-        if (Api && Api.upload) {
-          var fd = new FormData();
-          fd.append('video', blob, 'message.webm');
-          fd.append('productId', productId);
-          await Api.upload('/cart/video-message', fd);
-          showToast('Video message attached', 'success');
-        } else {
-          var url = URL.createObjectURL(blob);
-          try { sessionStorage.setItem('bloom_video_msg_' + productId, url); } catch (e) {}
-          showToast('Video saved locally for this order', 'success');
-        }
+        var url = URL.createObjectURL(blob);
+        try { sessionStorage.setItem('bloom_video_msg_' + productId, url); } catch (e) {}
+        showToast('Video attached (Simulated Demonstration)', 'success');
         bloomTrack('video_message_attached', { productId: productId });
-      } catch (e) { showToast('Could not attach video', 'error'); } finally { attachBtn.disabled = false; attachBtn.textContent = 'Attached ✔'; }
+      } catch (e) { 
+        showToast('Could not attach video', 'error'); 
+      } finally { 
+        attachBtn.disabled = false; 
+        attachBtn.textContent = 'Attached ✔'; 
+      }
     });
   }
   window.buildVideoMessageBlock = buildVideoMessageBlock;
