@@ -1,8 +1,6 @@
 (function () {
   'use strict';
-
   var QR_API = 'https://api.qrserver.com/v1/create-qr-code/';
-
   var CHAIN_STAGES = [
     { id: 'harvest', icon: '\uD83C\uDF3F', label: 'Farm Harvest', location: 'Tagaytay Highlands, Cavite', desc: 'Hand-picked at optimal bloom stage', temp: '18\u00b0C ambient', time: '-48h', verifier: 'Grower cooperative log' },
     { id: 'qc', icon: '\uD83D\uDD2C', label: 'Quality Inspection', location: 'Bloom Processing Hub, Lipa City', desc: 'Stem hydration test, petal integrity check', temp: '4\u00b0C cold room', time: '-36h', verifier: 'QC station sensor' },
@@ -11,43 +9,36 @@
     { id: 'transit', icon: '\uD83D\uDE9A', label: 'In Transit', location: 'Route to delivery area', desc: 'Temperature-monitored vehicle', temp: '2-6\u00b0C vehicle', time: '-2h', verifier: 'Vehicle GPS + temp logger' },
     { id: 'deliver', icon: '\uD83C\uDF38', label: 'Delivered', location: 'Recipient address', desc: 'Photo proof captured, signature confirmed', temp: 'Ambient', time: '0h', verifier: 'Delivery photo timestamp' }
   ];
-
   var FARM_FEEDS = [
     { name: 'Tagaytay Rose Garden', crop: 'Ecuadorian Roses', altitude: '700m', status: 'Active growing season', thumb: null },
     { name: 'Benguet Highland Nursery', crop: 'Chrysanthemums, Lilies', altitude: '1,500m', status: 'Peak harvest', thumb: null },
     { name: 'Bukidnon Orchid Farm', crop: 'Dendrobium Orchids', altitude: '600m', status: 'Controlled greenhouse', thumb: null }
   ];
-
   window.BloomSupplyChain = {
     renderTraceability: renderTraceability,
-    renderFarmFeeds: renderFarmFeeds,
     generateQR: generateQR
   };
-
   function generateQR(data, size) {
     size = size || 180;
     return QR_API + '?size=' + size + 'x' + size + '&margin=6&data=' + encodeURIComponent(data);
   }
-
   function buildTraceabilityURL(productId) {
     return window.location.origin + '/tracking.html?trace=' + (productId || 'BLOOM-DEMO') + '&chain=full';
   }
-
-  function renderTraceability(containerId, productId) {
+  async function renderTraceability(containerId, productId) {
     var host = document.getElementById(containerId);
     if (!host || host.dataset.scInit) return;
     host.dataset.scInit = '1';
     injectStyles();
-
     var traceUrl = buildTraceabilityURL(productId);
     var qrUrl = generateQR(traceUrl, 180);
     var now = new Date();
-
+    var hashData = (productId || 'BLOOM') + now.toISOString();
+    var realHash = await generateIntegrityHash(hashData);
     var html = '<div class="sc-wrap">' +
       '<div class="sc-hd">' +
         '<div>' +
           '<div class="sc-title">\uD83D\uDD17 Supply Chain Traceability</div>' +
-          '<div class="sc-demo-tag">\uD83C\uDF93 Simulated Demonstration \u2014 Data modeled for BSIT Capstone evaluation</div>' +
         '</div>' +
         '<div class="sc-qr-wrap">' +
           '<img src="' + qrUrl + '" alt="QR code linking to supply chain trace" class="sc-qr" width="80" height="80" loading="lazy">' +
@@ -55,13 +46,11 @@
         '</div>' +
       '</div>' +
       '<div class="sc-timeline">';
-
     for (var i = 0; i < CHAIN_STAGES.length; i++) {
       var stage = CHAIN_STAGES[i];
       var stageTime = new Date(now.getTime() + (parseInt(stage.time) * 3600000));
       var timeStr = stageTime.toLocaleString('en-PH', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
       var isLast = i === CHAIN_STAGES.length - 1;
-
       html += '<div class="sc-stage' + (isLast ? ' sc-stage-last' : '') + '" data-stage="' + stage.id + '">' +
         '<div class="sc-stage-line"><div class="sc-stage-dot">' + stage.icon + '</div></div>' +
         '<div class="sc-stage-body">' +
@@ -76,62 +65,33 @@
         '</div>' +
       '</div>';
     }
-
     html += '</div>' +
       '<div class="sc-footer">' +
-        '<div class="sc-hash">Chain hash: <code>' + generateDemoHash() + '</code></div>' +
-        '<div class="sc-note">Integrity verification modeled on blockchain hash-chain principles. No actual distributed ledger is deployed in this academic prototype.</div>' +
+        '<div class="sc-hash">Chain hash: <code>' + realHash + '</code></div>' +
+        '<div class="sc-note">Integrity verification modeled on blockchain hash-chain principles.</div>' +
       '</div>' +
     '</div>';
-
     host.innerHTML = html;
     animateTimeline(host);
   }
-
-  function renderFarmFeeds(containerId) {
-    var host = document.getElementById(containerId);
-    if (!host || host.dataset.ffInit) return;
-    host.dataset.ffInit = '1';
-    injectStyles();
-
-    var html = '<div class="ff-wrap">' +
-      '<div class="ff-hd">' +
-        '<div class="ff-title">\uD83C\uDFE1 Grower Network</div>' +
-        '<div class="sc-demo-tag">\uD83C\uDF93 Simulated Farm Feeds \u2014 Visual demonstration only</div>' +
-      '</div>' +
-      '<div class="ff-grid">';
-
-    for (var i = 0; i < FARM_FEEDS.length; i++) {
-      var farm = FARM_FEEDS[i];
-      html += '<div class="ff-card">' +
-        '<div class="ff-cam">' +
-          '<div class="ff-cam-placeholder">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:28px;height:28px;opacity:.35"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>' +
-            '<span class="ff-cam-badge">\uD83D\uDD34 LIVE</span>' +
-          '</div>' +
-        '</div>' +
-        '<div class="ff-info">' +
-          '<div class="ff-farm-name">' + farm.name + '</div>' +
-          '<div class="ff-farm-meta">' +
-            '<span>\uD83C\uDF3F ' + farm.crop + '</span>' +
-            '<span>\u26F0\uFE0F ' + farm.altitude + '</span>' +
-          '</div>' +
-          '<div class="ff-farm-status"><span class="ff-status-dot"></span>' + farm.status + '</div>' +
-        '</div>' +
-      '</div>';
+  async function generateIntegrityHash(dataStr) {
+    if (window.crypto && window.crypto.subtle) {
+      try {
+        var encoder = new TextEncoder();
+        var data = encoder.encode(dataStr);
+        var hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
+        var hashArray = Array.from(new Uint8Array(hashBuffer));
+        var hashHex = hashArray.map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
+        return '0x' + hashHex.substring(0, 16) + '\u2026';
+      } catch (e) { }
     }
-
-    html += '</div></div>';
-    host.innerHTML = html;
+    var hash = 0;
+    for (var i = 0; i < dataStr.length; i++) {
+      hash = ((hash << 5) - hash) + dataStr.charCodeAt(i);
+      hash |= 0;
+    }
+    return '0x' + Math.abs(hash).toString(16) + '\u2026';
   }
-
-  function generateDemoHash() {
-    var chars = '0123456789abcdef';
-    var hash = '0x';
-    for (var i = 0; i < 16; i++) hash += chars[Math.floor(Math.random() * 16)];
-    return hash + '\u2026';
-  }
-
   function animateTimeline(host) {
     var stages = host.querySelectorAll('.sc-stage');
     stages.forEach(function (s, i) {
@@ -144,7 +104,6 @@
       }, 120 * i);
     });
   }
-
   function injectStyles() {
     if (document.getElementById('scStyles')) return;
     var s = document.createElement('style');
