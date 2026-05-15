@@ -101,14 +101,25 @@
     };
 
     recognition.onerror = function (e) {
-      if (e.error === 'no-speech') {
+      var err = e.error || 'unknown';
+      if (err === 'no-speech') {
         setStatus('No speech detected', 'warn');
-      } else if (e.error === 'not-allowed') {
+      } else if (err === 'not-allowed') {
         setStatus('Microphone access denied', 'error');
+      } else if (err === 'network') {
+        setStatus('Network error. Speech API requires internet/HTTPS.', 'error');
       } else {
-        setStatus('Error: ' + e.error, 'error');
+        setStatus('Error: ' + err, 'error');
       }
-      setTimeout(stopListening, 2000);
+      
+      // Graceful fallback for academic prototype
+      setTimeout(function() {
+        stopListening();
+        if (err !== 'no-speech') {
+          var fallbackText = prompt('Voice input unavailable (' + err + ').\nType your command (e.g., "shop", "dark mode"):');
+          if (fallbackText) processCommand(fallbackText);
+        }
+      }, 1000);
     };
 
     recognition.onend = function () {
