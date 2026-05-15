@@ -86,7 +86,7 @@
         <label>Search</label>
         <input type="text" id="filterSearch" placeholder="Order ID or QR code">
       </div>
-      <button class="qr-btn qr-btn-print" onclick="window.print()" style="flex:0;">Print All</button>
+      <button class="qr-btn qr-btn-print" id="printAllBtn" style="flex:0;">Print All</button>
     </div>
     <div id="qrGrid" class="dash-grid">
       <div class="dash-loading">Loading orders</div>
@@ -147,8 +147,8 @@
             '<div class="qr-canvas-wrap"><canvas id="qr_' + i + '"></canvas></div>' +
             '<div class="qr-url">' + trackUrl + '</div>' +
             '<div class="qr-actions">' +
-              '<button class="qr-btn qr-btn-print" onclick="printSingle(' + i + ')">Print</button>' +
-              '<button class="qr-btn qr-btn-copy" onclick="copyUrl(\'' + trackUrl.replace(/'/g, "\\'") + '\')">Copy Link</button>' +
+              '<button class="qr-btn qr-btn-print" data-action="print" data-idx="' + i + '">Print</button>' +
+              '<button class="qr-btn qr-btn-copy" data-action="copy" data-url="' + trackUrl.replace(/"/g, '&quot;') + '">Copy Link</button>' +
             '</div>' +
           '</div>';
         }).join('');
@@ -165,7 +165,7 @@
           }
         });
       }
-      window.printSingle = function (idx) {
+      function printSingle(idx) {
         var card = document.querySelector('[data-idx="' + idx + '"]');
         if (!card) return;
         var w = window.open('', '_blank', 'width=400,height=600');
@@ -182,15 +182,23 @@
         w.document.write('</body></html>');
         w.document.close();
         setTimeout(function () { w.print(); }, 300);
-      };
-      window.copyUrl = function (url) {
+      }
+      function copyUrl(url) {
         navigator.clipboard.writeText(url).then(function () {
           if (window.showToast) window.showToast('Link copied', 'success');
           else alert('Copied!');
         });
-      };
+      }
       document.getElementById('filterVideo').addEventListener('change', function () { renderCards(allOrders); });
       document.getElementById('filterSearch').addEventListener('input', function () { renderCards(allOrders); });
+      document.getElementById('printAllBtn').addEventListener('click', function () { window.print(); });
+      document.getElementById('qrGrid').addEventListener('click', function (e) {
+        var btn = e.target.closest('.qr-btn');
+        if (!btn) return;
+        var action = btn.getAttribute('data-action');
+        if (action === 'print') printSingle(btn.getAttribute('data-idx'));
+        else if (action === 'copy') copyUrl(btn.getAttribute('data-url'));
+      });
       loadOrders();
     })();
   </script>
