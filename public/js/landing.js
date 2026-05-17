@@ -1,12 +1,10 @@
 var Api = window.Api;
 var Store = window.Store;
-
 const MOCK_REVIEWS = [
   { name: 'Valentina Cruz', rating: 5, body: "I ordered a custom arrangement for my mother's birthday and she cried happy tears. The silk wrap was exquisite and arrived perfectly on time.", occasion: 'Birthday' },
   { name: 'Hiroki Tanaka', rating: 5, body: 'The corporate order process was seamless. 40 branded bouquets for our product launch, every single one perfect. Repeat customer forever.', occasion: 'Corporate' },
   { name: 'Marisol Reyes', rating: 5, body: 'Ordered a surprise delivery for my wife on our anniversary. The evening slot worked perfectly. The photo proof on delivery was such a thoughtful touch.', occasion: 'Anniversary' }
 ];
-
 function showToast(msg, type) {
   type = type || 'info';
   const container = document.getElementById('toastContainer');
@@ -22,7 +20,6 @@ function showToast(msg, type) {
     setTimeout(function () { t.remove(); }, 300);
   }, 3500);
 }
-
 function spawnPetals() {
   const hero = document.querySelector('.hero-bg');
   if (!hero) return;
@@ -33,19 +30,15 @@ function spawnPetals() {
     p.textContent = petals[i % petals.length];
     hero.appendChild(p);
   }
- 
   const glow = document.createElement('div');
   glow.className = 'hero-flower-glow';
   hero.appendChild(glow);
 }
-
 function spawnParticles() {
   const field = document.getElementById('particles');
   if (!field) return;
-
   var cores = navigator.hardwareConcurrency || 2;
   var maxParticles = cores >= 8 ? 18 : cores >= 4 ? 12 : 6;
-
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     maxParticles = 3;
   }
@@ -61,7 +54,6 @@ function spawnParticles() {
     field.appendChild(p);
   }
 }
-
 function renderProductCard(p) {
   const image = p.image_url || p.imageUrl ||
                 (Array.isArray(p.images) && p.images.length ? p.images[0] : '') ||
@@ -88,7 +80,6 @@ function renderProductCard(p) {
     '<button class="add-to-cart-btn" data-id="' + p.id + '" style="background:linear-gradient(135deg,#e879a0,#c026d3);color:white;border:none;padding:6px 14px;border-radius:8px;font-size:0.78rem;font-weight:600;cursor:pointer;">+ Cart</button>' +
     '</div></div>';
 }
-
 async function loadFeatured(category) {
   category = category || 'all';
   const grid = document.getElementById('featuredGrid');
@@ -114,7 +105,7 @@ async function loadFeatured(category) {
           const cart = await Api.get('/cart');
           Store.set('cart', cart);
           Store.updateCartCount((cart.items || []).reduce(function (s, i) { return s + (i.qty || 1); }, 0));
-          showToast('Added to cart 🌸', 'success');
+          showToast('Added to cart \u2714', 'success');
         } catch {
           showToast('Could not add to cart. Please try again.', 'error');
         } finally {
@@ -134,7 +125,6 @@ async function loadFeatured(category) {
     console.error('loadFeatured error:', err);
   }
 }
-
 async function loadBanners() {
   try {
     const banners = await Api.get('/banners');
@@ -154,7 +144,6 @@ async function loadBanners() {
     if (subtitleEl && b.subtitle) subtitleEl.textContent = b.subtitle;
   } catch {}
 }
-
 async function loadSiteContent() {
   try {
     const content = await Api.get('/content');
@@ -175,7 +164,6 @@ async function loadSiteContent() {
     });
   } catch {}
 }
-
 function renderReviews() {
   const grid = document.getElementById('reviewsGrid');
   if (!grid) return;
@@ -193,7 +181,6 @@ function renderReviews() {
       '</div></div>';
   }).join('');
 }
-
 function animateStats() {
   const targets = {
     statOrders: { end: 12400, suffix: '+' },
@@ -222,7 +209,6 @@ function animateStats() {
     obs.observe(el);
   });
 }
-
 function bindCategoryTabs() {
   document.querySelectorAll('#categoryTabs .cat-tab').forEach(function (tab) {
     tab.addEventListener('click', function () {
@@ -232,7 +218,6 @@ function bindCategoryTabs() {
     });
   });
 }
-
 function bindProfilingModal() {
   const modal = document.getElementById('profilingModal');
   if (!modal) return;
@@ -253,7 +238,6 @@ function bindProfilingModal() {
     window.location.href = '/catalog.html?occasion=' + sel.dataset.occ;
   });
 }
-
 function bindLangSwitcher() {
   const btn = document.getElementById('langBtn');
   const dropdown = document.getElementById('langDropdown');
@@ -279,7 +263,6 @@ function bindLangSwitcher() {
     });
   });
 }
-
 function initLandingSocket() {
   Store.on('catalog_update', function () {
     loadFeatured();
@@ -291,7 +274,6 @@ function initLandingSocket() {
     loadSiteContent();
   });
 }
-
 document.addEventListener('DOMContentLoaded', function () {
   spawnParticles();
   spawnPetals();
