@@ -14,11 +14,12 @@ function showTrackToast(msg, type) {
   el.textContent = msg;
   el.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:99999;background:' +
     (type === 'success' ? '#22c55e' : type === 'error' ? '#ef4444' : '#6366f1') +
-    ';color:white;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,0.3);transition:opacity .3s;';
+    ';color:white;padding:14px 28px;border-radius:14px;font-size:14px;font-weight:600;box-shadow:0 8px 32px rgba(0,0,0,0.4);transition:opacity .4s,transform .4s;transform:translateY(0);';
   document.body.appendChild(el);
   setTimeout(function () {
     el.style.opacity = '0';
-    setTimeout(function () { el.remove(); }, 350);
+    el.style.transform = 'translateY(10px)';
+    setTimeout(function () { el.remove(); }, 400);
   }, 3500);
 }
 var currentOrderId = null;
@@ -113,7 +114,7 @@ function renderSurpriseTimeline(steps, currentStatus) {
   div.innerHTML = '<div class="timeline-node">\uD83C\uDF81</div>' +
     '<div class="timeline-content">' +
     '<div class="timeline-label" style="font-weight:700;">Surprise Delivery Active</div>' +
-    '<div class="timeline-time" style="color:rgba(255,255,255,0.5);">Delivery details hidden to preserve the surprise.<br>Full timeline visible after delivery.</div>' +
+    '<div class="timeline-time">Delivery details hidden to preserve the surprise.<br>Full timeline visible after delivery.</div>' +
     '</div>';
   container.appendChild(div);
 }
@@ -132,7 +133,7 @@ function renderTimeline(steps, currentStatus) {
     div.className = 'timeline-step' + (isCompleted ? ' complete' : '') + (isActive ? ' active' : '');
     var label = step.label || (step.status || '').replace(/_/g, ' ');
     var timeText = step.timestamp ? new Date(typeof step.timestamp === 'number' && step.timestamp < 1e12 ? step.timestamp * 1000 : step.timestamp).toLocaleString() : 'Pending';
-    var photoHtml = step.photo ? '<div class="timeline-photo" style="margin-top:12px;"><img src="' + encodeURI(step.photo) + '" alt="Status photo" style="width:100%;max-height:180px;object-fit:cover;border-radius:12px;border:1px solid var(--glb);cursor:pointer;" onclick="window.open(this.src,\'_blank\')"></div>' : '';
+    var photoHtml = step.photo ? '<div style="margin-top:12px;"><img src="' + encodeURI(step.photo) + '" alt="Status photo" style="width:100%;max-height:180px;object-fit:cover;border-radius:12px;border:1px solid rgba(255,255,255,.08);cursor:pointer;" onclick="window.open(this.src,\'_blank\')"></div>' : '';
     div.innerHTML = '<div class="timeline-node">' + (STATUS_ICONS[step.status] || '\u25CB') + '</div>' +
       '<div class="timeline-content">' +
       '<div class="timeline-label">' + label + '</div>' +
@@ -149,7 +150,7 @@ function renderVideoGreeting(order) {
     area.id = 'videoGreetingArea';
     var issuePanel = document.getElementById('issuePanel');
     var photoCard = document.getElementById('deliveryPhotoArea');
-    var parent = photoCard ? photoCard.closest('.glass-card') : null;
+    var parent = photoCard ? photoCard.closest('.track-card') || photoCard.closest('.glass-card') : null;
     if (parent && parent.parentNode) {
       parent.parentNode.insertBefore(area, parent.nextSibling);
     } else if (issuePanel && issuePanel.parentNode) {
@@ -169,9 +170,9 @@ function renderVideoGreeting(order) {
   area.style.marginTop = '20px';
   var safeUrl = encodeURI(videoUrl);
   area.innerHTML =
-    '<div class="glass-card" style="padding:0;overflow:hidden;">' +
-      '<div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.06);">' +
-        '<span style="font-weight:700;font-size:0.95rem;display:flex;align-items:center;gap:8px;">\uD83C\uDFA5 Video Greeting</span>' +
+    '<div class="track-card" style="overflow:hidden;">' +
+      '<div class="track-card-hd">' +
+        '<span class="track-card-title">\uD83C\uDFA5 Video Greeting</span>' +
         '<span style="font-size:0.62rem;padding:3px 10px;border-radius:100px;background:rgba(0,212,170,0.12);border:1px solid rgba(0,212,170,0.25);color:rgba(0,212,170,0.9);font-weight:700;letter-spacing:.04em;text-transform:uppercase;">Attached</span>' +
       '</div>' +
       '<div style="aspect-ratio:16/9;background:#000;position:relative;">' +
@@ -207,14 +208,13 @@ async function loadMyOrders() {
       var pricing = typeof o.pricing === 'string' ? JSON.parse(o.pricing || '{}') : (o.pricing || {});
       var items = typeof o.items === 'string' ? JSON.parse(o.items || '[]') : (o.items || []);
       var statusClass = statusClassMap[o.status] || 'status-new';
-      return '<div class="glass-card" style="padding:20px;cursor:pointer;" data-qr="' + (o.qr_code || o.id) + '">' +
-        '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">' +
-        '<div><div style="font-weight:700;font-family:var(--font-display);">' + (o.qr_code || o.id) + '</div>' +
+      return '<div class="my-order-row" data-qr="' + (o.qr_code || o.id) + '">' +
+        '<div><div style="font-weight:700;font-family:var(--fd);">' + (o.qr_code || o.id) + '</div>' +
         '<div style="font-size:0.78rem;color:rgba(255,255,255,0.4);margin-top:2px;">' + items.length + ' item(s) \u00B7 \u20B1' + Number(pricing.finalTotal || 0).toFixed(2) + '</div></div>' +
         '<div style="display:flex;align-items:center;gap:12px;">' +
         '<span class="status-pill ' + statusClass + '">' + (o.status || '').replace(/_/g, ' ').toUpperCase() + '</span>' +
         '<span style="font-size:0.78rem;color:rgba(255,255,255,0.35);">' + (o.delivery_date || '\u2014') + '</span>' +
-        '</div></div></div>';
+        '</div></div>';
     }).join('');
     list.querySelectorAll('[data-qr]').forEach(function (card) {
       card.addEventListener('click', function () {
