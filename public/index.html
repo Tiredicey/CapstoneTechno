@@ -1177,10 +1177,10 @@ input:-webkit-autofill:focus {
       <div>
         <span class="tag tag-m">Transparency</span>
         <h2 class="sec-title" style="max-width:680px">Farm to door, every step visible.</h2>
-        <p class="sec-sub" style="max-width:680px">Scan the QR code on any bouquet to trace its full journey through temperature-monitored milestones.</p>
+        <p class="sec-sub" style="max-width:680px">Scan the QR code on any bouquet to trace its full journey from Bagong Pook, Lipa City through temperature-monitored milestones. Live weather conditions via Windy.com.</p>
       </div>
     </div>
-    <div style="max-width:800px;margin:0 auto" id="scGridWrap">
+    <div style="max-width:960px;margin:0 auto" id="scGridWrap">
       <div id="supplyChainTrace"></div>
     </div>
   </div>
@@ -3036,7 +3036,7 @@ window.addEventListener('beforeinstallprompt', function (e) {
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   if (window.BloomSupplyChain) {
-    window.BloomSupplyChain.renderTraceability('supplyChainTrace', 'BLOOM-DEMO');
+    window.BloomSupplyChain.renderTraceability('supplyChainTrace', 'BLOOM-' + Date.now().toString(36).toUpperCase());
   }
 });
 </script>
