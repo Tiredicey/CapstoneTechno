@@ -1,6 +1,5 @@
 var Api = window.Api;
 var Store = window.Store;
-
 let currentPage = 0;
 const PAGE_SIZE = 12;
 let currentCat = 'all';
@@ -8,11 +7,9 @@ let searchTimer = null;
 let currentSearch = '';
 let currentSort = 'rating';
 let currentTag = '';
-
 function fmt(n) {
   return '\u20B1' + Number(n || 0).toFixed(2);
 }
-
 function showToast(msg, type) {
   type = type || 'info';
   var existing = document.getElementById('catalog-toast');
@@ -26,9 +23,7 @@ function showToast(msg, type) {
   document.body.appendChild(toast);
   setTimeout(function () { toast.remove(); }, 3500);
 }
-
 window.showToast = showToast;
-
 function resolveImage(raw) {
   if (!raw) return '';
   var imgs = raw;
@@ -36,20 +31,14 @@ function resolveImage(raw) {
   if (!Array.isArray(imgs) || !imgs.length) return '';
   var img = imgs.flat(Infinity)[0];
   if (typeof img !== 'string' || !img) return '';
-  
-  if (/^https?:\/\//i.test(img)) return img;
-  if (img.startsWith('/')) return img;
-  
+  if (/^https?:\/\//i.test(img)) return img; if (img.startsWith('/')) return img;
   var parts = img.replace(/[\[\]"\\]/g, '/').split('/');
   var filename = parts[parts.length - 1];
   return filename && filename !== 'null' ? '/uploads/products/' + filename : '';
 }
-
 function renderProductCard(p) {
   var image = resolveImage(p.images);
-  
-  if (!image) image = '/uploads/products/crimson-vow.jpg'; // Global ethereal fallback (now points to a dynamic asset)
-
+  if (!image) image = '/uploads/products/crimson-vow.jpg'; 
   var price = p.base_price || p.basePrice || 0;
   var stars = Array.from({ length: 5 }, function (_, i) {
     return '<span style="color:' + (i < Math.round(p.rating || 0) ? '#FFD700' : 'rgba(255,255,255,0.2)') + ';">★</span>';
@@ -69,7 +58,6 @@ function renderProductCard(p) {
     '<button class="add-to-cart-btn btn btn-primary btn-sm" data-id="' + p.id + '">+ Cart</button>' +
     '</div></div></div>';
 }
-
 async function loadProducts(append) {
   append = append || false;
   var grid = document.getElementById('productsGrid');
@@ -101,7 +89,6 @@ async function loadProducts(append) {
     console.error('loadProducts error:', err);
   }
 }
-
 function bindCardEvents(container) {
   container.querySelectorAll('.add-to-cart-btn:not([data-bound])').forEach(function (btn) {
     btn.dataset.bound = '1';
@@ -115,7 +102,7 @@ function bindCardEvents(container) {
         Store.set('cart', updated);
         var count = (updated.items || []).reduce(function (s, i) { return s + (i.qty || 1); }, 0);
         Store.updateCartCount(count);
-        showToast('Added to cart ����', 'success');
+        showToast('Added to cart \u2714', 'success');
       } catch (err) {
         showToast(err.message || 'Failed to add to cart', 'error');
       } finally {
@@ -124,7 +111,6 @@ function bindCardEvents(container) {
       }
     });
   });
-
   container.querySelectorAll('.product-card:not([data-bound])').forEach(function (card) {
     card.dataset.bound = '1';
     card.addEventListener('click', async function (e) {
@@ -132,12 +118,10 @@ function bindCardEvents(container) {
       await openProductModal(card.dataset.id);
     });
   });
-
   container.querySelectorAll('.product-wishlist:not([data-bound])').forEach(function (btn) {
     btn.dataset.bound = '1';
     var card = btn.closest('.product-card');
     var pid = card ? card.dataset.id : null;
-    // Sync initial state from Wishlist module
     if (pid && window.Wishlist && Wishlist.has(pid)) {
       btn.classList.add('active');
       btn.textContent = '♥';
@@ -159,7 +143,6 @@ function bindCardEvents(container) {
     });
   });
 }
-
 async function openProductModal(id) {
   var modal = document.getElementById('productModal');
   var nameEl = document.getElementById('modalProductName');
@@ -192,7 +175,6 @@ async function openProductModal(id) {
       '<button class="modal-add-cart" data-id="' + p.id + '" style="flex:2;background:linear-gradient(135deg,#e879a0,#c026d3);color:white;border:none;padding:12px 20px;border-radius:12px;font-weight:600;cursor:pointer;">🛒 Add to Cart</button>' +
       '</div></div></div>' +
       '<div id="modalReviews" style="margin-top:24px;display:flex;flex-direction:column;gap:12px;"></div>';
-
     body.querySelector('.modal-add-cart').addEventListener('click', async function () {
       try {
         await Api.post('/cart/items', { productId: p.id, qty: 1 });
@@ -200,13 +182,12 @@ async function openProductModal(id) {
         Store.set('cart', cart);
         var count = (cart.items || []).reduce(function (s, i) { return s + (i.qty || 1); }, 0);
         Store.updateCartCount(count);
-        showToast('Added to cart 🌸', 'success');
+        showToast('Added to cart \u2714', 'success');
         modal.classList.remove('active');
       } catch (e) {
         showToast(e.message || 'Failed to add to cart', 'error');
       }
     });
-
     try {
       var reviews = await Api.get('/products/' + id + '/reviews?limit=3');
       var rEl = body.querySelector('#modalReviews');
@@ -229,7 +210,6 @@ async function openProductModal(id) {
     console.error('openProductModal error:', err);
   }
 }
-
 async function loadRecs() {
   var scroll = document.getElementById('recScroll');
   if (!scroll) return;
@@ -237,7 +217,6 @@ async function loadRecs() {
     var data = await Api.get('/products/recommendations');
     var recs = data.products || data;
     if (!Array.isArray(recs) || !recs.length) return;
-    
     scroll.innerHTML = recs.map(function (p) {
       var img = resolveImage(p.images);
       if (!img) img = '/uploads/products/crimson-vow.jpg';
@@ -251,7 +230,6 @@ async function loadRecs() {
     });
   } catch (_) {}
 }
-
 function renderPagination(count) {
   var pg = document.getElementById('pagination');
   if (!pg) return;
@@ -280,11 +258,9 @@ function renderPagination(count) {
     pg.appendChild(next);
   }
 }
-
 document.getElementById('searchInput') && document.getElementById('searchInput').addEventListener('input', function (e) {
   clearTimeout(searchTimer);
   searchTimer = setTimeout(function () {
-    // Sanitize search input: strip HTML tags and suspicious patterns
     var raw = e.target.value.trim();
     raw = raw.replace(/<[^>]*>/g, '').replace(/javascript\s*:/gi, '').replace(/on\w+\s*=/gi, '');
     currentSearch = raw;
@@ -292,15 +268,12 @@ document.getElementById('searchInput') && document.getElementById('searchInput')
     loadProducts();
   }, 380);
 });
-
 document.getElementById('sortSelect') && document.getElementById('sortSelect').addEventListener('change', function (e) {
   currentSort = e.target.value; loadProducts();
 });
-
 document.getElementById('tagFilter') && document.getElementById('tagFilter').addEventListener('change', function (e) {
   currentTag = e.target.value; loadProducts();
 });
-
 document.querySelectorAll('#catTabs .cat-tab').forEach(function (tab) {
   tab.addEventListener('click', function () {
     document.querySelectorAll('#catTabs .cat-tab').forEach(function (t) { t.classList.remove('active'); });
@@ -310,18 +283,15 @@ document.querySelectorAll('#catTabs .cat-tab').forEach(function (tab) {
     loadProducts();
   });
 });
-
 document.getElementById('closeProductModal') && document.getElementById('closeProductModal').addEventListener('click', function () {
   var m = document.getElementById('productModal');
   if (m) m.classList.remove('active');
 });
-
 document.getElementById('productModal') && document.getElementById('productModal').addEventListener('click', function (e) {
   if (e.target === document.getElementById('productModal')) {
     document.getElementById('productModal').classList.remove('active');
   }
 });
-
 var urlParams = new URLSearchParams(window.location.search);
 var urlCat = urlParams.get('cat') || urlParams.get('category');
 if (urlCat) {
@@ -332,10 +302,8 @@ if (urlCat) {
 if (urlParams.get('occasion')) currentTag = urlParams.get('occasion');
 if (urlParams.get('search')) { currentSearch = urlParams.get('search'); var si = document.getElementById('searchInput'); if (si) si.value = currentSearch; }
 if (urlParams.get('id')) openProductModal(urlParams.get('id'));
-
 loadProducts();
 loadRecs();
-
 Store.on('catalog_update', function (data) {
   if (data && data.action === 'deleted') {
     var card = document.querySelector('.product-card[data-id="' + data.id + '"]');
@@ -345,7 +313,6 @@ Store.on('catalog_update', function (data) {
     loadRecs();
   }
 });
-
 Store.on('promo_update', function () {
   showToast('New promotions available! 🎉', 'info');
 });
