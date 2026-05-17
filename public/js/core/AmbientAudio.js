@@ -38,8 +38,8 @@
     src.loop = true;
     var filter = ctx.createBiquadFilter();
     filter.type = 'lowpass';
-    filter.frequency.value = 200;
-    filter.Q.value = 0.7;
+    filter.frequency.value = 180;
+    filter.Q.value = 0.6;
     var g = ctx.createGain();
     g.gain.value = vol;
     src.connect(filter);
@@ -47,6 +47,26 @@
     g.connect(masterGain);
     src.start();
     nodes.push(src, filter, g);
+  }
+
+  function createShimmer(freq, vol) {
+    var osc = ctx.createOscillator();
+    var g = ctx.createGain();
+    var lfo = ctx.createOscillator();
+    var lfoGain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    g.gain.value = 0;
+    lfo.type = 'sine';
+    lfo.frequency.value = 0.08;
+    lfoGain.gain.value = vol;
+    lfo.connect(lfoGain);
+    lfoGain.connect(g.gain);
+    osc.connect(g);
+    g.connect(masterGain);
+    osc.start();
+    lfo.start();
+    nodes.push(osc, g, lfo, lfoGain);
   }
 
   function startAudio() {
@@ -58,12 +78,16 @@
     masterGain = ctx.createGain();
     masterGain.gain.value = 0;
     masterGain.connect(ctx.destination);
-    createOscLayer(55, 'sine', 0.08, 0);
-    createOscLayer(82.5, 'sine', 0.04, 5);
-    createOscLayer(110, 'triangle', 0.025, -3);
-    createOscLayer(165, 'sine', 0.012, 8);
-    createNoise(0.015);
-    masterGain.gain.linearRampToValueAtTime(0.12, ctx.currentTime + 2.5);
+    createOscLayer(55, 'sine', 0.07, 0);
+    createOscLayer(82.5, 'sine', 0.035, 5);
+    createOscLayer(110, 'triangle', 0.022, -3);
+    createOscLayer(165, 'sine', 0.01, 8);
+    createOscLayer(220, 'sine', 0.006, -5);
+    createOscLayer(330, 'sine', 0.003, 12);
+    createNoise(0.012);
+    createShimmer(440, 0.008);
+    createShimmer(554.37, 0.005);
+    masterGain.gain.linearRampToValueAtTime(0.10, ctx.currentTime + 3);
     playing = true;
     setPreference(true);
     updateUI(true);
@@ -71,12 +95,12 @@
 
   function stopAudio() {
     if (!playing || !masterGain) return;
-    masterGain.gain.linearRampToValueAtTime(0, ctx.currentTime + 1.2);
+    masterGain.gain.linearRampToValueAtTime(0, ctx.currentTime + 1.5);
     setTimeout(function () {
       nodes.forEach(function (n) { try { n.stop && n.stop(); n.disconnect(); } catch (e) {} });
       nodes = [];
       if (masterGain) { masterGain.disconnect(); masterGain = null; }
-    }, 1400);
+    }, 1700);
     playing = false;
     setPreference(false);
     updateUI(false);
