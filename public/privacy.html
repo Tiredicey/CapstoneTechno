@@ -873,6 +873,7 @@ input:-webkit-autofill:focus {
     </div>
   </div>
 </div>
+
       <main style="position: relative; min-height: 100vh; overflow: hidden; padding-top: 140px;">
         <div class="hero-orb hero-orb-1" style="opacity: 0.15;"></div>
         <div class="hero-orb hero-orb-2" style="opacity: 0.1;"></div>
@@ -2708,7 +2709,7 @@ window.addEventListener('beforeinstallprompt', function (e) {
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   if (window.BloomSupplyChain) {
-    window.BloomSupplyChain.renderTraceability('supplyChainTrace', 'BLOOM-DEMO');
+    window.BloomSupplyChain.renderTraceability('supplyChainTrace', 'BLOOM-' + Date.now().toString(36).toUpperCase());
   }
 });
 </script>
