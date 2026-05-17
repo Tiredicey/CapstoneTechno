@@ -23,10 +23,10 @@ function _ttfb(){try{var n=performance.getEntriesByType('navigation');if(n&&n.le
 function _send(name,val){_ev('web_vital',{metric:name,value:val,url:location.pathname,ts:Date.now()});}
 
 function _ev(type,payload){
-  if(!window.Api){setTimeout(function(){_ev(type,payload);},2000);return;}
+  if(!window.Api)return;
   try{
     if(type==='web_vital'&&navigator.sendBeacon){
-      navigator.sendBeacon((Api.baseUrl||'/api')+'/analytics/event',new Blob([JSON.stringify({eventType:type,payload:payload})],{type:'application/json'}));
+      try{navigator.sendBeacon((Api.baseUrl||'/api')+'/analytics/event',new Blob([JSON.stringify({eventType:type,payload:payload})],{type:'application/json'}));}catch(e){}
     }else{Api.post('/analytics/event',{eventType:type,payload:payload}).catch(function(){});}
   }catch(e){}
 }
