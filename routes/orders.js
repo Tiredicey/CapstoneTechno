@@ -151,6 +151,17 @@ router.post('/:id/greeting', videoUpload.single('video'), (req, res) => {
       try { fs.unlinkSync(req.file.path); } catch {}
       return res.status(400).json({ error: 'Video file too small — recording may have failed' });
     }
+    const header = Buffer.alloc(12);
+    const fd = fs.openSync(req.file.path, 'r');
+    fs.readSync(fd, header, 0, 12, 0);
+    fs.closeSync(fd);
+    const isWebm = header[0] === 0x1A && header[1] === 0x45 && header[2] === 0xDF && header[3] === 0xA3;
+    const isMp4 = header.slice(4, 8).toString('ascii') === 'ftyp';
+    const isOgg = header.slice(0, 4).toString('ascii') === 'OggS';
+    if (!isWebm && !isMp4 && !isOgg) {
+      try { fs.unlinkSync(req.file.path); } catch {}
+      return res.status(400).json({ error: 'Invalid video file — corrupt or empty recording' });
+    }
     const order = OrderModel.getById(req.params.id);
     if (!order) {
       try { fs.unlinkSync(req.file.path); } catch {}
