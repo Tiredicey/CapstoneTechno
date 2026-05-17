@@ -50,14 +50,14 @@
     }
     var isMobile = window.innerWidth < 768;
     var isSmall = window.innerWidth < 560;
-
-    gsap.set('.ch-text-track', { autoAlpha: 0, y: 80, scale: 0.8, filter: 'blur(24px)', rotationX: -25 });
-    gsap.set('.ch-text-days', { autoAlpha: 1, clipPath: 'inset(0 100% 0 0)' });
-    gsap.set('.ch-main-card', { y: window.innerHeight + 250, autoAlpha: 1 });
-    gsap.set(['.ch-card-left-text', '.ch-card-right-text', '.ch-mockup-wrapper', '.ch-floating-badge', '.ch-phone-widget'], { autoAlpha: 0 });
-    gsap.set('.ch-cta-wrapper', { autoAlpha: 0, scale: 0.7, filter: 'blur(40px)' });
-    gsap.set('.ch-bg-frame', { force3D: true, transformOrigin: '50% 50%' });
-    gsap.set('.ch-bg-frame:not(.frame-1)', { opacity: 0 });
+    var q = function(sel) { return container.querySelectorAll(sel); };
+    gsap.set(q('.ch-text-track'), { autoAlpha: 0, y: 80, scale: 0.8, filter: 'blur(24px)', rotationX: -25 });
+    gsap.set(q('.ch-text-days'), { autoAlpha: 1, clipPath: 'inset(0 100% 0 0)' });
+    gsap.set(q('.ch-main-card'), { y: window.innerHeight + 250, autoAlpha: 1 });
+    gsap.set(q('.ch-card-left-text, .ch-card-right-text, .ch-mockup-wrapper, .ch-floating-badge, .ch-phone-widget'), { autoAlpha: 0 });
+    gsap.set(q('.ch-cta-wrapper'), { autoAlpha: 0, scale: 0.7, filter: 'blur(40px)' });
+    gsap.set(q('.ch-bg-frame'), { force3D: true, transformOrigin: '50% 50%' });
+    gsap.set(q('.ch-bg-frame:not(.frame-1)'), { opacity: 0 });
 
     var introTl = gsap.timeline({ delay: 0.2 });
     introTl
@@ -69,13 +69,17 @@
       .to('.ch-text-days', {
         duration: 1.6, clipPath: 'inset(0 0% 0 0)',
         ease: 'power4.inOut'
-      }, '-=1.2')
-      .fromTo('.ch-hero-text-wrapper .hero-eyebrow, .ch-hero-text-wrapper .tag', {
+      }, '-=1.2');
+
+    var eyebrowEls = container.querySelectorAll('.ch-hero-text-wrapper .hero-eyebrow, .ch-hero-text-wrapper .tag');
+    if (eyebrowEls.length) {
+      introTl.fromTo(eyebrowEls, {
         autoAlpha: 0, y: 20, filter: 'blur(8px)'
       }, {
         autoAlpha: 1, y: 0, filter: 'blur(0px)',
         duration: 0.8, ease: 'power3.out', stagger: 0.1, clearProps: 'filter'
       }, '-=0.8');
+    }
 
     var scrollEnd = isMobile ? '+=5000' : '+=7000';
     var scrollTl = gsap.timeline({
