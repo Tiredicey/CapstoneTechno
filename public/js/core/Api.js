@@ -1,7 +1,6 @@
 (function () {
   'use strict';
   if (window.Api) return;
-
   var BASE = ((window.BLOOM_CONFIG && window.BLOOM_CONFIG.API_URL) || window.__BLOOM_API_URL || '/api').replace(/\/+$/, '');
   var _csrfToken = null;
   var _csrfFetching = false;
@@ -29,7 +28,7 @@
   }
 
   function buildUrl(rawPath) {
-    var clean = rawPath.replace(/^\/api\//, '/').replace(/^\//, '');
+    var clean = rawPath.replace(/^\/api\//, '').replace(/^\/+/, '');
     return BASE + '/' + clean;
   }
 
@@ -59,35 +58,27 @@
 
   async function request(method, path, body, opts) {
     opts = opts || {};
-
     if (isRateLimited()) {
       var err429 = new Error('Rate limited. Please wait.');
       err429.status = 429;
       throw err429;
     }
-
     var url = buildUrl(path);
     var headers = getHeaders(opts.headers || {});
-
     if (method !== 'GET' && method !== 'HEAD') {
       var csrf = await ensureCsrf();
       if (csrf) headers['X-CSRF-Token'] = csrf;
     }
-
     var options = { method: method, headers: headers, credentials: 'include' };
     if (body !== undefined && body !== null) options.body = JSON.stringify(body);
-
     try {
       var res = await fetch(url, options);
       var data;
       try { data = await res.json(); } catch { data = {}; }
-
       if (!res.ok) {
         if (res.status === 401) {
-          // If we get a 401, only clear if it's not a transient issue or if it's a logout/me request
           const isCritical = path.includes('/auth/me') || path.includes('/auth/logout');
           const isBackground = !!opts.background;
-          
           if (isCritical && !isBackground) {
             try {
               localStorage.removeItem('bloom_token');
@@ -100,18 +91,15 @@
           }
           console.warn('[Api] 401 Unauthorized for:', path);
         }
-
         if (res.status === 429) {
           var retryAfter = res.headers.get('Retry-After');
           var backoffMs = (parseInt(retryAfter, 10) || 60) * 1000;
           var until = Date.now() + backoffMs;
           if (window.Store) window.Store.setRateLimit(until);
         }
-
         if (res.status === 403 && data && data.error && data.error.indexOf('CSRF') !== -1) {
           _csrfToken = null;
         }
-
         var errMsg = (data && (data.error || data.message)) || res.statusText || ('HTTP ' + res.status);
         var err = new Error(errMsg);
         err.status = res.status;
@@ -183,6 +171,5 @@
     baseUrl: BASE,
     clearCsrf: function () { _csrfToken = null; }
   };
-
   window.__BloomApi = window.Api;
 })();
