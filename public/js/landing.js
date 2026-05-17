@@ -1,9 +1,9 @@
 var Api = window.Api;
 var Store = window.Store;
-const MOCK_REVIEWS = [
-  { name: 'Valentina Cruz', rating: 5, body: "I ordered a custom arrangement for my mother's birthday and she cried happy tears. The silk wrap was exquisite and arrived perfectly on time.", occasion: 'Birthday' },
-  { name: 'Hiroki Tanaka', rating: 5, body: 'The corporate order process was seamless. 40 branded bouquets for our product launch, every single one perfect. Repeat customer forever.', occasion: 'Corporate' },
-  { name: 'Marisol Reyes', rating: 5, body: 'Ordered a surprise delivery for my wife on our anniversary. The evening slot worked perfectly. The photo proof on delivery was such a thoughtful touch.', occasion: 'Anniversary' }
+const SAMPLE_REVIEWS = [
+  { name: 'Maria C.', rating: 5, body: "I ordered flowers for my mom's birthday and they arrived looking even better than the photos. The silk wrap was beautiful and the delivery was right on time.", occasion: 'Birthday' },
+  { name: 'James R.', rating: 5, body: 'We needed 40 matching bouquets for a company event. The ordering process was straightforward and every arrangement looked consistent. Will order again.', occasion: 'Corporate' },
+  { name: 'Ana S.', rating: 5, body: 'Surprised my wife with an evening delivery on our anniversary. Getting the photo confirmation before she even called me was a really nice touch.', occasion: 'Anniversary' }
 ];
 function showToast(msg, type) {
   type = type || 'info';
@@ -167,7 +167,7 @@ async function loadSiteContent() {
 function renderReviews() {
   const grid = document.getElementById('reviewsGrid');
   if (!grid) return;
-  grid.innerHTML = MOCK_REVIEWS.map(function (r) {
+  grid.innerHTML = SAMPLE_REVIEWS.map(function (r) {
     return '<div class="glass-card float-card" style="padding:28px;">' +
       '<div style="display:flex;gap:2px;margin-bottom:14px;" aria-label="' + r.rating + ' out of 5 stars">' +
       Array.from({ length: 5 }, function (_, i) {
