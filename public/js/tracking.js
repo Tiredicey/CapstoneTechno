@@ -1,11 +1,10 @@
 var Api = window.Api || window.__BloomApi;
 var Store = window.Store || window.__BloomStore;
-
-const STATUS_ICONS = {
+var BloomDB = window.BloomDB;
+var STATUS_ICONS = {
   new: '\uD83D\uDCCB', processing: '\u2699\uFE0F', quality_check: '\uD83D\uDD0D',
   packed: '\uD83D\uDCE6', shipped: '\uD83D\uDE9A', out_for_delivery: '\uD83D\uDEF5', delivered: '\u2705', cancelled: '\u274C'
 };
-
 function showTrackToast(msg, type) {
   type = type || 'info';
   var existing = document.getElementById('track-toast');
@@ -15,36 +14,50 @@ function showTrackToast(msg, type) {
   el.textContent = msg;
   el.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:99999;background:' +
     (type === 'success' ? '#22c55e' : type === 'error' ? '#ef4444' : '#6366f1') +
-    ';color:white;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,0.3);';
+    ';color:white;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,0.3);transition:opacity .3s;';
   document.body.appendChild(el);
-  setTimeout(function () { el.remove(); }, 3500);
+  setTimeout(function () {
+    el.style.opacity = '0';
+    setTimeout(function () { el.remove(); }, 350);
+  }, 3500);
 }
-
 var currentOrderId = null;
-
 async function trackOrder(identifier) {
   if (!identifier) return;
   var cleanId = String(identifier).trim().toUpperCase();
   var resultEl = document.getElementById('trackingResult');
   if (resultEl) resultEl.style.display = 'none';
   try {
-    var order = await Api.get('/orders/' + cleanId + '/track');
+    var order = await Api.get('/orders/' + encodeURIComponent(cleanId) + '/track');
     currentOrderId = order.id;
-
     var detailId = document.getElementById('detailId');
     var detailEta = document.getElementById('detailEta');
     var detailRecipient = document.getElementById('detailRecipient');
     var statusPill = document.getElementById('statusPill');
-
+    var isSurprise = order.surpriseDelivery && order.status !== 'delivered';
     if (detailId) detailId.textContent = order.qrCode || order.id || '\u2014';
-    if (detailEta) detailEta.textContent = order.delivery_date || order.deliveryDate || '\u2014';
-    if (detailRecipient) {
-      try {
-        var rec = typeof order.recipient === 'string' ? JSON.parse(order.recipient) : order.recipient;
-        detailRecipient.textContent = (rec && rec.name) ? rec.name : '\u2014';
-      } catch { detailRecipient.textContent = '\u2014'; }
+    if (detailEta) {
+      if (isSurprise) {
+        detailEta.textContent = 'Hidden \u2014 Surprise Mode';
+      } else {
+        detailEta.textContent = order.delivery_date || order.deliveryDate || '\u2014';
+      }
     }
-
+    if (detailRecipient) {
+      if (isSurprise) {
+        detailRecipient.textContent = '\uD83C\uDF81 Surprise';
+      } else {
+        try {
+          var rec = typeof order.recipient === 'string' ? JSON.parse(order.recipient) : order.recipient;
+          var rName = '';
+          if (rec) {
+            if (rec.name) rName = rec.name;
+            else if (rec.firstName || rec.lastName) rName = ((rec.firstName || '') + ' ' + (rec.lastName || '')).trim();
+          }
+          detailRecipient.textContent = rName || '\u2014';
+        } catch (e) { detailRecipient.textContent = '\u2014'; }
+      }
+    }
     var statusMap = {
       new: 'status-new', processing: 'status-processing', quality_check: 'status-processing',
       packed: 'status-packed', shipped: 'status-shipped', out_for_delivery: 'status-shipped',
@@ -54,15 +67,17 @@ async function trackOrder(identifier) {
       statusPill.className = 'status-pill ' + (statusMap[order.status] || 'status-new');
       statusPill.textContent = (order.status || '').replace(/_/g, ' ').toUpperCase();
     }
-
     var steps = order.trackingSteps || order.timeline || [];
-    if (typeof steps === 'string') { try { steps = JSON.parse(steps); } catch { steps = []; } }
-    renderTimeline(steps, order.status);
-
+    if (typeof steps === 'string') { try { steps = JSON.parse(steps); } catch (e) { steps = []; } }
+    if (isSurprise) {
+      renderSurpriseTimeline(steps, order.status);
+    } else {
+      renderTimeline(steps, order.status);
+    }
     var photoArea = document.getElementById('deliveryPhotoArea');
     if (photoArea) {
       if (order.delivery_photo) {
-        photoArea.innerHTML = '<img src="' + order.delivery_photo + '" style="width:100%;height:100%;object-fit:cover;border-radius:12px;cursor:pointer;" onclick="window.open(\'' + order.delivery_photo + '\',\'_blank\')">';
+        photoArea.innerHTML = '<img src="' + encodeURI(order.delivery_photo) + '" alt="Delivery verification photo" style="width:100%;height:100%;object-fit:cover;border-radius:12px;cursor:pointer;" onclick="window.open(this.src,\'_blank\')">';
         photoArea.style.border = 'none';
         photoArea.style.height = '200px';
       } else {
@@ -70,7 +85,7 @@ async function trackOrder(identifier) {
         photoArea.style.height = '120px';
       }
     }
-
+    renderVideoGreeting(order);
     if (resultEl) resultEl.style.display = 'block';
     subscribeSocket(order.id);
   } catch (e) {
@@ -83,21 +98,33 @@ async function trackOrder(identifier) {
       msg = e.message || 'Tracking unavailable at the moment.';
     }
     showTrackToast(msg, 'error');
-    console.warn('[Track] Error:', e);
   }
 }
-
+function renderSurpriseTimeline(steps, currentStatus) {
+  var container = document.getElementById('trackingTimeline');
+  var fill = document.getElementById('timelineFill');
+  if (!container) return;
+  container.querySelectorAll('.timeline-step').forEach(function (e) { e.remove(); });
+  var completedCount = steps.filter(function (t) { return t.completed || t.timestamp; }).length;
+  var pct = steps.length ? (completedCount / steps.length) * 100 : 0;
+  setTimeout(function () { if (fill) fill.style.height = pct + '%'; }, 100);
+  var div = document.createElement('div');
+  div.className = 'timeline-step active';
+  div.innerHTML = '<div class="timeline-node">\uD83C\uDF81</div>' +
+    '<div class="timeline-content">' +
+    '<div class="timeline-label" style="font-weight:700;">Surprise Delivery Active</div>' +
+    '<div class="timeline-time" style="color:rgba(255,255,255,0.5);">Delivery details hidden to preserve the surprise.<br>Full timeline visible after delivery.</div>' +
+    '</div>';
+  container.appendChild(div);
+}
 function renderTimeline(steps, currentStatus) {
   var container = document.getElementById('trackingTimeline');
   var fill = document.getElementById('timelineFill');
   if (!container) return;
-
   var completedCount = steps.filter(function (t) { return t.completed || t.timestamp; }).length;
   var pct = steps.length ? (completedCount / steps.length) * 100 : 0;
-
   container.querySelectorAll('.timeline-step').forEach(function (e) { e.remove(); });
   setTimeout(function () { if (fill) fill.style.height = pct + '%'; }, 100);
-
   steps.forEach(function (step) {
     var isCompleted = step.completed || !!step.timestamp;
     var isActive = step.status === currentStatus && isCompleted;
@@ -105,7 +132,7 @@ function renderTimeline(steps, currentStatus) {
     div.className = 'timeline-step' + (isCompleted ? ' complete' : '') + (isActive ? ' active' : '');
     var label = step.label || (step.status || '').replace(/_/g, ' ');
     var timeText = step.timestamp ? new Date(typeof step.timestamp === 'number' && step.timestamp < 1e12 ? step.timestamp * 1000 : step.timestamp).toLocaleString() : 'Pending';
-    var photoHtml = step.photo ? '<div class="timeline-photo" style="margin-top:12px;"><img src="' + step.photo + '" style="width:100%;max-height:180px;object-fit:cover;border-radius:12px;border:1px solid var(--glb);cursor:pointer;" onclick="window.open(\'' + step.photo + '\',\'_blank\')"></div>' : '';
+    var photoHtml = step.photo ? '<div class="timeline-photo" style="margin-top:12px;"><img src="' + encodeURI(step.photo) + '" alt="Status photo" style="width:100%;max-height:180px;object-fit:cover;border-radius:12px;border:1px solid var(--glb);cursor:pointer;" onclick="window.open(this.src,\'_blank\')"></div>' : '';
     div.innerHTML = '<div class="timeline-node">' + (STATUS_ICONS[step.status] || '\u25CB') + '</div>' +
       '<div class="timeline-content">' +
       '<div class="timeline-label">' + label + '</div>' +
@@ -115,20 +142,56 @@ function renderTimeline(steps, currentStatus) {
     container.appendChild(div);
   });
 }
-
+function renderVideoGreeting(order) {
+  var area = document.getElementById('videoGreetingArea');
+  if (!area) {
+    area = document.createElement('div');
+    area.id = 'videoGreetingArea';
+    var issuePanel = document.getElementById('issuePanel');
+    var photoCard = document.getElementById('deliveryPhotoArea');
+    var parent = photoCard ? photoCard.closest('.glass-card') : null;
+    if (parent && parent.parentNode) {
+      parent.parentNode.insertBefore(area, parent.nextSibling);
+    } else if (issuePanel && issuePanel.parentNode) {
+      issuePanel.parentNode.insertBefore(area, issuePanel);
+    } else {
+      var result = document.getElementById('trackingResult');
+      if (result) result.appendChild(area);
+    }
+  }
+  var videoUrl = order.video_greeting;
+  if (!videoUrl) {
+    area.innerHTML = '';
+    area.style.display = 'none';
+    return;
+  }
+  area.style.display = 'block';
+  area.style.marginTop = '20px';
+  var safeUrl = encodeURI(videoUrl);
+  area.innerHTML =
+    '<div class="glass-card" style="padding:0;overflow:hidden;">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.06);">' +
+        '<span style="font-weight:700;font-size:0.95rem;display:flex;align-items:center;gap:8px;">\uD83C\uDFA5 Video Greeting</span>' +
+        '<span style="font-size:0.62rem;padding:3px 10px;border-radius:100px;background:rgba(0,212,170,0.12);border:1px solid rgba(0,212,170,0.25);color:rgba(0,212,170,0.9);font-weight:700;letter-spacing:.04em;text-transform:uppercase;">Attached</span>' +
+      '</div>' +
+      '<div style="aspect-ratio:16/9;background:#000;position:relative;">' +
+        '<video src="' + safeUrl + '" controls playsinline preload="metadata" style="width:100%;height:100%;object-fit:contain;display:block;"></video>' +
+      '</div>' +
+    '</div>';
+}
 function subscribeSocket(orderId) {
   if (!Store) return;
-  Store.joinOrderRoom(orderId);
-  Store.on('order_update', function (data) {
-    if (!data || data.orderId !== orderId) return;
-    showTrackToast('Order status updated: ' + (data.status || '').replace(/_/g, ' ') + ' \uD83C\uDF38', 'info');
-    trackOrder(orderId);
-  });
+  if (Store.joinOrderRoom) Store.joinOrderRoom(orderId);
+  if (Store.on) {
+    Store.on('order_update', function (data) {
+      if (!data || data.orderId !== orderId) return;
+      showTrackToast('Order status updated: ' + (data.status || '').replace(/_/g, ' ') + ' \uD83C\uDF38', 'info');
+      trackOrder(orderId);
+    });
+  }
 }
-
 async function loadMyOrders() {
   if (!Store) return;
-  // Support both logged-in users and guests via session matching
   try {
     var orders = await Api.get('/orders/my');
     if (!Array.isArray(orders) || !orders.length) return;
@@ -153,7 +216,6 @@ async function loadMyOrders() {
         '<span style="font-size:0.78rem;color:rgba(255,255,255,0.35);">' + (o.delivery_date || '\u2014') + '</span>' +
         '</div></div></div>';
     }).join('');
-
     list.querySelectorAll('[data-qr]').forEach(function (card) {
       card.addEventListener('click', function () {
         var input = document.getElementById('trackInput');
@@ -162,28 +224,24 @@ async function loadMyOrders() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
     });
-  } catch {}
+  } catch (e) {}
 }
-
 document.getElementById('trackBtn') && document.getElementById('trackBtn').addEventListener('click', function () {
   var val = document.getElementById('trackInput');
   val = val ? val.value.trim() : '';
   if (!val) { showTrackToast('Enter an order code', 'error'); return; }
   trackOrder(val);
 });
-
 document.getElementById('trackInput') && document.getElementById('trackInput').addEventListener('keydown', function (e) {
   if (e.key === 'Enter') {
     var btn = document.getElementById('trackBtn');
     if (btn) btn.click();
   }
 });
-
 var urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('id')) {
   var input = document.getElementById('trackInput');
   if (input) input.value = urlParams.get('id');
   trackOrder(urlParams.get('id'));
 }
-
 loadMyOrders();
