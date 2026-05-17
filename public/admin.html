@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bloom Admin</title>
+<title>Bloom Admin Panel</title>
 <link rel="stylesheet" href="/css/vars.css">
 <link rel="stylesheet" href="/css/admin.css">
 </head>
@@ -11,7 +11,7 @@
 <div id="loginScreen" class="login-screen">
   <div class="login-card">
     <div class="login-logo">🌸 Bloom Admin</div>
-    <p style="text-align:center;color:rgba(255,255,255,0.4);font-size:0.85rem;margin-bottom:28px;">Sign in to manage your store</p>
+    <p style="text-align:center;color:rgba(255,255,255,0.4);font-size:0.85rem;margin-bottom:32px;letter-spacing:0.3px;">Secure access to your store dashboard</p>
     <div id="loginError" class="login-error" style="display:none"></div>
     <div class="form-group">
       <label class="form-label" for="loginEmail">Email</label>
@@ -21,7 +21,7 @@
       <label class="form-label" for="loginPassword">Password</label>
       <input type="password" id="loginPassword" class="admin-input" placeholder="••••••••" autocomplete="current-password">
     </div>
-    <button id="loginBtn" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px;">Sign In →</button>
+    <button id="loginBtn" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:12px;padding:14px 20px;font-size:0.92rem;">Sign In →</button>
   </div>
 </div>
 <div id="adminApp" class="admin-layout" style="display:none">
@@ -64,40 +64,40 @@
         <button class="btn btn-ghost btn-sm" id="refreshDash">↻ Refresh</button>
       </div>
       <div class="kpi-grid">
-        <div class="kpi-card" style="--kpi-color:rgba(232,67,147,0.25)">
+        <div class="kpi-card" style="--kpi-color:rgba(232,67,147,0.2)">
           <div class="kpi-icon">💰</div>
           <div class="kpi-label">Total Revenue</div>
           <div class="kpi-value" id="kpiRevenue">—</div>
         </div>
-        <div class="kpi-card" style="--kpi-color:rgba(0,212,170,0.25)">
+        <div class="kpi-card" style="--kpi-color:rgba(0,212,170,0.2)">
           <div class="kpi-icon">📦</div>
           <div class="kpi-label">Orders Today</div>
           <div class="kpi-value" id="kpiToday">—</div>
         </div>
-        <div class="kpi-card" style="--kpi-color:rgba(255,215,0,0.25)">
+        <div class="kpi-card" style="--kpi-color:rgba(255,215,0,0.18)">
           <div class="kpi-icon">⏳</div>
           <div class="kpi-label">Pending</div>
           <div class="kpi-value" id="kpiPending">—</div>
         </div>
-        <div class="kpi-card" style="--kpi-color:rgba(99,102,241,0.25)">
+        <div class="kpi-card" style="--kpi-color:rgba(124,58,237,0.2)">
           <div class="kpi-icon">⭐</div>
           <div class="kpi-label">NPS Score</div>
           <div class="kpi-value" id="kpiNps">—</div>
         </div>
       </div>
       <div class="dash-grid">
-        <div class="glass-card" style="padding:28px;">
-          <div class="card-title">Revenue by Category</div>
+        <div class="glass-card" style="padding:32px;">
+          <div class="card-title" style="margin-bottom:20px;">Revenue by Category</div>
           <div class="chart-area">
             <div class="bar-chart" id="revenueChart"></div>
           </div>
         </div>
-        <div class="glass-card" style="padding:28px;">
-          <div class="card-title">Top Products</div>
+        <div class="glass-card" style="padding:32px;">
+          <div class="card-title" style="margin-bottom:16px;">Top Products</div>
           <div id="topProductsList"></div>
         </div>
       </div>
-      <div class="glass-card" style="padding:28px;margin-top:24px;">
+      <div class="glass-card" style="padding:32px;margin-top:28px;">
         <div class="card-header">
           <div class="card-title">Recent Orders</div>
           <button class="btn btn-ghost btn-sm" id="viewAllOrders">View All →</button>
@@ -208,7 +208,7 @@
         <div class="admin-title">Inventory</div>
         <button class="btn btn-ghost btn-sm" id="refreshInventory">↻ Refresh</button>
       </div>
-      <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px;">
+      <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:28px;">
         <div class="kpi-card" style="--kpi-color:rgba(255,215,0,0.2)">
           <div class="kpi-icon">⚠️</div>
           <div class="kpi-label">Low Stock</div>
@@ -403,7 +403,7 @@
         <button class="btn btn-ghost btn-sm" id="refreshAnalytics">↻ Refresh</button>
       </div>
       <div class="kpi-grid" id="analyticsKpi"></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:28px;">
         <div class="glass-card" style="padding:28px;">
           <div class="card-title" style="margin-bottom:16px;">Revenue by Category</div>
           <div class="chart-area">
@@ -420,7 +420,7 @@
       <div class="admin-header">
         <div class="admin-title">Broadcast Notification</div>
       </div>
-      <div class="glass-card" style="padding:36px;max-width:600px;">
+      <div class="glass-card" style="padding:40px;max-width:640px;">
         <div class="form-group">
           <label class="form-label" for="broadcastTitle">Title</label>
           <input type="text" id="broadcastTitle" class="admin-input" placeholder="Notification title">
