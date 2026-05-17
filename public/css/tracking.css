@@ -1,247 +1,592 @@
-var Api = window.Api || window.__BloomApi;
-var Store = window.Store || window.__BloomStore;
-var BloomDB = window.BloomDB;
-var STATUS_ICONS = {
-  new: '\uD83D\uDCCB', processing: '\u2699\uFE0F', quality_check: '\uD83D\uDD0D',
-  packed: '\uD83D\uDCE6', shipped: '\uD83D\uDE9A', out_for_delivery: '\uD83D\uDEF5', delivered: '\u2705', cancelled: '\u274C'
-};
-function showTrackToast(msg, type) {
-  type = type || 'info';
-  var existing = document.getElementById('track-toast');
-  if (existing) existing.remove();
-  var el = document.createElement('div');
-  el.id = 'track-toast';
-  el.textContent = msg;
-  el.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:99999;background:' +
-    (type === 'success' ? '#22c55e' : type === 'error' ? '#ef4444' : '#6366f1') +
-    ';color:white;padding:14px 28px;border-radius:14px;font-size:14px;font-weight:600;box-shadow:0 8px 32px rgba(0,0,0,0.4);transition:opacity .4s,transform .4s;transform:translateY(0);';
-  document.body.appendChild(el);
-  setTimeout(function () {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(10px)';
-    setTimeout(function () { el.remove(); }, 400);
-  }, 3500);
+@import './vars.css';
+
+.tracking-page {
+  padding: 0 0 80px;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
 }
-var currentOrderId = null;
-async function trackOrder(identifier) {
-  if (!identifier) return;
-  var cleanId = String(identifier).trim().toUpperCase();
-  var resultEl = document.getElementById('trackingResult');
-  if (resultEl) resultEl.style.display = 'none';
-  try {
-    var order = await Api.get('/orders/' + encodeURIComponent(cleanId) + '/track');
-    currentOrderId = order.id;
-    var detailId = document.getElementById('detailId');
-    var detailEta = document.getElementById('detailEta');
-    var detailRecipient = document.getElementById('detailRecipient');
-    var statusPill = document.getElementById('statusPill');
-    var isSurprise = order.surpriseDelivery && order.status !== 'delivered';
-    if (detailId) detailId.textContent = order.qrCode || order.id || '\u2014';
-    if (detailEta) {
-      if (isSurprise) {
-        detailEta.textContent = 'Hidden \u2014 Surprise Mode';
-      } else {
-        detailEta.textContent = order.delivery_date || order.deliveryDate || '\u2014';
-      }
-    }
-    if (detailRecipient) {
-      if (isSurprise) {
-        detailRecipient.textContent = '\uD83C\uDF81 Surprise';
-      } else {
-        try {
-          var rec = typeof order.recipient === 'string' ? JSON.parse(order.recipient) : order.recipient;
-          var rName = '';
-          if (rec) {
-            if (rec.name) rName = rec.name;
-            else if (rec.firstName || rec.lastName) rName = ((rec.firstName || '') + ' ' + (rec.lastName || '')).trim();
-          }
-          detailRecipient.textContent = rName || '\u2014';
-        } catch (e) { detailRecipient.textContent = '\u2014'; }
-      }
-    }
-    var statusMap = {
-      new: 'status-new', processing: 'status-processing', quality_check: 'status-processing',
-      packed: 'status-packed', shipped: 'status-shipped', out_for_delivery: 'status-shipped',
-      delivered: 'status-delivered', cancelled: 'status-cancelled'
-    };
-    if (statusPill) {
-      statusPill.className = 'status-pill ' + (statusMap[order.status] || 'status-new');
-      statusPill.textContent = (order.status || '').replace(/_/g, ' ').toUpperCase();
-    }
-    var steps = order.trackingSteps || order.timeline || [];
-    if (typeof steps === 'string') { try { steps = JSON.parse(steps); } catch (e) { steps = []; } }
-    if (isSurprise) {
-      renderSurpriseTimeline(steps, order.status);
-    } else {
-      renderTimeline(steps, order.status);
-    }
-    var photoArea = document.getElementById('deliveryPhotoArea');
-    if (photoArea) {
-      if (order.delivery_photo) {
-        photoArea.innerHTML = '<img src="' + encodeURI(order.delivery_photo) + '" alt="Delivery verification photo" style="width:100%;height:100%;object-fit:cover;border-radius:12px;cursor:pointer;" onclick="window.open(this.src,\'_blank\')">';
-        photoArea.style.border = 'none';
-        photoArea.style.height = '200px';
-      } else {
-        photoArea.innerHTML = 'Photo will appear upon delivery';
-        photoArea.style.height = '120px';
-      }
-    }
-    renderVideoGreeting(order);
-    if (resultEl) resultEl.style.display = 'block';
-    subscribeSocket(order.id);
-  } catch (e) {
-    var msg = 'Order not found';
-    if (e.status === 404) {
-      msg = 'Order ID not recognized. Please check the ID or QR code.';
-    } else if (e.status === 500) {
-      msg = 'Server error while tracking. Please try again later.';
-    } else {
-      msg = e.message || 'Tracking unavailable at the moment.';
-    }
-    showTrackToast(msg, 'error');
-  }
+
+.tracking-hero {
+  position: relative;
+  min-height: 52vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 40px 60px;
+  overflow: hidden;
+  background: var(--ethereal-obsidian);
+  isolation: isolate;
 }
-function renderSurpriseTimeline(steps, currentStatus) {
-  var container = document.getElementById('trackingTimeline');
-  var fill = document.getElementById('timelineFill');
-  if (!container) return;
-  container.querySelectorAll('.timeline-step').forEach(function (e) { e.remove(); });
-  var completedCount = steps.filter(function (t) { return t.completed || t.timestamp; }).length;
-  var pct = steps.length ? (completedCount / steps.length) * 100 : 0;
-  setTimeout(function () { if (fill) fill.style.height = pct + '%'; }, 100);
-  var div = document.createElement('div');
-  div.className = 'timeline-step active';
-  div.innerHTML = '<div class="timeline-node">\uD83C\uDF81</div>' +
-    '<div class="timeline-content">' +
-    '<div class="timeline-label" style="font-weight:700;">Surprise Delivery Active</div>' +
-    '<div class="timeline-time">Delivery details hidden to preserve the surprise.<br>Full timeline visible after delivery.</div>' +
-    '</div>';
-  container.appendChild(div);
+
+.tracking-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 30% 40%, rgba(230,26,26,.12), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 70% 60%, oklch(58% .22 348 / .1), transparent 55%),
+    radial-gradient(ellipse 50% 50% at 50% 90%, rgba(124,58,237,.08), transparent 50%);
+  animation: heroAmbience 18s ease-in-out infinite alternate;
+  z-index: 0;
 }
-function renderTimeline(steps, currentStatus) {
-  var container = document.getElementById('trackingTimeline');
-  var fill = document.getElementById('timelineFill');
-  if (!container) return;
-  var completedCount = steps.filter(function (t) { return t.completed || t.timestamp; }).length;
-  var pct = steps.length ? (completedCount / steps.length) * 100 : 0;
-  container.querySelectorAll('.timeline-step').forEach(function (e) { e.remove(); });
-  setTimeout(function () { if (fill) fill.style.height = pct + '%'; }, 100);
-  steps.forEach(function (step) {
-    var isCompleted = step.completed || !!step.timestamp;
-    var isActive = step.status === currentStatus && isCompleted;
-    var div = document.createElement('div');
-    div.className = 'timeline-step' + (isCompleted ? ' complete' : '') + (isActive ? ' active' : '');
-    var label = step.label || (step.status || '').replace(/_/g, ' ');
-    var timeText = step.timestamp ? new Date(typeof step.timestamp === 'number' && step.timestamp < 1e12 ? step.timestamp * 1000 : step.timestamp).toLocaleString() : 'Pending';
-    var photoHtml = step.photo ? '<div style="margin-top:12px;"><img src="' + encodeURI(step.photo) + '" alt="Status photo" style="width:100%;max-height:180px;object-fit:cover;border-radius:12px;border:1px solid rgba(255,255,255,.08);cursor:pointer;" onclick="window.open(this.src,\'_blank\')"></div>' : '';
-    div.innerHTML = '<div class="timeline-node">' + (STATUS_ICONS[step.status] || '\u25CB') + '</div>' +
-      '<div class="timeline-content">' +
-      '<div class="timeline-label">' + label + '</div>' +
-      '<div class="timeline-time">' + timeText + '</div>' +
-      photoHtml +
-      '</div>';
-    container.appendChild(div);
-  });
+
+@keyframes heroAmbience {
+  0%   { opacity: .6; filter: hue-rotate(0deg); }
+  50%  { opacity: 1;  filter: hue-rotate(8deg); }
+  100% { opacity: .7; filter: hue-rotate(-4deg); }
 }
-function renderVideoGreeting(order) {
-  var area = document.getElementById('videoGreetingArea');
-  if (!area) {
-    area = document.createElement('div');
-    area.id = 'videoGreetingArea';
-    var issuePanel = document.getElementById('issuePanel');
-    var photoCard = document.getElementById('deliveryPhotoArea');
-    var parent = photoCard ? photoCard.closest('.track-card') || photoCard.closest('.glass-card') : null;
-    if (parent && parent.parentNode) {
-      parent.parentNode.insertBefore(area, parent.nextSibling);
-    } else if (issuePanel && issuePanel.parentNode) {
-      issuePanel.parentNode.insertBefore(area, issuePanel);
-    } else {
-      var result = document.getElementById('trackingResult');
-      if (result) result.appendChild(area);
-    }
-  }
-  var videoUrl = order.video_greeting;
-  if (!videoUrl) {
-    area.innerHTML = '';
-    area.style.display = 'none';
-    return;
-  }
-  area.style.display = 'block';
-  area.style.marginTop = '20px';
-  var safeUrl = encodeURI(videoUrl);
-  area.innerHTML =
-    '<div class="track-card" style="overflow:hidden;">' +
-      '<div class="track-card-hd">' +
-        '<span class="track-card-title">\uD83C\uDFA5 Video Greeting</span>' +
-        '<span style="font-size:0.62rem;padding:3px 10px;border-radius:100px;background:rgba(0,212,170,0.12);border:1px solid rgba(0,212,170,0.25);color:rgba(0,212,170,0.9);font-weight:700;letter-spacing:.04em;text-transform:uppercase;">Attached</span>' +
-      '</div>' +
-      '<div style="aspect-ratio:16/9;background:#000;position:relative;">' +
-        '<video src="' + safeUrl + '" controls playsinline preload="metadata" style="width:100%;height:100%;object-fit:contain;display:block;"></video>' +
-      '</div>' +
-    '</div>';
+
+.tracking-hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(to top, var(--bg), transparent);
+  z-index: 1;
+  pointer-events: none;
 }
-function subscribeSocket(orderId) {
-  if (!Store) return;
-  if (Store.joinOrderRoom) Store.joinOrderRoom(orderId);
-  if (Store.on) {
-    Store.on('order_update', function (data) {
-      if (!data || data.orderId !== orderId) return;
-      showTrackToast('Order status updated: ' + (data.status || '').replace(/_/g, ' ') + ' \uD83C\uDF38', 'info');
-      trackOrder(orderId);
-    });
-  }
+
+.track-orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  z-index: 0;
+  will-change: transform;
 }
-async function loadMyOrders() {
-  if (!Store) return;
-  try {
-    var orders = await Api.get('/orders/my');
-    if (!Array.isArray(orders) || !orders.length) return;
-    var section = document.getElementById('myOrdersSection');
-    var list = document.getElementById('myOrdersList');
-    if (section) section.style.display = 'block';
-    if (!list) return;
-    var statusClassMap = {
-      new: 'status-new', processing: 'status-processing', packed: 'status-packed',
-      shipped: 'status-shipped', delivered: 'status-delivered', cancelled: 'status-cancelled'
-    };
-    list.innerHTML = orders.map(function (o) {
-      var pricing = typeof o.pricing === 'string' ? JSON.parse(o.pricing || '{}') : (o.pricing || {});
-      var items = typeof o.items === 'string' ? JSON.parse(o.items || '[]') : (o.items || []);
-      var statusClass = statusClassMap[o.status] || 'status-new';
-      return '<div class="my-order-row" data-qr="' + (o.qr_code || o.id) + '">' +
-        '<div><div style="font-weight:700;font-family:var(--fd);">' + (o.qr_code || o.id) + '</div>' +
-        '<div style="font-size:0.78rem;color:rgba(255,255,255,0.4);margin-top:2px;">' + items.length + ' item(s) \u00B7 \u20B1' + Number(pricing.finalTotal || 0).toFixed(2) + '</div></div>' +
-        '<div style="display:flex;align-items:center;gap:12px;">' +
-        '<span class="status-pill ' + statusClass + '">' + (o.status || '').replace(/_/g, ' ').toUpperCase() + '</span>' +
-        '<span style="font-size:0.78rem;color:rgba(255,255,255,0.35);">' + (o.delivery_date || '\u2014') + '</span>' +
-        '</div></div>';
-    }).join('');
-    list.querySelectorAll('[data-qr]').forEach(function (card) {
-      card.addEventListener('click', function () {
-        var input = document.getElementById('trackInput');
-        if (input) input.value = card.dataset.qr;
-        trackOrder(card.dataset.qr);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      });
-    });
-  } catch (e) {}
+
+.track-orb-1 {
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle, rgba(230,26,26,.18), transparent 70%);
+  top: -80px;
+  right: -60px;
+  filter: blur(60px);
+  animation: orbFloat1 20s ease-in-out infinite;
 }
-document.getElementById('trackBtn') && document.getElementById('trackBtn').addEventListener('click', function () {
-  var val = document.getElementById('trackInput');
-  val = val ? val.value.trim() : '';
-  if (!val) { showTrackToast('Enter an order code', 'error'); return; }
-  trackOrder(val);
-});
-document.getElementById('trackInput') && document.getElementById('trackInput').addEventListener('keydown', function (e) {
-  if (e.key === 'Enter') {
-    var btn = document.getElementById('trackBtn');
-    if (btn) btn.click();
-  }
-});
-var urlParams = new URLSearchParams(window.location.search);
-if (urlParams.get('id')) {
-  var input = document.getElementById('trackInput');
-  if (input) input.value = urlParams.get('id');
-  trackOrder(urlParams.get('id'));
+
+.track-orb-2 {
+  width: 340px;
+  height: 340px;
+  background: radial-gradient(circle, oklch(58% .22 348 / .14), transparent 70%);
+  bottom: -40px;
+  left: -40px;
+  filter: blur(50px);
+  animation: orbFloat2 24s ease-in-out infinite;
 }
-loadMyOrders();
+
+.track-orb-3 {
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(124,58,237,.12), transparent 70%);
+  top: 30%;
+  left: 50%;
+  filter: blur(40px);
+  animation: orbFloat3 16s ease-in-out infinite;
+}
+
+@keyframes orbFloat1 {
+  0%,100% { transform: translate3d(0,0,0) scale(1); }
+  50%     { transform: translate3d(-40px,30px,0) scale(1.15); }
+}
+@keyframes orbFloat2 {
+  0%,100% { transform: translate3d(0,0,0) scale(1); }
+  50%     { transform: translate3d(30px,-25px,0) scale(1.1); }
+}
+@keyframes orbFloat3 {
+  0%,100% { transform: translate3d(0,0,0) scale(.9); opacity: .5; }
+  50%     { transform: translate3d(-20px,-15px,0) scale(1.2); opacity: .9; }
+}
+
+.track-scanlines {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: .05;
+  background: repeating-linear-gradient(0deg, transparent 0, transparent 3px, rgba(255,255,255,.4) 3px, rgba(255,255,255,.4) 4px);
+  mix-blend-mode: overlay;
+}
+
+.track-noise {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: .04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
+}
+
+.tracking-hero-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 640px;
+}
+
+.track-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  animation: fadeSlideUp .8s var(--bloom-ease) both;
+}
+
+.track-eyebrow-tag {
+  font-family: var(--fc);
+  font-style: italic;
+  font-weight: 900;
+  font-size: .66rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--p5);
+  padding: 5px 14px 5px 16px;
+  clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+  transform: skewX(-6deg);
+}
+
+.track-eyebrow-tag > span { transform: skewX(6deg); display: inline-block; }
+
+.track-hero-title {
+  font-family: var(--fd);
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  font-weight: 900;
+  line-height: 1.12;
+  letter-spacing: -.03em;
+  margin-bottom: 16px;
+  animation: fadeSlideUp .8s var(--bloom-ease) .12s both;
+}
+
+.track-hero-title .g-txt {
+  background: linear-gradient(135deg, #fff 0%, oklch(58% .22 348) 40%, var(--p5) 70%, oklch(58% .22 348) 100%);
+  background-size: 250% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: txt-shine 5s linear infinite;
+}
+
+@keyframes txt-shine { to { background-position: 250% center; } }
+
+.track-hero-sub {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: rgba(255,255,255,.6);
+  max-width: 440px;
+  margin: 0 auto 32px;
+  text-wrap: pretty;
+  animation: fadeSlideUp .8s var(--bloom-ease) .24s both;
+}
+
+.tracking-search-bar {
+  display: flex;
+  gap: 10px;
+  max-width: 480px;
+  margin: 0 auto;
+  animation: fadeSlideUp .8s var(--bloom-ease) .36s both;
+}
+
+.tracking-search-bar .form-input {
+  flex: 1;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: var(--rs);
+  padding: 14px 18px;
+  color: #fff;
+  font-size: .92rem;
+  font-family: var(--fb);
+  outline: none;
+  transition: border-color .25s, box-shadow .25s;
+  backdrop-filter: blur(12px);
+}
+
+.tracking-search-bar .form-input::placeholder {
+  color: rgba(255,255,255,.3);
+}
+
+.tracking-search-bar .form-input:focus {
+  border-color: var(--p5);
+  box-shadow: 0 0 0 3px rgba(230,26,26,.15), 0 4px 24px rgba(230,26,26,.12);
+}
+
+.tracking-search-bar .btn {
+  padding: 14px 28px;
+  border-radius: var(--rs);
+  font-weight: 700;
+  font-size: .88rem;
+  white-space: nowrap;
+  border: none;
+  font-family: var(--fb);
+  background: linear-gradient(135deg, var(--p5d), var(--p5));
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(230,26,26,.35);
+  transition: transform .25s var(--ease), box-shadow .25s;
+}
+
+.tracking-search-bar .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(230,26,26,.5);
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.track-hero-glow-line {
+  position: absolute;
+  bottom: 0;
+  left: -5%;
+  right: -5%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent 0%, rgba(230,26,26,.15) 10%, var(--p5) 30%, oklch(58% .22 348) 50%, var(--p5) 70%, rgba(230,26,26,.15) 90%, transparent 100%);
+  filter: drop-shadow(0 0 8px rgba(230,26,26,.5));
+  z-index: 2;
+}
+
+.tracking-body {
+  max-width: 1100px;
+  margin: -40px auto 0;
+  padding: 0 40px;
+  position: relative;
+  z-index: 5;
+}
+
+.track-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.track-card {
+  background: linear-gradient(135deg, rgba(255,255,255,.05), rgba(255,255,255,.015));
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: var(--r);
+  backdrop-filter: blur(20px) saturate(1.3);
+  -webkit-backdrop-filter: blur(20px) saturate(1.3);
+  box-shadow: 0 8px 40px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.06);
+  overflow: hidden;
+  transition: border-color .4s, box-shadow .4s, transform .5s var(--ease);
+  opacity: 0;
+  transform: translateY(20px);
+  animation: cardReveal .7s var(--bloom-ease) both;
+}
+
+.track-card:nth-child(1) { animation-delay: .1s; }
+.track-card:nth-child(2) { animation-delay: .2s; }
+.track-card:nth-child(3) { animation-delay: .3s; }
+.track-card:nth-child(4) { animation-delay: .4s; }
+
+@keyframes cardReveal {
+  from { opacity: 0; transform: translateY(28px) scale(.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.track-card:hover {
+  border-color: rgba(230,26,26,.25);
+  box-shadow: 0 16px 60px rgba(168,16,16,.2), inset 0 1px 0 rgba(255,255,255,.1);
+}
+
+.track-card-hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+
+.track-card-title {
+  font-family: var(--fd);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.track-card-body { padding: 22px; }
+
+.tracking-header { display: none; }
+
+.tracking-timeline { position: relative; padding: 8px 0; }
+
+.timeline-line {
+  position: absolute;
+  left: 28px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(255,255,255,.06);
+  border-radius: 1px;
+}
+
+.timeline-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  background: linear-gradient(180deg, var(--p5), oklch(58% .22 348), var(--mn));
+  transition: height 1.2s var(--bloom-ease);
+  border-radius: 1px;
+  box-shadow: 0 0 10px rgba(230,26,26,.3);
+}
+
+.timeline-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 16px 0;
+  position: relative;
+  opacity: 0;
+  transform: translateX(-10px);
+  animation: stepSlideIn .5s var(--bloom-ease) both;
+}
+
+.timeline-step:nth-child(2) { animation-delay: .15s; }
+.timeline-step:nth-child(3) { animation-delay: .25s; }
+.timeline-step:nth-child(4) { animation-delay: .35s; }
+.timeline-step:nth-child(5) { animation-delay: .45s; }
+.timeline-step:nth-child(6) { animation-delay: .55s; }
+.timeline-step:nth-child(7) { animation-delay: .65s; }
+.timeline-step:nth-child(8) { animation-delay: .75s; }
+.timeline-step:nth-child(9) { animation-delay: .85s; }
+
+@keyframes stepSlideIn {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.timeline-node {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  border: 2px solid rgba(255,255,255,.08);
+  background: rgba(11,5,22,.85);
+  position: relative;
+  z-index: 1;
+  transition: all .4s var(--bloom-ease);
+}
+
+.timeline-step.complete .timeline-node {
+  border-color: var(--mn);
+  background: rgba(0,212,170,.12);
+  box-shadow: 0 0 16px rgba(0,212,170,.25);
+}
+
+.timeline-step.active .timeline-node {
+  border-color: var(--p5);
+  background: rgba(230,26,26,.12);
+  box-shadow: 0 0 20px rgba(230,26,26,.3);
+  animation: nodeGlow 2.5s ease-in-out infinite;
+}
+
+@keyframes nodeGlow {
+  0%, 100% { box-shadow: 0 0 16px rgba(230,26,26,.3); }
+  50%      { box-shadow: 0 0 32px rgba(230,26,26,.55); }
+}
+
+.timeline-content { flex: 1; padding-top: 10px; }
+.timeline-label { font-size: .95rem; font-weight: 600; margin-bottom: 3px; text-transform: capitalize; }
+.timeline-time { font-size: .78rem; color: rgba(255,255,255,.38); }
+
+.map-placeholder {
+  height: 220px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(45,27,94,.5), rgba(26,10,46,.7));
+  border: 1px solid rgba(255,255,255,.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.map-ping {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--p5);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 16px rgba(230,26,26,.5);
+}
+
+.map-ping::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px solid var(--p5);
+  animation: mapPing 2s ease-out infinite;
+}
+
+@keyframes mapPing {
+  0% { transform: scale(1); opacity: .7; }
+  100% { transform: scale(2.8); opacity: 0; }
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 14px;
+  border-radius: 100px;
+  font-family: var(--fc);
+  font-style: italic;
+  font-weight: 700;
+  font-size: .68rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  border: 1px solid;
+}
+
+.status-new { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.15); color: rgba(255,255,255,.6); }
+.status-processing { background: rgba(56,189,248,.1); border-color: rgba(56,189,248,.25); color: #38bdf8; }
+.status-packed { background: rgba(124,58,237,.1); border-color: rgba(124,58,237,.25); color: #a78bfa; }
+.status-shipped { background: rgba(230,26,26,.1); border-color: rgba(230,26,26,.3); color: var(--p5l); }
+.status-delivered { background: rgba(0,212,170,.1); border-color: rgba(0,212,170,.25); color: var(--mn); }
+.status-cancelled { background: rgba(239,68,68,.1); border-color: rgba(239,68,68,.25); color: #ef4444; }
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  font-size: .88rem;
+}
+
+.detail-row + .detail-row { border-top: 1px solid rgba(255,255,255,.04); }
+
+.detail-label { color: rgba(255,255,255,.45); font-weight: 500; }
+.detail-value { font-weight: 600; }
+
+.track-issue-card {
+  background: linear-gradient(135deg, rgba(255,255,255,.04), rgba(255,255,255,.01));
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: var(--r);
+  padding: 22px;
+  margin-top: 20px;
+}
+
+.track-issue-card h3 {
+  font-size: .92rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.track-issue-card p {
+  font-size: .8rem;
+  color: rgba(255,255,255,.45);
+  margin-bottom: 14px;
+  line-height: 1.6;
+}
+
+.track-issue-card .btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 10px 20px;
+  border-radius: var(--rs);
+  font-size: .84rem;
+  font-weight: 600;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.1);
+  color: rgba(255,255,255,.7);
+  transition: all .25s;
+  font-family: var(--fb);
+  text-decoration: none;
+}
+
+.track-issue-card .btn-ghost:hover {
+  background: rgba(230,26,26,.1);
+  border-color: rgba(230,26,26,.3);
+  color: #fff;
+}
+
+.my-orders-section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 48px 40px 0;
+}
+
+.my-orders-title {
+  font-family: var(--fd);
+  font-size: 1.3rem;
+  font-weight: 900;
+  margin-bottom: 20px;
+}
+
+.my-order-row {
+  background: linear-gradient(135deg, rgba(255,255,255,.04), rgba(255,255,255,.015));
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: var(--rs);
+  padding: 18px 22px;
+  cursor: pointer;
+  transition: all .25s var(--ease);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.my-order-row:hover {
+  border-color: rgba(230,26,26,.3);
+  transform: translateX(4px);
+  box-shadow: 0 6px 24px rgba(168,16,16,.15);
+}
+
+.my-order-row + .my-order-row { margin-top: 10px; }
+
+[data-theme="light"] .tracking-hero { background: var(--bg2); }
+[data-theme="light"] .tracking-hero::before { opacity: .3; }
+[data-theme="light"] .track-hero-title { color: var(--text); }
+[data-theme="light"] .track-hero-title .g-txt { background: linear-gradient(135deg, var(--text) 0%, var(--p5) 40%, oklch(58% .22 348) 100%); background-size: 250% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+[data-theme="light"] .track-hero-sub { color: rgba(26,18,32,.55); }
+[data-theme="light"] .tracking-hero::after { background: linear-gradient(to top, var(--bg), transparent); }
+[data-theme="light"] .tracking-search-bar .form-input { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.12); color: var(--text); }
+[data-theme="light"] .tracking-search-bar .form-input::placeholder { color: rgba(26,18,32,.3); }
+[data-theme="light"] .track-card { background: rgba(255,255,255,.7); border-color: rgba(0,0,0,.08); backdrop-filter: blur(16px); box-shadow: 0 4px 24px rgba(0,0,0,.06); }
+[data-theme="light"] .track-card:hover { border-color: rgba(230,26,26,.25); box-shadow: 0 8px 32px rgba(0,0,0,.1); }
+[data-theme="light"] .track-card-hd { border-bottom-color: rgba(0,0,0,.06); }
+[data-theme="light"] .timeline-line { background: rgba(0,0,0,.06); }
+[data-theme="light"] .timeline-node { background: rgba(255,255,255,.9); border-color: rgba(0,0,0,.08); }
+[data-theme="light"] .timeline-time { color: rgba(26,18,32,.4); }
+[data-theme="light"] .detail-label { color: rgba(26,18,32,.45); }
+[data-theme="light"] .detail-row + .detail-row { border-top-color: rgba(0,0,0,.06); }
+[data-theme="light"] .track-issue-card { background: rgba(0,0,0,.02); border-color: rgba(0,0,0,.06); }
+[data-theme="light"] .track-issue-card p { color: rgba(26,18,32,.45); }
+[data-theme="light"] .track-issue-card .btn-ghost { background: rgba(0,0,0,.03); border-color: rgba(0,0,0,.08); color: rgba(26,18,32,.65); }
+[data-theme="light"] .my-order-row { background: rgba(0,0,0,.02); border-color: rgba(0,0,0,.06); }
+[data-theme="light"] .my-order-row:hover { border-color: rgba(230,26,26,.25); }
+[data-theme="light"] .map-placeholder { background: linear-gradient(135deg, rgba(245,240,235,.8), rgba(237,230,223,.9)); border-color: rgba(0,0,0,.06); }
+[data-theme="light"] .status-new { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.1); color: rgba(26,18,32,.5); }
+
+@media (max-width: 900px) {
+  .track-grid { grid-template-columns: 1fr; }
+  .tracking-hero { min-height: 44vh; padding: 100px 20px 50px; }
+  .tracking-body { padding: 0 20px; margin-top: -30px; }
+  .my-orders-section { padding: 32px 20px 0; }
+}
+
+@media (max-width: 560px) {
+  .tracking-hero { min-height: 38vh; padding: 90px 16px 40px; }
+  .track-hero-title { font-size: clamp(1.6rem, 8vw, 2.2rem); }
+  .tracking-body { padding: 0 16px; }
+  .tracking-search-bar { flex-direction: column; }
+  .tracking-search-bar .btn { width: 100%; }
+  .track-card-hd { padding: 14px 16px; }
+  .track-card-body { padding: 16px; }
+  .my-orders-section { padding: 24px 16px 0; }
+}
