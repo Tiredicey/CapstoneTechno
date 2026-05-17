@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Video Greeting QR Dashboard — Bloom Staff</title>
   <link rel="stylesheet" href="/css/main.css">
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+  <script src="/js/vendor/qrcode.min.js"></script>
   <style>
     :root {
       --p5: #E61A1A;
@@ -35,8 +35,9 @@
     .qr-card:hover { border-color: rgba(230,26,26,.35); box-shadow: 0 12px 40px rgba(168,16,16,.2); }
     .qr-order-id { font-family: var(--fc); font-weight: 900; font-size: 1rem; letter-spacing: .06em; margin-bottom: 6px; }
     .qr-meta { font-size: .78rem; color: rgba(255,255,255,.45); margin-bottom: 16px; line-height: 1.5; }
-    .qr-canvas-wrap { display: flex; align-items: center; justify-content: center; padding: 20px; background: #fff; border-radius: var(--rs); margin-bottom: 16px; }
+    .qr-canvas-wrap { display: flex; align-items: center; justify-content: center; padding: 20px; background: #fff; border-radius: var(--rs); margin-bottom: 16px; min-height: 220px; }
     .qr-canvas-wrap canvas { display: block; }
+    .qr-canvas-wrap img { display: block; }
     .qr-url { font-size: .68rem; color: rgba(255,255,255,.35); word-break: break-all; margin-bottom: 16px; padding: 8px 12px; background: rgba(0,0,0,.3); border-radius: 8px; font-family: monospace; }
     .qr-actions { display: flex; gap: 8px; }
     .qr-btn { flex: 1; padding: 8px 14px; border-radius: 10px; font-size: .78rem; font-weight: 700; border: none; cursor: pointer; transition: all .2s; text-align: center; }
@@ -57,6 +58,7 @@
     .dash-filter select:focus, .dash-filter input:focus { border-color: var(--p5); box-shadow: 0 0 0 3px rgba(230,26,26,.12); }
     .dash-filter select option { background: var(--bg2); }
     .dash-filter label { font-size: .72rem; color: rgba(255,255,255,.5); font-weight: 600; letter-spacing: .05em; text-transform: uppercase; }
+    .qr-err { color: var(--p5l); font-size: .72rem; text-align: center; padding: 8px; }
     @media print {
       body { background: #fff; color: #000; }
       .dash-hd, .dash-filter, .qr-actions, .dash-back, .qr-video-tag, .qr-url { display: none !important; }
@@ -99,18 +101,29 @@
     (function () {
       var Api = window.Api || window.__BloomApi;
       var allOrders = [];
+      var qrDataUrls = {};
       async function loadOrders() {
         var grid = document.getElementById('qrGrid');
         try {
           allOrders = await Api.get('/orders?limit=100');
           if (!Array.isArray(allOrders) || !allOrders.length) {
-            grid.innerHTML = '<div class="dash-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>No orders with video greetings found.</div>';
+            grid.innerHTML = '<div class="dash-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>No orders found.</div>';
             return;
           }
           renderCards(allOrders);
         } catch (e) {
-          grid.innerHTML = '<div class="dash-empty">Failed to load orders. Ensure you are logged in as admin.</div>';
+          grid.innerHTML = '<div class="dash-empty">Failed to load orders. Ensure you are logged in as admin.<br><small style="color:rgba(255,255,255,.3);margin-top:8px;display:block;">' + (e.message || '') + '</small></div>';
         }
+      }
+      function parseRecipient(o) {
+        try {
+          var r = typeof o.recipient === 'string' ? JSON.parse(o.recipient) : o.recipient;
+          if (r) {
+            if (r.name) return r.name;
+            if (r.firstName || r.lastName) return ((r.firstName || '') + ' ' + (r.lastName || '')).trim();
+          }
+        } catch {}
+        return 'Unknown';
       }
       function renderCards(orders) {
         var grid = document.getElementById('qrGrid');
@@ -132,25 +145,15 @@
         grid.innerHTML = filtered.map(function (o, i) {
           var hasVideo = !!o.video_greeting;
           var qr = o.qr_code || o.id;
-          var recipient;
-          try {
-            var r = typeof o.recipient === 'string' ? JSON.parse(o.recipient) : o.recipient;
-            if (r) {
-              if (r.name) recipient = r.name;
-              else if (r.firstName || r.lastName) recipient = (r.firstName || '') + ' ' + (r.lastName || '');
-              else recipient = 'Unknown';
-            } else {
-              recipient = 'Unknown';
-            }
-          } catch { recipient = 'Unknown'; }
+          var recipient = parseRecipient(o);
           var trackUrl = window.location.origin + '/tracking.html?id=' + encodeURIComponent(qr);
-          return '<div class="qr-card" data-idx="' + i + '">' +
+          return '<div class="qr-card" data-idx="' + i + '" data-qr="' + qr + '">' +
             '<div class="qr-order-id">' + qr + '</div>' +
             '<div class="qr-meta">Recipient: ' + recipient + '<br>Date: ' + (o.delivery_date || '\u2014') + ' \u00B7 ' + (o.delivery_slot || '\u2014') + '</div>' +
             '<span class="qr-video-tag ' + (hasVideo ? 'has' : 'none') + '">' +
               (hasVideo ? '\uD83C\uDFA5 Video Attached' : 'No Video') +
             '</span>' +
-            '<div class="qr-canvas-wrap"><canvas id="qr_' + i + '"></canvas></div>' +
+            '<div class="qr-canvas-wrap" id="qrWrap_' + i + '"></div>' +
             '<div class="qr-url">' + trackUrl + '</div>' +
             '<div class="qr-actions">' +
               '<button class="qr-btn qr-btn-print" data-action="print" data-idx="' + i + '">Print</button>' +
@@ -158,36 +161,80 @@
             '</div>' +
           '</div>';
         }).join('');
+        generateQRCodes(filtered);
+      }
+      function generateQRCodes(filtered) {
+        if (!window.QRCode) {
+          filtered.forEach(function (o, i) {
+            var wrap = document.getElementById('qrWrap_' + i);
+            if (wrap) wrap.innerHTML = '<div class="qr-err">QR library not loaded. Check network.</div>';
+          });
+          return;
+        }
         filtered.forEach(function (o, i) {
-          var canvas = document.getElementById('qr_' + i);
+          var wrap = document.getElementById('qrWrap_' + i);
+          if (!wrap) return;
           var qr = o.qr_code || o.id;
           var trackUrl = window.location.origin + '/tracking.html?id=' + encodeURIComponent(qr);
-          if (canvas && window.QRCode) {
-            QRCode.toCanvas(canvas, trackUrl, {
-              width: 180,
-              margin: 2,
-              color: { dark: '#1a1220', light: '#ffffff' }
-            });
-          }
+          var canvas = document.createElement('canvas');
+          wrap.innerHTML = '';
+          wrap.appendChild(canvas);
+          QRCode.toCanvas(canvas, trackUrl, {
+            width: 180,
+            margin: 2,
+            color: { dark: '#1a1220', light: '#ffffff' }
+          }, function (err) {
+            if (err) {
+              wrap.innerHTML = '<div class="qr-err">QR generation failed</div>';
+              return;
+            }
+            try {
+              qrDataUrls[i] = canvas.toDataURL('image/png');
+            } catch (e) {}
+          });
         });
       }
       function printSingle(idx) {
         var card = document.querySelector('[data-idx="' + idx + '"]');
         if (!card) return;
-        var w = window.open('', '_blank', 'width=400,height=600');
-        w.document.write('<html><head><title>Print QR</title><style>body{font-family:sans-serif;text-align:center;padding:40px;}.qr-order-id{font-size:1.4rem;font-weight:900;margin-bottom:8px;}.qr-meta{font-size:.85rem;color:#666;margin-bottom:20px;}.qr-tag{display:inline-block;padding:4px 10px;border-radius:6px;font-size:.7rem;margin-bottom:16px;background:#f0f0f0;}.qr-tag.has{background:#d4edda;color:#155724;}</style></head><body>');
-        w.document.write('<div class="qr-order-id">' + card.querySelector('.qr-order-id').textContent + '</div>');
-        w.document.write('<div class="qr-meta">' + card.querySelector('.qr-meta').innerHTML + '</div>');
+        var orderId = card.querySelector('.qr-order-id').textContent;
+        var metaHtml = card.querySelector('.qr-meta').innerHTML;
         var tag = card.querySelector('.qr-video-tag');
-        w.document.write('<div class="qr-tag ' + (tag.classList.contains('has') ? 'has' : '') + '">' + tag.textContent + '</div>');
-        var canvas = card.querySelector('canvas');
-        if (canvas) {
-          w.document.write('<div><img src="' + canvas.toDataURL() + '" width="200" height="200"></div>');
+        var tagText = tag ? tag.textContent : '';
+        var hasTag = tag && tag.classList.contains('has');
+        var imgSrc = qrDataUrls[idx] || '';
+        if (!imgSrc) {
+          var canvas = card.querySelector('canvas');
+          if (canvas) {
+            try { imgSrc = canvas.toDataURL('image/png'); } catch (e) {}
+          }
         }
-        w.document.write('<div style="font-size:.72rem;color:#999;margin-top:12px;">Scan to view greeting · Bloom ' + new Date().getFullYear() + '</div>');
-        w.document.write('</body></html>');
+        var w = window.open('', '_blank', 'width=420,height=640');
+        if (!w) return;
+        var html = '<!DOCTYPE html><html><head><title>Print QR</title>' +
+          '<style>' +
+            'body{font-family:system-ui,sans-serif;text-align:center;padding:40px 24px;margin:0;color:#000;}' +
+            '.oid{font-size:1.6rem;font-weight:900;letter-spacing:.04em;margin-bottom:10px;}' +
+            '.meta{font-size:.88rem;color:#555;margin-bottom:20px;line-height:1.6;}' +
+            '.tag{display:inline-block;padding:4px 12px;border-radius:6px;font-size:.72rem;font-weight:700;margin-bottom:20px;letter-spacing:.04em;text-transform:uppercase;}' +
+            '.tag.has{background:#d4edda;color:#155724;border:1px solid #b1dfbb;}' +
+            '.tag.none{background:#f0f0f0;color:#888;border:1px solid #ddd;}' +
+            '.qr-img{margin:20px auto;}' +
+            '.foot{font-size:.72rem;color:#999;margin-top:20px;}' +
+          '</style></head><body>' +
+          '<div class="oid">' + orderId + '</div>' +
+          '<div class="meta">' + metaHtml + '</div>' +
+          '<div class="tag ' + (hasTag ? 'has' : 'none') + '">' + tagText + '</div>';
+        if (imgSrc) {
+          html += '<div class="qr-img"><img src="' + imgSrc + '" width="220" height="220" alt="QR Code"></div>';
+        } else {
+          html += '<div style="padding:40px;color:#999;">QR Code unavailable</div>';
+        }
+        html += '<div class="foot">Scan to view greeting \u00B7 Bloom ' + new Date().getFullYear() + '</div>';
+        html += '</body></html>';
+        w.document.write(html);
         w.document.close();
-        setTimeout(function () { w.print(); }, 300);
+        w.onload = function () { w.focus(); w.print(); };
       }
       function copyUrl(url) {
         navigator.clipboard.writeText(url).then(function () {
