@@ -82,8 +82,8 @@ try {
         <section class="hero-about">
           <div class="con">
             <span class="tag-team">Our Team</span>
-            <h1 class="sec-title-large">Built by students<br>who care about details.</h1>
-            <p class="sec-sub-about">Bloom is a capstone project by BSIT students of STI College Lipa. Every pixel, every line of code, and every platform workflow was built from scratch - with the intent to ship a real product, not a classroom demo.</p>
+            <h1 class="sec-title-large">We're students<br>who built something real.</h1>
+            <p class="sec-sub-about">Bloom started as a capstone project by BSIT students at STI College Lipa. We wanted to build a flower delivery platform that actually works — not just a slide deck, but something people can use, test, and give honest feedback on.</p>
           </div>
         </section>
         <section style="padding:0 0 80px">
@@ -93,25 +93,25 @@ try {
                 <div class="team-avatar">👨‍💻</div>
                 <div class="team-name">Team Lead</div>
                 <div class="team-role">Full-Stack Developer</div>
-                <p class="team-bio">Architected the entire platform - from the Express backend and SQLite data layer to the real-time WebSocket system and admin dashboard.</p>
+                <p class="team-bio">Built the backend server, database, real-time order updates, and the admin dashboard that powers everything behind the scenes.</p>
               </div>
               <div class="team-card">
                 <div class="team-avatar">🎨</div>
                 <div class="team-name">UI/UX Designer</div>
                 <div class="team-role">Frontend & Design</div>
-                <p class="team-bio">Designed the dark-mode interface, accessibility features, micro-animations, and the responsive component system that works across all devices.</p>
+                <p class="team-bio">Designed how everything looks and feels — the dark mode, the animations, the mobile layouts, and making sure the site is usable for people with disabilities.</p>
               </div>
               <div class="team-card">
                 <div class="team-avatar">📊</div>
                 <div class="team-name">Project Manager</div>
                 <div class="team-role">Documentation & QA</div>
-                <p class="team-bio">Managed sprint planning, coordinated testing cycles, wrote the technical documentation, and ensured WCAG 2.1 AA conformance.</p>
+                <p class="team-bio">Kept the team organized, wrote the documentation, tested every feature, and made sure the site meets accessibility standards.</p>
               </div>
               <div class="team-card">
                 <div class="team-avatar">🔧</div>
                 <div class="team-name">Backend Developer</div>
                 <div class="team-role">API & Database</div>
-                <p class="team-bio">Built the REST API, cart engine, pricing system, authentication flows with bcrypt + JWT, and the real-time notification infrastructure.</p>
+                <p class="team-bio">Built the shopping cart, pricing logic, secure login system, and the notification system that keeps you updated on your order.</p>
               </div>
             </div>
           </div>
@@ -125,18 +125,18 @@ try {
             <div class="values-grid">
               <div class="value-card">
                 <div class="value-icon">❄️</div>
-                <div class="value-title">Freshness First</div>
-                <p class="value-desc">The platform is designed to model logistics guidelines, demonstrating workflow capabilities from order to handoff.</p>
+                <div class="value-title">Freshness matters</div>
+                <p class="value-desc">We designed the ordering process around keeping flowers fresh — from temperature-aware handling guidelines to delivery windows you choose yourself.</p>
               </div>
               <div class="value-card">
                 <div class="value-icon">♿</div>
-                <div class="value-title">Accessibility by Default</div>
-                <p class="value-desc">WCAG 2.1 AA conformance target. Keyboard navigation, screen reader labels, reduced motion support, and 4.5:1 contrast ratios.</p>
+                <div class="value-title">Everyone should be able to use this</div>
+                <p class="value-desc">We built the site to work with keyboards, screen readers, and for people who prefer less motion. We aim for WCAG 2.1 AA accessibility standards.</p>
               </div>
               <div class="value-card">
                 <div class="value-icon">📸</div>
-                <div class="value-title">Honest Delivery</div>
-                <p class="value-desc">The system supports timestamped photo proof of delivery. It models resolution workflows for order discrepancies.</p>
+                <div class="value-title">You'll see what we deliver</div>
+                <p class="value-desc">We take a photo when your order arrives so you can see it got there safely. If something isn't right, our support system helps sort it out.</p>
               </div>
             </div>
           </div>
@@ -244,14 +244,14 @@ try {
       .tbl-log td{padding:10px 14px;border:1px solid rgba(255,255,255,.06);color:rgba(255,255,255,.7)}
       </style>
       <main>
-        <section class="hero-ship"><div class="con"><span class="tag-ship">Logistics</span><h1 class="sec-title-s">Shipping & Delivery</h1><p class="sec-sub-s">Comprehensive logistics tracking, showing your order progression from preparation to delivery.</p></div></section>
+        <section class="hero-ship"><div class="con"><span class="tag-ship">Delivery</span><h1 class="sec-title-s">How we get flowers to you</h1><p class="sec-sub-s">Here's everything you need to know about where we deliver, how long it takes, and what to expect.</p></div></section>
         <section><div class="con">
-          <div class="sc-box"><h2 class="sh-title">Delivery Areas</h2><p class="sp-desc">We deliver to Metro Manila, Batangas, Cavite, Laguna, Rizal, Bulacan, Pampanga, Cebu City, and Baguio. More regions are being added quarterly.</p></div>
+          <div class="sc-box"><h2 class="sh-title">Where we deliver</h2><p class="sp-desc">Right now, we cover Metro Manila, Batangas, Cavite, Laguna, Rizal, Bulacan, Pampanga, Cebu City, and Baguio. We're working on adding more areas.</p></div>
           <div class="sc-box"><h2 class="sh-title">Lead Times</h2><table class="tbl-log"><thead><tr><th>Area</th><th>Standard</th><th>Express</th></tr></thead><tbody><tr><td>Metro Manila</td><td>48 hours</td><td>24 hours (+₱350)</td></tr><tr><td>Batangas / Cavite / Laguna</td><td>48 hours</td><td>24 hours (+₱450)</td></tr><tr><td>Cebu City</td><td>72 hours</td><td>48 hours (+₱500)</td></tr><tr><td>Baguio / Pampanga / Bulacan</td><td>72 hours</td><td>48 hours (+₱450)</td></tr></tbody></table></div>
-          <div class="sc-box"><h2 class="sh-title">Delivery Windows</h2><p class="sp-desc">Choose a 1-hour delivery window at checkout, including evening slots (6-9 PM). The selected time is locked at checkout - it's our contract with you.</p></div>
-          <div class="sc-box"><h2 class="sh-title">Freshness-First Handling</h2><p class="sp-desc">We use temperature-aware logistics based on UC Davis postharvest research guidelines (0-4°C recommended range). This ensures we maintain floral quality during transit.</p></div>
+          <div class="sc-box"><h2 class="sh-title">Pick your delivery time</h2><p class="sp-desc">At checkout, choose a 1-hour window that works for you — including evening slots from 6 to 9 PM. Once you confirm, we'll do our best to hit that window.</p></div>
+          <div class="sc-box"><h2 class="sh-title">Keeping things cool</h2><p class="sp-desc">Flowers last longer when kept between 0–4°C. We follow temperature handling practices based on UC Davis postharvest research to help your arrangement stay fresh during transit.</p></div>
           <div class="sc-box"><h2 class="sh-title">Free Shipping</h2><p class="sp-desc">Orders above ₱4,200 ship free. Below that threshold, a flat ₱560 delivery fee applies. Subscription orders always ship free.</p></div>
-          <div class="sc-box"><h2 class="sh-title">Photo Proof of Delivery</h2><p class="sp-desc">Every delivery is documented with a timestamped photo at the recipient's location. You'll receive this in your order confirmation email within 15 minutes of delivery.</p></div>
+          <div class="sc-box"><h2 class="sh-title">Photo when it arrives</h2><p class="sp-desc">We take a photo at the delivery location so you can see your order arrived. You'll get this in your confirmation email shortly after delivery.</p></div>
         </div></section>
       </main>
     `,
@@ -267,14 +267,14 @@ try {
       .rp-desc{font-size:.88rem;color:rgba(255,255,255,.62);line-height:1.75;padding-left:12px}
       </style>
       <main>
-        <section class="hero-ret"><div class="con"><span class="tag-ret">Promise</span><h1 class="sec-title-r">Our Service Promise</h1><p class="sec-sub-r">Clear, accountable resolution workflows for a reliable Bloom experience.</p></div></section>
+        <section class="hero-ret"><div class="con"><span class="tag-ret">Our promise</span><h1 class="sec-title-r">What happens if something goes wrong</h1><p class="sec-sub-r">We want every order to go smoothly. When it doesn't, here's how we handle it.</p></div></section>
         <section><div class="con">
-          <div class="rc-box"><h2 class="rh-title">🌹 Tracking Integration</h2><p class="rp-desc">The Bloom platform tracks cold-chain logistics from harvest to delivery, powering automated issue resolution.</p></div>
-          <div class="rc-box"><h2 class="rh-title">📸 Photo Proof</h2><p class="rp-desc">We require timestamped photo proof of delivery to ensure end-to-end order accountability.</p></div>
-          <div class="rc-box"><h2 class="rh-title">⏰ On-Time Delivery</h2><p class="rp-desc">We track chosen 1-hour delivery windows and have clear compensation workflows for any late deliveries.</p></div>
-          <div class="rc-box"><h2 class="rh-title">💬 Responsive Support</h2><p class="rp-desc">Reach us via live chat, email, or Viber. Our support team responds within 2 hours during operating hours (8 AM-8 PM PHT, 7 days a week). Urgent delivery issues are escalated immediately.</p></div>
-          <div class="rc-box"><h2 class="rh-title">↩️ Issue Resolution</h2><p class="rp-desc">We provide integrated support ticketing to facilitate seamless issue resolution, including automated remakes and refund workflows.</p></div>
-          <div class="rc-box"><h2 class="rh-title">🔒 Secure Transactions</h2><p class="rp-desc">All payments are processed over HTTPS with transport-layer encryption. Passwords are hashed with bcrypt. Sessions use HTTP-only JWT cookies with CSRF protection. Your data is never shared with third parties.</p></div>
+          <div class="rc-box"><h2 class="rh-title">🌹 Order tracking</h2><p class="rp-desc">You can follow your order from preparation to delivery. If something looks off along the way, our system flags it so we can fix it before it reaches you.</p></div>
+          <div class="rc-box"><h2 class="rh-title">📸 Photo on delivery</h2><p class="rp-desc">We take a photo when your flowers arrive so you can see exactly what was delivered, even if it's a surprise for someone else.</p></div>
+          <div class="rc-box"><h2 class="rh-title">⏰ On-time delivery</h2><p class="rp-desc">You pick a 1-hour delivery window at checkout. If we're late, we'll let you know and work with you on a fair resolution.</p></div>
+          <div class="rc-box"><h2 class="rh-title">💬 Talk to us</h2><p class="rp-desc">You can reach us by chat, email, or Viber. We respond within 2 hours during our operating hours (8 AM–8 PM PHT, every day). Urgent issues get handled first.</p></div>
+          <div class="rc-box"><h2 class="rh-title">↩️ Making it right</h2><p class="rp-desc">If your order has a problem, let us know. We'll work with you to fix it — whether that means a replacement, a refund, or something else that works for you.</p></div>
+          <div class="rc-box"><h2 class="rh-title">🔒 Your data is safe</h2><p class="rp-desc">All connections are encrypted with HTTPS. Your password is hashed (never stored as text). Login sessions use secure tokens. We don't share your information with anyone.</p></div>
         </div></section>
       </main>
     `,
