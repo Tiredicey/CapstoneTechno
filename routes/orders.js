@@ -147,6 +147,10 @@ router.get('/:id', optionalAuth, (req, res) => {
 router.post('/:id/greeting', videoUpload.single('video'), (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No video uploaded' });
+    if (req.file.size < 1024) {
+      try { fs.unlinkSync(req.file.path); } catch {}
+      return res.status(400).json({ error: 'Video file too small — recording may have failed' });
+    }
     const order = OrderModel.getById(req.params.id);
     if (!order) {
       try { fs.unlinkSync(req.file.path); } catch {}
@@ -154,6 +158,7 @@ router.post('/:id/greeting', videoUpload.single('video'), (req, res) => {
     }
     const videoUrl = `/uploads/greetings/${req.file.filename}`;
     db.run('UPDATE orders SET video_greeting = ?, updated_at = unixepoch() WHERE id = ?', [videoUrl, order.id]);
+    console.log(`🎥 Video greeting saved for order ${order.qr_code}: ${videoUrl} (${req.file.size} bytes)`);
     res.json({ success: true, videoUrl });
   } catch (err) {
     console.error('[VIDEO GREETING UPLOAD ERROR]', err);
