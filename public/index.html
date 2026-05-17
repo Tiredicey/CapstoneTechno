@@ -1329,6 +1329,12 @@ input:-webkit-autofill:focus {
     </div>
   </div>
 </section>
+<section class="sec-pad" id="supportUs" aria-label="Support the project" style="background:var(--bg)">
+  <div class="con">
+    <div id="supportUsContent"></div>
+  </div>
+</section>
+<div class="p5-sec-div" aria-hidden="true"></div>
 <footer class="bloom-foot" role="contentinfo">
   <div class="con">
     <div class="foot-grid">
@@ -3033,10 +3039,15 @@ window.addEventListener('beforeinstallprompt', function (e) {
 <script src="/js/core/VoiceNav.js" defer></script>
 <script src="/js/core/VideoMessage.js" defer></script>
 <script src="/js/core/SupplyChain.js" defer></script>
+<script src="/js/core/SupportUs.js" defer></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   if (window.BloomSupplyChain) {
     window.BloomSupplyChain.renderTraceability('supplyChainTrace', 'BLOOM-' + Date.now().toString(36).toUpperCase());
+  }
+  if (window.BloomSupport) {
+    window.BloomSupport.renderSupportSection('supportUsContent');
+    window.BloomSupport.renderFloatingButton();
   }
 });
 </script>
