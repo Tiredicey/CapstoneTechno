@@ -60,6 +60,8 @@
 
 .bloom-cursor-trail {
   mix-blend-mode: screen;
+  border-radius: 50%;
+  filter: blur(0.5px);
 }
 
 .exh-section {
@@ -122,9 +124,9 @@
   transition: transform .5s var(--spring, cubic-bezier(.34,1.56,.64,1)), box-shadow .4s, border-color .3s;
 }
 .exh-card:hover {
-  transform: translateY(-8px) scale(1.01);
-  border-color: rgba(230,26,26,.4);
-  box-shadow: 0 24px 64px rgba(168,16,16,.28);
+  transform: translateY(-10px) scale(1.015);
+  border-color: rgba(230,26,26,.45);
+  box-shadow: 0 28px 72px rgba(168,16,16,.32), 0 0 40px rgba(124,58,237,.08);
 }
 .exh-card-img {
   height: 200px;
@@ -247,12 +249,13 @@
 }
 .expo-canvas-wrap {
   width: 100%;
-  min-height: 480px;
+  min-height: 520px;
   border-radius: var(--r, 20px);
   overflow: hidden;
-  background: #05020a;
+  background: #030108;
   position: relative;
   cursor: grab;
+  box-shadow: 0 0 80px -20px rgba(124,58,237,.15), inset 0 0 60px rgba(0,0,0,.5);
 }
 .expo-canvas-wrap:active {
   cursor: grabbing;
