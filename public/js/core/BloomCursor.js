@@ -8,19 +8,26 @@
   if (!dot || !ring) return;
 
   var trail = [];
-  var TRAIL_COUNT = 5;
+  var TRAIL_COUNT = 7;
   var mx = -100, my = -100;
   var hoverType = '';
+  var velocity = { x: 0, y: 0 };
+  var prevMouse = { x: -100, y: -100 };
 
   for (var i = 0; i < TRAIL_COUNT; i++) {
     var t = document.createElement('div');
     t.className = 'bloom-cursor-trail';
-    t.style.cssText = 'position:fixed;pointer-events:none;z-index:99997;border-radius:50%;width:' + (6 - i) + 'px;height:' + (6 - i) + 'px;opacity:' + (0.3 - i * 0.05) + ';will-change:transform;transition:none;';
+    var size = 8 - i;
+    t.style.cssText = 'position:fixed;pointer-events:none;z-index:99997;border-radius:50%;width:' + size + 'px;height:' + size + 'px;opacity:' + (0.35 - i * 0.04) + ';will-change:transform;transition:none;mix-blend-mode:screen;';
     document.body.appendChild(t);
     trail.push({ el: t, x: -100, y: -100 });
   }
 
   document.addEventListener('mousemove', function (e) {
+    velocity.x = e.clientX - prevMouse.x;
+    velocity.y = e.clientY - prevMouse.y;
+    prevMouse.x = mx;
+    prevMouse.y = my;
     mx = e.clientX;
     my = e.clientY;
   }, { passive: true });
@@ -63,25 +70,64 @@
     }
   }, { passive: true });
 
-  var trailColors = [
-    'rgba(230,26,26,0.4)',
-    'rgba(238,90,160,0.35)',
-    'rgba(255,215,0,0.3)',
-    'rgba(124,58,237,0.25)',
-    'rgba(0,212,170,0.2)'
-  ];
+  var trailPalettes = {
+    default: [
+      'rgba(255,255,255,0.25)',
+      'rgba(232,67,147,0.22)',
+      'rgba(124,58,237,0.18)',
+      'rgba(0,212,170,0.15)',
+      'rgba(255,215,0,0.12)',
+      'rgba(230,26,26,0.10)',
+      'rgba(56,189,248,0.08)'
+    ],
+    product: [
+      'rgba(230,26,26,0.45)',
+      'rgba(238,90,160,0.38)',
+      'rgba(255,215,0,0.32)',
+      'rgba(124,58,237,0.28)',
+      'rgba(0,212,170,0.22)',
+      'rgba(255,107,107,0.18)',
+      'rgba(230,26,26,0.12)'
+    ],
+    canvas: [
+      'rgba(0,212,170,0.35)',
+      'rgba(56,189,248,0.30)',
+      'rgba(124,58,237,0.25)',
+      'rgba(0,212,170,0.20)',
+      'rgba(56,189,248,0.16)',
+      'rgba(124,58,237,0.12)',
+      'rgba(0,212,170,0.08)'
+    ]
+  };
+
+  var hue = 0;
 
   (function animate() {
     requestAnimationFrame(animate);
+    hue = (hue + 0.3) % 360;
+    var speed = Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
+    var springFactor = Math.min(0.6, 0.35 + speed * 0.003);
+    var trailFactor = Math.min(0.5, 0.28 + speed * 0.002);
+
     for (var i = trail.length - 1; i > 0; i--) {
-      trail[i].x += (trail[i - 1].x - trail[i].x) * 0.35;
-      trail[i].y += (trail[i - 1].y - trail[i].y) * 0.35;
+      trail[i].x += (trail[i - 1].x - trail[i].x) * trailFactor;
+      trail[i].y += (trail[i - 1].y - trail[i].y) * trailFactor;
     }
-    trail[0].x += (mx - trail[0].x) * 0.5;
-    trail[0].y += (my - trail[0].y) * 0.5;
+    trail[0].x += (mx - trail[0].x) * springFactor;
+    trail[0].y += (my - trail[0].y) * springFactor;
+
+    var palette = hoverType === 'product' ? trailPalettes.product :
+                  hoverType === 'canvas' ? trailPalettes.canvas :
+                  trailPalettes.default;
+
     for (var j = 0; j < trail.length; j++) {
-      trail[j].el.style.transform = 'translate3d(' + trail[j].x + 'px,' + trail[j].y + 'px,0) translate(-50%,-50%)';
-      trail[j].el.style.background = hoverType === 'product' ? trailColors[j] : (hoverType === 'canvas' ? 'rgba(0,212,170,' + (0.3 - j * 0.05) + ')' : 'rgba(255,255,255,' + (0.2 - j * 0.03) + ')');
+      var stretch = 1 + Math.min(speed * 0.003, 0.4);
+      var angle = Math.atan2(velocity.y, velocity.x) * (180 / Math.PI);
+      trail[j].el.style.transform = 'translate3d(' + trail[j].x + 'px,' + trail[j].y + 'px,0) translate(-50%,-50%) rotate(' + angle + 'deg) scaleX(' + stretch + ')';
+      trail[j].el.style.background = palette[j] || palette[palette.length - 1];
     }
+
+    velocity.x *= 0.92;
+    velocity.y *= 0.92;
   })();
 })();
