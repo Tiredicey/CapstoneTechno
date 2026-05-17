@@ -52,6 +52,7 @@ const CORE_MODULES = [
   'public/js/core/VoiceNav.js',
   'public/js/core/VideoMessage.js',
   'public/js/core/SupplyChain.js',
+  'public/js/core/SupportUs.js',
 ];
 const PAGE_SCRIPTS = [
   'public/js/landing.js',
