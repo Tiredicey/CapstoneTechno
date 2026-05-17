@@ -173,12 +173,36 @@ function renderVideoGreeting(order) {
     '<div class="track-card" style="overflow:hidden;">' +
       '<div class="track-card-hd">' +
         '<span class="track-card-title">\uD83C\uDFA5 Video Greeting</span>' +
-        '<span style="font-size:0.62rem;padding:3px 10px;border-radius:100px;background:rgba(0,212,170,0.12);border:1px solid rgba(0,212,170,0.25);color:rgba(0,212,170,0.9);font-weight:700;letter-spacing:.04em;text-transform:uppercase;">Attached</span>' +
+        '<span id="videoStatusBadge" style="font-size:0.62rem;padding:3px 10px;border-radius:100px;background:rgba(0,212,170,0.12);border:1px solid rgba(0,212,170,0.25);color:rgba(0,212,170,0.9);font-weight:700;letter-spacing:.04em;text-transform:uppercase;">Loading\u2026</span>' +
       '</div>' +
-      '<div style="aspect-ratio:16/9;background:#000;position:relative;">' +
-        '<video src="' + safeUrl + '" controls playsinline preload="metadata" style="width:100%;height:100%;object-fit:contain;display:block;"></video>' +
+      '<div id="videoContainer" style="aspect-ratio:16/9;background:#000;position:relative;">' +
+        '<video id="greetingVideo" src="' + safeUrl + '" controls playsinline muted preload="metadata" style="width:100%;height:100%;object-fit:contain;display:block;"></video>' +
       '</div>' +
     '</div>';
+  var vid = document.getElementById('greetingVideo');
+  var badge = document.getElementById('videoStatusBadge');
+  if (vid) {
+    vid.addEventListener('loadedmetadata', function () {
+      if (badge) {
+        badge.textContent = 'Attached';
+        badge.style.background = 'rgba(0,212,170,0.12)';
+        badge.style.borderColor = 'rgba(0,212,170,0.25)';
+        badge.style.color = 'rgba(0,212,170,0.9)';
+      }
+    });
+    vid.addEventListener('error', function () {
+      var container = document.getElementById('videoContainer');
+      if (container) {
+        container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,0.4);font-size:0.85rem;padding:24px;text-align:center;">Video file unavailable or corrupted.<br>The sender may need to re-record their greeting.</div>';
+      }
+      if (badge) {
+        badge.textContent = 'Unavailable';
+        badge.style.background = 'rgba(239,68,68,0.12)';
+        badge.style.borderColor = 'rgba(239,68,68,0.25)';
+        badge.style.color = 'rgba(239,68,68,0.9)';
+      }
+    });
+  }
 }
 function subscribeSocket(orderId) {
   if (!Store) return;
