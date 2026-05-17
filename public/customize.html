@@ -31,6 +31,7 @@
 <script src="/js/core/ExhibitTicketing.js"></script>
 <script src="/js/core/ExpoGallery.js"></script>
 <script src="/js/core/Motion.js"></script>
+
 <!-- BLOOM_BASE_END -->
 <script type="importmap">
   {
@@ -812,6 +813,7 @@ input:-webkit-autofill:focus {
 <div class="c-ring" id="cRing" aria-hidden="true"></div>
 <div class="c-dot" id="cDot" aria-hidden="true"></div>
 <div id="sbar" aria-hidden="true"></div>
+
 <nav id="nav" role="navigation" aria-label="Main navigation">
   <a href="/" class="n-logo">Bloom</a>
   <button class="hmb" id="hmb" aria-label="Open menu" aria-expanded="false" aria-controls="mobMenu">
@@ -878,6 +880,7 @@ input:-webkit-autofill:focus {
     </div>
   </div>
 </div>
+
 <!-- BLOOM_NAV_END -->
 
 <div class="customize-layout">
@@ -2823,7 +2826,7 @@ window.addEventListener('beforeinstallprompt', function (e) {
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   if (window.BloomSupplyChain) {
-    window.BloomSupplyChain.renderTraceability('supplyChainTrace', 'BLOOM-DEMO');
+    window.BloomSupplyChain.renderTraceability('supplyChainTrace', 'BLOOM-' + Date.now().toString(36).toUpperCase());
   }
 });
 </script>
