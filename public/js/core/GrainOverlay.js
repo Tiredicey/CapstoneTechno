@@ -14,7 +14,7 @@
   var canvas = document.createElement('canvas');
   canvas.id = 'bloomGrainCanvas';
   canvas.setAttribute('aria-hidden', 'true');
-  canvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:99990;opacity:0.045;mix-blend-mode:overlay;';
+  canvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:99990;opacity:0.04;mix-blend-mode:overlay;';
   var enabled = getPref();
   if (!enabled) canvas.style.display = 'none';
 
@@ -25,14 +25,19 @@
 
   var imageData = ctx.createImageData(w, h);
   var data = imageData.data;
+  var tintPhase = 0;
 
   function renderGrain() {
+    tintPhase += 0.008;
+    var rTint = Math.sin(tintPhase) * 12;
+    var gTint = Math.sin(tintPhase + 2.09) * 8;
+    var bTint = Math.sin(tintPhase + 4.19) * 10;
     for (var i = 0; i < data.length; i += 4) {
       var v = (Math.random() * 255) | 0;
-      data[i] = v;
-      data[i + 1] = v;
-      data[i + 2] = v;
-      data[i + 3] = 25;
+      data[i] = Math.min(255, Math.max(0, v + rTint));
+      data[i + 1] = Math.min(255, Math.max(0, v + gTint));
+      data[i + 2] = Math.min(255, Math.max(0, v + bTint));
+      data[i + 3] = 22;
     }
     ctx.putImageData(imageData, 0, 0);
   }
