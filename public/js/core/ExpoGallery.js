@@ -3,7 +3,9 @@
   if (typeof THREE === 'undefined') {
     var s = document.createElement('script');
     s.src = 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js';
-    s.onload = init;
+    var _warn = console.warn;
+    s.onload = function () { console.warn = _warn; init(); };
+    console.warn = function () { if (arguments[0] && String(arguments[0]).indexOf('deprecated') !== -1) return; _warn.apply(console, arguments); };
     document.head.appendChild(s);
   } else {
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
