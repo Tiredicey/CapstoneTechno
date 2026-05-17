@@ -81,14 +81,24 @@
   --shadow-color: rgba(0,0,0,.3);
 
   /* Ethereal & Artistic Tokens */
-  --ethereal-obsidian: #05020a;
+  --ethereal-obsidian: #030108;
   --ethereal-neon-pink: #ff00ff;
-  --ethereal-glow-pink: rgba(255, 0, 255, 0.6);
-  --ethereal-glow-red: rgba(230, 26, 26, 0.6);
-  --ethereal-blur: 24px;
+  --ethereal-glow-pink: rgba(255, 0, 255, 0.55);
+  --ethereal-glow-red: rgba(230, 26, 26, 0.55);
+  --ethereal-glow-gold: rgba(255, 215, 0, 0.2);
+  --ethereal-glow-mint: rgba(0, 212, 170, 0.2);
+  --ethereal-glow-violet: rgba(124, 58, 237, 0.35);
+  --ethereal-blur: 28px;
   --glass-bg: rgba(255, 255, 255, 0.03);
   --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-shine: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+  --glass-shine: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(124,58,237,0.03) 50%, transparent 100%);
+
+  --aurora-violet: #7c3aed;
+  --aurora-rose: #e84393;
+  --aurora-crimson: #e61a1a;
+  --aurora-gold: #ffd700;
+  --aurora-mint: #00d4aa;
+  --aurora-sky: #38bdf8;
 }
 
 [data-theme="light"] {
