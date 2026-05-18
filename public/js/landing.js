@@ -129,17 +129,17 @@ async function loadBanners() {
   try {
     const banners = await Api.get('/banners');
     if (!Array.isArray(banners) || !banners.length) return;
-    const heroEl = document.getElementById('heroBanner');
+    const heroEl = document.getElementById('heroPhoto');
     const activeBanners = banners.filter(function (b) { return b.active; });
-    if (!heroEl || !activeBanners.length) return;
+    if (!activeBanners.length) return;
     const b = activeBanners[0];
-    if (b.image_url) {
+    if (heroEl && b.image_url) {
       heroEl.style.backgroundImage = 'url(' + b.image_url + ')';
       heroEl.style.backgroundSize = 'cover';
       heroEl.style.backgroundPosition = 'center';
     }
-    const titleEl = document.getElementById('heroTitle');
-    const subtitleEl = document.getElementById('heroSubtitle');
+    const titleEl = document.querySelector('[data-content-key="heroHeadline"]') || document.querySelector('[data-content-key="hero_title_2"]');
+    const subtitleEl = document.querySelector('[data-content-key="hero_subtitle"]');
     if (titleEl && b.title) titleEl.textContent = b.title;
     if (subtitleEl && b.subtitle) subtitleEl.textContent = b.subtitle;
   } catch {}
