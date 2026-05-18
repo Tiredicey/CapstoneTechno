@@ -54,7 +54,7 @@ const resolveProduct = (req) => {
   }
   if (!product) return { error: { status: 404, message: 'Product not found' } };
   if ((product.inventory || 0) < 1) return { error: { status: 400, message: 'Out of stock' } };
-  return { product, pid };
+  return { pid, product };
 };
 
 const buildItem = (pid, product, body) => {
