@@ -21,6 +21,7 @@ class DatabaseClass {
     this.seedProducts();
     this.seedPromoCodes();
     this.seedFaqs();
+    this.seedSiteContent();
     return this;
   }
   createTables() {
@@ -298,6 +299,36 @@ class DatabaseClass {
       ]
     ]);
     console.log('🌸 FAQs seeded');
+  }
+  seedSiteContent() {
+    const count = this.db.prepare('SELECT COUNT(*) AS c FROM site_content').get();
+    if (count.c > 0) return;
+    const insert = this.db.prepare(
+      `INSERT INTO site_content (key, value, type) VALUES (?, ?, ?)`
+    );
+    const defaults = [
+      ['heroBadge', 'Handcrafted · Pre-Order · Delivered with Love', 'text'],
+      ['heroHeadline', 'Blooms Built For Your Moment', 'text'],
+      ['hero_subtitle', 'Custom bouquets for every occasion, handcrafted with love and delivered fresh across the Philippines.', 'text'],
+      ['freeShipThreshold', '4350', 'number'],
+      ['banner', '🌸 Free delivery on orders over ₱4,350', 'text'],
+      ['bannerActive', '1', 'boolean'],
+      ['corpHeadline', 'Corporate Partnerships', 'text'],
+      ['instagramUrl', 'https://instagram.com/bloom', 'text'],
+      ['facebookUrl', 'https://facebook.com/bloom', 'text'],
+      ['footerTagline', 'Fresh flowers, delivered with care. A BSIT capstone project by STI College Lipa.', 'text'],
+      ['sub_weekly_name', 'Weekly Bloom', 'text'],
+      ['sub_weekly_price', '1499', 'number'],
+      ['sub_biweekly_name', 'Biweekly Refresh', 'text'],
+      ['sub_biweekly_price', '2299', 'number'],
+      ['sub_monthly_name', 'Monthly Statement', 'text'],
+      ['sub_monthly_price', '4299', 'number']
+    ];
+    const seed = this.db.transaction((rows) => {
+      for (const [key, value, type] of rows) insert.run(key, value, type);
+    });
+    seed(defaults);
+    console.log('🌸 Site content seeded');
   }
   get(sql, params = []) {
     const p = Array.isArray(params) ? params : [params];
