@@ -2,12 +2,30 @@ const { Api, Store } = window;
 const Toast = window.Toast || { show: (m, t) => window.showToast?.(m, t) || alert(m) };
 
 const FAQS = [
-  { q: 'How far in advance should I pre-order?', a: 'Order at least 2 days in advance. For weddings or 10+ corporate arrangements, 7–14 days is best.' },
-  { q: 'Can I change my delivery date after ordering?', a: 'Yes — contact support at least 24 hours before scheduled delivery and we will reschedule free of charge.' },
-  { q: 'What is your refund policy?', a: 'Submit a ticket with your order code and a photo. Resolution is handled within 24 hours by a live agent.' },
-  { q: 'Do you offer corporate bulk pricing?', a: 'Yes — 10+ arrangements unlock B2B pricing. Open a ticket with subject "corporate".' },
-  { q: 'How do loyalty points work?', a: 'Earn 10 points per ₱1 spent. Redeem at ₱0.01 per point, up to 10% of order total.' },
-  { q: 'Can I track my delivery in real time?', a: 'Yes — use the Track Order page or paste your BLOOM- code in chat. Live socket updates included.' }
+  {
+    q: 'How far in advance should I pre-order?',
+    a: 'Order at least 2 days in advance. For weddings or 10+ corporate arrangements, 7–14 days is best.'
+  },
+  {
+    q: 'Can I change my delivery date after ordering?',
+    a: 'Yes — contact support at least 24 hours before scheduled delivery and we will reschedule free of charge.'
+  },
+  {
+    q: 'What is your refund policy?',
+    a: 'Submit a ticket with your order code and a photo. Resolution is handled within 24 hours by a live agent.'
+  },
+  {
+    q: 'Do you offer corporate bulk pricing?',
+    a: 'Yes — 10+ arrangements unlock B2B pricing. Open a ticket with subject "corporate".'
+  },
+  {
+    q: 'How do loyalty points work?',
+    a: 'Earn 10 points per ₱1 spent. Redeem at ₱0.01 per point, up to 10% of order total.'
+  },
+  {
+    q: 'Can I track my delivery in real time?',
+    a: 'Yes — use the Track Order page or paste your BLOOM- code in chat. Live socket updates included.'
+  }
 ];
 
 const BLOOM_CODE_REGEX = /\b(BLOOM-[A-Z0-9]{4,}|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\b/i;
@@ -16,8 +34,37 @@ const HISTORY_KEY = 'bloom_chat_history_v2';
 const POLLINATIONS = 'https://text.pollinations.ai/openai';
 
 const FRUSTRATION_LEXICON = {
-  high: ['scam', 'fraud', 'estafa', 'stolen', 'sue', 'lawsuit', 'horrible', 'disaster', 'unacceptable', 'furious', 'outrage', '詐欺', 'fraude'],
-  mid: ['angry', 'upset', 'frustrated', 'disappointed', 'broken', 'damaged', 'wrong', 'late', 'galit', 'enojado', '怒', 'sucks', 'hate', 'useless'],
+  high: [
+    'scam',
+    'fraud',
+    'estafa',
+    'stolen',
+    'sue',
+    'lawsuit',
+    'horrible',
+    'disaster',
+    'unacceptable',
+    'furious',
+    'outrage',
+    '詐欺',
+    'fraude'
+  ],
+  mid: [
+    'angry',
+    'upset',
+    'frustrated',
+    'disappointed',
+    'broken',
+    'damaged',
+    'wrong',
+    'late',
+    'galit',
+    'enojado',
+    '怒',
+    'sucks',
+    'hate',
+    'useless'
+  ],
   low: ['bad', 'slow', 'confusing', 'annoying', 'pangit', 'malo', 'だめ']
 };
 
@@ -149,9 +196,10 @@ const Agent = {
       const norm = String(code).toUpperCase().trim();
       try {
         const order = await Api.get(`/orders/${encodeURIComponent(norm)}/track`);
-        const recipient = typeof order.recipient === 'string'
-          ? (safeJSON(order.recipient)?.name || 'Customer')
-          : (order.recipient?.name || 'Customer');
+        const recipient =
+          typeof order.recipient === 'string'
+            ? safeJSON(order.recipient)?.name || 'Customer'
+            : order.recipient?.name || 'Customer';
         return {
           ok: true,
           code: norm,
@@ -179,7 +227,9 @@ const Agent = {
       if (name) name.textContent = 'Esperanza · Live Agent';
       if (status) {
         status.textContent = '● Connecting…';
-        setTimeout(() => { status.textContent = '● Connected'; }, 1400);
+        setTimeout(() => {
+          status.textContent = '● Connected';
+        }, 1400);
       }
       return { ok: true };
     },
@@ -191,15 +241,27 @@ const Agent = {
 
     get_cart: async () => {
       const cart = safeJSON(localStorage.getItem('bloom_cart')) || [];
-      const total = cart.reduce((s, i) => s + Number(i.price || i.base_price || 0) * Number(i.qty || i.quantity || 1), 0);
-      return { ok: true, count: cart.length, total: total.toFixed(2), items: cart.map(i => ({ name: i.name, qty: i.qty || 1 })) };
+      const total = cart.reduce(
+        (s, i) => s + Number(i.price || i.base_price || 0) * Number(i.qty || i.quantity || 1),
+        0
+      );
+      return {
+        ok: true,
+        count: cart.length,
+        total: total.toFixed(2),
+        items: cart.map((i) => ({ name: i.name, qty: i.qty || 1 }))
+      };
     },
 
     recommend: async ({ occasion }) => {
       try {
         const data = await Api.get(`/products?occasion=${encodeURIComponent(occasion || '')}&limit=3`);
         const list = data.products || data || [];
-        return { ok: true, occasion, items: list.map(p => ({ id: p.id, name: p.name, price: p.base_price || p.price })) };
+        return {
+          ok: true,
+          occasion,
+          items: list.map((p) => ({ id: p.id, name: p.name, price: p.base_price || p.price }))
+        };
       } catch {
         return { ok: false, error: 'Could not fetch recommendations right now' };
       }
@@ -209,9 +271,7 @@ const Agent = {
   render: {
     track_order(r) {
       if (!r.ok) return `<div class="chat-tool-error">⚠️ ${escapeHtml(r.error)}</div>`;
-      const photo = r.photo
-        ? `<div class="card-photo"><img src="${escapeHtml(r.photo)}"></div>`
-        : '';
+      const photo = r.photo ? `<div class="card-photo"><img src="${escapeHtml(r.photo)}"></div>` : '';
       return `
         <div class="chat-status-card glass-ethereal shimmer">
           <div class="card-hd">
@@ -232,24 +292,32 @@ const Agent = {
       if (!r.ok || !r.items?.length) return '';
       return `
         <div class="chat-reco-grid">
-          ${r.items.map(i => `
+          ${r.items
+            .map(
+              (i) => `
             <a href="/product.html?id=${escapeHtml(i.id)}" class="chat-reco-card" target="_blank">
               <div class="reco-name">${escapeHtml(i.name)}</div>
               <div class="reco-price">₱${Number(i.price).toLocaleString()}</div>
             </a>
-          `).join('')}
+          `
+            )
+            .join('')}
         </div>
       `;
     },
 
     get_cart(r) {
       if (!r.ok || !r.count) return '';
-      const rows = r.items.map(i => `
+      const rows = r.items
+        .map(
+          (i) => `
         <div class="cart-row">
           <span>${escapeHtml(i.name)}</span>
           <span>×${i.qty}</span>
         </div>
-      `).join('');
+      `
+        )
+        .join('');
       return `
         <div class="chat-cart-card glass-ethereal">
           <div class="card-hd">
@@ -263,14 +331,34 @@ const Agent = {
   }
 };
 
-function safeJSON(s) { try { return JSON.parse(s); } catch { return null; } }
-function load(k, fb) { return safeJSON(localStorage.getItem(k)) || fb; }
-function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+function safeJSON(s) {
+  try {
+    return JSON.parse(s);
+  } catch {
+    return null;
+  }
+}
+function load(k, fb) {
+  return safeJSON(localStorage.getItem(k)) || fb;
+}
+function save(k, v) {
+  try {
+    localStorage.setItem(k, JSON.stringify(v));
+  } catch {}
+}
 
 function escapeHtml(s = '') {
-  return String(s).replace(/[&<>"']/g, c => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-  }[c]));
+  return String(s).replace(
+    /[&<>"']/g,
+    (c) =>
+      ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[c]
+  );
 }
 
 function formatMd(s = '') {
@@ -285,7 +373,8 @@ function formatMd(s = '') {
 }
 
 const FaqController = (() => {
-  let all = [], active = 'all';
+  let all = [],
+    active = 'all';
 
   async function load() {
     try {
@@ -293,7 +382,7 @@ const FaqController = (() => {
       const data = res.ok ? await res.json() : null;
       all = (Array.isArray(data) ? data : data?.faqs) || [];
     } catch {}
-    if (!all.length) all = FAQS.map(f => ({ question: f.q, answer: f.a, category: 'general' }));
+    if (!all.length) all = FAQS.map((f) => ({ question: f.q, answer: f.a, category: 'general' }));
     buildTabs();
     render();
   }
@@ -301,28 +390,37 @@ const FaqController = (() => {
   function buildTabs() {
     const wrap = document.getElementById('faqCategoryTabs');
     if (!wrap) return;
-    const cats = ['all', ...new Set(all.map(f => f.category).filter(Boolean))];
-    wrap.innerHTML = cats.map(c => `
+    const cats = ['all', ...new Set(all.map((f) => f.category).filter(Boolean))];
+    wrap.innerHTML = cats
+      .map(
+        (c) => `
       <button type="button" class="faq-tab${c === active ? ' is-active' : ''}" data-cat="${escapeHtml(c)}">
         ${escapeHtml(c.charAt(0).toUpperCase() + c.slice(1))}
       </button>
-    `).join('');
-    wrap.querySelectorAll('.faq-tab').forEach(b => b.addEventListener('click', () => {
-      active = b.dataset.cat;
-      buildTabs();
-      render();
-    }));
+    `
+      )
+      .join('');
+    wrap.querySelectorAll('.faq-tab').forEach((b) =>
+      b.addEventListener('click', () => {
+        active = b.dataset.cat;
+        buildTabs();
+        render();
+      })
+    );
   }
 
   function render() {
     const list = document.getElementById('faqList');
     if (!list) return;
-    const filtered = active === 'all' ? all : all.filter(f => f.category === active);
+    const filtered = active === 'all' ? all : all.filter((f) => f.category === active);
     if (!filtered.length) {
-      list.innerHTML = '<div style="color:rgba(255,255,255,0.3);text-align:center;padding:40px;">No FAQs in this category yet.</div>';
+      list.innerHTML =
+        '<div style="color:rgba(255,255,255,0.3);text-align:center;padding:40px;">No FAQs in this category yet.</div>';
       return;
     }
-    list.innerHTML = filtered.map((f, i) => `
+    list.innerHTML = filtered
+      .map(
+        (f, i) => `
       <div class="faq-item" data-open="false">
         <button type="button" class="faq-trigger" aria-expanded="false">
           <span>${escapeHtml(f.question || f.q)}</span>
@@ -334,14 +432,18 @@ const FaqController = (() => {
           </div>
         </div>
       </div>
-    `).join('');
+    `
+      )
+      .join('');
 
-    list.querySelectorAll('.faq-trigger').forEach(btn => btn.addEventListener('click', () => {
-      const item = btn.closest('.faq-item');
-      const open = item.getAttribute('data-open') === 'true';
-      item.setAttribute('data-open', String(!open));
-      btn.setAttribute('aria-expanded', String(!open));
-    }));
+    list.querySelectorAll('.faq-trigger').forEach((btn) =>
+      btn.addEventListener('click', () => {
+        const item = btn.closest('.faq-item');
+        const open = item.getAttribute('data-open') === 'true';
+        item.setAttribute('data-open', String(!open));
+        btn.setAttribute('aria-expanded', String(!open));
+      })
+    );
   }
 
   return { load, refresh: load };
@@ -368,16 +470,22 @@ function appendQuickReplies(replies) {
   if (!c) return;
   const wrap = document.createElement('div');
   wrap.className = 'chat-chips';
-  wrap.innerHTML = replies.map(r => `
+  wrap.innerHTML = replies
+    .map(
+      (r) => `
     <button type="button" class="chat-chip">${escapeHtml(r)}</button>
-  `).join('');
-  wrap.querySelectorAll('.chat-chip').forEach(b => b.addEventListener('click', () => {
-    const input = document.getElementById('chatInput');
-    if (input) {
-      input.value = b.textContent;
-      sendChat();
-    }
-  }));
+  `
+    )
+    .join('');
+  wrap.querySelectorAll('.chat-chip').forEach((b) =>
+    b.addEventListener('click', () => {
+      const input = document.getElementById('chatInput');
+      if (input) {
+        input.value = b.textContent;
+        sendChat();
+      }
+    })
+  );
   c.appendChild(wrap);
   c.scrollTop = c.scrollHeight;
 }
@@ -413,10 +521,16 @@ function buildContextSystem() {
   const user = Store?.get?.('user');
   const lang = window.I18n?.getLang?.() || Store?.get?.('lang') || 'en';
   const cart = safeJSON(localStorage.getItem('bloom_cart')) || [];
-  const cartTotal = cart.reduce((s, i) => s + Number(i.price || i.base_price || 0) * Number(i.qty || i.quantity || 1), 0);
+  const cartTotal = cart.reduce(
+    (s, i) => s + Number(i.price || i.base_price || 0) * Number(i.qty || i.quantity || 1),
+    0
+  );
   const conn = navigator.connection;
   const low = conn?.saveData || /2g|slow-2g/i.test(conn?.effectiveType || '');
-  return `[SESSION] time=${new Date().toISOString()} | online=${navigator.onLine} | lang=${lang} | user=${user?.name || 'guest'} | cart=${cart.length} items, ₱${cartTotal.toLocaleString()} | bandwidth=${low ? 'LOW (be terse, no emojis)' : 'normal'} | recent_intent=${Agent.state.history.slice(-2).map(m => m.role).join(',')}`;
+  return `[SESSION] time=${new Date().toISOString()} | online=${navigator.onLine} | lang=${lang} | user=${user?.name || 'guest'} | cart=${cart.length} items, ₱${cartTotal.toLocaleString()} | bandwidth=${low ? 'LOW (be terse, no emojis)' : 'normal'} | recent_intent=${Agent.state.history
+    .slice(-2)
+    .map((m) => m.role)
+    .join(',')}`;
 }
 
 async function streamCompletion(messages, onDelta) {
@@ -437,7 +551,8 @@ async function streamCompletion(messages, onDelta) {
   if (!res.ok || !res.body) throw new Error('AI offline');
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
-  let buffer = '', full = '';
+  let buffer = '',
+    full = '';
   while (true) {
     const { value, done } = await reader.read();
     if (done) break;
@@ -474,7 +589,9 @@ async function completeNonStreaming(messages) {
 }
 
 function parseAgentOutput(raw) {
-  let text = raw, toolCall = null, replies = [];
+  let text = raw,
+    toolCall = null,
+    replies = [];
   const toolMatch = raw.match(/>\s*(\w+)(?:\s*(\{.*?\}))?/);
   if (toolMatch) {
     const name = toolMatch[1];
@@ -484,7 +601,11 @@ function parseAgentOutput(raw) {
   }
   const repMatch = text.match(/(?:Suggested replies?|Quick replies?):\s*(.+)$/im);
   if (repMatch) {
-    replies = repMatch[1].split('|').map(s => s.trim()).filter(Boolean).slice(0, 4);
+    replies = repMatch[1]
+      .split('|')
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .slice(0, 4);
     text = text.replace(repMatch[0], '').trim();
   }
   return { text: text.trim(), toolCall, replies };
@@ -514,8 +635,12 @@ async function runAgent(userMsg) {
       if (c) c.scrollTop = c.scrollHeight;
     });
 
+    hideTyping();
     const parsed = parseAgentOutput(final || streamed);
-    if (bubble) bubble.innerHTML = formatMd(parsed.text || '…');
+    if (!bubble) {
+      bubble = appendMessage('', 'bot');
+    }
+    bubble.innerHTML = formatMd(parsed.text || '…');
 
     if (parsed.toolCall) await executeTool(parsed.toolCall);
     if (parsed.replies.length) appendQuickReplies(parsed.replies);
@@ -551,7 +676,10 @@ async function executeTool({ name, args }) {
     const html = renderer(result);
     if (html) appendMessage(html, 'bot', true);
   }
-  Agent.state.history.push({ role: 'system', content: `[tool_result:${name}] ${JSON.stringify(result).slice(0, 600)}` });
+  Agent.state.history.push({
+    role: 'system',
+    content: `[tool_result:${name}] ${JSON.stringify(result).slice(0, 600)}`
+  });
   if (name === 'track_order' && result.ok && /failed|cancelled|delayed/i.test(result.rawStatus || '')) {
     Agent.state.frustration += 2;
   }
@@ -559,11 +687,15 @@ async function executeTool({ name, args }) {
 
 function localFallback(msg) {
   const m = msg.toLowerCase();
-  if (BLOOM_CODE_REGEX.test(m)) return 'I noticed an order code but the AI is offline. Tap "Track my order" to use the live tracker.';
+  if (BLOOM_CODE_REGEX.test(m))
+    return 'I noticed an order code but the AI is offline. Tap "Track my order" to use the live tracker.';
   if (/track|where|status/.test(m)) return 'Visit our Track Order page with your BLOOM- code for live updates.';
-  if (/refund|damaged|wrong/.test(m)) return 'Please open a support ticket with your order ID and a photo — agents reply within 24h.';
-  if (/cancel/.test(m)) return 'Orders can be cancelled up to 12 hours before scheduled delivery. Open a ticket with your order code.';
-  if (/deliver|when|time/.test(m)) return 'Slots: Morning 9–12pm, Afternoon 12–4pm, Evening 4–8pm. Lead time is 48h minimum.';
+  if (/refund|damaged|wrong/.test(m))
+    return 'Please open a support ticket with your order ID and a photo — agents reply within 24h.';
+  if (/cancel/.test(m))
+    return 'Orders can be cancelled up to 12 hours before scheduled delivery. Open a ticket with your order code.';
+  if (/deliver|when|time/.test(m))
+    return 'Slots: Morning 9–12pm, Afternoon 12–4pm, Evening 4–8pm. Lead time is 48h minimum.';
   return 'I am offline right now 🌸 — try Track Order, open a ticket, or browse the FAQ below.';
 }
 
@@ -585,7 +717,10 @@ async function syncOffline() {
   Toast.show(`Reconnected — syncing ${q.length} message${q.length > 1 ? 's' : ''}`, 'success');
   localStorage.removeItem(OFFLINE_KEY);
   if (Agent.state.ticketId) {
-    for (const m of q) await Api.post(`/support/${Agent.state.ticketId}/message`, { message: m.content, sender: 'user' }).catch(() => {});
+    for (const m of q)
+      await Api.post(`/support/${Agent.state.ticketId}/message`, { message: m.content, sender: 'user' }).catch(
+        () => {}
+      );
   }
 }
 
@@ -605,10 +740,19 @@ async function sendChat() {
     showTyping();
     const result = await Agent.tools.track_order({ code: codeMatch[0] });
     hideTyping();
-    appendMessage(result.ok ? `Here is the live status for ${result.code} 🌸` : `I couldn't find ${codeMatch[0]}. Could you double-check the code?`, 'bot');
+    appendMessage(
+      result.ok
+        ? `Here is the live status for ${result.code} 🌸`
+        : `I couldn't find ${codeMatch[0]}. Could you double-check the code?`,
+      'bot'
+    );
     const html = Agent.render.track_order(result);
     if (html) appendMessage(html, 'bot', true);
-    appendQuickReplies(result.ok ? ['Reschedule delivery', 'Talk to a human', 'Open a ticket'] : ['Try again', 'Talk to a human', 'Open ticket']);
+    appendQuickReplies(
+      result.ok
+        ? ['Reschedule delivery', 'Talk to a human', 'Open a ticket']
+        : ['Try again', 'Talk to a human', 'Open ticket']
+    );
     return;
   }
 
@@ -634,14 +778,16 @@ function buildNpsButtons() {
   const row = document.getElementById('npsRow');
   if (!row || row.dataset.built) return;
   row.dataset.built = '1';
-  row.innerHTML = Array.from({ length: 11 }, (_, i) =>
-    `<button type="button" class="btn btn-ghost btn-sm nps-btn" data-nps="${i}" role="radio" aria-checked="false" aria-label="${i} out of 10">${i}</button>`
+  row.innerHTML = Array.from(
+    { length: 11 },
+    (_, i) =>
+      `<button type="button" class="btn btn-ghost btn-sm nps-btn" data-nps="${i}" role="radio" aria-checked="false" aria-label="${i} out of 10">${i}</button>`
   ).join('');
 }
 
 function bindStarRating() {
   const stars = document.querySelectorAll('#csatStars .rating-star');
-  stars.forEach(star => {
+  stars.forEach((star) => {
     star.addEventListener('click', () => {
       Agent.state.csat = Number(star.dataset.val);
       stars.forEach((s, i) => {
@@ -650,7 +796,7 @@ function bindStarRating() {
         s.setAttribute('aria-checked', String(i === Agent.state.csat - 1));
       });
     });
-    star.addEventListener('keydown', e => {
+    star.addEventListener('keydown', (e) => {
       const idx = Number(star.dataset.val) - 1;
       if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
         e.preventDefault();
@@ -679,7 +825,10 @@ function closeChat() {
 }
 
 function wireEvents() {
-  document.getElementById('chatForm')?.addEventListener('submit', e => { e.preventDefault(); sendChat(); });
+  document.getElementById('chatForm')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    sendChat();
+  });
   document.getElementById('closeChatBtn')?.addEventListener('click', () => {
     closeChat();
     document.getElementById('csatSection')?.classList.remove('is-hidden');
@@ -688,7 +837,10 @@ function wireEvents() {
   document.getElementById('openChatBtn')?.addEventListener('click', () => {
     openChat();
     if (!Agent.state.history.length) {
-      appendMessage('Hi 🌸 I am Bloom Assistant. I can track orders, reschedule deliveries, recommend bouquets, or connect you to a human in under a minute.', 'bot');
+      appendMessage(
+        'Hi 🌸 I am Bloom Assistant. I can track orders, reschedule deliveries, recommend bouquets, or connect you to a human in under a minute.',
+        'bot'
+      );
       appendQuickReplies(['Track my order', 'Recommend a bouquet', 'Talk to a human', 'See FAQ']);
     }
   });
@@ -700,7 +852,7 @@ function wireEvents() {
   document.getElementById('openTicketBtn')?.addEventListener('click', () => Agent.tools.open_ticket());
   document.getElementById('openSelfBtn')?.addEventListener('click', () => Agent.tools.show_faq());
 
-  document.getElementById('ticketForm')?.addEventListener('submit', async e => {
+  document.getElementById('ticketForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const form = e.currentTarget;
     if (!form.checkValidity()) return form.reportValidity();
@@ -720,12 +872,17 @@ function wireEvents() {
       form.reset();
       document.getElementById('ticketSection')?.classList.add('is-hidden');
       openChat();
-      appendMessage(`Ticket #${ticket.id.slice(0, 8)} created 🌸 — an agent will reach out within 4 hours. Anything else I can help with right now?`, 'bot');
+      appendMessage(
+        `Ticket #${ticket.id.slice(0, 8)} created 🌸 — an agent will reach out within 4 hours. Anything else I can help with right now?`,
+        'bot'
+      );
       appendQuickReplies(['Track another order', 'Recommend a bouquet', 'Close chat']);
       if (typeof io !== 'undefined') {
         Agent.state.socket ??= io();
         Agent.state.socket.emit('join_support', ticket.id);
-        Agent.state.socket.on('support_message', d => { if (d.sender !== 'user') appendMessage(d.message, 'agent'); });
+        Agent.state.socket.on('support_message', (d) => {
+          if (d.sender !== 'user') appendMessage(d.message, 'agent');
+        });
       }
     } catch (err) {
       Toast.show(err.message || 'Could not submit ticket', 'error');
@@ -735,10 +892,13 @@ function wireEvents() {
     }
   });
 
-  document.addEventListener('click', e => {
+  document.addEventListener('click', (e) => {
     const btn = e.target.closest('.nps-btn');
     if (!btn) return;
-    document.querySelectorAll('.nps-btn').forEach(b => { b.classList.remove('btn-primary'); b.setAttribute('aria-checked', 'false'); });
+    document.querySelectorAll('.nps-btn').forEach((b) => {
+      b.classList.remove('btn-primary');
+      b.setAttribute('aria-checked', 'false');
+    });
     btn.classList.add('btn-primary');
     btn.setAttribute('aria-checked', 'true');
     Agent.state.nps = Number(btn.dataset.nps);
@@ -750,12 +910,15 @@ function wireEvents() {
     try {
       if (Agent.state.ticketId) {
         await Api.post(`/support/${Agent.state.ticketId}/resolve`, {
-          csatScore: Agent.state.csat, npsScore: Agent.state.nps, feedbackComment: comment
+          csatScore: Agent.state.csat,
+          npsScore: Agent.state.nps,
+          feedbackComment: comment
         });
       }
       Toast.show('Thank you for your feedback 🌸', 'success');
       const sec = document.getElementById('csatSection');
-      if (sec) sec.innerHTML = `<div class="glass-card" style="padding:40px;text-align:center;max-width:560px;"><h2 class="section-heading csat-heading" style="margin-bottom:12px;">Thank You! 🌸</h2><p style="color:rgba(255,255,255,0.6);font-size:0.95rem;">Your feedback helps us bloom and grow.</p></div>`;
+      if (sec)
+        sec.innerHTML = `<div class="glass-card" style="padding:40px;text-align:center;max-width:560px;"><h2 class="section-heading csat-heading" style="margin-bottom:12px;">Thank You! 🌸</h2><p style="color:rgba(255,255,255,0.6);font-size:0.95rem;">Your feedback helps us bloom and grow.</p></div>`;
     } catch (e) {
       Toast.show(e.message || 'Could not submit feedback', 'error');
     }
@@ -772,12 +935,15 @@ document.addEventListener('DOMContentLoaded', () => {
   syncOffline();
   Store?.on?.('faq_update', () => FaqController.refresh());
 
-  const hero = document.querySelector('.support-hero, .hero-support, main > section:first-child .con, .support-page > .container > div:first-child');
+  const hero = document.querySelector(
+    '.support-hero, .hero-support, main > section:first-child .con, .support-page > .container > div:first-child'
+  );
   if (hero && !hero.querySelector('.bloom-academic-notice')) {
     const note = document.createElement('div');
     note.className = 'bloom-academic-notice';
     note.setAttribute('role', 'note');
-    note.style.cssText = 'margin:12px 0 0;padding:10px 16px;border-radius:10px;background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);font-size:.78rem;color:rgba(255,255,255,.6);text-align:center;';
+    note.style.cssText =
+      'margin:12px 0 0;padding:10px 16px;border-radius:10px;background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);font-size:.78rem;color:rgba(255,255,255,.6);text-align:center;';
     note.innerHTML = '🎓 Academic Demo — BSIT Capstone project. No commercial agents monitor these tickets.';
     hero.appendChild(note);
   }
