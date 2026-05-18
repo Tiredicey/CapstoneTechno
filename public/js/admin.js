@@ -77,15 +77,25 @@ async function checkAdmin() {
 }
 
 function showLogin() {
-  document.getElementById('loginScreen').style.display='flex';
-  document.getElementById('adminApp').style.display='none';
+  const login = document.getElementById('loginScreen');
+  const app = document.getElementById('adminApp');
+  if (login) { login.hidden = false; login.style.display = ''; }
+  if (app) { app.hidden = true; app.style.display = ''; }
+  document.body.style.overflow = '';
+  setTimeout(() => document.getElementById('loginEmail')?.focus(), 60);
 }
 
 function showApp(user) {
-  document.getElementById('loginScreen').style.display='none';
-  document.getElementById('adminApp').style.display='flex';
+  const login = document.getElementById('loginScreen');
+  const app = document.getElementById('adminApp');
+  if (login) { login.hidden = true; login.style.display = ''; }
+  if (app) { app.hidden = false; app.style.display = ''; }
   const g = document.getElementById('adminGreeting');
-  if (g) g.textContent = `\uD83D\uDC4B ${user.name||user.email}`;
+  if (g) {
+    const hour = new Date().getHours();
+    const greet = hour < 12 ? 'Morning' : hour < 17 ? 'Afternoon' : 'Evening';
+    g.textContent = `🌸 Good ${greet}, ${user.name || user.email || 'Staff'}`;
+  }
 }
 
 async function handleLogin() {
@@ -482,14 +492,15 @@ async function loadAdminProducts() {
       btn.addEventListener('click',()=>openEditProduct(btn.dataset.id));
     });
     tbody.querySelectorAll('.delete-product').forEach(btn=>{
-      btn.addEventListener('click',async()=>{
-        if (!confirm('Delete this product? This cannot be undone.')) return;
-        try {
-          await Api.delete(`/api/products/${btn.dataset.id}`);
-          showToast('Product deleted','success');
-          loadAdminProducts();
-          if (typeof socket !== 'undefined' && socket) socket.emit('admin_updated_catalog');
-        } catch { showToast('Failed to delete','error'); }
+      btn.addEventListener('click',()=>{
+        openConfirm('Delete this product? This cannot be undone.', async () => {
+          try {
+            await Api.delete(`/api/products/${btn.dataset.id}`);
+            showToast('Product deleted \u2713','success');
+            loadAdminProducts();
+            if (typeof socket !== 'undefined' && socket) socket.emit('admin_updated_catalog');
+          } catch { showToast('Failed to delete','error'); }
+        });
       });
     });
   } catch { showToast('Failed to load products','error'); }
@@ -1160,34 +1171,87 @@ async function sendBroadcast() {
 }
 
 function switchPanel(panel) {
-  document.querySelectorAll('.panel').forEach(p=>p.style.display='none');
-  document.querySelectorAll('.admin-nav-item').forEach(n=>n.classList.remove('active'));
-  const el=document.getElementById(`panel-${panel}`);
-  if (el) el.style.display='block';
-  const nav=document.querySelector(`[data-panel="${panel}"]`);
-  if (nav) nav.classList.add('active');
-  const loaders={
-    dashboard:loadDashboard,
-    products:loadAdminProducts,
-    orders:loadAllOrders,
-    queue:loadQueue,
-    inventory:loadInventory,
-    banners:loadBanners,
-    faqs:loadFaqs,
-    content:loadContent,
-    users:loadUsers,
-    support:loadSupportTickets,
-    reviews:loadReviews,
-    promos:loadPromos,
-    analytics:loadAnalytics
+  document.querySelectorAll('.panel').forEach(p => {
+    p.classList.remove('active');
+    p.hidden = true;
+    p.style.display = '';
+  });
+  document.querySelectorAll('.admin-nav-item').forEach(n => {
+    n.classList.remove('active');
+    n.removeAttribute('aria-current');
+  });
+  const el = document.getElementById(`panel-${panel}`);
+  if (el) { el.hidden = false; el.classList.add('active'); }
+  const nav = document.querySelector(`[data-panel="${panel}"]`);
+  if (nav) { nav.classList.add('active'); nav.setAttribute('aria-current', 'page'); }
+
+  const sidebar = document.getElementById('adminSidebar');
+  const backdrop = document.querySelector('.sidebar-backdrop');
+  if (window.innerWidth <= 900 && sidebar?.classList.contains('open')) {
+    sidebar.classList.remove('open');
+    backdrop?.classList.remove('active');
+    document.getElementById('sidebarToggle')?.setAttribute('aria-expanded', 'false');
+  }
+
+  const loaders = {
+    dashboard: loadDashboard,
+    products: loadAdminProducts,
+    orders: loadAllOrders,
+    queue: loadQueue,
+    inventory: loadInventory,
+    banners: loadBanners,
+    faqs: loadFaqs,
+    content: loadContent,
+    users: loadUsers,
+    support: loadSupportTickets,
+    reviews: loadReviews,
+    promos: loadPromos,
+    broadcast: () => {},
+    analytics: loadAnalytics
   };
   if (loaders[panel]) loaders[panel]();
+  try { history.replaceState(null, '', `#${panel}`); } catch {}
 }
 
 function bindNav() {
   document.querySelectorAll('.admin-nav-item[data-panel]').forEach(btn=>{
     btn.addEventListener('click',()=>switchPanel(btn.dataset.panel));
   });
+}
+
+function openConfirm(message, onOk) {
+  const modal = document.getElementById('confirmModal');
+  const msg = document.getElementById('confirmMessage');
+  const ok = document.getElementById('confirmOk');
+  if (!modal) { if (window.confirm(message)) onOk(); return; }
+  if (msg) msg.textContent = message;
+  modal.classList.add('active');
+  modal.hidden = false;
+  const cleanup = () => {
+    modal.classList.remove('active');
+    modal.hidden = true;
+    ok.removeEventListener('click', handler);
+  };
+  const handler = () => { cleanup(); try { onOk(); } catch(e) { console.error(e); } };
+  ok.addEventListener('click', handler, { once: true });
+  document.getElementById('confirmCancel')?.addEventListener('click', cleanup, { once: true });
+  document.getElementById('closeConfirm')?.addEventListener('click', cleanup, { once: true });
+}
+window.openConfirm = openConfirm;
+
+function exportCSV(filename, rows) {
+  if (!rows?.length) { showToast('Nothing to export', 'info'); return; }
+  const headers = Object.keys(rows[0]);
+  const escape = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  const csv = [headers.join(','), ...rows.map(r => headers.map(h => escape(r[h])).join(','))].join('\n');
+  const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${filename}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 100);
+  showToast('Export ready \u2713', 'success');
 }
 
 function bindModals() {
@@ -1274,8 +1338,98 @@ function bindModals() {
     const preview=document.getElementById('bannerImagePreview');
     if (!f||!preview) return;
     const url=URL.createObjectURL(f);
-    preview.src=url; preview.style.display='block';
+    preview.src=url; preview.hidden = false; preview.style.display='block';
   });
+
+  const pwToggle = document.getElementById('togglePassword');
+  const pwInput = document.getElementById('loginPassword');
+  if (pwToggle && pwInput) {
+    pwToggle.addEventListener('click', () => {
+      const isPwd = pwInput.type === 'password';
+      pwInput.type = isPwd ? 'text' : 'password';
+      pwToggle.setAttribute('aria-pressed', isPwd ? 'true' : 'false');
+      pwToggle.setAttribute('aria-label', isPwd ? 'Hide password' : 'Show password');
+      pwToggle.textContent = isPwd ? '🙈' : '👁';
+      pwInput.focus();
+    });
+  }
+
+  const sidebar = document.getElementById('adminSidebar');
+  const sidebarBtn = document.getElementById('sidebarToggle');
+  if (sidebar && sidebarBtn) {
+    let backdrop = document.querySelector('.sidebar-backdrop');
+    if (!backdrop) {
+      backdrop = document.createElement('div');
+      backdrop.className = 'sidebar-backdrop';
+      document.body.appendChild(backdrop);
+    }
+    const closeSidebar = () => {
+      sidebar.classList.remove('open');
+      backdrop.classList.remove('active');
+      sidebarBtn.setAttribute('aria-expanded', 'false');
+    };
+    sidebarBtn.addEventListener('click', () => {
+      const isOpen = sidebar.classList.toggle('open');
+      backdrop.classList.toggle('active', isOpen);
+      sidebarBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+    backdrop.addEventListener('click', closeSidebar);
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay.active').forEach(m => {
+        m.classList.remove('active');
+        m.hidden = true;
+      });
+      const sb = document.getElementById('adminSidebar');
+      if (sb?.classList.contains('open')) {
+        sb.classList.remove('open');
+        document.querySelector('.sidebar-backdrop')?.classList.remove('active');
+        document.getElementById('sidebarToggle')?.setAttribute('aria-expanded', 'false');
+      }
+    }
+  });
+
+  document.getElementById('inventorySearch')?.addEventListener('input', e => {
+    const q = e.target.value.toLowerCase();
+    document.querySelectorAll('#inventoryList .inv-row').forEach(row => {
+      const name = row.querySelector('.inv-info')?.textContent.toLowerCase() || '';
+      row.style.display = !q || name.includes(q) ? '' : 'none';
+    });
+  });
+
+  document.getElementById('revenueRange')?.addEventListener('change', loadDashboard);
+  document.getElementById('analyticsRange')?.addEventListener('change', loadAnalytics);
+
+  document.getElementById('exportDash')?.addEventListener('click', () => {
+    const rows = allOrdersCache.length ? allOrdersCache : [];
+    if (!rows.length) { loadAllOrders().then(() => exportCSV('dashboard_orders', allOrdersCache.map(o => ({
+      id: o.qr_code || o.id, date: o.created_at, status: o.status, total: o.pricing?.finalTotal || 0
+    })))); return; }
+    exportCSV('dashboard_orders', rows.map(o => ({
+      id: o.qr_code || o.id, date: o.created_at, status: o.status, total: o.pricing?.finalTotal || 0
+    })));
+  });
+
+  document.getElementById('exportOrders')?.addEventListener('click', () => {
+    exportCSV('orders', allOrdersCache.map(o => {
+      const rec = parseRecipient(o);
+      return {
+        order_id: o.qr_code || o.id,
+        date: o.created_at,
+        customer: `${rec.firstName || rec.name || ''} ${rec.lastName || ''}`.trim() || 'Guest',
+        items: o.items?.length || 0,
+        total: o.pricing?.finalTotal || 0,
+        status: o.status,
+        payment: o.payment_status || 'pending',
+        delivery: o.delivery_date || ''
+      };
+    }));
+  });
+
+  const bannerActiveToggle = document.getElementById('contentBannerActive');
+  if (bannerActiveToggle) bannerActiveToggle.classList.add('toggle-input');
 }
 
 function bindFilters() {
@@ -1341,15 +1495,33 @@ function initWebSocket() {
   } catch {}
 }
 
-document.addEventListener('DOMContentLoaded',async()=>{
+document.addEventListener('DOMContentLoaded', async () => {
+  document.querySelectorAll('.panel').forEach(p => {
+    if (!p.classList.contains('active')) { p.hidden = true; }
+  });
+  document.getElementById('panel-dashboard')?.classList.add('active');
+
   bindLogin();
   bindLogout();
   bindNav();
   bindModals();
   bindFilters();
+
   await checkAdmin();
-  if (Store.get('token')) {
+
+  let token = null;
+  try { token = (window.Store && Store.get('token')) || localStorage.getItem('bloom_token'); } catch {}
+
+  if (token) {
     initWebSocket();
-    loadDashboard();
+    const hash = (location.hash || '#dashboard').slice(1);
+    const valid = ['dashboard','analytics','products','orders','queue','inventory','banners','faqs','content','users','support','reviews','promos','broadcast'];
+    switchPanel(valid.includes(hash) ? hash : 'dashboard');
   }
+
+  window.addEventListener('hashchange', () => {
+    const hash = location.hash.slice(1);
+    const valid = ['dashboard','analytics','products','orders','queue','inventory','banners','faqs','content','users','support','reviews','promos','broadcast'];
+    if (valid.includes(hash)) switchPanel(hash);
+  });
 });
