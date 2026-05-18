@@ -90,16 +90,17 @@ router.get('/occasion/:occasion', (req, res) => {
 router.get('/:id/order-count', (req, res) => {
   try {
     const slug = req.params.id;
+    const cutoff = Math.floor(Date.now() / 1000) - 86400;
     const row = db.get(
       `SELECT COUNT(*) as count FROM orders
-       WHERE JSON_EXTRACT(items, '$') LIKE ?
-       AND created_at >= datetime('now', '-24 hours')`,
-      [`%${slug}%`]
+       WHERE items LIKE ?
+       AND CAST(created_at AS INTEGER) >= ?`,
+      [`%${slug}%`, cutoff]
     );
-    const count = row?.count || Math.floor(Math.random() * 8) + 2;
-    res.json({ count });
+    res.json({ count: row?.count ?? 0 });
   } catch (err) {
-    res.json({ count: 3 });
+    console.error('[ORDER COUNT ERROR]', err);
+    res.status(500).json({ error: 'Failed to fetch order count' });
   }
 });
 
