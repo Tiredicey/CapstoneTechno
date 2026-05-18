@@ -13,6 +13,20 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='52' font-size='52'%3E🌸%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="/css/vars.css">
 <link rel="stylesheet" href="/css/admin.css">
+<script>
+  // Force admin panel to always remain in dark theme regardless of store or system preference
+  document.documentElement.setAttribute('data-theme', 'dark');
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+        if (document.documentElement.getAttribute('data-theme') !== 'dark') {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      }
+    });
+  });
+  observer.observe(document.documentElement, { attributes: true });
+</script>
 </head>
 <body>
 <a href="#mainContent" class="skip-link">Skip to content</a>
