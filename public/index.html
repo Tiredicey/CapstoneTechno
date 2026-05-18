@@ -829,6 +829,9 @@ input:-webkit-autofill:focus {
 </style>
 </head>
 <body>
+<div id="promoBanner" class="promo-banner" style="display:none; justify-content:center; align-items:center; background:linear-gradient(135deg,var(--p5),oklch(50% .22 340)); color:#fff; font-family:var(--fc); font-weight:700; font-size:0.82rem; letter-spacing:0.08em; text-transform:uppercase; padding:8px 16px; text-align:center; z-index:1000; position:relative; box-shadow:0 4px 15px rgba(230,26,26,0.25);" role="region" aria-label="Announcement">
+  <span data-content-key="banner">🌸 Free delivery on orders over ₱4,350</span>
+</div>
 <div id="bloomBoot" role="status" aria-live="polite" aria-label="Bloom is loading">
   <div class="bloom-flower" aria-hidden="true">
     <span class="bloom-petal"></span><span class="bloom-petal"></span><span class="bloom-petal"></span><span class="bloom-petal"></span>
@@ -1063,7 +1066,7 @@ input:-webkit-autofill:focus {
           <span class="hero-eyebrow-tag">Pre-order</span>
           <span class="hero-eyebrow-tag">Freshness-first</span>
           <span class="hero-eyebrow-tag">Flexible scheduling</span>
-          <span class="hero-eyebrow-sub">Gentle care · Designed fresh · At your pace</span>
+          <span class="hero-eyebrow-sub" data-content-key="heroBadge">Gentle care · Designed fresh · At your pace</span>
         </div>
         <h1 class="hero-hl">
           <span data-content-key="hero_title_1">A small gesture,</span>
@@ -1294,7 +1297,7 @@ input:-webkit-autofill:focus {
       </div>
       <div>
         <span class="tag tag-a">For Teams</span>
-        <h2 class="sec-title" style="margin-bottom:16px">Flowers for your team,<br>without the hassle.</h2>
+        <h2 class="sec-title" style="margin-bottom:16px" data-content-key="corpHeadline">Flowers for your team,<br>without the hassle.</h2>
         <p class="sec-sub" style="max-width:none;margin-bottom:18px">Whether it's a work anniversary, a client thank-you, or just making someone's Monday better — tell us what you need and we'll take care of the rest.</p>
         <ul class="corp-list">
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Custom wraps with personal notes, starting at 10 orders</li>
@@ -1375,7 +1378,7 @@ input:-webkit-autofill:focus {
     <div class="foot-grid">
       <div>
         <div class="foot-brand">Bloom</div>
-        <p class="foot-tag">Fresh flowers, delivered with care. A BSIT capstone project by STI College Lipa.</p>
+        <p class="foot-tag" data-content-key="footerTagline">Fresh flowers, delivered with care. A BSIT capstone project by STI College Lipa.</p>
         <form class="nl-form" id="nlForm" aria-label="Newsletter signup">
           <input type="email" class="nl-inp" id="nlEmail" placeholder="your@email.com" aria-label="Email address" required>
           <button type="submit" class="btn btn-p btn-sm">Join</button>
@@ -2514,18 +2517,28 @@ input:-webkit-autofill:focus {
       if (!c) return;
       document.querySelectorAll('[data-content-key]').forEach(el => {
         var key = el.getAttribute('data-content-key');
-        if (c[key] !== undefined && c[key] !== null && c[key] !== '') {
-           var val = c[key];
-           if (key.includes('price') || key.includes('Threshold')) {
-             val = '\u20B1' + Number(val).toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:2});
-           }
-           if (el.tagName === 'INPUT') el.value = val;
-           else el.textContent = val;
+        var dbKey = key;
+        if (key === 'heroHeadline' && c.heroHeadline === undefined) dbKey = 'hero_title_2';
+        if (key === 'hero_title_2' && c.hero_title_2 === undefined) dbKey = 'heroHeadline';
+        
+        if (c[dbKey] !== undefined && c[dbKey] !== null && c[dbKey] !== '') {
+          var val = c[dbKey];
+          if (dbKey.includes('price') || dbKey.includes('Threshold')) {
+            val = '\u20B1' + Number(val).toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:2});
+          }
+          if (el.tagName === 'INPUT') el.value = val;
+          else el.textContent = val;
         }
       });
       if (c.bannerActive !== undefined) {
         var banner = document.getElementById('promoBanner');
         if (banner) banner.style.display = c.bannerActive ? 'flex' : 'none';
+      }
+      if (c.instagramUrl) {
+        document.querySelectorAll('a[href*="instagram.com"]').forEach(el => el.setAttribute('href', c.instagramUrl));
+      }
+      if (c.facebookUrl) {
+        document.querySelectorAll('a[href*="facebook.com"]').forEach(el => el.setAttribute('href', c.facebookUrl));
       }
     } catch (e) {}
   }
