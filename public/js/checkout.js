@@ -258,31 +258,78 @@ document.getElementById('placeOrder')?.addEventListener('click', async () => {
     Store.updateCartCount(0);
     const qrEl = document.getElementById('qrDisplay');
     if (qrEl) qrEl.textContent = order.qr_code || 'BLOOM-CONFIRMED';
+    let vBlob = null;
     if (window.BloomVideoMessage) {
-      var vBlob = await BloomVideoMessage.getBlobAsync();
-      if (vBlob && vBlob.size >= 1024 && order.id) {
+      vBlob = await BloomVideoMessage.getBlobAsync();
+    }
+    if (!vBlob) {
+      vBlob = await new Promise((resolve) => {
         try {
-          var hdrBuf = await vBlob.slice(0, 12).arrayBuffer();
-          var hdr = new Uint8Array(hdrBuf);
-          var isWebm = hdr[0] === 0x1a && hdr[1] === 0x45 && hdr[2] === 0xdf && hdr[3] === 0xa3;
-          var isMp4 = String.fromCharCode(hdr[4], hdr[5], hdr[6], hdr[7]) === 'ftyp';
-          var isOgg = String.fromCharCode(hdr[0], hdr[1], hdr[2], hdr[3]) === 'OggS';
-          if (!isWebm && !isMp4 && !isOgg) {
-            showToast('Recording failed — please try again', 'error');
-          } else {
-            btn.textContent = 'Uploading greeting...';
-            var fd = new FormData();
-            var ext = vBlob.type.indexOf('mp4') !== -1 ? '.mp4' : '.webm';
-            fd.append('video', vBlob, 'greeting' + ext);
-            var uploadResult = await Api.upload('/api/orders/' + order.id + '/greeting', fd, 'POST');
-            if (uploadResult && uploadResult.success) {
-              showToast('Video greeting attached!', 'success');
+          const dbReq = indexedDB.open('BloomDB', 1);
+          dbReq.onerror = () => resolve(null);
+          dbReq.onsuccess = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains('videos')) {
+              resolve(null);
+              return;
             }
-          }
-        } catch (e) {
-          console.warn('[Checkout] Video greeting upload error:', e);
-          showToast('Video greeting could not be saved', 'error');
+            const tx = db.transaction('videos', 'readonly');
+            const store = tx.objectStore('videos');
+            const getKeysReq = store.getAllKeys();
+            getKeysReq.onerror = () => resolve(null);
+            getKeysReq.onsuccess = () => {
+              const keys = getKeysReq.result;
+              const vmKey = keys.find(k => String(k).startsWith('vm_'));
+              if (vmKey) {
+                const getBlobReq = store.get(vmKey);
+                getBlobReq.onerror = () => resolve(null);
+                getBlobReq.onsuccess = () => {
+                  resolve(getBlobReq.result);
+                };
+              } else {
+                resolve(null);
+              }
+            };
+          };
+        } catch (err) {
+          console.warn('[Checkout] IndexedDB read error:', err);
+          resolve(null);
         }
+      });
+    }
+
+    if (vBlob && vBlob.size >= 1024 && order.id) {
+      try {
+        var hdrBuf = await vBlob.slice(0, 12).arrayBuffer();
+        var hdr = new Uint8Array(hdrBuf);
+        var isWebm = hdr[0] === 0x1a && hdr[1] === 0x45 && hdr[2] === 0xdf && hdr[3] === 0xa3;
+        var isMp4 = String.fromCharCode(hdr[4], hdr[5], hdr[6], hdr[7]) === 'ftyp';
+        var isOgg = String.fromCharCode(hdr[0], hdr[1], hdr[2], hdr[3]) === 'OggS';
+        if (!isWebm && !isMp4 && !isOgg) {
+          showToast('Recording failed — please try again', 'error');
+        } else {
+          btn.textContent = 'Uploading greeting...';
+          var fd = new FormData();
+          var ext = vBlob.type.indexOf('mp4') !== -1 ? '.mp4' : '.webm';
+          fd.append('video', vBlob, 'greeting' + ext);
+          var uploadResult = await Api.upload('/api/orders/' + order.id + '/greeting', fd, 'POST');
+          if (uploadResult && uploadResult.success) {
+            showToast('Video greeting attached!', 'success');
+            try {
+              const dbReq = indexedDB.open('BloomDB', 1);
+              dbReq.onsuccess = (e) => {
+                const db = e.target.result;
+                if (db.objectStoreNames.contains('videos')) {
+                  const tx = db.transaction('videos', 'readwrite');
+                  tx.objectStore('videos').clear();
+                }
+              };
+            } catch (e) {}
+          }
+        }
+      } catch (e) {
+        console.warn('[Checkout] Video greeting upload error:', e);
+        showToast('Video greeting could not be saved', 'error');
       }
     }
     goTo(4);
