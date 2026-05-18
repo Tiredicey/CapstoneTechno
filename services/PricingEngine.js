@@ -34,7 +34,8 @@ export class PricingEngine {
         );
         if (promo) {
           const minOrder = Number(promo.min_order_amount || promo.min_order || 0);
-          const notExpired = !promo.expires_at || Number(promo.expires_at) > Math.floor(Date.now() / 1000);
+          const notExpired = !promo.expires_at ||
+            Number(promo.expires_at) > Math.floor(Date.now() / 1000);
           const discountType = promo.discount_type || promo.type;
 
           if (notExpired && subtotal >= minOrder) {
@@ -98,14 +99,20 @@ export class PricingEngine {
     }
     const minOrder = Number(promo.min_order_amount || promo.min_order || 0);
     if (orderTotal < minOrder) {
-      return { valid: false, error: `Minimum order of ₱${minOrder.toLocaleString('en-PH')} required` };
+      return {
+        valid: false,
+        error: `Minimum order of ₱${minOrder.toLocaleString('en-PH')} required`
+      };
     }
     return { valid: true, promo, discount: promo.value };
   }
 
   static redeemPromo(code) {
     try {
-      db.run('UPDATE promo_codes SET used_count = used_count + 1 WHERE code = ?', [code.toUpperCase()]);
+      db.run(
+        'UPDATE promo_codes SET used_count = used_count + 1 WHERE code = ?',
+        [code.toUpperCase()]
+      );
     } catch (err) {
       console.error('[PricingEngine] redeemPromo error:', err.message);
     }
