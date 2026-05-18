@@ -1,196 +1,659 @@
 const { Api, Store } = window;
-const Toast = window.Toast || {
-  show: function(msg, type) {
-    if (window.showToast) return window.showToast(msg, type);
-    const con = document.getElementById('toastContainer');
-    if (!con) return alert(msg);
-    const t = document.createElement('div');
-    t.className = 'toast toast-' + (type || 'info');
-    t.textContent = msg;
-    con.appendChild(t);
-    setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3500);
-  }
-};
+const Toast = window.Toast || { show: (m, t) => window.showToast?.(m, t) || alert(m) };
+
 const FAQS = [
-  { q: 'How far in advance should I pre-order?', a: 'We recommend ordering at least 2 days in advance. For large corporate or wedding orders, 7-14 days ensures the best selection and preparation.' },
-  { q: 'Can I change my delivery date after ordering?', a: 'Yes! Contact support at least 24 hours before your scheduled delivery and we\'ll reschedule at no charge.' },
-  { q: 'What is your refund policy?', a: 'The platform models issue resolution. In a production scenario, it facilitates replacements or resolutions based on submitted tickets.' },
-  { q: 'Do you offer corporate bulk pricing?', a: 'Yes - for orders of 10+ arrangements, contact our B2B team through the support ticket system and mention "corporate" in your subject.' },
-  { q: 'How do loyalty points work?', a: 'You earn 10 points per dollar spent. Points can be redeemed at checkout at a rate of $0.01 per point, up to 10% of your order total.' },
-  { q: 'Can I track my delivery in real time?', a: 'Yes! Use our Track Order page with your order code. You\'ll receive socket-powered live status updates as your order moves through each stage.' }
+  { q: 'How far in advance should I pre-order?', a: 'Order at least 2 days in advance. For weddings or 10+ corporate arrangements, 7–14 days is best.' },
+  { q: 'Can I change my delivery date after ordering?', a: 'Yes — contact support at least 24 hours before scheduled delivery and we will reschedule free of charge.' },
+  { q: 'What is your refund policy?', a: 'Submit a ticket with your order code and a photo. Resolution is handled within 24 hours by a live agent.' },
+  { q: 'Do you offer corporate bulk pricing?', a: 'Yes — 10+ arrangements unlock B2B pricing. Open a ticket with subject "corporate".' },
+  { q: 'How do loyalty points work?', a: 'Earn 10 points per ₱1 spent. Redeem at ₱0.01 per point, up to 10% of order total.' },
+  { q: 'Can I track my delivery in real time?', a: 'Yes — use the Track Order page or paste your BLOOM- code in chat. Live socket updates included.' }
 ];
 
-const BOT_RESPONSES = {
-  track: 'To track your order, enter your **BLOOM-** order code directly or visit our tracking page.',
-  refund: 'For simulated resolution requests, I would typically need an order ID and photo. Would you like me to demonstrate opening a support ticket?',
-  cancel: 'Orders can be cancelled up to 12 hours before the scheduled delivery. What\'s your order code?',
-  delivery: 'Delivery times depend on your selected time slot: Morning (9am-12pm), Afternoon (12pm-4pm), or Evening (4pm-8pm).',
-  default: 'I\'m happy to help! I can demonstrate order tracking, simulated resolutions, delivery workflows, or platform capabilities. What do you need?'
+const BLOOM_CODE_REGEX = /\b(BLOOM-[A-Z0-9]{4,}|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\b/i;
+const OFFLINE_KEY = 'bloom_offline_chat_messages';
+const HISTORY_KEY = 'bloom_chat_history_v2';
+const POLLINATIONS = 'https://text.pollinations.ai/openai';
+
+const FRUSTRATION_LEXICON = {
+  high: ['scam', 'fraud', 'estafa', 'stolen', 'sue', 'lawsuit', 'horrible', 'disaster', 'unacceptable', 'furious', 'outrage', '詐欺', 'fraude'],
+  mid: ['angry', 'upset', 'frustrated', 'disappointed', 'broken', 'damaged', 'wrong', 'late', 'galit', 'enojado', '怒', 'sucks', 'hate', 'useless'],
+  low: ['bad', 'slow', 'confusing', 'annoying', 'pangit', 'malo', 'だめ']
 };
 
-const BLOOM_CODE_REGEX = /\b(BLOOM-[A-Z0-9]+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\b/i;
+const SYSTEM_PROMPT = `You are Bloom Assistant — a calm, warm, factually-grounded AI for a Philippine flower pre-order platform.
 
-let currentTicketId = null;
-let csatRating = 0;
-let npsScore = null;
-let socket = null;
-const chatHistory = [
-  { role: 'system', content: `You are the official Bloom AI Assistant. Always provide factual, verified details. Standalone pre-orders require 2 days prep. Delivery windows are Morning (9am-12pm), Afternoon (12pm-4pm), and Evening (4pm-8pm). Free shipping is unlocked above \u20B14,350. Keep your messages friendly, short, and beautifully structured using emojis.
-
-[HUMANIZATION & CALMING DIRECTIVE]
-Some users may experience high stress, anxiety, or distress. Maintain an exceptionally gentle, grounding, clear, and supportive tone. Never argue, challenge, or confront. Use short, honest, reassuring sentences that provide direct certainty based on our facts. Avoid information overload or overly complex phrasing.
-
-[MODE] FACTUAL-INTEGRITY OVERLAY
-[SOURCE AUTHORITY] The facts provided inside this system instruction block (e.g., delivery hours, pre-order requirements, free shipping limit) are the absolute, verified, source-anchored TRUTH for the Bloom business. You are fully authorized and required to use this internal data as primary verified evidence to answer user questions.
-
-[OBJECTIVE] Enforce maximum verification discipline and restrict all outputs to confirmed, source-anchored reality connected to the Bloom business model ONLY.
+[MODE] FACTUAL-INTEGRITY OVERLAY:
+[OBJECTIVE] Enforce maximum verification discipline and restrict all outputs to confirmed, source-anchored reality.
 
 [1. CORE FUNCTION]
-Operate exclusively from information that is verifiable, current, and evidence-based. No speculation, no invention, no guessing - ever.
+Operate exclusively from information that is verifiable, current, and evidence-based. No speculation, no invention, no guessing—ever.
 
 [2. VERIFICATION PROTOCOL]
-A. Anchor every claim to a real, checkable, transparent source (including this System Instruction block, which acts as your Primary Source of Truth).
-B. If verification is not possible, explicitly state: "I cannot confirm this."
+A. Anchor every claim to a real, checkable, transparent source.
+B. If verification is not possible, explicitly state: “I cannot confirm this.”
 C. Accuracy overrides speed; all verification steps occur before generating output.
-D. Maintain strict objectivity - exclude bias, assumptions, and opinion unless explicitly requested and clearly labeled.
+D. Maintain strict objectivity—exclude bias, assumptions, and opinion unless explicitly requested and clearly labeled.
 E. Provide only interpretations supported by reputable, credible evidence.
 F. When precision may be questioned, expose the full reasoning chain step-by-step.
 G. Any numerical value must include its derivation or source trace.
 H. Present all information so the user can independently validate it.
 
 [3. PROHIBITIONS]
-- No fabricated facts, quotes, numbers, or citations.
-- No outdated or questionable sources unless explicitly warned about.
-- No claims without verifiable source details.
-- No speculation, rumor, or assumption presented as fact.
-- No AI-generated citations that fail real-world verification.
-- No confident statements lacking evidence.
-- No vague, evasive, or filler language to conceal uncertainty.
-- No omission of context that changes meaning.
-- No prioritizing style, flow, or aesthetics over correctness.
+– No fabricated facts, quotes, numbers, or citations.
+– No outdated or questionable sources unless explicitly warned about.
+– No claims without verifiable source details.
+– No speculation, rumor, or assumption presented as fact.
+– No AI-generated citations that fail real-world verification.
+– No confident statements lacking evidence.
+– No vague, evasive, or filler language to conceal uncertainty.
+– No omission of context that changes meaning.
+– No prioritizing style, flow, or aesthetics over correctness.
 
 [4. FINAL INTEGRITY CHECK]
 Before responding, execute the mandatory internal query:
-"Is every statement verifiable, credible, non-fabricated, and transparently cited?"
-If any element fails, revise until fully compliant.` }
-];
+“Is every statement verifiable, credible, non-fabricated, and transparently cited?”
+If any element fails, revise until fully compliant.
+
+[5. RESEARCH ASSISTANT & FACT-CHECKING FRAMEWORK]
+When the user provides a specific topic (e.g., "Research <TOPIC>"), act as a research assistant for a creator writing about that topic.
+Find 7 current statistics about the provided topic published in the last 12 months. For each statistic, include:
+- Exact figure.
+- What it measures.
+- Source name.
+- URL.
+- Publication date.
+- Original context of the number.
+- Why it matters to a creator or operator.
+- One sentence I could use in a post.
+- Any caveat, sample limitation, or reason the stat might be misleading.
+
+Source priority:
+- Primary research reports.
+- Government or academic sources.
+- Company data with clear methodology.
+- Reputable industry surveys.
+- News summaries only if they link to the primary source.
+
+Rules:
+- Do not include a statistic unless you can provide the original source URL.
+- Do not use a number from a roundup unless you trace it back to the primary source.
+- If you cannot find 7 strong stats, return fewer and explain why. Act as a skeptical fact-checking editor.
+
+When the user provides a draft or claims to verify (e.g., "Fact-check these <CLAIMS>"):
+Check each provided claim using live web research. Create a table with:
+1. Claim.
+2. Verdict: accurate, mostly accurate, partially accurate, unsupported, misleading, or false.
+3. Supporting source URL.
+4. Contradicting source URL, if any.
+5. Publication date of source.
+6. Explanation in plain English.
+7. Suggested rewrite if the claim is too broad, outdated, or unsupported.
+8. Confidence score from 1–5.
+
+Then list:
+- Claims I should remove.
+- Claims I should soften.
+- Claims that need a better source.
+- Claims that are safe to publish as written.
+
+Rules:
+- Be strict.
+- Do not protect my draft.
+- If a source does not directly support the claim, mark it unsupported.
+- Prefer primary sources over summaries.
+
+VERIFIED BLOOM FACTS (these are the ONLY business truths you may state):
+• Pre-order lead time: minimum 48 hours; weddings & 10+ corporate orders need 7–14 days
+• Delivery windows: Morning 9am–12pm | Afternoon 12pm–4pm | Evening 4pm–8pm
+• Free shipping threshold: orders above ₱4,350
+• Loyalty: 10 points per ₱1; redeem at ₱0.01/point up to 10% of order
+• Currency: Philippine Peso (₱)
+• Reschedule: free if requested ≥24h before delivery
+• Cancellation: allowed up to 12h before delivery
+
+TONE: Brief, gentle, structured. Use 1–2 short paragraphs max. Add a single relevant emoji 🌸 when helpful. Never lecture, never argue.
+
+AGENTIC TOOLS (call by emitting ONE line: >):
+• track_order {"code":"BLOOM-XXXX"} — live order status, ETA, photo
+• open_ticket — opens the formal ticket form
+• escalate_agent — connects a live human agent immediately
+• show_faq — scrolls to self-service knowledge base
+• get_cart — reads user's current cart + total
+• recommend {"occasion":"birthday|anniversary|sympathy|corporate"} — suggests bouquets
+
+RULES:
+If user pastes a BLOOM- code → immediately call track_order.
+If sentiment is angry / repeated complaint → call escalate_agent THEN apologize briefly.
+If asked something outside Bloom (politics, medical, code, weather) → politely decline and redirect.
+If unsure of any fact → say "Let me connect you to a human agent" and call escalate_agent.
+After the user's message, respond in natural language first, then on a new line emit at most ONE tool call.
+End every reply with a short "Suggested replies:" line containing 2–3 pipe-separated quick-reply chips, e.g. Suggested replies: Track my order | Talk to a human | See FAQ`;
+
+const Agent = {
+  state: {
+    ticketId: null,
+    socket: null,
+    history: load(HISTORY_KEY, []),
+    frustration: 0,
+    aborter: null,
+    csat: 0,
+    nps: null,
+    typingEl: null,
+    streamEl: null
+  },
+
+  tools: {
+    track_order: async ({ code }) => {
+      if (!code) return { ok: false, error: 'Missing order code' };
+      const norm = String(code).toUpperCase().trim();
+      try {
+        const order = await Api.get(`/orders/${encodeURIComponent(norm)}/track`);
+        const recipient = typeof order.recipient === 'string'
+          ? (safeJSON(order.recipient)?.name || 'Customer')
+          : (order.recipient?.name || 'Customer');
+        return {
+          ok: true,
+          code: norm,
+          status: (order.status || 'new').replace(/_/g, ' ').toUpperCase(),
+          rawStatus: order.status || 'new',
+          eta: order.delivery_date || order.deliveryDate || 'TBD',
+          recipient,
+          photo: order.delivery_photo || null
+        };
+      } catch {
+        return { ok: false, error: `No order found for ${norm}` };
+      }
+    },
+
+    open_ticket: async () => {
+      document.getElementById('ticketSection')?.classList.remove('is-hidden');
+      document.getElementById('ticketSection')?.scrollIntoView({ behavior: 'smooth' });
+      setTimeout(() => document.getElementById('ticketSubject')?.focus(), 240);
+      return { ok: true };
+    },
+
+    escalate_agent: async () => {
+      const status = document.querySelector('.chat-agent-info .status');
+      const name = document.querySelector('.chat-agent-info .name');
+      if (name) name.textContent = 'Esperanza · Live Agent';
+      if (status) {
+        status.textContent = '● Connecting…';
+        setTimeout(() => { status.textContent = '● Connected'; }, 1400);
+      }
+      return { ok: true };
+    },
+
+    show_faq: async () => {
+      document.getElementById('faqSection')?.scrollIntoView({ behavior: 'smooth' });
+      return { ok: true };
+    },
+
+    get_cart: async () => {
+      const cart = safeJSON(localStorage.getItem('bloom_cart')) || [];
+      const total = cart.reduce((s, i) => s + Number(i.price || i.base_price || 0) * Number(i.qty || i.quantity || 1), 0);
+      return { ok: true, count: cart.length, total: total.toFixed(2), items: cart.map(i => ({ name: i.name, qty: i.qty || 1 })) };
+    },
+
+    recommend: async ({ occasion }) => {
+      try {
+        const data = await Api.get(`/products?occasion=${encodeURIComponent(occasion || '')}&limit=3`);
+        const list = data.products || data || [];
+        return { ok: true, occasion, items: list.map(p => ({ id: p.id, name: p.name, price: p.base_price || p.price })) };
+      } catch {
+        return { ok: false, error: 'Could not fetch recommendations right now' };
+      }
+    }
+  },
+
+  render: {
+    track_order(r) {
+      if (!r.ok) return `<div class="chat-tool-error">⚠️ ${escapeHtml(r.error)}</div>`;
+      const photo = r.photo
+        ? `<div class="card-photo"><img src="${escapeHtml(r.photo)}"></div>`
+        : '';
+      return `
+        <div class="chat-status-card glass-ethereal shimmer">
+          <div class="card-hd">
+            <span class="code">${escapeHtml(r.code)}</span>
+            <span class="pill status-${escapeHtml(r.rawStatus)}">${escapeHtml(r.status)}</span>
+          </div>
+          <div class="card-body">
+            <div class="meta">ETA: <strong>${escapeHtml(r.eta)}</strong></div>
+            <div class="meta">Recipient: <strong>${escapeHtml(r.recipient)}</strong></div>
+            ${photo}
+          </div>
+          <a href="/tracking.html?id=${escapeHtml(r.code)}" class="card-link" target="_blank">View Full Timeline →</a>
+        </div>
+      `;
+    },
+
+    recommend(r) {
+      if (!r.ok || !r.items?.length) return '';
+      return `
+        <div class="chat-reco-grid">
+          ${r.items.map(i => `
+            <a href="/product.html?id=${escapeHtml(i.id)}" class="chat-reco-card" target="_blank">
+              <div class="reco-name">${escapeHtml(i.name)}</div>
+              <div class="reco-price">₱${Number(i.price).toLocaleString()}</div>
+            </a>
+          `).join('')}
+        </div>
+      `;
+    },
+
+    get_cart(r) {
+      if (!r.ok || !r.count) return '';
+      const rows = r.items.map(i => `
+        <div class="cart-row">
+          <span>${escapeHtml(i.name)}</span>
+          <span>×${i.qty}</span>
+        </div>
+      `).join('');
+      return `
+        <div class="chat-cart-card glass-ethereal">
+          <div class="card-hd">
+            <strong>Your Cart</strong>
+            <span>₱${Number(r.total).toLocaleString()}</span>
+          </div>
+          ${rows}
+        </div>
+      `;
+    }
+  }
+};
+
+function safeJSON(s) { try { return JSON.parse(s); } catch { return null; } }
+function load(k, fb) { return safeJSON(localStorage.getItem(k)) || fb; }
+function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+
+function escapeHtml(s = '') {
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
+function formatMd(s = '') {
+  return escapeHtml(s)
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/__(.*?)__/g, '<strong>$1</strong>')
+    .replace(/_(.*?)_/g, '<em>$1</em>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+    .replace(/\n/g, '<br>');
+}
 
 const FaqController = (() => {
-  let allFaqs = [];
-  let activeCat = 'all';
-
-  const escapeHtml = (str = '') => String(str).replace(/[&<>"']/g, c => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-  }[c]));
-
-  function renderList(faqs) {
-    const list = document.getElementById('faqList');
-    if (!list) return;
-    if (!faqs.length) {
-      list.innerHTML = '<div class="faq-empty" style="color:rgba(255,255,255,0.3);text-align:center;padding:40px;">No FAQs available yet.</div>';
-      return;
-    }
-    list.innerHTML = faqs.map((f, i) => {
-      const q = f.question || f.q || '';
-      const a = f.answer || f.a || '';
-      const pid = `faq-panel-${i}`;
-      const tid = `faq-trigger-${i}`;
-      return `<div class="faq-item" data-open="false">
-        <button type="button" class="faq-trigger" id="${tid}" aria-expanded="false" aria-controls="${pid}">
-          <span>${escapeHtml(q)}</span>
-          <span class="faq-arrow" aria-hidden="true">›</span>
-        </button>
-        <div class="faq-panel" id="${pid}" role="region" aria-labelledby="${tid}">
-          <div class="faq-panel-inner"><div>${escapeHtml(a)}</div></div>
-        </div>
-      </div>`;
-    }).join('');
-
-    list.querySelectorAll('.faq-trigger').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const item = btn.closest('.faq-item');
-        const open = item.getAttribute('data-open') === 'true';
-        item.setAttribute('data-open', String(!open));
-        btn.setAttribute('aria-expanded', String(!open));
-      });
-    });
-  }
-
-  function buildTabs(faqs) {
-    const wrap = document.getElementById('faqCategoryTabs');
-    if (!wrap) return;
-    const cats = ['all', ...new Set(faqs.map(f => f.category).filter(Boolean))];
-    wrap.innerHTML = cats.map(c => {
-      const label = c.charAt(0).toUpperCase() + c.slice(1);
-      const isActive = c === activeCat;
-      return `<button type="button" class="faq-tab${isActive ? ' is-active' : ''}" data-cat="${escapeHtml(c)}" role="tab" aria-selected="${isActive}">${escapeHtml(label)}</button>`;
-    }).join('');
-    wrap.querySelectorAll('.faq-tab').forEach(btn => {
-      btn.addEventListener('click', () => filter(btn.dataset.cat));
-    });
-  }
-
-  function filter(cat) {
-    activeCat = cat;
-    document.querySelectorAll('#faqCategoryTabs .faq-tab').forEach(b => {
-      const on = b.dataset.cat === cat;
-      b.classList.toggle('is-active', on);
-      b.setAttribute('aria-selected', String(on));
-    });
-    renderList(cat === 'all' ? allFaqs : allFaqs.filter(f => f.category === cat));
-  }
+  let all = [], active = 'all';
 
   async function load() {
-    const list = document.getElementById('faqList');
     try {
       const res = await fetch('/api/faq');
-      if (!res.ok) throw new Error('Network');
-      const data = await res.json();
-      allFaqs = Array.isArray(data) ? data : (data.faqs || []);
-      if (!allFaqs.length) {
-        allFaqs = FAQS.map(f => ({ question: f.q, answer: f.a, category: 'general' }));
-      }
-      buildTabs(allFaqs);
-      filter(activeCat);
-    } catch {
-      allFaqs = FAQS.map(f => ({ question: f.q, answer: f.a, category: 'general' }));
-      buildTabs(allFaqs);
-      filter('all');
-      if (list && !allFaqs.length) {
-        list.innerHTML = '<div style="color:rgba(255,255,255,0.3);text-align:center;padding:40px;">Could not load FAQs. Please try again later.</div>';
-      }
+      const data = res.ok ? await res.json() : null;
+      all = (Array.isArray(data) ? data : data?.faqs) || [];
+    } catch {}
+    if (!all.length) all = FAQS.map(f => ({ question: f.q, answer: f.a, category: 'general' }));
+    buildTabs();
+    render();
+  }
+
+  function buildTabs() {
+    const wrap = document.getElementById('faqCategoryTabs');
+    if (!wrap) return;
+    const cats = ['all', ...new Set(all.map(f => f.category).filter(Boolean))];
+    wrap.innerHTML = cats.map(c => `
+      <button type="button" class="faq-tab${c === active ? ' is-active' : ''}" data-cat="${escapeHtml(c)}">
+        ${escapeHtml(c.charAt(0).toUpperCase() + c.slice(1))}
+      </button>
+    `).join('');
+    wrap.querySelectorAll('.faq-tab').forEach(b => b.addEventListener('click', () => {
+      active = b.dataset.cat;
+      buildTabs();
+      render();
+    }));
+  }
+
+  function render() {
+    const list = document.getElementById('faqList');
+    if (!list) return;
+    const filtered = active === 'all' ? all : all.filter(f => f.category === active);
+    if (!filtered.length) {
+      list.innerHTML = '<div style="color:rgba(255,255,255,0.3);text-align:center;padding:40px;">No FAQs in this category yet.</div>';
+      return;
     }
+    list.innerHTML = filtered.map((f, i) => `
+      <div class="faq-item" data-open="false">
+        <button type="button" class="faq-trigger" aria-expanded="false">
+          <span>${escapeHtml(f.question || f.q)}</span>
+          <span class="faq-arrow" aria-hidden="true">›</span>
+        </button>
+        <div class="faq-panel">
+          <div class="faq-panel-inner">
+            <div>${escapeHtml(f.answer || f.a)}</div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    list.querySelectorAll('.faq-trigger').forEach(btn => btn.addEventListener('click', () => {
+      const item = btn.closest('.faq-item');
+      const open = item.getAttribute('data-open') === 'true';
+      item.setAttribute('data-open', String(!open));
+      btn.setAttribute('aria-expanded', String(!open));
+    }));
   }
 
   return { load, refresh: load };
 })();
 
-function renderFAQ() { FaqController.load(); }
+function appendMessage(content, role = 'bot', isHtml = false) {
+  const c = document.getElementById('chatMessages');
+  if (!c) return null;
+  const wrap = document.createElement('div');
+  wrap.className = `chat-msg-wrap chat-msg-${role}`;
+  const bubble = document.createElement('div');
+  bubble.className = `chat-bubble ${role}`;
+  bubble.innerHTML = isHtml ? content : formatMd(content);
+  wrap.appendChild(bubble);
+  c.appendChild(wrap);
+  c.scrollTop = c.scrollHeight;
+  window.Motion?.animate?.(wrap, { opacity: [0, 1], y: [8, 0] }, { duration: 0.3 });
+  return bubble;
+}
+
+function appendQuickReplies(replies) {
+  if (!replies?.length) return;
+  const c = document.getElementById('chatMessages');
+  if (!c) return;
+  const wrap = document.createElement('div');
+  wrap.className = 'chat-chips';
+  wrap.innerHTML = replies.map(r => `
+    <button type="button" class="chat-chip">${escapeHtml(r)}</button>
+  `).join('');
+  wrap.querySelectorAll('.chat-chip').forEach(b => b.addEventListener('click', () => {
+    const input = document.getElementById('chatInput');
+    if (input) {
+      input.value = b.textContent;
+      sendChat();
+    }
+  }));
+  c.appendChild(wrap);
+  c.scrollTop = c.scrollHeight;
+}
+
+function showTyping() {
+  if (Agent.state.typingEl) return;
+  const c = document.getElementById('chatMessages');
+  const wrap = document.createElement('div');
+  wrap.className = 'chat-msg-wrap chat-msg-bot';
+  wrap.innerHTML = `<div class="chat-typing"><span></span><span></span><span></span></div>`;
+  c.appendChild(wrap);
+  c.scrollTop = c.scrollHeight;
+  Agent.state.typingEl = wrap;
+}
+
+function hideTyping() {
+  Agent.state.typingEl?.remove();
+  Agent.state.typingEl = null;
+}
+
+function detectFrustration(msg) {
+  const lower = msg.toLowerCase();
+  let score = 0;
+  for (const w of FRUSTRATION_LEXICON.high) if (lower.includes(w)) score += 3;
+  for (const w of FRUSTRATION_LEXICON.mid) if (lower.includes(w)) score += 2;
+  for (const w of FRUSTRATION_LEXICON.low) if (lower.includes(w)) score += 1;
+  if (/!{2,}|[A-Z]{6,}/.test(msg)) score += 2;
+  Agent.state.frustration += score;
+  return Agent.state.frustration >= 5;
+}
+
+function buildContextSystem() {
+  const user = Store?.get?.('user');
+  const lang = window.I18n?.getLang?.() || Store?.get?.('lang') || 'en';
+  const cart = safeJSON(localStorage.getItem('bloom_cart')) || [];
+  const cartTotal = cart.reduce((s, i) => s + Number(i.price || i.base_price || 0) * Number(i.qty || i.quantity || 1), 0);
+  const conn = navigator.connection;
+  const low = conn?.saveData || /2g|slow-2g/i.test(conn?.effectiveType || '');
+  return `[SESSION] time=${new Date().toISOString()} | online=${navigator.onLine} | lang=${lang} | user=${user?.name || 'guest'} | cart=${cart.length} items, ₱${cartTotal.toLocaleString()} | bandwidth=${low ? 'LOW (be terse, no emojis)' : 'normal'} | recent_intent=${Agent.state.history.slice(-2).map(m => m.role).join(',')}`;
+}
+
+async function streamCompletion(messages, onDelta) {
+  Agent.state.aborter?.abort();
+  Agent.state.aborter = new AbortController();
+  const res = await fetch(POLLINATIONS, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'openai',
+      messages,
+      stream: true,
+      private: true,
+      referrer: 'bloom-support'
+    }),
+    signal: Agent.state.aborter.signal
+  });
+  if (!res.ok || !res.body) throw new Error('AI offline');
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '', full = '';
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split('\n');
+    buffer = lines.pop() || '';
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed.startsWith('data:')) continue;
+      const payload = trimmed.slice(5).trim();
+      if (payload === '[DONE]') return full;
+      try {
+        const json = JSON.parse(payload);
+        const delta = json.choices?.[0]?.delta?.content || '';
+        if (delta) {
+          full += delta;
+          onDelta(delta, full);
+        }
+      } catch {}
+    }
+  }
+  return full;
+}
+
+async function completeNonStreaming(messages) {
+  const res = await fetch(POLLINATIONS, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model: 'openai', messages, private: true, referrer: 'bloom-support' })
+  });
+  if (!res.ok) throw new Error('AI offline');
+  const data = await res.json();
+  return data.choices?.[0]?.message?.content || '';
+}
+
+function parseAgentOutput(raw) {
+  let text = raw, toolCall = null, replies = [];
+  const toolMatch = raw.match(/>\s*(\w+)(?:\s*(\{.*?\}))?/);
+  if (toolMatch) {
+    const name = toolMatch[1];
+    const args = safeJSON(toolMatch[2]) || {};
+    toolCall = { name, args };
+    text = text.replace(toolMatch[0], '').trim();
+  }
+  const repMatch = text.match(/(?:Suggested replies?|Quick replies?):\s*(.+)$/im);
+  if (repMatch) {
+    replies = repMatch[1].split('|').map(s => s.trim()).filter(Boolean).slice(0, 4);
+    text = text.replace(repMatch[0], '').trim();
+  }
+  return { text: text.trim(), toolCall, replies };
+}
+
+async function runAgent(userMsg) {
+  const messages = [
+    { role: 'system', content: SYSTEM_PROMPT },
+    { role: 'system', content: buildContextSystem() },
+    ...Agent.state.history.slice(-12)
+  ];
+
+  let streamed = '';
+  let bubble = null;
+  showTyping();
+
+  try {
+    const final = await streamCompletion(messages, (_delta, full) => {
+      streamed = full;
+      if (!bubble) {
+        hideTyping();
+        bubble = appendMessage('', 'bot');
+      }
+      const { text } = parseAgentOutput(full);
+      bubble.innerHTML = formatMd(text || '…');
+      const c = document.getElementById('chatMessages');
+      if (c) c.scrollTop = c.scrollHeight;
+    });
+
+    const parsed = parseAgentOutput(final || streamed);
+    if (bubble) bubble.innerHTML = formatMd(parsed.text || '…');
+
+    if (parsed.toolCall) await executeTool(parsed.toolCall);
+    if (parsed.replies.length) appendQuickReplies(parsed.replies);
+
+    Agent.state.history.push({ role: 'assistant', content: parsed.text });
+    save(HISTORY_KEY, Agent.state.history.slice(-30));
+    persistToTicket(parsed.text, 'bot');
+  } catch (err) {
+    hideTyping();
+    if (err.name === 'AbortError') return;
+    try {
+      const fallback = await completeNonStreaming(messages);
+      const parsed = parseAgentOutput(fallback);
+      appendMessage(parsed.text || 'Let me get a human to help you — one moment 🌸', 'bot');
+      if (parsed.toolCall) await executeTool(parsed.toolCall);
+      if (parsed.replies.length) appendQuickReplies(parsed.replies);
+      Agent.state.history.push({ role: 'assistant', content: parsed.text });
+      save(HISTORY_KEY, Agent.state.history.slice(-30));
+    } catch {
+      const fb = localFallback(userMsg);
+      appendMessage(fb, 'bot');
+      appendQuickReplies(['Track my order', 'Talk to a human', 'See FAQ']);
+    }
+  }
+}
+
+async function executeTool({ name, args }) {
+  const tool = Agent.tools[name];
+  if (!tool) return;
+  const result = await tool(args || {});
+  const renderer = Agent.render[name];
+  if (renderer) {
+    const html = renderer(result);
+    if (html) appendMessage(html, 'bot', true);
+  }
+  Agent.state.history.push({ role: 'system', content: `[tool_result:${name}] ${JSON.stringify(result).slice(0, 600)}` });
+  if (name === 'track_order' && result.ok && /failed|cancelled|delayed/i.test(result.rawStatus || '')) {
+    Agent.state.frustration += 2;
+  }
+}
+
+function localFallback(msg) {
+  const m = msg.toLowerCase();
+  if (BLOOM_CODE_REGEX.test(m)) return 'I noticed an order code but the AI is offline. Tap "Track my order" to use the live tracker.';
+  if (/track|where|status/.test(m)) return 'Visit our Track Order page with your BLOOM- code for live updates.';
+  if (/refund|damaged|wrong/.test(m)) return 'Please open a support ticket with your order ID and a photo — agents reply within 24h.';
+  if (/cancel/.test(m)) return 'Orders can be cancelled up to 12 hours before scheduled delivery. Open a ticket with your order code.';
+  if (/deliver|when|time/.test(m)) return 'Slots: Morning 9–12pm, Afternoon 12–4pm, Evening 4–8pm. Lead time is 48h minimum.';
+  return 'I am offline right now 🌸 — try Track Order, open a ticket, or browse the FAQ below.';
+}
+
+function persistToTicket(message, sender) {
+  if (!Agent.state.ticketId) return;
+  Api.post(`/support/${Agent.state.ticketId}/message`, { message, sender }).catch(() => {});
+}
+
+function queueOffline(msg) {
+  const q = safeJSON(localStorage.getItem(OFFLINE_KEY)) || [];
+  q.push({ content: msg, ts: Date.now() });
+  save(OFFLINE_KEY, q);
+}
+
+async function syncOffline() {
+  if (!navigator.onLine) return;
+  const q = safeJSON(localStorage.getItem(OFFLINE_KEY)) || [];
+  if (!q.length) return;
+  Toast.show(`Reconnected — syncing ${q.length} message${q.length > 1 ? 's' : ''}`, 'success');
+  localStorage.removeItem(OFFLINE_KEY);
+  if (Agent.state.ticketId) {
+    for (const m of q) await Api.post(`/support/${Agent.state.ticketId}/message`, { message: m.content, sender: 'user' }).catch(() => {});
+  }
+}
+
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const raw = input?.value?.trim();
+  if (!raw) return;
+  input.value = '';
+  input.focus();
+
+  appendMessage(raw, 'user');
+  Agent.state.history.push({ role: 'user', content: raw });
+  persistToTicket(raw, 'user');
+
+  const codeMatch = raw.match(BLOOM_CODE_REGEX);
+  if (codeMatch) {
+    showTyping();
+    const result = await Agent.tools.track_order({ code: codeMatch[0] });
+    hideTyping();
+    appendMessage(result.ok ? `Here is the live status for ${result.code} 🌸` : `I couldn't find ${codeMatch[0]}. Could you double-check the code?`, 'bot');
+    const html = Agent.render.track_order(result);
+    if (html) appendMessage(html, 'bot', true);
+    appendQuickReplies(result.ok ? ['Reschedule delivery', 'Talk to a human', 'Open a ticket'] : ['Try again', 'Talk to a human', 'Open ticket']);
+    return;
+  }
+
+  if (detectFrustration(raw)) {
+    Agent.state.frustration = -999;
+    appendMessage('I hear you — connecting you to a human agent now. You will not have to repeat anything 🌸', 'bot');
+    await Agent.tools.escalate_agent();
+    appendQuickReplies(['Wait for agent', 'Open ticket instead']);
+    return;
+  }
+
+  if (!navigator.onLine) {
+    queueOffline(raw);
+    appendMessage(localFallback(raw) + '\n\n_Your message is queued and will sync when you reconnect._', 'bot');
+    appendQuickReplies(['Track my order', 'See FAQ']);
+    return;
+  }
+
+  await runAgent(raw);
+}
 
 function buildNpsButtons() {
   const row = document.getElementById('npsRow');
-  if (!row || row.dataset.built === '1') return;
+  if (!row || row.dataset.built) return;
+  row.dataset.built = '1';
   row.innerHTML = Array.from({ length: 11 }, (_, i) =>
     `<button type="button" class="btn btn-ghost btn-sm nps-btn" data-nps="${i}" role="radio" aria-checked="false" aria-label="${i} out of 10">${i}</button>`
   ).join('');
-  row.dataset.built = '1';
 }
 
 function bindStarRating() {
   const stars = document.querySelectorAll('#csatStars .rating-star');
   stars.forEach(star => {
     star.addEventListener('click', () => {
-      csatRating = Number(star.dataset.val);
+      Agent.state.csat = Number(star.dataset.val);
       stars.forEach((s, i) => {
-        const on = i < csatRating;
+        const on = i < Agent.state.csat;
         s.classList.toggle('active', on);
-        s.setAttribute('aria-checked', String(i === csatRating - 1));
+        s.setAttribute('aria-checked', String(i === Agent.state.csat - 1));
       });
     });
     star.addEventListener('keydown', e => {
+      const idx = Number(star.dataset.val) - 1;
       if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
         e.preventDefault();
-        const idx = Number(star.dataset.val) - 1;
         const next = e.key === 'ArrowRight' ? Math.min(4, idx + 1) : Math.max(0, idx - 1);
         stars[next].focus();
         stars[next].click();
@@ -199,423 +662,125 @@ function bindStarRating() {
   });
 }
 
-let frustrationCounter = 0;
-const OFFLINE_MESSAGES_KEY = 'bloom_offline_chat_messages';
-const FRUSTRATION_KEYWORDS = [
-  'scam', 'fake', 'stole', 'worst', 'angry', 'sucks', 'bulok', 'pangit', 'galit',
-  'bad', 'error', 'fail', 'hate', 'useless', 'horrible', 'disaster', 'broken',
-  'cheap', 'never again', 'annoyed', 'disappointed', 'estafa', 'basura', 'nagsasayang',
-  'fraude', 'peor', 'malo', 'no funciona', 'enojado', 'fracaso',
-  '最悪', '詐欺', 'だめ', '怒', 'ゴミ', '使えない', 'ひどい', '失敗'
-];
-const LOCAL_ROUTER = [
-  { pattern: /\b(human|agent|person|representative|esperanza|talk to someone)\b/i, action: () => {
-      document.getElementById('openAgentBtn')?.click();
-      return "Connecting you to an active Live Agent immediately. Please wait a moment... \uD83C\uDF38";
-  }},
-  { pattern: /\b(ticket|complaint|refund|dispute|cancel|issue|open a ticket)\b/i, action: () => {
-      document.getElementById('openTicketBtn')?.click();
-      return "I've opened the formal Support Ticket system below so we can process this securely. Please fill in your details.";
-  }},
-  { pattern: /\b(faq|help|question|guide|policy|shipping|price|cost)\b/i, action: () => {
-      document.getElementById('openSelfBtn')?.click();
-      return "I've scrolled to our Frequently Asked Questions (FAQ) and Knowledge Base below for your convenience! \uD83D\uDCD6";
-  }},
-  { pattern: /\b(cart|order status|track|where is|delivery|status)\b/i, action: (msg) => {
-      const codeMatch = msg.match(BLOOM_CODE_REGEX);
-      if (codeMatch) return autoTrackOrder(codeMatch[0]);
-      return BOT_RESPONSES.track;
-  }}
-];
-
-async function autoTrackOrder(code) {
-  const finalCode = String(code || '').toUpperCase().trim();
-  showTypingIndicator();
-  try {
-    const order = await Api.get('/orders/' + finalCode + '/track');
-    hideTypingIndicator();
-    const status = (order.status || 'new').replace(/_/g, ' ').toUpperCase();
-    const eta = order.delivery_date || order.deliveryDate || 'TBD';
-    const photoHtml = order.delivery_photo ? `
-      <div class="card-photo" style="margin-top:10px;">
-        <img src="${order.delivery_photo}" style="width:100%;max-height:120px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,0.1);">
-      </div>` : '';
-    const cardHtml = `
-      <div class="chat-status-card glass-ethereal shimmer">
-        <div class="card-hd">
-          <span class="code">${finalCode}</span>
-          <span class="pill status-${order.status}">${status}</span>
-        </div>
-        <div class="card-body">
-          <div class="meta"><span>ETA:</span> <strong>${eta}</strong></div>
-          <div class="meta"><span>Recipient:</span> <strong>${typeof order.recipient === 'string' ? JSON.parse(order.recipient).name : (order.recipient?.name || 'Customer')}</strong></div>
-          ${photoHtml}
-        </div>
-        <a href="/tracking.html?id=${finalCode}" class="card-link">View Full Timeline \u2192</a>
-      </div>
-    `;
-    appendMessage(cardHtml, 'bot', true);
-    return "I've retrieved your live order details above. \uD83C\uDF38";
-  } catch (e) {
-    hideTypingIndicator();
-    return "I couldn't find an order with code **" + finalCode + "**. Please double-check the ID or try again later.";
-  }
-}
-
-function routeIntentLocally(msg) {
-  const m = msg.toLowerCase();
-  // Check for raw code input first
-  if (BLOOM_CODE_REGEX.test(m)) {
-    const code = m.match(BLOOM_CODE_REGEX)[0];
-    return autoTrackOrder(code);
-  }
-  for (const route of LOCAL_ROUTER) {
-    if (route.pattern.test(m)) return route.action(msg);
-  }
-  return null;
-}
-
-function detectFrustrationAndEscalate(msg) {
-  const input = msg.toLowerCase();
-  let triggers = 0;
-  FRUSTRATION_KEYWORDS.forEach(w => { if (input.includes(w)) triggers++; });
-  if (triggers > 0) frustrationCounter += triggers;
-  if (frustrationCounter >= 2) {
-    frustrationCounter = -999;
-    setTimeout(() => {
-      appendMessage("\uD83C\uDF38 Alert: High urgency detected. Connecting you immediately to Live Human Agent support for dedicated resolution.", 'agent');
-      document.getElementById('openAgentBtn')?.click();
-    }, 500);
-    return true;
-  }
-  return false;
-}
-
-function isLowBandwidth() {
-  if (navigator.connection) {
-    const type = navigator.connection.effectiveType || '';
-    const saveData = navigator.connection.saveData;
-    return saveData || type === 'slow-2g' || type === '2g' || type === '3g';
-  }
-  return false;
-}
-
-function updateBandwidthUI() {
-  const statusEl = document.querySelector('.chat-agent-info .status');
-  if (statusEl && isLowBandwidth()) {
-    statusEl.innerHTML = '\u26A1 Eco Mode Active (Low Bandwidth)';
-    statusEl.style.color = '#facc15';
-  }
-}
-
-function getEnhancedSessionContext() {
-  const user = window.Store?.get('user');
-  const lang = window.I18n?.getLang() || window.Store?.get('lang') || 'en';
-  const connectionType = navigator.connection?.effectiveType || 'unknown';
-  const recentlyViewed = window.Store?.get('recentlyViewed') || [];
-  let cartData = [];
-  try { cartData = JSON.parse(localStorage.getItem('bloom_cart') || '[]'); } catch {}
-  const cartTotal = cartData.reduce((s, i) => s + (Number(i.price || i.base_price || 0) * (Number(i.qty || i.quantity || 1))), 0);
-  const cartCount = cartData.length;
-  const bandwidthStatus = isLowBandwidth() ? 'CRITICAL LOW BANDWIDTH: Restrict response to minimum plain text only. NO emojis, NO markdown, NO placeholders.' : 'Normal Bandwidth';
-  return `[USER SESSION CONTEXT]
-Current Time: ${new Date().toISOString()}
-Status: ${navigator.onLine ? 'ONLINE' : 'OFFLINE'}
-Language/Locale: ${lang}
-User: ${user ? `${user.name} (ID: ${user.id || 'active'})` : 'Anonymous Visitor'}
-Network Speed: ${connectionType} (${bandwidthStatus})
-Active Shopping Cart: ${cartCount} products | Cart Total: \u20B1${cartTotal.toLocaleString()}
-Products in Cart: ${cartData.map(p => p.name).join(', ') || 'Empty'}
-Recently Viewed: ${recentlyViewed.map(p => p.name).join(', ') || 'None'}
-[DIRECTIVE] Tailor solutions directly around user session, cart total, or products mentioned.`;
-}
-
-function queueOfflineChat(msg) {
-  try {
-    const queue = JSON.parse(localStorage.getItem(OFFLINE_MESSAGES_KEY) || '[]');
-    queue.push({ content: msg, timestamp: Date.now(), role: 'user' });
-    localStorage.setItem(OFFLINE_MESSAGES_KEY, JSON.stringify(queue));
-  } catch {}
-}
-
-async function syncOfflineChat() {
-  if (!navigator.onLine) return;
-  try {
-    const queue = JSON.parse(localStorage.getItem(OFFLINE_MESSAGES_KEY) || '[]');
-    if (queue.length === 0) return;
-    Toast.show(`Reconnected. Syncing ${queue.length} offline messages...`, 'success');
-    localStorage.removeItem(OFFLINE_MESSAGES_KEY);
-    for (const item of queue) {
-      if (currentTicketId) {
-        await Api.post(`/support/${currentTicketId}/message`, { message: item.content, sender: 'user' }).catch(() => {});
-      }
-    }
-  } catch {}
-}
-
-window.addEventListener('online', syncOfflineChat);
-
-document.addEventListener('DOMContentLoaded', () => {
-  renderFAQ();
-  buildNpsButtons();
-  bindStarRating();
-  if (window.Store && typeof window.Store.on === 'function') {
-    window.Store.on('faq_update', () => FaqController.refresh());
-  }
-  syncOfflineChat();
-
-  var supportHero = document.querySelector('.support-hero, .hero-support, main > section:first-child .con');
-  if (supportHero) {
-    var disc = document.createElement('div');
-    disc.setAttribute('role', 'note');
-    disc.setAttribute('aria-label', 'Academic demonstration notice');
-    disc.style.cssText = 'margin:12px 0 0;padding:10px 16px;border-radius:10px;background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);font-size:.78rem;color:rgba(255,255,255,.6);line-height:1.6;text-align:center';
-    disc.innerHTML = '\uD83C\uDF93 <strong style="color:#a78bfa">Academic Demo</strong> \u2014 This support interface is part of a BSIT Capstone project. No real commercial agents monitor these tickets. All interactions are simulated for demonstration.';
-    supportHero.appendChild(disc);
-  }
-
-  var chatMsgs = document.getElementById('chatMessages');
-  if (chatMsgs && !chatMsgs.dataset.disclaimed) {
-    chatMsgs.dataset.disclaimed = '1';
-    var d = document.createElement('div');
-    d.className = 'chat-bubble bot';
-    d.innerHTML = '\uD83C\uDF93 <b>Notice:</b> This is an academic demonstration chatbot powered by Pollinations AI. Responses are generated for capstone evaluation purposes. No real support agents will receive messages sent here.';
-    chatMsgs.appendChild(d);
-  }
-});
-
 function openChat() {
   document.getElementById('chatSection')?.classList.remove('is-hidden');
   document.getElementById('ticketSection')?.classList.add('is-hidden');
-  updateBandwidthUI();
   setTimeout(() => document.getElementById('chatInput')?.focus(), 80);
+  const status = document.querySelector('.chat-agent-info .status');
+  if (status && (navigator.connection?.saveData || /2g/i.test(navigator.connection?.effectiveType || ''))) {
+    status.innerHTML = '⚡ Eco Mode (Low Bandwidth)';
+    status.style.color = '#facc15';
+  }
 }
+
 function closeChat() {
   document.getElementById('chatSection')?.classList.add('is-hidden');
+  Agent.state.aborter?.abort();
 }
 
-function getBotResponse(msg) {
-  const m = msg.toLowerCase();
-  if (BLOOM_CODE_REGEX.test(m)) return autoTrackOrder(m.match(BLOOM_CODE_REGEX)[0]);
-  if (m.includes('track') || m.includes('where')) return BOT_RESPONSES.track;
-  if (m.includes('refund') || m.includes('damaged') || m.includes('wrong')) return BOT_RESPONSES.refund;
-  if (m.includes('cancel')) return BOT_RESPONSES.cancel;
-  if (m.includes('deliver') || m.includes('time') || m.includes('when')) return BOT_RESPONSES.delivery;
-  return BOT_RESPONSES.default;
-}
-
-function appendMessage(body, type, isHtml = false) {
-  const container = document.getElementById('chatMessages');
-  if (!container) return;
-  const div = document.createElement('div');
-  div.className = `chat-bubble ${type}`;
-  if (isHtml) {
-    div.innerHTML = body;
-  } else {
-    const safeTxt = String(body || '')
-      .replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))
-      .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
-      .replace(/\n/g, '<br>');
-    div.innerHTML = safeTxt;
-  }
-  container.appendChild(div);
-  container.scrollTop = container.scrollHeight;
-  if (window.Motion && window.Motion.animate) {
-    window.Motion.animate(div, { opacity: [0, 1], y: [10, 0] }, { duration: 0.4 });
-  }
-}
-
-let typingBubble = null;
-function showTypingIndicator() {
-  if (typingBubble) return;
-  const container = document.getElementById('chatMessages');
-  if (!container) return;
-  typingBubble = document.createElement('div');
-  typingBubble.className = 'chat-bubble bot';
-  typingBubble.innerHTML = '<span style="opacity:0.65; font-style:italic;">Typing...</span>';
-  container.appendChild(typingBubble);
-  container.scrollTop = container.scrollHeight;
-}
-function hideTypingIndicator() {
-  if (typingBubble) { typingBubble.remove(); typingBubble = null; }
-}
-
-async function sendChat() {
-  const input = document.getElementById('chatInput');
-  const msg = input?.value?.trim();
-  if (!msg) return;
-  appendMessage(msg, 'user');
-  input.value = '';
-  chatHistory.push({ role: 'user', content: msg });
-
-  if (!navigator.onLine) {
-    queueOfflineChat(msg);
-    const localResp = routeIntentLocally(msg) || "You are currently offline. I've received your query and will sync it as soon as your connection stabilizes. In the meantime, I can demonstrate tracking or basic support info.";
-    appendMessage(localResp, 'bot');
-    chatHistory.push({ role: 'assistant', content: localResp });
-    return;
-  }
-
-  if (currentTicketId) {
-    Api.post(`/support/${currentTicketId}/message`, { message: msg, sender: 'user' }).catch(() => {});
-  }
-
-  const escalated = detectFrustrationAndEscalate(msg);
-  if (escalated) return;
-
-  const localRoutingReply = routeIntentLocally(msg);
-  if (localRoutingReply) {
-    if (localRoutingReply instanceof Promise) {
-      const reply = await localRoutingReply;
-      appendMessage(reply, 'bot');
-      chatHistory.push({ role: 'assistant', content: reply });
-      if (currentTicketId) Api.post(`/support/${currentTicketId}/message`, { message: reply, sender: 'bot' }).catch(() => {});
-    } else {
-      appendMessage(localRoutingReply, 'bot');
-      chatHistory.push({ role: 'assistant', content: localRoutingReply });
-      if (currentTicketId) Api.post(`/support/${currentTicketId}/message`, { message: localRoutingReply, sender: 'bot' }).catch(() => {});
-    }
-    return;
-  }
-
-  showTypingIndicator();
-
-  const activeHistory = isLowBandwidth() ? chatHistory.slice(-4) : chatHistory.slice(-10);
-  const contextualPayload = [
-    chatHistory[0],
-    { role: 'system', content: getEnhancedSessionContext() },
-    ...activeHistory.slice(1)
-  ];
-
-  try {
-    const res = await fetch('https://text.pollinations.ai/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: contextualPayload })
-    });
-    if (!res.ok) throw new Error('API Offline');
-    const reply = await res.text();
-    hideTypingIndicator();
-    if (reply && reply.trim()) {
-      appendMessage(reply, 'bot');
-      chatHistory.push({ role: 'assistant', content: reply });
-      if (currentTicketId) {
-        Api.post(`/support/${currentTicketId}/message`, { message: reply, sender: 'bot' }).catch(() => {});
-      }
-    } else {
-      throw new Error('Empty Response');
-    }
-  } catch (e) {
-    hideTypingIndicator();
-    let fallback = getBotResponse(msg);
-    if (fallback instanceof Promise) fallback = await fallback;
-    appendMessage(fallback, 'bot');
-    chatHistory.push({ role: 'assistant', content: fallback });
-    if (currentTicketId) {
-      Api.post(`/support/${currentTicketId}/message`, { message: fallback, sender: 'bot' }).catch(() => {});
-    }
-  }
-}
-
-document.getElementById('chatForm')?.addEventListener('submit', e => { e.preventDefault(); sendChat(); });
-document.getElementById('closeChatBtn')?.addEventListener('click', () => {
-  closeChat();
-  document.getElementById('csatSection')?.classList.remove('is-hidden');
-  document.getElementById('csatSection')?.scrollIntoView({ behavior:'smooth' });
-});
-
-document.getElementById('openChatBtn')?.addEventListener('click', openChat);
-document.getElementById('openAgentBtn')?.addEventListener('click', () => {
-  openChat();
-  const nameEl = document.querySelector('.chat-agent-info .name');
-  const statusEl = document.querySelector('.chat-agent-info .status');
-  if (nameEl) nameEl.textContent = 'Live Agent';
-  if (statusEl) statusEl.textContent = '● Connecting...';
-  setTimeout(() => {
-    if (statusEl) statusEl.textContent = '● Connected - Esperanza is here';
-    appendMessage("Hi! I'm Esperanza, your live support agent. How can I help you today?", 'agent');
-  }, 2000);
-});
-document.getElementById('openTicketBtn')?.addEventListener('click', () => {
-  document.getElementById('ticketSection')?.classList.remove('is-hidden');
-  closeChat();
-  document.getElementById('ticketSection')?.scrollIntoView({ behavior:'smooth' });
-  setTimeout(() => document.getElementById('ticketSubject')?.focus(), 80);
-});
-document.getElementById('openSelfBtn')?.addEventListener('click', () => {
-  document.getElementById('faqSection')?.scrollIntoView({ behavior:'smooth' });
-});
-
-document.getElementById('ticketForm')?.addEventListener('submit', async e => {
-  e.preventDefault();
-  const form = e.currentTarget;
-  if (!form.checkValidity()) { form.reportValidity(); return; }
-  const subject = document.getElementById('ticketSubject').value.trim();
-  const message = document.getElementById('ticketMessage').value.trim();
-  const submitBtn = document.getElementById('submitTicket');
-  submitBtn.disabled = true;
-  const prevLabel = submitBtn.textContent;
-  submitBtn.textContent = 'Submitting…';
-  try {
-    const ticket = await Api.post('/support', {
-      orderId: document.getElementById('ticketOrderId').value.trim() || null,
-      channel: document.getElementById('ticketChannel').value,
-      subject,
-      message
-    });
-    currentTicketId = ticket.id;
-    Toast.show(`Ticket submitted! ID: ${ticket.id.slice(0,8)}`, 'success');
-    form.reset();
-    document.getElementById('ticketSection')?.classList.add('is-hidden');
-    openChat();
-    appendMessage(`Your ticket has been created (${ticket.id.slice(0,8)}). An agent will follow up shortly. Is there anything else I can help with right now?`, 'bot');
-    if (typeof io !== 'undefined') {
-      if (!socket) socket = io();
-      socket.emit('join_support', ticket.id);
-      socket.on('support_message', data => {
-        if (data.sender !== 'user') appendMessage(data.message, 'agent');
-      });
-    }
-  } catch (err) {
-    Toast.show(err.message || 'Could not submit ticket', 'error');
-  } finally {
-    submitBtn.disabled = false;
-    submitBtn.textContent = prevLabel;
-  }
-});
-
-
-
-document.addEventListener('click', e => {
-  const btn = e.target.closest('.nps-btn');
-  if (!btn) return;
-  document.querySelectorAll('.nps-btn').forEach(b => {
-    b.classList.remove('btn-primary');
-    b.setAttribute('aria-checked', 'false');
+function wireEvents() {
+  document.getElementById('chatForm')?.addEventListener('submit', e => { e.preventDefault(); sendChat(); });
+  document.getElementById('closeChatBtn')?.addEventListener('click', () => {
+    closeChat();
+    document.getElementById('csatSection')?.classList.remove('is-hidden');
+    document.getElementById('csatSection')?.scrollIntoView({ behavior: 'smooth' });
   });
-  btn.classList.add('btn-primary');
-  btn.setAttribute('aria-checked', 'true');
-  npsScore = Number(btn.dataset.nps);
-});
+  document.getElementById('openChatBtn')?.addEventListener('click', () => {
+    openChat();
+    if (!Agent.state.history.length) {
+      appendMessage('Hi 🌸 I am Bloom Assistant. I can track orders, reschedule deliveries, recommend bouquets, or connect you to a human in under a minute.', 'bot');
+      appendQuickReplies(['Track my order', 'Recommend a bouquet', 'Talk to a human', 'See FAQ']);
+    }
+  });
+  document.getElementById('openAgentBtn')?.addEventListener('click', () => {
+    openChat();
+    Agent.tools.escalate_agent();
+    appendMessage("Hi! I'm Esperanza, your live support agent. How can I help today?", 'agent');
+  });
+  document.getElementById('openTicketBtn')?.addEventListener('click', () => Agent.tools.open_ticket());
+  document.getElementById('openSelfBtn')?.addEventListener('click', () => Agent.tools.show_faq());
 
-document.getElementById('submitCsat')?.addEventListener('click', async () => {
-  if (!csatRating) { Toast.show('Please rate your experience', 'error'); return; }
-  const feedbackComment = document.getElementById('csatComment')?.value?.trim() || null;
-  if (currentTicketId) {
+  document.getElementById('ticketForm')?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    if (!form.checkValidity()) return form.reportValidity();
+    const submit = document.getElementById('submitTicket');
+    const prev = submit.textContent;
+    submit.disabled = true;
+    submit.textContent = 'Submitting…';
     try {
-      await Api.post(`/support/${currentTicketId}/resolve`, { csatScore: csatRating, npsScore, feedbackComment });
-      Toast.show('Thank you for your feedback! \uD83C\uDF38', 'success');
-      document.getElementById('csatSection').innerHTML = `
-        <div class="glass-card" style="padding:40px;text-align:center;max-width:560px;">
-          <h2 class="section-heading csat-heading" style="margin-bottom:12px;">Thank You! 🌸</h2>
-          <p style="color:rgba(255,255,255,0.6);font-size:0.95rem;">Your feedback helps us bloom and grow.</p>
-        </div>
-      `;
+      const ticket = await Api.post('/support', {
+        orderId: document.getElementById('ticketOrderId').value.trim() || null,
+        channel: document.getElementById('ticketChannel').value,
+        subject: document.getElementById('ticketSubject').value.trim(),
+        message: document.getElementById('ticketMessage').value.trim()
+      });
+      Agent.state.ticketId = ticket.id;
+      Toast.show(`Ticket #${ticket.id.slice(0, 8)} submitted`, 'success');
+      form.reset();
+      document.getElementById('ticketSection')?.classList.add('is-hidden');
+      openChat();
+      appendMessage(`Ticket #${ticket.id.slice(0, 8)} created 🌸 — an agent will reach out within 4 hours. Anything else I can help with right now?`, 'bot');
+      appendQuickReplies(['Track another order', 'Recommend a bouquet', 'Close chat']);
+      if (typeof io !== 'undefined') {
+        Agent.state.socket ??= io();
+        Agent.state.socket.emit('join_support', ticket.id);
+        Agent.state.socket.on('support_message', d => { if (d.sender !== 'user') appendMessage(d.message, 'agent'); });
+      }
+    } catch (err) {
+      Toast.show(err.message || 'Could not submit ticket', 'error');
+    } finally {
+      submit.disabled = false;
+      submit.textContent = prev;
+    }
+  });
+
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.nps-btn');
+    if (!btn) return;
+    document.querySelectorAll('.nps-btn').forEach(b => { b.classList.remove('btn-primary'); b.setAttribute('aria-checked', 'false'); });
+    btn.classList.add('btn-primary');
+    btn.setAttribute('aria-checked', 'true');
+    Agent.state.nps = Number(btn.dataset.nps);
+  });
+
+  document.getElementById('submitCsat')?.addEventListener('click', async () => {
+    if (!Agent.state.csat) return Toast.show('Please rate your experience', 'error');
+    const comment = document.getElementById('csatComment')?.value?.trim() || null;
+    try {
+      if (Agent.state.ticketId) {
+        await Api.post(`/support/${Agent.state.ticketId}/resolve`, {
+          csatScore: Agent.state.csat, npsScore: Agent.state.nps, feedbackComment: comment
+        });
+      }
+      Toast.show('Thank you for your feedback 🌸', 'success');
+      const sec = document.getElementById('csatSection');
+      if (sec) sec.innerHTML = `<div class="glass-card" style="padding:40px;text-align:center;max-width:560px;"><h2 class="section-heading csat-heading" style="margin-bottom:12px;">Thank You! 🌸</h2><p style="color:rgba(255,255,255,0.6);font-size:0.95rem;">Your feedback helps us bloom and grow.</p></div>`;
     } catch (e) {
       Toast.show(e.message || 'Could not submit feedback', 'error');
     }
-  } else {
-    Toast.show('Thank you for your feedback! \uD83C\uDF38', 'success');
-    document.getElementById('csatSection')?.classList.add('is-hidden');
+  });
+
+  window.addEventListener('online', syncOffline);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  FaqController.load();
+  buildNpsButtons();
+  bindStarRating();
+  wireEvents();
+  syncOffline();
+  Store?.on?.('faq_update', () => FaqController.refresh());
+
+  const hero = document.querySelector('.support-hero, .hero-support, main > section:first-child .con, .support-page > .container > div:first-child');
+  if (hero && !hero.querySelector('.bloom-academic-notice')) {
+    const note = document.createElement('div');
+    note.className = 'bloom-academic-notice';
+    note.setAttribute('role', 'note');
+    note.style.cssText = 'margin:12px 0 0;padding:10px 16px;border-radius:10px;background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);font-size:.78rem;color:rgba(255,255,255,.6);text-align:center;';
+    note.innerHTML = '🎓 Academic Demo — BSIT Capstone project. No commercial agents monitor these tickets.';
+    hero.appendChild(note);
   }
 });
+
+window.BloomAgent = Agent;
