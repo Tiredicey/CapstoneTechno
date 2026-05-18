@@ -79,8 +79,8 @@ async function checkAdmin() {
 function showLogin() {
   const login = document.getElementById('loginScreen');
   const app = document.getElementById('adminApp');
-  if (login) { login.hidden = false; login.style.display = 'flex'; }
-  if (app) { app.hidden = true; app.style.display = 'none'; }
+  if (login) { login.hidden = false; login.style.removeProperty('display'); }
+  if (app) { app.hidden = true; app.style.removeProperty('display'); }
   document.body.style.overflow = '';
   setTimeout(() => document.getElementById('loginEmail')?.focus(), 60);
 }
@@ -88,8 +88,8 @@ function showLogin() {
 function showApp(user) {
   const login = document.getElementById('loginScreen');
   const app = document.getElementById('adminApp');
-  if (login) { login.hidden = true; login.style.display = 'none'; }
-  if (app) { app.hidden = false; app.style.display = 'grid'; }
+  if (login) { login.hidden = true; login.style.removeProperty('display'); }
+  if (app) { app.hidden = false; app.style.removeProperty('display'); }
   const g = document.getElementById('adminGreeting');
   if (g) {
     const hour = new Date().getHours();
@@ -445,11 +445,19 @@ async function loadQueue() {
 async function loadAdminProducts() {
   const search = (document.getElementById('productSearch')?.value||'').toLowerCase();
   const cat = document.getElementById('productCatFilter')?.value||'';
+  const stock = document.getElementById('productStockFilter')?.value||'';
   try {
-    const params = cat?`?category=${cat}&limit=100`:'?limit=100';
+    const params = cat?`?category=${encodeURIComponent(cat)}&limit=200`:'?limit=200';
     const data = await Api.get(`/api/products${params}`);
     allProductsCache = data.products||data;
-    const products = allProductsCache.filter(p=>!search||p.name.toLowerCase().includes(search));
+    const products = allProductsCache.filter(p=>{
+      if (search && !(p.name||'').toLowerCase().includes(search)) return false;
+      const inv = Number(p.inventory)||0;
+      if (stock==='in' && inv<=0) return false;
+      if (stock==='low' && (inv<=0 || inv>=10)) return false;
+      if (stock==='out' && inv>0) return false;
+      return true;
+    });
     const tbody = document.getElementById('adminProductsTbody');
     if (!tbody) return;
 
@@ -499,7 +507,6 @@ async function loadAdminProducts() {
             await Api.delete(`/api/products/${btn.dataset.id}`);
             showToast('Product deleted \u2713','success');
             loadAdminProducts();
-            if (typeof socket !== 'undefined' && socket) socket.emit('admin_updated_catalog');
           } catch { showToast('Failed to delete','error'); }
         });
       });
@@ -587,7 +594,6 @@ async function saveProduct() {
     showToast(id ? 'Product updated \u2713' : 'Product created \uD83C\uDF38', 'success');
     document.getElementById('productModal').classList.remove('active');
     if (typeof loadAdminProducts === 'function') loadAdminProducts();
-    if (typeof socket !== 'undefined' && socket) socket.emit('admin_updated_catalog');
   } catch (e) {
     showToast(e.message || 'Failed to save', 'error');
     console.error('saveProduct error:', e);
@@ -684,13 +690,14 @@ async function loadFaqs() {
       btn.addEventListener('click',()=>openEditFaq(btn.dataset.id,faqs));
     });
     listEl.querySelectorAll('.delete-faq').forEach(btn=>{
-      btn.addEventListener('click',async()=>{
-        if (!confirm('Delete this FAQ?')) return;
-        try {
-          await Api.delete(`/api/faq/${btn.dataset.id}`);
-          showToast('FAQ deleted','success');
-          loadFaqs();
-        } catch { showToast('Failed to delete FAQ','error'); }
+      btn.addEventListener('click',()=>{
+        openConfirm('Delete this FAQ? This cannot be undone.', async () => {
+          try {
+            await Api.delete(`/api/faq/${btn.dataset.id}`);
+            showToast('FAQ deleted','success');
+            loadFaqs();
+          } catch { showToast('Failed to delete FAQ','error'); }
+        });
       });
     });
   } catch { showToast('Failed to load FAQs','error'); }
@@ -916,13 +923,14 @@ async function loadUsers() {
       btn.addEventListener('click',()=>openUserDetail(btn.dataset.id,filtered));
     });
     tbody.querySelectorAll('.promote-user').forEach(btn=>{
-      btn.addEventListener('click',async()=>{
-        if (!confirm(`Promote ${btn.dataset.name} to admin?`)) return;
-        try {
-          await Api.put(`/api/users/${btn.dataset.id}`,{role:'admin'});
-          showToast('User promoted to admin','success');
-          loadUsers();
-        } catch { showToast('Failed to promote user','error'); }
+      btn.addEventListener('click',()=>{
+        openConfirm(`Promote ${btn.dataset.name} to admin? This grants full access.`, async () => {
+          try {
+            await Api.put(`/api/users/${btn.dataset.id}`,{role:'admin'});
+            showToast('User promoted to admin','success');
+            loadUsers();
+          } catch { showToast('Failed to promote user','error'); }
+        });
       });
     });
   } catch { showToast('Failed to load users','error'); }
@@ -972,13 +980,14 @@ async function loadReviews() {
         </tr>`).join('')
       : emptyRow(6,'No reviews found');
     tbody.querySelectorAll('.delete-review').forEach(btn=>{
-      btn.addEventListener('click',async()=>{
-        if (!confirm('Delete this review?')) return;
-        try {
-          await Api.delete(`/api/reviews/${btn.dataset.id}`);
-          showToast('Review deleted','success');
-          loadReviews();
-        } catch { showToast('Failed to delete review','error'); }
+      btn.addEventListener('click',()=>{
+        openConfirm('Delete this review permanently?', async () => {
+          try {
+            await Api.delete(`/api/reviews/${btn.dataset.id}`);
+            showToast('Review deleted','success');
+            loadReviews();
+          } catch { showToast('Failed to delete review','error'); }
+        });
       });
     });
   } catch { showToast('Failed to load reviews','error'); }
@@ -1018,13 +1027,14 @@ async function loadPromos() {
       });
     });
     tbody.querySelectorAll('.delete-promo').forEach(btn=>{
-      btn.addEventListener('click',async()=>{
-        if (!confirm('Delete this promo code?')) return;
-        try {
-          await Api.delete(`/api/promos/${btn.dataset.id}`);
-          showToast('Promo deleted','success');
-          loadPromos();
-        } catch { showToast('Failed to delete promo','error'); }
+      btn.addEventListener('click',()=>{
+        openConfirm('Delete this promo code? Customers can no longer redeem it.', async () => {
+          try {
+            await Api.delete(`/api/promos/${btn.dataset.id}`);
+            showToast('Promo deleted','success');
+            loadPromos();
+          } catch { showToast('Failed to delete promo','error'); }
+        });
       });
     });
   } catch { showToast('Failed to load promos','error'); }
@@ -1083,14 +1093,14 @@ async function loadBanners() {
       btn.addEventListener('click',()=>openEditBanner(btn.dataset.id,banners));
     });
     list.querySelectorAll('.delete-banner').forEach(btn=>{
-      btn.addEventListener('click',async()=>{
-        if (!confirm('Delete this banner?')) return;
-        try {
-          await Api.delete(`/api/banners/${btn.dataset.id}`);
-          showToast('Banner deleted','success');
-          loadBanners();
-          if (socket) socket.emit('admin_updated_catalog');
-        } catch { showToast('Failed to delete banner','error'); }
+      btn.addEventListener('click',()=>{
+        openConfirm('Delete this banner? It will disappear from the storefront immediately.', async () => {
+          try {
+            await Api.delete(`/api/banners/${btn.dataset.id}`);
+            showToast('Banner deleted','success');
+            loadBanners();
+          } catch { showToast('Failed to delete banner','error'); }
+        });
       });
     });
   } catch { showToast('Failed to load banners','error'); }
@@ -1137,7 +1147,6 @@ async function saveBanner() {
     showToast(id ? 'Banner updated ✓' : 'Banner created ✓', 'success');
     document.getElementById('bannerModal').classList.remove('active');
     loadBanners();
-    if (socket) socket.emit('admin_updated_catalog');
   } catch(e) {
     showToast(e.message||'Failed to save banner','error');
   } finally {
@@ -1438,17 +1447,22 @@ function bindModals() {
 }
 
 function bindFilters() {
-  document.getElementById('orderStatusFilter')?.addEventListener('change',loadAllOrders);
-  document.getElementById('orderSearch')?.addEventListener('input',()=>{
-    const s=(document.getElementById('orderSearch')?.value||'').toLowerCase();
-    renderOrderTable(allOrdersCache,s);
+  const debouncedOrders = debounce(loadAllOrders, 350);
+  const debouncedProducts = debounce(loadAdminProducts, 350);
+  const debouncedUsers = debounce(loadUsers, 350);
+
+  document.getElementById('orderStatusFilter')?.addEventListener('change', loadAllOrders);
+  document.getElementById('orderSearch')?.addEventListener('input', () => {
+    const s = (document.getElementById('orderSearch')?.value || '').toLowerCase();
+    renderOrderTable(allOrdersCache, s);
   });
-  document.getElementById('productSearch')?.addEventListener('input',loadAdminProducts);
-  document.getElementById('productCatFilter')?.addEventListener('change',loadAdminProducts);
-  document.getElementById('ticketStatusFilter')?.addEventListener('change',loadSupportTickets);
-  document.getElementById('reviewFilter')?.addEventListener('change',loadReviews);
-  document.getElementById('userSearch')?.addEventListener('input',loadUsers);
-  document.getElementById('userRoleFilter')?.addEventListener('change',loadUsers);
+  document.getElementById('productSearch')?.addEventListener('input', debouncedProducts);
+  document.getElementById('productCatFilter')?.addEventListener('change', loadAdminProducts);
+  document.getElementById('productStockFilter')?.addEventListener('change', loadAdminProducts);
+  document.getElementById('ticketStatusFilter')?.addEventListener('change', loadSupportTickets);
+  document.getElementById('reviewFilter')?.addEventListener('change', loadReviews);
+  document.getElementById('userSearch')?.addEventListener('input', debouncedUsers);
+  document.getElementById('userRoleFilter')?.addEventListener('change', loadUsers);
 }
 
 function bindLogin() {
@@ -1469,39 +1483,102 @@ function bindLogout() {
   });
 }
 
+function debounce(fn, ms = 400) {
+  let t;
+  return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
+}
+
+const activePanel = () => document.querySelector('.admin-nav-item.active')?.dataset.panel || '';
+const refreshIfActive = debounce((panels, fn) => {
+  if (panels.includes(activePanel())) fn();
+}, 250);
+
 function initWebSocket() {
   if (typeof io === 'undefined' && !(window.Store && window.Store.getSocket)) return;
   try {
-    socket = (window.Store && window.Store.getSocket()) || (typeof io !== 'undefined' ? io(Api.getSocketUrl()) : null);
+    socket = (window.Store && window.Store.getSocket()) || (typeof io !== 'undefined' ? io(Api.getSocketUrl(), { transports: ['websocket','polling'], reconnection: true, reconnectionDelay: 1500 }) : null);
     if (!socket) return;
-    
+
     let token = null;
     try { token = (window.Store && Store.get('token')) || null; } catch {}
     if (!token) token = localStorage.getItem('bloom_token') || localStorage.getItem('token');
-    if (token) socket.emit('join_admin', token);
+
+    const joinAdmin = () => { if (token) socket.emit('join_admin', token); };
+    joinAdmin();
+    socket.on('connect', joinAdmin);
 
     socket.on('new_order', msg => {
-      try {
-        showToast(`🌸 New order: ${msg.data?.qr_code||(msg.data?.id||'').slice(0,8)}`,'success');
-        const active=document.querySelector('.admin-nav-item.active')?.dataset.panel;
-        if (active==='dashboard') loadDashboard();
-        if (active==='orders') loadAllOrders();
-        if (active==='queue') loadQueue();
-      } catch {}
+      const id = msg.data?.qr_code || (msg.data?.id || '').slice(0, 8);
+      showToast(`🌸 New order: ${id}`, 'success');
+      refreshIfActive(['dashboard'], loadDashboard);
+      refreshIfActive(['orders'], loadAllOrders);
+      refreshIfActive(['queue'], loadQueue);
+      refreshIfActive(['inventory'], loadInventory);
     });
 
     socket.on('order_update', msg => {
-      try {
-        showToast(`Order updated → ${(msg.status||'').replace(/_/g,' ')}`,'info');
-        const active=document.querySelector('.admin-nav-item.active')?.dataset.panel;
-        if (active==='dashboard') loadDashboard();
-        if (active==='orders') loadAllOrders();
-        if (active==='queue') loadQueue();
-      } catch {}
+      const status = (msg.status || '').replace(/_/g, ' ');
+      if (status) showToast(`Order → ${status}`, 'info');
+      refreshIfActive(['dashboard'], loadDashboard);
+      refreshIfActive(['orders'], loadAllOrders);
+      refreshIfActive(['queue'], loadQueue);
+      refreshIfActive(['analytics'], loadAnalytics);
     });
 
-    socket.on('disconnect', () => setTimeout(initWebSocket, 5000));
-  } catch {}
+    socket.on('catalog_update', () => {
+      refreshIfActive(['products'], loadAdminProducts);
+      refreshIfActive(['inventory'], loadInventory);
+      refreshIfActive(['dashboard'], loadDashboard);
+      refreshIfActive(['reviews'], loadReviews);
+    });
+
+    socket.on('banner_update', () => {
+      refreshIfActive(['banners'], loadBanners);
+    });
+
+    socket.on('content_update', () => {
+      refreshIfActive(['content'], loadContent);
+    });
+
+    socket.on('promo_update', () => {
+      refreshIfActive(['promos'], loadPromos);
+    });
+
+    socket.on('review_update', () => {
+      refreshIfActive(['reviews'], loadReviews);
+      refreshIfActive(['products'], loadAdminProducts);
+    });
+
+    socket.on('support_message', () => {
+      refreshIfActive(['support'], loadSupportTickets);
+      showToast('💬 New support message', 'info');
+    });
+
+    socket.on('ticket_update', () => {
+      refreshIfActive(['support'], loadSupportTickets);
+    });
+
+    socket.on('user_update', () => {
+      refreshIfActive(['users'], loadUsers);
+    });
+
+    socket.on('faq_update', () => {
+      refreshIfActive(['faqs'], loadFaqs);
+    });
+
+    socket.on('broadcast_sent', msg => {
+      showToast(`📣 Broadcast delivered to ${msg.count || 0} customers`, 'success');
+    });
+
+    socket.on('notification', msg => {
+      if (msg?.title) showToast(`🔔 ${msg.title}`, 'info');
+    });
+
+    socket.on('connect_error', err => console.warn('[socket] connect_error', err?.message));
+    socket.on('disconnect', reason => {
+      if (reason === 'io server disconnect') setTimeout(initWebSocket, 2500);
+    });
+  } catch (e) { console.warn('[socket] init failed', e); }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
