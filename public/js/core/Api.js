@@ -152,6 +152,11 @@
         var csrf = await ensureCsrf();
         if (csrf) h['X-CSRF-Token'] = csrf;
       } catch {}
+      if (typeof window.Headers !== 'undefined') {
+        var hdrs = new Headers();
+        for (var k in h) hdrs.append(k, h[k]);
+        h = hdrs;
+      }
       var res = await fetch(buildUrl(path), { method: method, headers: h, body: formData, credentials: 'include' });
       if (!res.ok) {
         var errData = await res.json().catch(function () { return {}; });
