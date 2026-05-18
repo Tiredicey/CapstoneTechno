@@ -79,8 +79,8 @@ async function checkAdmin() {
 function showLogin() {
   const login = document.getElementById('loginScreen');
   const app = document.getElementById('adminApp');
-  if (login) { login.hidden = false; login.style.display = ''; }
-  if (app) { app.hidden = true; app.style.display = ''; }
+  if (login) { login.hidden = false; login.style.display = 'flex'; }
+  if (app) { app.hidden = true; app.style.display = 'none'; }
   document.body.style.overflow = '';
   setTimeout(() => document.getElementById('loginEmail')?.focus(), 60);
 }
@@ -88,8 +88,8 @@ function showLogin() {
 function showApp(user) {
   const login = document.getElementById('loginScreen');
   const app = document.getElementById('adminApp');
-  if (login) { login.hidden = true; login.style.display = ''; }
-  if (app) { app.hidden = false; app.style.display = ''; }
+  if (login) { login.hidden = true; login.style.display = 'none'; }
+  if (app) { app.hidden = false; app.style.display = 'grid'; }
   const g = document.getElementById('adminGreeting');
   if (g) {
     const hour = new Date().getHours();
