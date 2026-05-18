@@ -40,7 +40,7 @@ router.post('/broadcast', authenticate, requireAdmin, (req, res) => {
   try {
     const { title, message, type } = req.body;
     if (!title || !message) return res.status(400).json({ error: 'title and message required' });
-    const users = db.all(`SELECT id FROM users WHERE role = 'customer'`);
+    const users = db.all(`SELECT id FROM users`);
     const notifType = type || 'info';
     for (const u of users) {
       const id = uuid();
@@ -48,8 +48,18 @@ router.post('/broadcast', authenticate, requireAdmin, (req, res) => {
         `INSERT INTO notifications (id, user_id, type, title, body, message) VALUES (?, ?, ?, ?, ?, ?)`,
         [id, u.id, notifType, title, message, message]
       );
-      SocketManager.emitNotificationToUser(u.id, { id, type: notifType, title, body: message, message, read: 0 });
     }
+    
+  
+    SocketManager.emitBroadcastNotification({
+      id: uuid(),
+      type: notifType,
+      title,
+      body: message,
+      message,
+      read: 0
+    });
+
     SocketManager.io?.to('admin_room').emit('broadcast_sent', {
       title,
       message,
