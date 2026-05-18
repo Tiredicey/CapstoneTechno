@@ -29,7 +29,10 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const allowed = ['.jpg', '.jpeg', '.png', '.webp'];
-    cb(null, allowed.includes(path.extname(file.originalname).toLowerCase()));
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (!allowed.includes(ext)) return cb(new Error('Unsupported image type: ' + ext));
+    if (!/^image\//.test(file.mimetype)) return cb(new Error('Unsupported MIME type: ' + file.mimetype));
+    cb(null, true);
   }
 });
 
@@ -43,17 +46,29 @@ const videoUpload = multer({
   fileFilter: (req, file, cb) => {
     const allowed = ['.webm', '.mp4', '.ogg'];
     const ext = path.extname(file.originalname).toLowerCase();
-    cb(null, allowed.includes(ext) || file.mimetype.startsWith('video/'));
+    const okExt = allowed.includes(ext);
+    const okMime = typeof file.mimetype === 'string' && file.mimetype.startsWith('video/');
+    if (!okExt && !okMime) return cb(new Error('Unsupported video type: ' + (ext || file.mimetype)));
+    cb(null, true);
   }
 });
 
 const router = Router();
 const VALID_STATUSES = ['new', 'processing', 'quality_check', 'packed', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'];
 
+const VALID_PAYMENTS = ['card', 'gcash', 'maya', 'cod', 'bank'];
+const VALID_SLOTS = /^[\w\-: ]{2,40}$/;
 router.post('/', optionalAuth, (req, res) => {
   try {
     const { cartId, recipient, deliveryDate, deliverySlot, recurring, paymentMethod, specialInstructions, loyaltyPointsUsed, surpriseDelivery } = req.body;
     if (!recipient || !deliveryDate || !deliverySlot || !paymentMethod) return res.status(400).json({ error: 'Missing required fields' });
+    if (!VALID_PAYMENTS.includes(String(paymentMethod).toLowerCase())) return res.status(400).json({ error: 'Unsupported payment method' });
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(String(deliveryDate))) return res.status(400).json({ error: 'Invalid delivery date format (YYYY-MM-DD)' });
+    if (!VALID_SLOTS.test(String(deliverySlot))) return res.status(400).json({ error: 'Invalid delivery slot' });
+    const dt = new Date(deliveryDate + 'T00:00:00');
+    if (Number.isNaN(dt.getTime())) return res.status(400).json({ error: 'Invalid delivery date' });
+    const today = new Date(); today.setHours(0,0,0,0);
+    if (dt < today) return res.status(400).json({ error: 'Delivery date cannot be in the past' });
     const userId = req.user?.id || null;
     const sessionId = req.headers['x-session-id'] || null;
     let cart = cartId ? db.get('SELECT * FROM carts WHERE id = ?', [cartId]) : null;
@@ -118,17 +133,19 @@ router.get('/:id/track', (req, res) => {
     if (!order) return res.status(404).json({ error: 'Order not found' });
     const rec = order.recipient || {};
     const recipientName = rec.name || ((rec.firstName || '') + ' ' + (rec.lastName || '')).trim() || null;
+    const isSurprise = !!order.surprise_delivery && order.status !== 'delivered';
+    const safeRecipient = isSurprise ? { name: null } : { ...rec, name: recipientName };
     res.json({
       id: order.id,
       status: order.status,
       trackingSteps: order.trackingSteps,
-      delivery_date: order.delivery_date,
-      delivery_slot: order.delivery_slot,
+      delivery_date: isSurprise ? null : order.delivery_date,
+      delivery_slot: isSurprise ? null : order.delivery_slot,
       qrCode: order.qr_code,
       delivery_photo: order.delivery_photo,
       video_greeting: order.video_greeting,
-      recipient: { ...rec, name: recipientName },
-      surpriseDelivery: order.surprise_delivery
+      recipient: safeRecipient,
+      surpriseDelivery: !!order.surprise_delivery
     });
   } catch (err) {
     console.error('[ORDER TRACK ERROR]', err);
@@ -144,34 +161,40 @@ router.get('/:id', optionalAuth, (req, res) => {
   } catch { res.status(500).json({ error: 'Failed to fetch order' }); }
 });
 
-router.post('/:id/greeting', videoUpload.single('video'), (req, res) => {
+router.post('/:id/greeting', optionalAuth, videoUpload.single('video'), (req, res) => {
+  const cleanup = () => { try { if (req.file) fs.unlinkSync(req.file.path); } catch {} };
   try {
     if (!req.file) return res.status(400).json({ error: 'No video uploaded' });
-    if (req.file.size < 1024) {
-      try { fs.unlinkSync(req.file.path); } catch {}
-      return res.status(400).json({ error: 'Video file too small — recording may have failed' });
-    }
+    if (req.file.size < 1024) { cleanup(); return res.status(400).json({ error: 'Video file too small — recording may have failed' }); }
+    const order = OrderModel.getById(req.params.id);
+    if (!order) { cleanup(); return res.status(404).json({ error: 'Order not found' }); }
+    const sessionToken = req.headers['x-session-id'] || null;
+    const authUser = req.user?.id || null;
+    const isOwner = (order.user_id && order.user_id === authUser) || (order.session_id && order.session_id === sessionToken);
+    if (!isOwner) { cleanup(); return res.status(403).json({ error: 'Unauthorized to attach greeting to this order' }); }
+    const ageSec = Math.floor((Date.now() - (order.created_at * 1000)) / 1000);
+    if (ageSec > 1800) { cleanup(); return res.status(409).json({ error: 'Greeting window closed for this order' }); }
     const header = Buffer.alloc(12);
     const fd = fs.openSync(req.file.path, 'r');
-    fs.readSync(fd, header, 0, 12, 0);
+    const bytesRead = fs.readSync(fd, header, 0, 12, 0);
     fs.closeSync(fd);
+    if (bytesRead < 12) { cleanup(); return res.status(400).json({ error: 'Invalid video header' }); }
     const isWebm = header[0] === 0x1A && header[1] === 0x45 && header[2] === 0xDF && header[3] === 0xA3;
     const isMp4 = header.slice(4, 8).toString('ascii') === 'ftyp';
     const isOgg = header.slice(0, 4).toString('ascii') === 'OggS';
-    if (!isWebm && !isMp4 && !isOgg) {
-      try { fs.unlinkSync(req.file.path); } catch {}
-      return res.status(400).json({ error: 'Invalid video file — corrupt or empty recording' });
-    }
-    const order = OrderModel.getById(req.params.id);
-    if (!order) {
-      try { fs.unlinkSync(req.file.path); } catch {}
-      return res.status(404).json({ error: 'Order not found' });
+    if (!isWebm && !isMp4 && !isOgg) { cleanup(); return res.status(400).json({ error: 'Invalid video file — corrupt or empty recording' }); }
+    if (order.video_greeting) {
+      try {
+        const oldPath = path.join(__dirname, '..', order.video_greeting);
+        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+      } catch (err) { console.warn('[VIDEO CLEANUP ERROR]', err); }
     }
     const videoUrl = `/uploads/greetings/${req.file.filename}`;
     db.run('UPDATE orders SET video_greeting = ?, updated_at = unixepoch() WHERE id = ?', [videoUrl, order.id]);
     console.log(`🎥 Video greeting saved for order ${order.qr_code}: ${videoUrl} (${req.file.size} bytes)`);
     res.json({ success: true, videoUrl });
   } catch (err) {
+    cleanup();
     console.error('[VIDEO GREETING UPLOAD ERROR]', err);
     res.status(500).json({ error: 'Failed to upload video greeting' });
   }
