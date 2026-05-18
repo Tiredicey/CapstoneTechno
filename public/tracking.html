@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Track Order - Bloom</title>
-  <link rel="stylesheet" href="/css/main.css">
-  <link rel="stylesheet" href="/css/tracking.css">
+  <link rel="stylesheet" href="/css/main.min.css">
+  <link rel="stylesheet" href="/css/tracking.min.css">
 
 <!-- BLOOM_STYLE_INJECT -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -121,10 +121,11 @@ body.modal-open { overflow: hidden; }
 [data-theme="light"] .stats-strip::before { background: linear-gradient(135deg, rgba(230,26,26,.03), rgba(188,49,148,.02)); }
 [data-theme="light"] .stat-item { background: transparent; }
 [data-theme="light"] .stat-num { background: linear-gradient(135deg, var(--text), rgba(26,18,32,.68)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-[data-theme="light"] .stat-lbl { color: rgba(26,18,32,.5); }
-[data-theme="light"] .stat-src { color: rgba(26,18,32,.4); }
+[data-theme="light"] .stat-lbl { color: rgba(26,18,32,.55); }
+[data-theme="light"] .stat-src { color: rgba(26,18,32,.45); }
 [data-theme="light"] .stat-src a { color: var(--p5d); border-bottom-color: rgba(230,26,26,.3); }
 [data-theme="light"] .stat-bar { background: rgba(0,0,0,.06); }
+[data-theme="light"] .stat-icon { filter: grayscale(.15); }
 [data-theme="light"] .feat-sec { background: var(--bg2); }
 [data-theme="light"] .feat-sec::before { mix-blend-mode: normal; }
 [data-theme="light"] .feat-card { background: rgba(255,255,255,.7); border-color: rgba(0,0,0,.08); }
@@ -133,21 +134,34 @@ body.modal-open { overflow: hidden; }
 [data-theme="light"] .feat-d { color: rgba(26,18,32,.6); }
 [data-theme="light"] .feat-card:hover .feat-d { color: rgba(26,18,32,.8); }
 [data-theme="light"] .feat-ico { background: linear-gradient(135deg, rgba(230,26,26,.12), rgba(188,49,148,.08)); border-color: rgba(230,26,26,.25); }
+[data-theme="light"] .feat-ico svg { color: var(--p5d); }
 [data-theme="light"] .rev-sec { background: var(--bg); }
 [data-theme="light"] .rev-card { background: rgba(0,0,0,.03); border-color: rgba(0,0,0,.08); }
-[data-theme="light"] .rev-body { color: rgba(26,18,32,.7); }
+[data-theme="light"] .rev-body { color: rgba(26,18,32,.72); }
 [data-theme="light"] .rev-name { color: var(--text); }
 [data-theme="light"] .rev-role { color: rgba(26,18,32,.5); }
-[data-theme="light"] .rev-card::before { color: rgba(230,26,26,.15); }
-[data-theme="light"] .fact-card { background: rgba(0,0,0,.03); border-color: rgba(0,0,0,.08); }
+[data-theme="light"] .rev-card::before { color: rgba(230,26,26,.2); }
+[data-theme="light"] .rev-stars span { color: #d4940a !important; }
+[data-theme="light"] .rev-stars span[style*="0.2"] { color: rgba(26,18,32,.15) !important; }
+[data-theme="light"] .fact-card { background: rgba(255,255,255,.7); border-color: rgba(0,0,0,.1); }
+[data-theme="light"] .fact-card::before { background: linear-gradient(to bottom, var(--p5), var(--pk)); }
+[data-theme="light"] .fact-k { color: var(--p5d); -webkit-text-fill-color: var(--p5d); }
+[data-theme="light"] .fact-t { color: var(--text); }
+[data-theme="light"] .fact-d { color: rgba(26,18,32,.65); }
+[data-theme="light"] .fact-src { color: rgba(26,18,32,.5); }
+[data-theme="light"] .fact-src a { color: var(--p5d); border-bottom-color: rgba(230,26,26,.35); }
+[data-theme="light"] .facts-sec { background: var(--bg2); border-top-color: rgba(0,0,0,.06); border-bottom-color: rgba(0,0,0,.06); }
 [data-theme="light"] .subs-sec { background: var(--bg2); }
 [data-theme="light"] .subs-card { background: rgba(255,255,255,.6); border-color: rgba(0,0,0,.08); color: var(--text); }
 [data-theme="light"] .subs-card:hover { border-color: rgba(230,26,26,.3); }
 [data-theme="light"] .subs-card.selected { border-color: var(--p5); background: rgba(255,255,255,.85); }
 [data-theme="light"] .subs-card-name { color: var(--text); }
-[data-theme="light"] .subs-card-price { color: var(--text); }
+[data-theme="light"] .subs-card-name em { background: rgba(230,26,26,.1); color: var(--p5d); }
+[data-theme="light"] .subs-card-price { color: var(--text); -webkit-text-fill-color: var(--text); }
+[data-theme="light"] .subs-card-price small { color: rgba(26,18,32,.5); }
 [data-theme="light"] .subs-card-d { color: rgba(26,18,32,.6); }
-[data-theme="light"] .subs-card-feats span { color: rgba(26,18,32,.55); }
+[data-theme="light"] .subs-card-feats span { color: rgba(26,18,32,.55); background: rgba(0,0,0,.04); }
+[data-theme="light"] .subs-card-feats span svg { color: #0a8f6a; }
 [data-theme="light"] .bloom-foot { background: var(--bg2); }
 [data-theme="light"] .foot-brand { color: var(--text); -webkit-text-fill-color: var(--text); background: none; }
 [data-theme="light"] .foot-tag { color: rgba(26,18,32,.55); }
@@ -158,7 +172,7 @@ body.modal-open { overflow: hidden; }
 [data-theme="light"] .foot-soc a { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.08); color: rgba(26,18,32,.5); }
 [data-theme="light"] .foot-soc a:hover { background: rgba(230,26,26,.1); color: var(--p5); border-color: rgba(230,26,26,.25); }
 [data-theme="light"] .nl-inp { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.1); color: var(--text); }
-[data-theme="light"] .btt { background: var(--surface2); border-color: rgba(0,0,0,.08); color: var(--text); }
+[data-theme="light"] .btt { background: var(--p5); border-color: var(--p5d); color: #fff; }
 [data-theme="light"] .overlay .modal { background: #fff; border-color: rgba(0,0,0,.1); }
 [data-theme="light"] .m-cls { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.1); color: var(--text); }
 [data-theme="light"] .m-sub { color: rgba(26,18,32,.6); }
@@ -178,18 +192,39 @@ body.modal-open { overflow: hidden; }
 [data-theme="light"] .toast { background: rgba(255,255,255,.96); border-color: rgba(0,0,0,.1); color: var(--text); box-shadow: 0 10px 40px rgba(0,0,0,.12); }
 [data-theme="light"] .cat-tab { border-color: rgba(0,0,0,.08); background: rgba(0,0,0,.03); color: rgba(26,18,32,.55); }
 [data-theme="light"] .cat-tab:hover { color: var(--text); }
-[data-theme="light"] .cat-tab.active { color: var(--text); }
+[data-theme="light"] .cat-tab.active { color: #fff; background: linear-gradient(135deg, var(--p5d), var(--p5)); border-color: var(--p5); }
 [data-theme="light"] .wl-btn { background: rgba(0,0,0,.03); border-color: rgba(0,0,0,.08); color: rgba(26,18,32,.45); }
 [data-theme="light"] .bloom-academic-badge { background: linear-gradient(135deg, rgba(254,252,249,.96), rgba(245,240,235,.96)); border-top-color: rgba(0,0,0,.08); color: rgba(26,18,32,.6); }
 [data-theme="light"] .bloom-academic-badge-close { color: rgba(26,18,32,.4); }
 [data-theme="light"] .bloom-academic-badge-close:hover { color: var(--text); }
 [data-theme="light"] .p5-sec-div { background: linear-gradient(90deg, transparent, rgba(230,26,26,.25), transparent); }
-[data-theme="light"] .delivery-bar { background: rgba(0,0,0,.03); color: rgba(26,18,32,.6); }
+[data-theme="light"] .delivery-bar { background: rgba(255,255,255,.95); color: rgba(26,18,32,.6); border-bottom-color: rgba(0,0,0,.08); }
+[data-theme="light"] .delivery-pill { background: rgba(230,26,26,.08); border-color: rgba(230,26,26,.2); color: var(--p5d); }
+[data-theme="light"] .dlv-fld { background: rgba(0,0,0,.03); border-color: rgba(0,0,0,.08); }
+[data-theme="light"] .dlv-fld input, [data-theme="light"] .dlv-fld select { color: var(--text); }
+[data-theme="light"] .dlv-fld label { color: rgba(26,18,32,.5); }
+[data-theme="light"] .dlv-eta { color: #0a8f6a; }
 [data-theme="light"] .hc-card { background: rgba(255,255,255,.6); border-color: rgba(0,0,0,.08); }
 [data-theme="light"] .hc-card:hover { border-color: rgba(230,26,26,.25); box-shadow: 0 8px 32px rgba(0,0,0,.06); }
 [data-theme="light"] .hc-title { color: var(--text); }
 [data-theme="light"] .hc-desc { color: rgba(26,18,32,.55); }
 [data-theme="light"] .hc-status { color: rgba(26,18,32,.5); }
+[data-theme="light"] .hero-hl { color: var(--text); text-shadow: none; }
+[data-theme="light"] .hero-sub { color: rgba(26,18,32,.65); text-shadow: none; }
+[data-theme="light"] .hero-eyebrow-sub { color: rgba(26,18,32,.5); }
+[data-theme="light"] .g-txt { background: linear-gradient(135deg, var(--p5d) 0%, var(--p5) 50%, var(--pk2) 100%); background-size: 250% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+[data-theme="light"] .trust-item { color: rgba(26,18,32,.5); }
+[data-theme="light"] .trust-item svg { color: #0a8f6a; }
+[data-theme="light"] .hero-countdown { background: rgba(230,26,26,.06); border-color: rgba(230,26,26,.18); }
+[data-theme="light"] .cd-lbl { color: rgba(26,18,32,.5); }
+[data-theme="light"] .cd-num { color: var(--p5d); }
+[data-theme="light"] .corp-list li { color: rgba(26,18,32,.65); }
+[data-theme="light"] .corp-list svg { color: #0a8f6a; }
+[data-theme="light"] .sec-title { color: var(--text); }
+[data-theme="light"] .sec-sub { color: rgba(26,18,32,.55); }
+[data-theme="light"] .voice-fab { box-shadow: 0 8px 24px rgba(230,26,26,.3); }
+[data-theme="light"] .p-price { color: #a97800; }
+[data-theme="light"] .p-stars span { color: #d4940a; }
 [data-theme="light"] ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
@@ -884,6 +919,16 @@ input:-webkit-autofill:focus {
 <div id="deliveryPhotoArea" style="height:120px;border-radius:var(--rs);background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:0.84rem;color:rgba(255,255,255,0.28);">Photo will appear upon delivery</div>
 </div>
 </div>
+
+<div class="track-card" id="videoGreetingCard" style="margin-top:20px;display:none;">
+<div class="track-card-hd"><span class="track-card-title">&#x1F3A5; Video Greeting</span></div>
+<div class="track-card-body" style="display:flex;flex-direction:column;gap:12px;">
+<p style="font-size:0.85rem;color:var(--text-muted);">Personal Message</p>
+<video id="videoGreetingPlayer" style="width:100%;max-height:280px;border-radius:12px;background:#000;display:block;" controls playsinline></video>
+<p style="font-size:0.75rem;color:var(--text-dim);line-height:1.4;">Your browser does not support the video tag. <br>A personal message from your sender &#x1F490;</p>
+<a id="videoGreetingDownload" href="#" download class="btn btn-g btn-sm" style="text-align:center;padding:10px;border:1px solid var(--glb);border-radius:10px;font-size:0.8rem;width:100%;">Download</a>
+</div>
+</div>
 </div>
 <div>
 <div class="track-card">
@@ -923,7 +968,7 @@ input:-webkit-autofill:focus {
 
 <!-- BLOOM_BASE_END -->
 <script src="/socket.io/socket.io.js"></script>
-<script type="module" src="/js/tracking.js"></script>
+<script type="module" src="/js/tracking.min.js"></script>
 
 <!-- BLOOM_FOOT_INJECT -->
 <footer class="bloom-foot" role="contentinfo">
@@ -931,7 +976,7 @@ input:-webkit-autofill:focus {
     <div class="foot-grid">
       <div>
         <div class="foot-brand">Bloom</div>
-        <p class="foot-tag">Handcrafted bouquets, pre-ordered for every moment. WCAG 2.1 AA accessible.</p>
+        <p class="foot-tag">Fresh flowers, delivered with care. A BSIT capstone project by STI College Lipa.</p>
         <form class="nl-form" id="nlForm" aria-label="Newsletter signup">
           <input type="email" class="nl-inp" id="nlEmail" placeholder="your@email.com" aria-label="Email address" required>
           <button type="submit" class="btn btn-p btn-sm">Join</button>
@@ -1161,11 +1206,11 @@ input:-webkit-autofill:focus {
   };
   var FALLBACK_PRODUCTS = [];
   var FEATURED_REVIEWS = [
-    { name: 'Valentina, Makati', rating: 5, body: "I pre-ordered a Crimson Vow for my mother's 60th. The silk wrap was exquisite and the evening slot worked perfectly - I got the photo proof exactly when I was finishing dinner with her.", role: 'Birthday · Makati City' },
-    { name: 'Hiroki, BGC', rating: 5, body: 'Corporate gifting for our product launch - 40 branded bouquets, every single one perfect, single invoice, CSV export for accounting. The coordinator on Viber replied within the hour.', role: 'Corporate · 40 units' },
-    { name: 'Marisol, QC', rating: 5, body: 'Surprise anniversary delivery for my wife. The evening slot + the timestamped photo at the door was such a thoughtful touch. Re-ordering for her birthday next month.', role: 'Anniversary · Quezon City' },
-    { name: 'Aiko, Cebu', rating: 5, body: 'Sympathy arrangement for a friend who lost her father. Bloom handled the note with care and the whole thing arrived within the window - exactly what the day needed.', role: 'Sympathy · Cebu City' },
-    { name: 'Diego, Taguig', rating: 5, body: 'Just-because flowers for my partner on a random Tuesday. Pre-ordered Saturday, delivered Tuesday at 7pm sharp. Cold-chain made it - still fresh a week later.', role: 'Just because · Taguig' }
+    { name: 'Maria C.', rating: 5, body: "I ordered flowers for my mom's birthday and they arrived looking even better than the photos. The silk wrap was beautiful and the delivery was right on time.", role: 'Sample · Birthday' },
+    { name: 'James R.', rating: 5, body: 'We needed 40 matching bouquets for a company event. The ordering process was straightforward and every arrangement looked consistent. Will definitely order again.', role: 'Sample · Corporate' },
+    { name: 'Ana S.', rating: 5, body: 'Surprised my wife with an evening delivery on our anniversary. Getting the photo confirmation before she even called me was a really nice touch.', role: 'Sample · Anniversary' },
+    { name: 'Carlo M.', rating: 5, body: 'Sent flowers to a friend who was going through a hard time. Bloom handled the personal note carefully and delivered within the time window I picked.', role: 'Sample · Sympathy' },
+    { name: 'Rina L.', rating: 5, body: 'Just wanted to brighten up my partner\u2019s Tuesday. Pre-ordered on Saturday, arrived Tuesday evening as planned. Still fresh a week later.', role: 'Sample · Just because' }
   ];
   var toastCount = 0;
   var MAX_TOASTS = 5;
@@ -2607,10 +2652,15 @@ window.addEventListener('beforeinstallprompt', function (e) {
 <script src="/js/core/VoiceNav.js" defer></script>
 <script src="/js/core/VideoMessage.js" defer></script>
 <script src="/js/core/SupplyChain.js" defer></script>
+<script src="/js/core/SupportUs.js" defer></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   if (window.BloomSupplyChain) {
     window.BloomSupplyChain.renderTraceability('supplyChainTrace', 'BLOOM-' + Date.now().toString(36).toUpperCase());
+  }
+  if (window.BloomSupport) {
+    window.BloomSupport.renderSupportSection('supportUsContent');
+    window.BloomSupport.renderFloatingButton();
   }
 });
 </script>
