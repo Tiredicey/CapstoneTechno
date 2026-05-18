@@ -103,9 +103,12 @@ async function handleLogin() {
   const password = document.getElementById('loginPassword').value;
   const btn = document.getElementById('loginBtn');
   const err = document.getElementById('loginError');
-  err.style.display='none';
-  if (!email||!password) { err.textContent='Enter email and password'; err.style.display='block'; return; }
-  btn.disabled=true; btn.textContent='Signing in...';
+  if (err) { err.hidden = true; err.style.display='none'; err.textContent=''; }
+  if (!email||!password) {
+    if (err) { err.textContent='Enter email and password'; err.hidden=false; err.style.display='block'; }
+    return;
+  }
+  if (btn) { btn.disabled=true; btn.textContent='Signing in...'; }
   try {
     const res = await Api.post('/api/auth/login',{email,password});
     if (typeof Store !== 'undefined' && Store.set) {
@@ -118,18 +121,16 @@ async function handleLogin() {
       localStorage.removeItem('token');
       localStorage.removeItem('bloom_token');
       localStorage.removeItem('user');
-      err.textContent='Access denied — admin only';
-      err.style.display='block';
+      if (err) { err.textContent='Access denied — admin only'; err.hidden=false; err.style.display='block'; }
       return;
     }
     showApp(res.user||res);
     if (!socket) initWebSocket();
     loadDashboard();
   } catch(e) {
-    err.textContent = e.message||'Invalid credentials';
-    err.style.display='block';
+    if (err) { err.textContent = e.message||'Invalid credentials'; err.hidden=false; err.style.display='block'; }
   } finally {
-    btn.disabled=false; btn.textContent='Sign In \u2192';
+    if (btn) { btn.disabled=false; btn.textContent='Sign In \u2192'; }
   }
 }
 
@@ -541,7 +542,7 @@ async function saveProduct() {
 
   const category = document.getElementById('pmCategory').value;
   const subcategory = document.getElementById('pmSubcategory').value.trim();
-  const base_price = parseFloat(document.getElementById('pmBasePrice')?.value) || price;
+  const base_price = price;
   const inventory = parseInt(document.getElementById('pmInventory').value) || 0;
   const lead_time = parseInt(document.getElementById('pmLeadTime').value) || 1;
   const customizable = document.getElementById('pmCustomizable').value === '1' || document.getElementById('pmCustomizable').checked;
@@ -1215,7 +1216,7 @@ function switchPanel(panel) {
 
 function bindNav() {
   document.querySelectorAll('.admin-nav-item[data-panel]').forEach(btn=>{
-    btn.addEventListener('click',()=>switchPanel(btn.dataset.panel));
+    btn.addEventListener('click', e => { e.preventDefault(); switchPanel(btn.dataset.panel); });
   });
 }
 
@@ -1267,33 +1268,36 @@ function bindModals() {
     ['cancelBannerModal','bannerModal'],
     ['closeUserDetail','userDetailModal']
   ];
+  const closeModal = (modalId) => {
+    const m = document.getElementById(modalId);
+    if (m) { m.classList.remove('active'); m.hidden = true; }
+  };
   pairs.forEach(([btnId,modalId])=>{
-    document.getElementById(btnId)?.addEventListener('click',()=>{
-      document.getElementById(modalId)?.classList.remove('active');
-    });
+    document.getElementById(btnId)?.addEventListener('click',()=>closeModal(modalId));
   });
   document.querySelectorAll('.modal-overlay').forEach(overlay=>{
-    overlay.addEventListener('click',e=>{ if(e.target===overlay) overlay.classList.remove('active'); });
+    overlay.addEventListener('click',e=>{ if(e.target===overlay) { overlay.classList.remove('active'); overlay.hidden = true; } });
   });
 
   document.getElementById('openAddProduct')?.addEventListener('click',()=>{
     resetProductForm();
     document.getElementById('productModal')?.classList.add('active');
   });
-  document.getElementById('saveProduct')?.addEventListener('click',saveProduct);
+  document.getElementById('productModalBody')?.addEventListener('submit', e => { e.preventDefault(); saveProduct(); });
 
   document.getElementById('openAddFaq')?.addEventListener('click',()=>{
     resetFaqForm();
     document.getElementById('faqModal')?.classList.add('active');
   });
-  document.getElementById('saveFaq')?.addEventListener('click',saveFaq);
+  document.getElementById('faqForm')?.addEventListener('submit', e => { e.preventDefault(); saveFaq(); });
 
   document.getElementById('openAddPromo')?.addEventListener('click',()=>{
     ['promoId','promoCode','promoValue','promoMinOrder','promoMaxUses','promoExpires']
       .forEach(id=>{ const e=document.getElementById(id); if(e) e.value=''; });
+    document.getElementById('promoModalTitle') && (document.getElementById('promoModalTitle').textContent='Add Promo Code');
     document.getElementById('promoModal')?.classList.add('active');
   });
-  document.getElementById('savePromo')?.addEventListener('click',savePromo);
+  document.getElementById('promoForm')?.addEventListener('submit', e => { e.preventDefault(); savePromo(); });
 
   document.getElementById('openAddBanner')?.addEventListener('click',()=>{
     document.getElementById('bannerId').value='';
@@ -1301,12 +1305,13 @@ function bindModals() {
     document.getElementById('bannerSubtitle').value='';
     document.getElementById('bannerLink').value='';
     document.getElementById('bannerOrder').value='0';
-    document.getElementById('bannerImage').value='';
-    document.getElementById('bannerImagePreview').style.display='none';
+    const bi = document.getElementById('bannerImage'); if (bi) bi.value='';
+    const bip = document.getElementById('bannerImagePreview');
+    if (bip) { bip.removeAttribute('src'); bip.hidden = true; bip.style.display='none'; }
     document.getElementById('bannerModalTitle').textContent='Add Banner';
     document.getElementById('bannerModal')?.classList.add('active');
   });
-  document.getElementById('saveBanner')?.addEventListener('click',saveBanner);
+  document.getElementById('bannerForm')?.addEventListener('submit', e => { e.preventDefault(); saveBanner(); });
   document.getElementById('saveContent')?.addEventListener('click',saveContent);
   document.getElementById('sendBroadcast')?.addEventListener('click',sendBroadcast);
 
@@ -1447,10 +1452,12 @@ function bindFilters() {
 }
 
 function bindLogin() {
-  document.getElementById('loginBtn')?.addEventListener('click',handleLogin);
-  document.getElementById('loginPassword')?.addEventListener('keydown',e=>{
-    if (e.key==='Enter') handleLogin();
-  });
+  const form = document.getElementById('loginForm');
+  if (form) {
+    form.addEventListener('submit', e => { e.preventDefault(); handleLogin(); });
+  } else {
+    document.getElementById('loginBtn')?.addEventListener('click', e => { e.preventDefault(); handleLogin(); });
+  }
 }
 
 function bindLogout() {
@@ -1468,7 +1475,9 @@ function initWebSocket() {
     socket = (window.Store && window.Store.getSocket()) || (typeof io !== 'undefined' ? io(Api.getSocketUrl()) : null);
     if (!socket) return;
     
-    let token = localStorage.getItem('bloom_token');
+    let token = null;
+    try { token = (window.Store && Store.get('token')) || null; } catch {}
+    if (!token) token = localStorage.getItem('bloom_token') || localStorage.getItem('token');
     if (token) socket.emit('join_admin', token);
 
     socket.on('new_order', msg => {
