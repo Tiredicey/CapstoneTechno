@@ -110,6 +110,16 @@ UPDATE users SET role = 'admin' WHERE email = 'you@example.com';
 
 ---
 
+## 🌱 Gentle Changelog
+
+**May 2026 Updates: The Ethereal Admin Dashboard**
+- **A Calmer Workspace:** We've introduced soft aurora backgrounds, gentle floating animations, and pulsing glows to the Admin login and dashboard. It's designed to feel peaceful, welcoming, and safe.
+- **Guiding Subtitles:** Every panel now has a soft, helpful subtitle to guide you. You don't have to remember everything; the interface is here to support you at your own pace.
+- **More Breathing Room:** We've expanded the spacing inside our glass cards (standardized to 32px), giving the content—and you—a little more space to breathe. 
+- **Graceful Restorations:** We carefully restored the site content and analytics panels. Everything is safely in its right place now. Take your time, the system is stable and ready whenever you are.
+
+---
+
 <div align="center">
 
 **Built with 🌸 by the STI LIPA BSIT Capstone Team**
