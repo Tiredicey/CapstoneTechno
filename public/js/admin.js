@@ -1134,7 +1134,7 @@ async function saveBanner() {
 }
 
 async function sendBroadcast() {
-  const title=document.getElementById('broadcastTitle').value.trim();
+  const title=document.getElementById('broadcastTitleInput').value.trim();
   const message=document.getElementById('broadcastMessage').value.trim();
   const type=document.getElementById('broadcastType').value;
   const result=document.getElementById('broadcastResult');
@@ -1146,8 +1146,10 @@ async function sendBroadcast() {
     result.textContent=`✓ Sent to ${res.count||'all'} customers`;
     result.style.color='#00D4AA';
     showToast('Broadcast sent ✓','success');
-    document.getElementById('broadcastTitle').value='';
+    document.getElementById('broadcastTitleInput').value='';
     document.getElementById('broadcastMessage').value='';
+    const countEl = document.getElementById('broadcastCount');
+    if (countEl) countEl.textContent = '0';
   } catch(e) {
     result.textContent=`✕ ${e.message||'Failed to send'}`;
     result.style.color='#ef4444';
@@ -1243,6 +1245,11 @@ function bindModals() {
   document.getElementById('saveBanner')?.addEventListener('click',saveBanner);
   document.getElementById('saveContent')?.addEventListener('click',saveContent);
   document.getElementById('sendBroadcast')?.addEventListener('click',sendBroadcast);
+
+  document.getElementById('broadcastMessage')?.addEventListener('input', e => {
+    const countEl = document.getElementById('broadcastCount');
+    if (countEl) countEl.textContent = e.target.value.length;
+  });
 
   document.getElementById('viewAllOrders')?.addEventListener('click',()=>switchPanel('orders'));
   document.getElementById('refreshDash')?.addEventListener('click',loadDashboard);
