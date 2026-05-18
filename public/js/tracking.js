@@ -368,9 +368,10 @@ document.getElementById('trackInput') &&
     }
   });
 var urlParams = new URLSearchParams(window.location.search);
-if (urlParams.get('id')) {
+var trackParam = urlParams.get('id') || urlParams.get('trace') || urlParams.get('order');
+if (trackParam) {
   var input = document.getElementById('trackInput');
-  if (input) input.value = urlParams.get('id');
-  trackOrder(urlParams.get('id'));
+  if (input) input.value = trackParam;
+  trackOrder(trackParam);
 }
 loadMyOrders();
