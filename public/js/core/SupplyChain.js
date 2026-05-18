@@ -26,7 +26,7 @@
   }
 
   function buildTraceabilityURL(productId) {
-    return window.location.origin + '/tracking.html?trace=' + (productId || 'BLOOM') + '&chain=full';
+    return window.location.origin + '/tracking.html?id=' + encodeURIComponent(productId || 'BLOOM');
   }
 
   async function generateIntegrityHash(dataStr) {
