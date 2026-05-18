@@ -226,7 +226,16 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 app.use((err, req, res, next) => {
-  console.error('[SERVER ERROR]', err.stack);
+  console.error('[SERVER ERROR]', err);
+  if (err instanceof multer.MulterError) {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ error: 'Uploaded file exceeds the maximum size limit' });
+    }
+    return res.status(400).json({ error: 'Upload configuration error: ' + err.message });
+  }
+  if (err.message && err.message.indexOf('type') !== -1) {
+    return res.status(400).json({ error: err.message });
+  }
   res.status(err.status || 500).json({ error: err.message || 'Internal Server Error' });
 });
 const PORT = process.env.PORT || 3000;
