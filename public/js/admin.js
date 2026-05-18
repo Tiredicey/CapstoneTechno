@@ -1083,7 +1083,7 @@ async function loadBanners() {
             <div style="font-size:0.72rem;color:rgba(255,255,255,0.25);margin-top:4px;">${b.link_url||''}</div>
           </div>
           <div class="action-btns">
-            <span class="pill ${b.is_active?'pill-green':'pill-red'}">${b.is_active?'Active':'Off'}</span>
+            <span class="pill ${b.active?'pill-green':'pill-red'}">${b.active?'Active':'Off'}</span>
             <button class="btn btn-ghost btn-sm edit-banner" data-id="${b.id}">Edit</button>
             <button class="btn btn-sm delete-banner" data-id="${b.id}" style="background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.25);">Del</button>
           </div>
