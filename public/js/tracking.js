@@ -2,8 +2,14 @@ var Api = window.Api || window.__BloomApi;
 var Store = window.Store || window.__BloomStore;
 var BloomDB = window.BloomDB;
 var STATUS_ICONS = {
-  new: '\uD83D\uDCCB', processing: '\u2699\uFE0F', quality_check: '\uD83D\uDD0D',
-  packed: '\uD83D\uDCE6', shipped: '\uD83D\uDE9A', out_for_delivery: '\uD83D\uDEF5', delivered: '\u2705', cancelled: '\u274C'
+  new: '\uD83D\uDCCB',
+  processing: '\u2699\uFE0F',
+  quality_check: '\uD83D\uDD0D',
+  packed: '\uD83D\uDCE6',
+  shipped: '\uD83D\uDE9A',
+  out_for_delivery: '\uD83D\uDEF5',
+  delivered: '\u2705',
+  cancelled: '\u274C'
 };
 function showTrackToast(msg, type) {
   type = type || 'info';
@@ -12,14 +18,17 @@ function showTrackToast(msg, type) {
   var el = document.createElement('div');
   el.id = 'track-toast';
   el.textContent = msg;
-  el.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:99999;background:' +
+  el.style.cssText =
+    'position:fixed;bottom:24px;right:24px;z-index:99999;background:' +
     (type === 'success' ? '#22c55e' : type === 'error' ? '#ef4444' : '#6366f1') +
     ';color:white;padding:14px 28px;border-radius:14px;font-size:14px;font-weight:600;box-shadow:0 8px 32px rgba(0,0,0,0.4);transition:opacity .4s,transform .4s;transform:translateY(0);';
   document.body.appendChild(el);
   setTimeout(function () {
     el.style.opacity = '0';
     el.style.transform = 'translateY(10px)';
-    setTimeout(function () { el.remove(); }, 400);
+    setTimeout(function () {
+      el.remove();
+    }, 400);
   }, 3500);
 }
 var currentOrderId = null;
@@ -29,7 +38,7 @@ async function trackOrder(identifier) {
   var resultEl = document.getElementById('trackingResult');
   if (resultEl) resultEl.style.display = 'none';
   try {
-    var order = await Api.get('/orders/' + encodeURIComponent(cleanId) + '/track');
+    var order = await Api.get('/api/orders/' + encodeURIComponent(cleanId) + '/track');
     currentOrderId = order.id;
     var detailId = document.getElementById('detailId');
     var detailEta = document.getElementById('detailEta');
@@ -56,20 +65,33 @@ async function trackOrder(identifier) {
             else if (rec.firstName || rec.lastName) rName = ((rec.firstName || '') + ' ' + (rec.lastName || '')).trim();
           }
           detailRecipient.textContent = rName || '\u2014';
-        } catch (e) { detailRecipient.textContent = '\u2014'; }
+        } catch (e) {
+          detailRecipient.textContent = '\u2014';
+        }
       }
     }
     var statusMap = {
-      new: 'status-new', processing: 'status-processing', quality_check: 'status-processing',
-      packed: 'status-packed', shipped: 'status-shipped', out_for_delivery: 'status-shipped',
-      delivered: 'status-delivered', cancelled: 'status-cancelled'
+      new: 'status-new',
+      processing: 'status-processing',
+      quality_check: 'status-processing',
+      packed: 'status-packed',
+      shipped: 'status-shipped',
+      out_for_delivery: 'status-shipped',
+      delivered: 'status-delivered',
+      cancelled: 'status-cancelled'
     };
     if (statusPill) {
       statusPill.className = 'status-pill ' + (statusMap[order.status] || 'status-new');
       statusPill.textContent = (order.status || '').replace(/_/g, ' ').toUpperCase();
     }
     var steps = order.trackingSteps || order.timeline || [];
-    if (typeof steps === 'string') { try { steps = JSON.parse(steps); } catch (e) { steps = []; } }
+    if (typeof steps === 'string') {
+      try {
+        steps = JSON.parse(steps);
+      } catch (e) {
+        steps = [];
+      }
+    }
     if (isSurprise) {
       renderSurpriseTimeline(steps, order.status);
     } else {
@@ -78,7 +100,10 @@ async function trackOrder(identifier) {
     var photoArea = document.getElementById('deliveryPhotoArea');
     if (photoArea) {
       if (order.delivery_photo) {
-        photoArea.innerHTML = '<img src="' + encodeURI(order.delivery_photo) + '" alt="Delivery verification photo" style="width:100%;height:100%;object-fit:cover;border-radius:12px;cursor:pointer;" onclick="window.open(this.src,\'_blank\')">';
+        photoArea.innerHTML =
+          '<img src="' +
+          encodeURI(order.delivery_photo) +
+          '" alt="Delivery verification photo" style="width:100%;height:100%;object-fit:cover;border-radius:12px;cursor:pointer;" onclick="window.open(this.src,\'_blank\')">';
         photoArea.style.border = 'none';
         photoArea.style.height = '200px';
       } else {
@@ -105,13 +130,21 @@ function renderSurpriseTimeline(steps, currentStatus) {
   var container = document.getElementById('trackingTimeline');
   var fill = document.getElementById('timelineFill');
   if (!container) return;
-  container.querySelectorAll('.timeline-step').forEach(function (e) { e.remove(); });
-  var completedCount = steps.filter(function (t) { return t.completed || t.timestamp; }).length;
+  if (!Array.isArray(steps)) steps = [];
+  container.querySelectorAll('.timeline-step').forEach(function (e) {
+    e.remove();
+  });
+  var completedCount = steps.filter(function (t) {
+    return t.completed || t.timestamp;
+  }).length;
   var pct = steps.length ? (completedCount / steps.length) * 100 : 0;
-  setTimeout(function () { if (fill) fill.style.height = pct + '%'; }, 100);
+  setTimeout(function () {
+    if (fill) fill.style.height = pct + '%';
+  }, 100);
   var div = document.createElement('div');
   div.className = 'timeline-step active';
-  div.innerHTML = '<div class="timeline-node">\uD83C\uDF81</div>' +
+  div.innerHTML =
+    '<div class="timeline-node">\uD83C\uDF81</div>' +
     '<div class="timeline-content">' +
     '<div class="timeline-label" style="font-weight:700;">Surprise Delivery Active</div>' +
     '<div class="timeline-time">Delivery details hidden to preserve the surprise.<br>Full timeline visible after delivery.</div>' +
@@ -122,22 +155,47 @@ function renderTimeline(steps, currentStatus) {
   var container = document.getElementById('trackingTimeline');
   var fill = document.getElementById('timelineFill');
   if (!container) return;
-  var completedCount = steps.filter(function (t) { return t.completed || t.timestamp; }).length;
+  if (!Array.isArray(steps)) steps = [];
+  var completedCount = steps.filter(function (t) {
+    return t.completed || t.timestamp;
+  }).length;
   var pct = steps.length ? (completedCount / steps.length) * 100 : 0;
-  container.querySelectorAll('.timeline-step').forEach(function (e) { e.remove(); });
-  setTimeout(function () { if (fill) fill.style.height = pct + '%'; }, 100);
+  container.querySelectorAll('.timeline-step').forEach(function (e) {
+    e.remove();
+  });
+  setTimeout(function () {
+    if (fill) fill.style.height = pct + '%';
+  }, 100);
   steps.forEach(function (step) {
     var isCompleted = step.completed || !!step.timestamp;
     var isActive = step.status === currentStatus && isCompleted;
     var div = document.createElement('div');
     div.className = 'timeline-step' + (isCompleted ? ' complete' : '') + (isActive ? ' active' : '');
     var label = step.label || (step.status || '').replace(/_/g, ' ');
-    var timeText = step.timestamp ? new Date(typeof step.timestamp === 'number' && step.timestamp < 1e12 ? step.timestamp * 1000 : step.timestamp).toLocaleString() : 'Pending';
-    var photoHtml = step.photo ? '<div style="margin-top:12px;"><img src="' + encodeURI(step.photo) + '" alt="Status photo" style="width:100%;max-height:180px;object-fit:cover;border-radius:12px;border:1px solid rgba(255,255,255,.08);cursor:pointer;" onclick="window.open(this.src,\'_blank\')"></div>' : '';
-    div.innerHTML = '<div class="timeline-node">' + (STATUS_ICONS[step.status] || '\u25CB') + '</div>' +
+    label = String(label).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+    var timeText = step.timestamp
+      ? new Date(
+          typeof step.timestamp === 'number' && step.timestamp < 1e12 ? step.timestamp * 1000 : step.timestamp
+        ).toLocaleString()
+      : 'Pending';
+    var photoHtml = step.photo
+      ? '<div style="margin-top:12px;"><img src="' +
+        encodeURI(step.photo) +
+        '" alt="Status photo" style="width:100%;max-height:180px;object-fit:cover;border-radius:12px;border:1px solid rgba(255,255,255,.08);cursor:pointer;" onclick="window.open(this.src,\'_blank\')"></div>'
+      : '';
+    div.innerHTML =
+      '<div class="timeline-node">' +
+      (STATUS_ICONS[step.status] || '\u25CB') +
+      '</div>' +
       '<div class="timeline-content">' +
-      '<div class="timeline-label">' + label + '</div>' +
-      '<div class="timeline-time">' + timeText + '</div>' +
+      '<div class="timeline-label">' +
+      label +
+      '</div>' +
+      '<div class="timeline-time">' +
+      timeText +
+      '</div>' +
       photoHtml +
       '</div>';
     container.appendChild(div);
@@ -171,13 +229,15 @@ function renderVideoGreeting(order) {
   var safeUrl = encodeURI(videoUrl);
   area.innerHTML =
     '<div class="track-card" style="overflow:hidden;">' +
-      '<div class="track-card-hd">' +
-        '<span class="track-card-title">\uD83C\uDFA5 Video Greeting</span>' +
-        '<span id="videoStatusBadge" style="font-size:0.62rem;padding:3px 10px;border-radius:100px;background:rgba(0,212,170,0.12);border:1px solid rgba(0,212,170,0.25);color:rgba(0,212,170,0.9);font-weight:700;letter-spacing:.04em;text-transform:uppercase;">Loading\u2026</span>' +
-      '</div>' +
-      '<div id="videoContainer" style="aspect-ratio:16/9;background:#000;position:relative;">' +
-        '<video id="greetingVideo" src="' + safeUrl + '" controls playsinline muted preload="metadata" style="width:100%;height:100%;object-fit:contain;display:block;"></video>' +
-      '</div>' +
+    '<div class="track-card-hd">' +
+    '<span class="track-card-title">\uD83C\uDFA5 Video Greeting</span>' +
+    '<span id="videoStatusBadge" style="font-size:0.62rem;padding:3px 10px;border-radius:100px;background:rgba(0,212,170,0.12);border:1px solid rgba(0,212,170,0.25);color:rgba(0,212,170,0.9);font-weight:700;letter-spacing:.04em;text-transform:uppercase;">Loading\u2026</span>' +
+    '</div>' +
+    '<div id="videoContainer" style="aspect-ratio:16/9;background:#000;position:relative;">' +
+    '<video id="greetingVideo" src="' +
+    safeUrl +
+    '" controls playsinline muted preload="metadata" style="width:100%;height:100%;object-fit:contain;display:block;"></video>' +
+    '</div>' +
     '</div>';
   var vid = document.getElementById('greetingVideo');
   var badge = document.getElementById('videoStatusBadge');
@@ -193,7 +253,8 @@ function renderVideoGreeting(order) {
     vid.addEventListener('error', function () {
       var container = document.getElementById('videoContainer');
       if (container) {
-        container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,0.4);font-size:0.85rem;padding:24px;text-align:center;">Video file unavailable or corrupted.<br>The sender may need to re-record their greeting.</div>';
+        container.innerHTML =
+          '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,0.4);font-size:0.85rem;padding:24px;text-align:center;">Video file unavailable or corrupted.<br>The sender may need to re-record their greeting.</div>';
       }
       if (badge) {
         badge.textContent = 'Unavailable';
@@ -204,42 +265,81 @@ function renderVideoGreeting(order) {
     });
   }
 }
+var _trackSub = null;
 function subscribeSocket(orderId) {
   if (!Store) return;
+  if (_trackSub && Store.off) {
+    try {
+      Store.off('order_update', _trackSub);
+    } catch (e) {}
+    _trackSub = null;
+  }
+  if (Store.leaveOrderRoom && currentOrderId && currentOrderId !== orderId) {
+    try {
+      Store.leaveOrderRoom(currentOrderId);
+    } catch (e) {}
+  }
   if (Store.joinOrderRoom) Store.joinOrderRoom(orderId);
   if (Store.on) {
-    Store.on('order_update', function (data) {
+    var _lastRefetch = 0;
+    _trackSub = function (data) {
       if (!data || data.orderId !== orderId) return;
       showTrackToast('Order status updated: ' + (data.status || '').replace(/_/g, ' ') + ' \uD83C\uDF38', 'info');
+      var now = Date.now();
+      if (now - _lastRefetch < 1500) return;
+      _lastRefetch = now;
       trackOrder(orderId);
-    });
+    };
+    Store.on('order_update', _trackSub);
   }
 }
 async function loadMyOrders() {
   if (!Store) return;
   try {
-    var orders = await Api.get('/orders/my');
+    var orders = await Api.get('/api/orders/my');
     if (!Array.isArray(orders) || !orders.length) return;
     var section = document.getElementById('myOrdersSection');
     var list = document.getElementById('myOrdersList');
     if (section) section.style.display = 'block';
     if (!list) return;
     var statusClassMap = {
-      new: 'status-new', processing: 'status-processing', packed: 'status-packed',
-      shipped: 'status-shipped', delivered: 'status-delivered', cancelled: 'status-cancelled'
+      new: 'status-new',
+      processing: 'status-processing',
+      packed: 'status-packed',
+      shipped: 'status-shipped',
+      delivered: 'status-delivered',
+      cancelled: 'status-cancelled'
     };
-    list.innerHTML = orders.map(function (o) {
-      var pricing = typeof o.pricing === 'string' ? JSON.parse(o.pricing || '{}') : (o.pricing || {});
-      var items = typeof o.items === 'string' ? JSON.parse(o.items || '[]') : (o.items || []);
-      var statusClass = statusClassMap[o.status] || 'status-new';
-      return '<div class="my-order-row" data-qr="' + (o.qr_code || o.id) + '">' +
-        '<div><div style="font-weight:700;font-family:var(--fd);">' + (o.qr_code || o.id) + '</div>' +
-        '<div style="font-size:0.78rem;color:rgba(255,255,255,0.4);margin-top:2px;">' + items.length + ' item(s) \u00B7 \u20B1' + Number(pricing.finalTotal || 0).toFixed(2) + '</div></div>' +
-        '<div style="display:flex;align-items:center;gap:12px;">' +
-        '<span class="status-pill ' + statusClass + '">' + (o.status || '').replace(/_/g, ' ').toUpperCase() + '</span>' +
-        '<span style="font-size:0.78rem;color:rgba(255,255,255,0.35);">' + (o.delivery_date || '\u2014') + '</span>' +
-        '</div></div>';
-    }).join('');
+    list.innerHTML = orders
+      .map(function (o) {
+        var pricing = typeof o.pricing === 'string' ? JSON.parse(o.pricing || '{}') : o.pricing || {};
+        var items = typeof o.items === 'string' ? JSON.parse(o.items || '[]') : o.items || [];
+        var statusClass = statusClassMap[o.status] || 'status-new';
+        return (
+          '<div class="my-order-row" data-qr="' +
+          (o.qr_code || o.id) +
+          '">' +
+          '<div><div style="font-weight:700;font-family:var(--fd);">' +
+          (o.qr_code || o.id) +
+          '</div>' +
+          '<div style="font-size:0.78rem;color:rgba(255,255,255,0.4);margin-top:2px;">' +
+          items.length +
+          ' item(s) \u00B7 \u20B1' +
+          Number(pricing.finalTotal || 0).toFixed(2) +
+          '</div></div>' +
+          '<div style="display:flex;align-items:center;gap:12px;">' +
+          '<span class="status-pill ' +
+          statusClass +
+          '">' +
+          (o.status || '').replace(/_/g, ' ').toUpperCase() +
+          '</span>' +
+          '<span style="font-size:0.78rem;color:rgba(255,255,255,0.35);">' +
+          (o.delivery_date || '\u2014') +
+          '</span>' +
+          '</div></div>'
+        );
+      })
+      .join('');
     list.querySelectorAll('[data-qr]').forEach(function (card) {
       card.addEventListener('click', function () {
         var input = document.getElementById('trackInput');
@@ -250,18 +350,23 @@ async function loadMyOrders() {
     });
   } catch (e) {}
 }
-document.getElementById('trackBtn') && document.getElementById('trackBtn').addEventListener('click', function () {
-  var val = document.getElementById('trackInput');
-  val = val ? val.value.trim() : '';
-  if (!val) { showTrackToast('Enter an order code', 'error'); return; }
-  trackOrder(val);
-});
-document.getElementById('trackInput') && document.getElementById('trackInput').addEventListener('keydown', function (e) {
-  if (e.key === 'Enter') {
-    var btn = document.getElementById('trackBtn');
-    if (btn) btn.click();
-  }
-});
+document.getElementById('trackBtn') &&
+  document.getElementById('trackBtn').addEventListener('click', function () {
+    var val = document.getElementById('trackInput');
+    val = val ? val.value.trim() : '';
+    if (!val) {
+      showTrackToast('Enter an order code', 'error');
+      return;
+    }
+    trackOrder(val);
+  });
+document.getElementById('trackInput') &&
+  document.getElementById('trackInput').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      var btn = document.getElementById('trackBtn');
+      if (btn) btn.click();
+    }
+  });
 var urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('id')) {
   var input = document.getElementById('trackInput');
