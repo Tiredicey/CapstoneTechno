@@ -1,656 +1,645 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bloom Admin Panel</title>
-  <link rel="stylesheet" href="/css/vars.css">
-  <link rel="stylesheet" href="/css/admin.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0f">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="Bloom Admin — secure operational dashboard for catalog, orders, customers, and growth.">
+<meta name="robots" content="noindex,nofollow">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Bloom Admin · Operations Console</title>
+<link rel="preconnect" href="/" crossorigin>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='52' font-size='52'%3E🌸%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="/css/vars.css">
+<link rel="stylesheet" href="/css/admin.css">
 </head>
-
 <body>
-  <div id="loginScreen" class="login-screen">
-    <div class="login-card">
-      <div class="login-logo">🌸 Bloom Admin</div>
-      <p
-        style="text-align:center;color:rgba(255,255,255,0.4);font-size:0.85rem;margin-bottom:32px;letter-spacing:0.3px;">
-        Secure access to your store dashboard</p>
-      <div id="loginError" class="login-error" style="display:none"></div>
-      <div class="form-group">
-        <label class="form-label" for="loginEmail">Email</label>
-        <input type="email" id="loginEmail" class="admin-input" placeholder="admin@bloom.com" autocomplete="email">
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="loginPassword">Password</label>
-        <input type="password" id="loginPassword" class="admin-input" placeholder="••••••••"
-          autocomplete="current-password">
-      </div>
-      <button id="loginBtn" class="btn btn-primary"
-        style="width:100%;justify-content:center;margin-top:12px;padding:14px 20px;font-size:0.92rem;">Sign In
-        →</button>
+<a href="#mainContent" class="skip-link">Skip to content</a>
+
+<section id="loginScreen" class="login-screen" aria-labelledby="loginHeading">
+  <form id="loginForm" class="login-card" autocomplete="on" novalidate>
+    <h1 id="loginHeading" class="login-logo">🌸 Bloom Admin</h1>
+    <p class="login-tagline">Secure access to your store dashboard</p>
+    <div id="loginError" class="login-error" role="alert" aria-live="assertive" hidden></div>
+    <div class="form-group">
+      <label class="form-label" for="loginEmail">Email</label>
+      <input type="email" id="loginEmail" class="admin-input" placeholder="admin@bloom.com" autocomplete="username" required spellcheck="false" inputmode="email">
     </div>
-  </div>
-  <div id="adminApp" class="admin-layout" style="display:none">
-    <aside class="admin-sidebar">
-      <div class="admin-logo">🌸 <span>Bloom</span></div>
-      <div id="adminGreeting" class="admin-greeting"></div>
-      <nav class="admin-nav">
-        <div class="admin-nav-section">Overview</div>
-        <button class="admin-nav-item active" data-panel="dashboard"><span class="nav-icon">📊</span>Dashboard</button>
-        <button class="admin-nav-item" data-panel="analytics"><span class="nav-icon">📈</span>Analytics</button>
-        <div class="admin-nav-section">Store</div>
-        <button class="admin-nav-item" data-panel="products"><span class="nav-icon">🌸</span>Products</button>
-        <button class="admin-nav-item" data-panel="orders"><span class="nav-icon">📦</span>Orders</button>
-        <button class="admin-nav-item" data-panel="queue"><span class="nav-icon">🗂</span>Order Queue</button>
-        <button class="admin-nav-item" data-panel="inventory"><span class="nav-icon">🏷</span>Inventory</button>
-        <a href="/qr-dashboard.html" class="admin-nav-item" style="text-decoration:none;"><span
-            class="nav-icon">📱</span>Video QR Cards</a>
-        <div class="admin-nav-section">Content</div>
-        <button class="admin-nav-item" data-panel="banners"><span class="nav-icon">🖼</span>Banners</button>
-        <button class="admin-nav-item" data-panel="faqs"><span class="nav-icon">❓</span>FAQs</button>
-        <button class="admin-nav-item" data-panel="content"><span class="nav-icon">✏️</span>Site Content</button>
-        <div class="admin-nav-section">Customers</div>
-        <button class="admin-nav-item" data-panel="users"><span class="nav-icon">👥</span>Users</button>
-        <button class="admin-nav-item" data-panel="support"><span class="nav-icon">💬</span>Support</button>
-        <button class="admin-nav-item" data-panel="reviews"><span class="nav-icon">⭐</span>Reviews</button>
-        <div class="admin-nav-section">Promotions</div>
-        <button class="admin-nav-item" data-panel="promos"><span class="nav-icon">🎟</span>Promo Codes</button>
-        <button class="admin-nav-item" data-panel="broadcast"><span class="nav-icon">📣</span>Broadcast</button>
-        <div class="admin-nav-footer">
-          <button class="admin-nav-item logout-btn" id="adminLogout"><span class="nav-icon">🚪</span>Logout</button>
+    <div class="form-group">
+      <label class="form-label" for="loginPassword">Password</label>
+      <div class="password-field">
+        <input type="password" id="loginPassword" class="admin-input" placeholder="••••••••" autocomplete="current-password" required minlength="6">
+        <button type="button" id="togglePassword" class="password-toggle" aria-label="Show password" aria-pressed="false">👁</button>
+      </div>
+    </div>
+    <button type="submit" id="loginBtn" class="btn btn-primary btn-block">Sign In →</button>
+  </form>
+</section>
+
+<div id="adminApp" class="admin-layout" hidden>
+  <button id="sidebarToggle" class="sidebar-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="adminSidebar">☰</button>
+
+  <aside id="adminSidebar" class="admin-sidebar" aria-label="Primary navigation">
+    <div class="admin-logo">🌸 <span>Bloom</span></div>
+    <div id="adminGreeting" class="admin-greeting" aria-live="polite"></div>
+    <nav class="admin-nav" role="navigation">
+      <div class="admin-nav-section">Overview</div>
+      <button class="admin-nav-item active" data-panel="dashboard" aria-current="page"><span class="nav-icon" aria-hidden="true">📊</span>Dashboard</button>
+      <button class="admin-nav-item" data-panel="analytics"><span class="nav-icon" aria-hidden="true">📈</span>Analytics</button>
+
+      <div class="admin-nav-section">Store</div>
+      <button class="admin-nav-item" data-panel="products"><span class="nav-icon" aria-hidden="true">🌸</span>Products</button>
+      <button class="admin-nav-item" data-panel="orders"><span class="nav-icon" aria-hidden="true">📦</span>Orders</button>
+      <button class="admin-nav-item" data-panel="queue"><span class="nav-icon" aria-hidden="true">🗂</span>Order Queue</button>
+      <button class="admin-nav-item" data-panel="inventory"><span class="nav-icon" aria-hidden="true">🏷</span>Inventory</button>
+      <a href="/qr-dashboard.html" class="admin-nav-item nav-link"><span class="nav-icon" aria-hidden="true">📱</span>Video QR Cards</a>
+
+      <div class="admin-nav-section">Content</div>
+      <button class="admin-nav-item" data-panel="banners"><span class="nav-icon" aria-hidden="true">🖼</span>Banners</button>
+      <button class="admin-nav-item" data-panel="faqs"><span class="nav-icon" aria-hidden="true">❓</span>FAQs</button>
+      <button class="admin-nav-item" data-panel="content"><span class="nav-icon" aria-hidden="true">✏️</span>Site Content</button>
+
+      <div class="admin-nav-section">Customers</div>
+      <button class="admin-nav-item" data-panel="users"><span class="nav-icon" aria-hidden="true">👥</span>Users</button>
+      <button class="admin-nav-item" data-panel="support"><span class="nav-icon" aria-hidden="true">💬</span>Support</button>
+      <button class="admin-nav-item" data-panel="reviews"><span class="nav-icon" aria-hidden="true">⭐</span>Reviews</button>
+
+      <div class="admin-nav-section">Promotions</div>
+      <button class="admin-nav-item" data-panel="promos"><span class="nav-icon" aria-hidden="true">🎟</span>Promo Codes</button>
+      <button class="admin-nav-item" data-panel="broadcast"><span class="nav-icon" aria-hidden="true">📣</span>Broadcast</button>
+
+      <div class="admin-nav-footer">
+        <button class="admin-nav-item logout-btn" id="adminLogout"><span class="nav-icon" aria-hidden="true">🚪</span>Logout</button>
+      </div>
+    </nav>
+  </aside>
+
+  <main id="mainContent" class="admin-main" tabindex="-1">
+
+    <section id="panel-dashboard" class="panel active" aria-labelledby="dashTitle">
+      <header class="admin-header">
+        <div>
+          <h2 id="dashTitle" class="admin-title">Dashboard</h2>
+          <p id="dashDate" class="admin-subtitle"></p>
         </div>
-      </nav>
-    </aside>
-    <main class="admin-main">
-      <div id="panel-dashboard" class="panel active">
-        <div class="admin-header">
-          <div>
-            <div class="admin-title">Dashboard</div>
-            <div id="dashDate" class="admin-subtitle"></div>
-          </div>
-          <button class="btn btn-ghost btn-sm" id="refreshDash">↻ Refresh</button>
+        <div class="header-actions">
+          <button class="btn btn-ghost btn-sm" id="exportDash" type="button">⬇ Export</button>
+          <button class="btn btn-ghost btn-sm" id="refreshDash" type="button">↻ Refresh</button>
         </div>
-        <div class="kpi-grid">
-          <div class="kpi-card" style="--kpi-color:rgba(232,67,147,0.2)">
-            <div class="kpi-icon">💰</div>
-            <div class="kpi-label">Total Revenue</div>
-            <div class="kpi-value" id="kpiRevenue">—</div>
+      </header>
+      <div class="kpi-grid">
+        <div class="kpi-card" style="--kpi-color:rgba(232,67,147,0.2)">
+          <div class="kpi-icon" aria-hidden="true">💰</div>
+          <div class="kpi-label">Total Revenue</div>
+          <div class="kpi-value" id="kpiRevenue" aria-live="polite">—</div>
+          <div class="kpi-trend" id="kpiRevenueTrend"></div>
+        </div>
+        <div class="kpi-card" style="--kpi-color:rgba(0,212,170,0.2)">
+          <div class="kpi-icon" aria-hidden="true">📦</div>
+          <div class="kpi-label">Orders Today</div>
+          <div class="kpi-value" id="kpiToday" aria-live="polite">—</div>
+          <div class="kpi-trend" id="kpiTodayTrend"></div>
+        </div>
+        <div class="kpi-card" style="--kpi-color:rgba(255,215,0,0.18)">
+          <div class="kpi-icon" aria-hidden="true">⏳</div>
+          <div class="kpi-label">Pending</div>
+          <div class="kpi-value" id="kpiPending" aria-live="polite">—</div>
+          <div class="kpi-trend" id="kpiPendingTrend"></div>
+        </div>
+        <div class="kpi-card" style="--kpi-color:rgba(124,58,237,0.2)">
+          <div class="kpi-icon" aria-hidden="true">⭐</div>
+          <div class="kpi-label">NPS Score</div>
+          <div class="kpi-value" id="kpiNps" aria-live="polite">—</div>
+          <div class="kpi-trend" id="kpiNpsTrend"></div>
+        </div>
+      </div>
+      <div class="dash-grid">
+        <div class="glass-card pad-lg">
+          <div class="card-header">
+            <h3 class="card-title">Revenue by Category</h3>
+            <select id="revenueRange" class="admin-select admin-select-sm" aria-label="Revenue range">
+              <option value="7">Last 7 days</option>
+              <option value="30" selected>Last 30 days</option>
+              <option value="90">Last 90 days</option>
+            </select>
           </div>
-          <div class="kpi-card" style="--kpi-color:rgba(0,212,170,0.2)">
-            <div class="kpi-icon">📦</div>
-            <div class="kpi-label">Orders Today</div>
-            <div class="kpi-value" id="kpiToday">—</div>
+          <div class="chart-area"><div class="bar-chart" id="revenueChart" role="img" aria-label="Revenue by category chart"></div></div>
+        </div>
+        <div class="glass-card pad-lg">
+          <h3 class="card-title">Top Products</h3>
+          <div id="topProductsList" class="top-products"></div>
+        </div>
+      </div>
+      <div class="glass-card pad-lg mt-lg">
+        <div class="card-header">
+          <h3 class="card-title">Recent Orders</h3>
+          <button class="btn btn-ghost btn-sm" id="viewAllOrders" type="button">View All →</button>
+        </div>
+        <div class="table-wrap">
+          <table class="orders-table">
+            <thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Delivery</th><th>Actions</th></tr></thead>
+            <tbody id="recentOrdersTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel-products" class="panel" hidden aria-labelledby="productsTitle">
+      <header class="admin-header">
+        <div>
+          <h2 id="productsTitle" class="admin-title">Products</h2>
+          <p class="admin-subtitle">Manage your flower catalog</p>
+        </div>
+        <button class="btn btn-primary" id="openAddProduct" type="button">+ Add Product</button>
+      </header>
+      <div class="filter-bar">
+        <input type="search" id="productSearch" placeholder="🔍 Search products..." class="admin-input flex-1" aria-label="Search products">
+        <select id="productCatFilter" class="admin-select" aria-label="Filter by category">
+          <option value="">All Categories</option>
+          <option value="fresh">🌷 Fresh</option>
+          <option value="dried">🌿 Dried</option>
+          <option value="branded">🏷 Branded</option>
+          <option value="bundled">🎁 Bundled</option>
+          <option value="merchandise">🛍 Merchandise</option>
+        </select>
+        <select id="productStockFilter" class="admin-select" aria-label="Filter by stock">
+          <option value="">All Stock</option>
+          <option value="in">In Stock</option>
+          <option value="low">Low Stock</option>
+          <option value="out">Out of Stock</option>
+        </select>
+      </div>
+      <div class="glass-card no-pad">
+        <div class="table-wrap">
+          <table class="orders-table">
+            <thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="adminProductsTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel-orders" class="panel" hidden aria-labelledby="ordersTitle">
+      <header class="admin-header">
+        <div>
+          <h2 id="ordersTitle" class="admin-title">Orders</h2>
+          <p class="admin-subtitle">Track and manage customer orders</p>
+        </div>
+        <div class="header-actions">
+          <input type="search" id="orderSearch" placeholder="🔍 Search by ID or name..." class="admin-input search-input" aria-label="Search orders">
+          <select id="orderStatusFilter" class="admin-select" aria-label="Filter orders by status">
+            <option value="">All Status</option>
+            <option value="new">New</option>
+            <option value="processing">Processing</option>
+            <option value="quality_check">Quality Check</option>
+            <option value="packed">Packed</option>
+            <option value="shipped">Shipped</option>
+            <option value="out_for_delivery">Out for Delivery</option>
+            <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+          <button class="btn btn-ghost btn-sm" id="exportOrders" type="button">⬇ CSV</button>
+        </div>
+      </header>
+      <div class="glass-card no-pad">
+        <div class="table-wrap">
+          <table class="orders-table">
+            <thead><tr><th>Order</th><th>Date</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Payment</th><th>Delivery</th><th>Actions</th></tr></thead>
+            <tbody id="allOrdersTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel-queue" class="panel" hidden aria-labelledby="queueTitle">
+      <header class="admin-header">
+        <div>
+          <h2 id="queueTitle" class="admin-title">Order Queue</h2>
+          <p class="admin-subtitle">Kanban workflow pipeline · drag cards between columns</p>
+        </div>
+        <button class="btn btn-ghost btn-sm" id="refreshQueue" type="button">↻ Refresh</button>
+      </header>
+      <div class="kanban-board" id="kanbanBoard">
+        <div class="kanban-col" data-status="new">
+          <div class="kanban-col-header" style="--col-color:#38bdf8"><span>New</span><span class="kanban-count" id="cnt-new">0</span></div>
+          <div class="kanban-cards" id="col-new" data-dropzone="new"></div>
+        </div>
+        <div class="kanban-col" data-status="processing">
+          <div class="kanban-col-header" style="--col-color:#FFD700"><span>Processing</span><span class="kanban-count" id="cnt-processing">0</span></div>
+          <div class="kanban-cards" id="col-processing" data-dropzone="processing"></div>
+        </div>
+        <div class="kanban-col" data-status="quality_check">
+          <div class="kanban-col-header" style="--col-color:#A78BFA"><span>Quality Check</span><span class="kanban-count" id="cnt-quality_check">0</span></div>
+          <div class="kanban-cards" id="col-quality_check" data-dropzone="quality_check"></div>
+        </div>
+        <div class="kanban-col" data-status="packed">
+          <div class="kanban-col-header" style="--col-color:#e84393"><span>Packed</span><span class="kanban-count" id="cnt-packed">0</span></div>
+          <div class="kanban-cards" id="col-packed" data-dropzone="packed"></div>
+        </div>
+        <div class="kanban-col" data-status="shipped">
+          <div class="kanban-col-header" style="--col-color:#818cf8"><span>Shipped</span><span class="kanban-count" id="cnt-shipped">0</span></div>
+          <div class="kanban-cards" id="col-shipped" data-dropzone="shipped"></div>
+        </div>
+        <div class="kanban-col" data-status="out_for_delivery">
+          <div class="kanban-col-header" style="--col-color:#00D4AA"><span>Out for Delivery</span><span class="kanban-count" id="cnt-out_for_delivery">0</span></div>
+          <div class="kanban-cards" id="col-out_for_delivery" data-dropzone="out_for_delivery"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel-inventory" class="panel" hidden aria-labelledby="invTitle">
+      <header class="admin-header">
+        <div>
+          <h2 id="invTitle" class="admin-title">Inventory</h2>
+          <p class="admin-subtitle">Stock levels and alerts</p>
+        </div>
+        <div class="header-actions">
+          <input type="search" id="inventorySearch" placeholder="🔍 Search SKU..." class="admin-input search-input" aria-label="Search inventory">
+          <button class="btn btn-ghost btn-sm" id="refreshInventory" type="button">↻ Refresh</button>
+        </div>
+      </header>
+      <div class="kpi-grid kpi-grid-3">
+        <div class="kpi-card" style="--kpi-color:rgba(255,215,0,0.2)">
+          <div class="kpi-icon" aria-hidden="true">⚠️</div>
+          <div class="kpi-label">Low Stock</div>
+          <div class="kpi-value" id="invLow">—</div>
+        </div>
+        <div class="kpi-card" style="--kpi-color:rgba(239,68,68,0.2)">
+          <div class="kpi-icon" aria-hidden="true">🚫</div>
+          <div class="kpi-label">Out of Stock</div>
+          <div class="kpi-value" id="invOut">—</div>
+        </div>
+        <div class="kpi-card" style="--kpi-color:rgba(0,212,170,0.2)">
+          <div class="kpi-icon" aria-hidden="true">📦</div>
+          <div class="kpi-label">Total SKUs</div>
+          <div class="kpi-value" id="invTotal">—</div>
+        </div>
+      </div>
+      <div class="glass-card no-pad"><div id="inventoryList"></div></div>
+    </section>
+
+    <section id="panel-banners" class="panel" hidden aria-labelledby="bannersTitle">
+      <header class="admin-header">
+        <div>
+          <h2 id="bannersTitle" class="admin-title">Banners</h2>
+          <p class="admin-subtitle">Storefront promotional banners</p>
+        </div>
+        <button class="btn btn-primary" id="openAddBanner" type="button">+ Add Banner</button>
+      </header>
+      <div id="bannersList" class="stack-list"></div>
+    </section>
+
+    <section id="panel-faqs" class="panel" hidden aria-labelledby="faqsTitle">
+      <header class="admin-header">
+        <div>
+          <h2 id="faqsTitle" class="admin-title">FAQs</h2>
+          <p class="admin-subtitle">Customer frequently asked questions</p>
+        </div>
+        <button class="btn btn-primary" id="openAddFaq" type="button">+ Add FAQ</button>
+      </header>
+      <div id="faqsList" class="stack-list stack-sm"></div>
+    </section>
+
+    <section id="panel-content" class="panel" hidden aria-labelledby="contentTitle">
+      <header class="admin-header">
+        <div>
+          <h2 id="contentTitle" class="admin-title">Site Content</h2>
+          <p class="admin-subtitle">Edit storefront text and settings</p>
+        </div>
+        <button class="btn btn-primary" id="saveContent" type="button">💾 Save All</button>
+      </header>
+      <div class="content-editor-grid">
+        <div class="glass-card pad-md">
+          <h3 class="card-title mb-md">🦸 Hero Section</h3>
+          <div class="form-group">
+            <label class="form-label" for="contentHeroBadge">Badge Text</label>
+            <input type="text" id="contentHeroBadge" class="admin-input" placeholder="Handcrafted · Pre-Order · Delivered with Love" maxlength="80">
           </div>
-          <div class="kpi-card" style="--kpi-color:rgba(255,215,0,0.18)">
-            <div class="kpi-icon">⏳</div>
-            <div class="kpi-label">Pending</div>
-            <div class="kpi-value" id="kpiPending">—</div>
+          <div class="form-group">
+            <label class="form-label" for="contentHeroHeadline">Headline</label>
+            <input type="text" id="contentHeroHeadline" class="admin-input" placeholder="Blooms Built For Your Moment" maxlength="100">
           </div>
-          <div class="kpi-card" style="--kpi-color:rgba(124,58,237,0.2)">
-            <div class="kpi-icon">⭐</div>
-            <div class="kpi-label">NPS Score</div>
-            <div class="kpi-value" id="kpiNps">—</div>
+          <div class="form-group">
+            <label class="form-label" for="contentHeroSub">Subtitle</label>
+            <textarea id="contentHeroSub" class="admin-input" rows="3" placeholder="Custom bouquets..." maxlength="280"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="contentFreeShip">Free Shipping Threshold (₱)</label>
+            <input type="number" id="contentFreeShip" class="admin-input" placeholder="4350" min="0" step="50">
           </div>
         </div>
-        <div class="dash-grid">
-          <div class="glass-card" style="padding:32px;">
-            <div class="card-title" style="margin-bottom:20px;">Revenue by Category</div>
-            <div class="chart-area">
-              <div class="bar-chart" id="revenueChart"></div>
+
+        <div class="glass-card pad-md">
+          <h3 class="card-title mb-md">📅 Subscription Plans</h3>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label" for="contentSubWeeklyName">Weekly Name</label>
+              <input type="text" id="contentSubWeeklyName" class="admin-input" placeholder="Weekly Bloom">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="contentSubWeeklyPrice">Weekly Price (₱)</label>
+              <input type="number" id="contentSubWeeklyPrice" class="admin-input" placeholder="1499" min="0">
             </div>
           </div>
-          <div class="glass-card" style="padding:32px;">
-            <div class="card-title" style="margin-bottom:16px;">Top Products</div>
-            <div id="topProductsList"></div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label" for="contentSubBiweeklyName">Biweekly Name</label>
+              <input type="text" id="contentSubBiweeklyName" class="admin-input" placeholder="Biweekly Refresh">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="contentSubBiweeklyPrice">Biweekly Price (₱)</label>
+              <input type="number" id="contentSubBiweeklyPrice" class="admin-input" placeholder="2299" min="0">
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label" for="contentSubMonthlyName">Monthly Name</label>
+              <input type="text" id="contentSubMonthlyName" class="admin-input" placeholder="Monthly Statement">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="contentSubMonthlyPrice">Monthly Price (₱)</label>
+              <input type="number" id="contentSubMonthlyPrice" class="admin-input" placeholder="4299" min="0">
+            </div>
           </div>
         </div>
-        <div class="glass-card" style="padding:32px;margin-top:28px;">
-          <div class="card-header">
-            <div class="card-title">Recent Orders</div>
-            <button class="btn btn-ghost btn-sm" id="viewAllOrders">View All →</button>
+
+        <div class="glass-card pad-md">
+          <h3 class="card-title mb-md">📢 Announcement Banner</h3>
+          <div class="form-group">
+            <label class="form-label" for="contentBanner">Banner Text</label>
+            <input type="text" id="contentBanner" class="admin-input" placeholder="🌸 Free delivery on orders over ₱4,350" maxlength="120">
           </div>
-          <div class="table-wrap">
-            <table class="orders-table">
-              <thead>
-                <tr>
-                  <th>Order</th>
-                  <th>Customer</th>
-                  <th>Items</th>
-                  <th>Total</th>
-                  <th>Status</th>
-                  <th>Delivery</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="recentOrdersTbody"></tbody>
-            </table>
+          <div class="form-group toggle-row">
+            <input type="checkbox" id="contentBannerActive" class="toggle-input">
+            <label class="form-label toggle-label" for="contentBannerActive">Banner Active</label>
+          </div>
+          <h3 class="card-title mt-lg mb-md">🏢 Corporate Section</h3>
+          <div class="form-group">
+            <label class="form-label" for="contentCorpHeadline">Corporate Headline</label>
+            <input type="text" id="contentCorpHeadline" class="admin-input" placeholder="Corporate Partnerships">
+          </div>
+          <h3 class="card-title mt-lg mb-md">🔗 Social Links</h3>
+          <div class="form-group">
+            <label class="form-label" for="contentIG">Instagram URL</label>
+            <input type="url" id="contentIG" class="admin-input" placeholder="https://instagram.com/bloom" inputmode="url">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="contentFB">Facebook URL</label>
+            <input type="url" id="contentFB" class="admin-input" placeholder="https://facebook.com/bloom" inputmode="url">
+          </div>
+        </div>
+
+        <div class="glass-card pad-md span-full">
+          <h3 class="card-title mb-md">🦶 Footer</h3>
+          <div class="form-group">
+            <label class="form-label" for="contentFooter">Footer Tagline</label>
+            <input type="text" id="contentFooter" class="admin-input" placeholder="Handcrafted blooms, personalized gifts..." maxlength="200">
           </div>
         </div>
       </div>
-      <div id="panel-products" class="panel" style="display:none">
-        <div class="admin-header">
-          <div>
-            <div class="admin-title">Products</div>
-            <div class="admin-subtitle">Manage your flower catalog</div>
-          </div>
-          <button class="btn btn-primary" id="openAddProduct">+ Add Product</button>
+    </section>
+
+    <section id="panel-users" class="panel" hidden aria-labelledby="usersTitle">
+      <header class="admin-header">
+        <div>
+          <h2 id="usersTitle" class="admin-title">Users</h2>
+          <p class="admin-subtitle">Customer accounts and roles</p>
         </div>
-        <div class="filter-bar">
-          <input type="text" id="productSearch" placeholder="🔍 Search products..." class="admin-input"
-            style="flex:1;min-width:200px;">
-          <select id="productCatFilter" class="admin-select">
-            <option value="">All Categories</option>
+        <div class="header-actions">
+          <input type="search" id="userSearch" placeholder="🔍 Search users..." class="admin-input search-input" aria-label="Search users">
+          <select id="userRoleFilter" class="admin-select" aria-label="Filter by role">
+            <option value="">All Roles</option>
+            <option value="customer">Customer</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+      </header>
+      <div class="glass-card no-pad">
+        <div class="table-wrap">
+          <table class="orders-table">
+            <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Points</th><th>Joined</th><th>Actions</th></tr></thead>
+            <tbody id="usersTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel-support" class="panel" hidden aria-labelledby="supportTitle">
+      <header class="admin-header">
+        <div>
+          <h2 id="supportTitle" class="admin-title">Support Tickets</h2>
+          <p class="admin-subtitle">Customer inquiries and resolutions</p>
+        </div>
+        <select id="ticketStatusFilter" class="admin-select" aria-label="Filter tickets">
+          <option value="">All</option>
+          <option value="open">Open</option>
+          <option value="pending">Pending</option>
+          <option value="resolved">Resolved</option>
+        </select>
+      </header>
+      <div id="ticketsList" class="stack-list stack-sm"></div>
+    </section>
+
+    <section id="panel-reviews" class="panel" hidden aria-labelledby="reviewsTitle">
+      <header class="admin-header">
+        <div>
+          <h2 id="reviewsTitle" class="admin-title">Reviews</h2>
+          <p class="admin-subtitle">Product ratings and feedback</p>
+        </div>
+        <select id="reviewFilter" class="admin-select" aria-label="Filter by rating">
+          <option value="">All Ratings</option>
+          <option value="5">⭐⭐⭐⭐⭐ 5 Star</option>
+          <option value="4">⭐⭐⭐⭐ 4 Star</option>
+          <option value="3">⭐⭐⭐ 3 Star</option>
+          <option value="1">⭐ 1-2 Star</option>
+        </select>
+      </header>
+      <div class="glass-card no-pad">
+        <div class="table-wrap">
+          <table class="orders-table">
+            <thead><tr><th>Product</th><th>Customer</th><th>Rating</th><th>Comment</th><th>Date</th><th>Actions</th></tr></thead>
+            <tbody id="reviewsTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel-promos" class="panel" hidden aria-labelledby="promosTitle">
+      <header class="admin-header">
+        <div>
+          <h2 id="promosTitle" class="admin-title">Promo Codes</h2>
+          <p class="admin-subtitle">Discount and promotion management</p>
+        </div>
+        <button class="btn btn-primary" id="openAddPromo" type="button">+ Add Promo</button>
+      </header>
+      <div class="glass-card no-pad">
+        <div class="table-wrap">
+          <table class="orders-table">
+            <thead><tr><th>Code</th><th>Type</th><th>Value</th><th>Min Order</th><th>Used / Max</th><th>Expires</th><th>Active</th><th>Actions</th></tr></thead>
+            <tbody id="promosTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel-analytics" class="panel" hidden aria-labelledby="analyticsTitle">
+      <header class="admin-header">
+        <div>
+          <h2 id="analyticsTitle" class="admin-title">Analytics</h2>
+          <p class="admin-subtitle">Performance metrics and insights</p>
+        </div>
+        <div class="header-actions">
+          <select id="analyticsRange" class="admin-select" aria-label="Analytics range">
+            <option value="7">7 days</option>
+            <option value="30" selected>30 days</option>
+            <option value="90">90 days</option>
+            <option value="365">1 year</option>
+          </select>
+          <button class="btn btn-ghost btn-sm" id="refreshAnalytics" type="button">↻ Refresh</button>
+        </div>
+      </header>
+      <div class="kpi-grid" id="analyticsKpi"></div>
+      <div class="analytics-grid">
+        <div class="glass-card pad-lg">
+          <h3 class="card-title mb-md">Revenue by Category</h3>
+          <div class="chart-area"><div class="bar-chart" id="analyticsChart" role="img" aria-label="Analytics revenue chart"></div></div>
+        </div>
+        <div class="glass-card pad-lg">
+          <h3 class="card-title mb-md">Event Activity</h3>
+          <div id="eventList"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel-broadcast" class="panel" hidden aria-labelledby="broadcastTitle">
+      <header class="admin-header">
+        <div>
+          <h2 id="broadcastTitle" class="admin-title">Broadcast Notification</h2>
+          <p class="admin-subtitle">Send messages to all customers</p>
+        </div>
+      </header>
+      <div class="glass-card pad-xl broadcast-card">
+        <div class="form-group">
+          <label class="form-label" for="broadcastTitle">Title</label>
+          <input type="text" id="broadcastTitleInput" class="admin-input" placeholder="Notification title" maxlength="80" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="broadcastMessage">Message</label>
+          <textarea id="broadcastMessage" class="admin-input" rows="5" placeholder="Message to all customers..." maxlength="500" required></textarea>
+          <div class="char-counter"><span id="broadcastCount">0</span> / 500</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="broadcastType">Type</label>
+          <select id="broadcastType" class="admin-select">
+            <option value="info">ℹ️ Info</option>
+            <option value="promo">🎟 Promo</option>
+            <option value="alert">🚨 Alert</option>
+          </select>
+        </div>
+        <button class="btn btn-primary mt-md" id="sendBroadcast" type="button">📣 Send to All Customers</button>
+        <div id="broadcastResult" class="broadcast-result" role="status" aria-live="polite"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="orderDetailModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="orderDetailTitle" hidden>
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 class="modal-title" id="orderDetailTitle">Order Detail</h3>
+      <button id="closeOrderDetail" class="modal-close" aria-label="Close" type="button">✕</button>
+    </div>
+    <div id="orderDetailBody"></div>
+  </div>
+</div>
+
+<div id="productModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="productModalTitle" hidden>
+  <div class="modal-box modal-md">
+    <div class="modal-head">
+      <h3 class="modal-title" id="productModalTitle">Add Product</h3>
+      <button id="closeProductModal" class="modal-close" aria-label="Close" type="button">✕</button>
+    </div>
+    <form id="productModalBody" novalidate>
+      <input type="hidden" id="pmId">
+      <div class="modal-form-grid">
+        <div class="form-group span-full">
+          <label class="form-label" for="pmName">Product Name</label>
+          <input type="text" id="pmName" class="admin-input" placeholder="e.g. Crimson Horizon Bouquet" required maxlength="120">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="pmCategory">Category</label>
+          <select id="pmCategory" class="admin-select">
             <option value="fresh">🌷 Fresh</option>
             <option value="dried">🌿 Dried</option>
             <option value="branded">🏷 Branded</option>
             <option value="bundled">🎁 Bundled</option>
             <option value="merchandise">🛍 Merchandise</option>
           </select>
-          <button class="btn btn-ghost btn-sm" onclick="loadAdminProducts()">Filter</button>
         </div>
-        <div class="glass-card" style="padding:0;overflow:hidden;">
-          <table class="orders-table">
-            <thead>
-              <tr>
-                <th>Image</th>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Price</th>
-                <th>Stock</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="adminProductsTbody"></tbody>
-          </table>
+        <div class="form-group">
+          <label class="form-label" for="pmSubcategory">Subcategory</label>
+          <input type="text" id="pmSubcategory" class="admin-input" placeholder="roses, pampas, tulips...">
         </div>
-      </div>
-      <div id="panel-orders" class="panel" style="display:none">
-        <div class="admin-header">
-          <div>
-            <div class="admin-title">Orders</div>
-            <div class="admin-subtitle">Track and manage customer orders</div>
-          </div>
-          <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
-            <input type="text" id="orderSearch" placeholder="🔍 Search by ID or name..." class="admin-input"
-              style="min-width:220px;">
-            <select id="orderStatusFilter" class="admin-select">
-              <option value="">All Status</option>
-              <option value="new">New</option>
-              <option value="processing">Processing</option>
-              <option value="quality_check">Quality Check</option>
-              <option value="packed">Packed</option>
-              <option value="shipped">Shipped</option>
-              <option value="out_for_delivery">Out for Delivery</option>
-              <option value="delivered">Delivered</option>
-              <option value="cancelled">Cancelled</option>
-            </select>
-          </div>
+        <div class="form-group">
+          <label class="form-label" for="pmPrice">Price (₱)</label>
+          <input type="number" id="pmPrice" class="admin-input" placeholder="0.00" step="0.01" min="0" required>
         </div>
-        <div class="glass-card" style="padding:0;overflow:hidden;">
-          <table class="orders-table">
-            <thead>
-              <tr>
-                <th>Order</th>
-                <th>Date</th>
-                <th>Customer</th>
-                <th>Items</th>
-                <th>Total</th>
-                <th>Status</th>
-                <th>Payment</th>
-                <th>Delivery</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="allOrdersTbody"></tbody>
-          </table>
+        <div class="form-group">
+          <label class="form-label" for="pmInventory">Stock Quantity</label>
+          <input type="number" id="pmInventory" class="admin-input" placeholder="0" min="0" required>
         </div>
-      </div>
-      <div id="panel-queue" class="panel" style="display:none">
-        <div class="admin-header">
-          <div>
-            <div class="admin-title">Order Queue</div>
-            <div class="admin-subtitle">Kanban workflow pipeline</div>
-          </div>
-          <button class="btn btn-ghost btn-sm" id="refreshQueue">↻ Refresh</button>
+        <div class="form-group">
+          <label class="form-label" for="pmLeadTime">Lead Time (days)</label>
+          <input type="number" id="pmLeadTime" class="admin-input" placeholder="1" min="1" value="1">
         </div>
-        <div class="kanban-board" id="kanbanBoard">
-          <div class="kanban-col">
-            <div class="kanban-col-header" style="--col-color:#38bdf8">
-              <span>New</span><span class="kanban-count" id="cnt-new">0</span>
-            </div>
-            <div class="kanban-cards" id="col-new"></div>
-          </div>
-          <div class="kanban-col">
-            <div class="kanban-col-header" style="--col-color:#FFD700">
-              <span>Processing</span><span class="kanban-count" id="cnt-processing">0</span>
-            </div>
-            <div class="kanban-cards" id="col-processing"></div>
-          </div>
-          <div class="kanban-col">
-            <div class="kanban-col-header" style="--col-color:#A78BFA">
-              <span>Quality Check</span><span class="kanban-count" id="cnt-quality_check">0</span>
-            </div>
-            <div class="kanban-cards" id="col-quality_check"></div>
-          </div>
-          <div class="kanban-col">
-            <div class="kanban-col-header" style="--col-color:#e84393">
-              <span>Packed</span><span class="kanban-count" id="cnt-packed">0</span>
-            </div>
-            <div class="kanban-cards" id="col-packed"></div>
-          </div>
-          <div class="kanban-col">
-            <div class="kanban-col-header" style="--col-color:#818cf8">
-              <span>Shipped</span><span class="kanban-count" id="cnt-shipped">0</span>
-            </div>
-            <div class="kanban-cards" id="col-shipped"></div>
-          </div>
-          <div class="kanban-col">
-            <div class="kanban-col-header" style="--col-color:#00D4AA">
-              <span>Out for Delivery</span><span class="kanban-count" id="cnt-out_for_delivery">0</span>
-            </div>
-            <div class="kanban-cards" id="col-out_for_delivery"></div>
-          </div>
-        </div>
-      </div>
-      <div id="panel-inventory" class="panel" style="display:none">
-        <div class="admin-header">
-          <div>
-            <div class="admin-title">Inventory</div>
-            <div class="admin-subtitle">Stock levels and alerts</div>
-          </div>
-          <button class="btn btn-ghost btn-sm" id="refreshInventory">↻ Refresh</button>
-        </div>
-        <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:28px;">
-          <div class="kpi-card" style="--kpi-color:rgba(255,215,0,0.2)">
-            <div class="kpi-icon">⚠️</div>
-            <div class="kpi-label">Low Stock</div>
-            <div class="kpi-value" id="invLow">—</div>
-          </div>
-          <div class="kpi-card" style="--kpi-color:rgba(239,68,68,0.2)">
-            <div class="kpi-icon">🚫</div>
-            <div class="kpi-label">Out of Stock</div>
-            <div class="kpi-value" id="invOut">—</div>
-          </div>
-          <div class="kpi-card" style="--kpi-color:rgba(0,212,170,0.2)">
-            <div class="kpi-icon">📦</div>
-            <div class="kpi-label">Total SKUs</div>
-            <div class="kpi-value" id="invTotal">—</div>
-          </div>
-        </div>
-        <div class="glass-card" style="padding:0;overflow:hidden;">
-          <div id="inventoryList"></div>
-        </div>
-      </div>
-      <div id="panel-banners" class="panel" style="display:none">
-        <div class="admin-header">
-          <div>
-            <div class="admin-title">Banners</div>
-            <div class="admin-subtitle">Storefront promotional banners</div>
-          </div>
-          <button class="btn btn-primary" id="openAddBanner">+ Add Banner</button>
-        </div>
-        <div id="bannersList" style="display:flex;flex-direction:column;gap:16px;"></div>
-      </div>
-      <div id="panel-faqs" class="panel" style="display:none">
-        <div class="admin-header">
-          <div>
-            <div class="admin-title">FAQs</div>
-            <div class="admin-subtitle">Customer frequently asked questions</div>
-          </div>
-          <button class="btn btn-primary" id="openAddFaq">+ Add FAQ</button>
-        </div>
-        <div id="faqsList" style="display:flex;flex-direction:column;gap:12px;"></div>
-      </div>
-      <div id="panel-content" class="panel" style="display:none">
-        <div class="admin-header">
-          <div>
-            <div class="admin-title">Site Content</div>
-            <div class="admin-subtitle">Edit storefront text and settings</div>
-          </div>
-          <button class="btn btn-primary" id="saveContent">💾 Save All</button>
-        </div>
-        <div class="content-editor-grid">
-          <div class="glass-card" style="padding:28px;">
-            <div class="card-title" style="margin-bottom:20px;">🦸 Hero Section</div>
-            <div class="form-group">
-              <label class="form-label" for="contentHeroBadge">Badge Text</label>
-              <input type="text" id="contentHeroBadge" class="admin-input"
-                placeholder="Handcrafted · Pre-Order · Delivered with Love">
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="contentHeroHeadline">Headline</label>
-              <input type="text" id="contentHeroHeadline" class="admin-input"
-                placeholder="Blooms Built For Your Moment">
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="contentHeroSub">Subtitle</label>
-              <textarea id="contentHeroSub" class="admin-input" rows="3" placeholder="Custom bouquets..."></textarea>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="contentFreeShip">Free Shipping Threshold (₱)</label>
-              <input type="number" id="contentFreeShip" class="admin-input" placeholder="4350">
-            </div>
-          </div>
-          <div class="glass-card" style="padding:28px;">
-            <div class="card-title" style="margin-bottom:20px;">📅 Subscription Plans</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-              <div class="form-group">
-                <label class="form-label" for="contentSubWeeklyName">Weekly Name</label>
-                <input type="text" id="contentSubWeeklyName" class="admin-input" placeholder="Weekly Bloom">
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="contentSubWeeklyPrice">Weekly Price (₱)</label>
-                <input type="number" id="contentSubWeeklyPrice" class="admin-input" placeholder="1499">
-              </div>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-              <div class="form-group">
-                <label class="form-label" for="contentSubBiweeklyName">Biweekly Name</label>
-                <input type="text" id="contentSubBiweeklyName" class="admin-input" placeholder="Biweekly Refresh">
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="contentSubBiweeklyPrice">Biweekly Price (₱)</label>
-                <input type="number" id="contentSubBiweeklyPrice" class="admin-input" placeholder="2299">
-              </div>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-              <div class="form-group">
-                <label class="form-label" for="contentSubMonthlyName">Monthly Name</label>
-                <input type="text" id="contentSubMonthlyName" class="admin-input" placeholder="Monthly Statement">
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="contentSubMonthlyPrice">Monthly Price (₱)</label>
-                <input type="number" id="contentSubMonthlyPrice" class="admin-input" placeholder="4299">
-              </div>
-            </div>
-          </div>
-          <div class="glass-card" style="padding:28px;">
-            <div class="card-title" style="margin-bottom:20px;">📢 Announcement Banner</div>
-            <div class="form-group">
-              <label class="form-label" for="contentBanner">Banner Text</label>
-              <input type="text" id="contentBanner" class="admin-input"
-                placeholder="🌸 Free delivery on orders over ₱4,350">
-            </div>
-            <div class="form-group" style="display:flex;align-items:center;gap:12px;">
-              <input type="checkbox" id="contentBannerActive" style="width:18px;height:18px;accent-color:#e84393;">
-              <label class="form-label" style="margin:0;cursor:pointer;" for="contentBannerActive">Banner Active</label>
-            </div>
-            <div class="card-title" style="margin:24px 0 16px;">🏢 Corporate Section</div>
-            <div class="form-group">
-              <label class="form-label" for="contentCorpHeadline">Corporate Headline</label>
-              <input type="text" id="contentCorpHeadline" class="admin-input" placeholder="Corporate Partnerships">
-            </div>
-            <div class="card-title" style="margin:24px 0 16px;">🔗 Social Links</div>
-            <div class="form-group">
-              <label class="form-label" for="contentIG">Instagram URL</label>
-              <input type="text" id="contentIG" class="admin-input" placeholder="https://instagram.com/bloom">
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="contentFB">Facebook URL</label>
-              <input type="text" id="contentFB" class="admin-input" placeholder="https://facebook.com/bloom">
-            </div>
-          </div>
-          <div class="glass-card" style="padding:28px;grid-column:1/-1;">
-            <div class="card-title" style="margin-bottom:16px;">🦶 Footer</div>
-            <div class="form-group">
-              <label class="form-label" for="contentFooter">Footer Tagline</label>
-              <input type="text" id="contentFooter" class="admin-input"
-                placeholder="Handcrafted blooms, personalized gifts...">
-            </div>
-          </div>
-        </div>
-      </div>
-      <div id="panel-users" class="panel" style="display:none">
-        <div class="admin-header">
-          <div>
-            <div class="admin-title">Users</div>
-            <div class="admin-subtitle">Customer accounts and roles</div>
-          </div>
-          <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
-            <input type="text" id="userSearch" placeholder="🔍 Search users..." class="admin-input"
-              style="min-width:200px;">
-            <select id="userRoleFilter" class="admin-select">
-              <option value="">All Roles</option>
-              <option value="customer">Customer</option>
-              <option value="admin">Admin</option>
-            </select>
-            <button class="btn btn-ghost btn-sm" onclick="loadUsers()">Filter</button>
-          </div>
-        </div>
-        <div class="glass-card" style="padding:0;overflow:hidden;">
-          <table class="orders-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Points</th>
-                <th>Joined</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="usersTbody"></tbody>
-          </table>
-        </div>
-      </div>
-      <div id="panel-support" class="panel" style="display:none">
-        <div class="admin-header">
-          <div>
-            <div class="admin-title">Support Tickets</div>
-            <div class="admin-subtitle">Customer inquiries and resolutions</div>
-          </div>
-          <select id="ticketStatusFilter" class="admin-select">
-            <option value="">All</option>
-            <option value="open">Open</option>
-            <option value="pending">Pending</option>
-            <option value="resolved">Resolved</option>
+        <div class="form-group">
+          <label class="form-label" for="pmCustomizable">Customizable</label>
+          <select id="pmCustomizable" class="admin-select">
+            <option value="0">No</option>
+            <option value="1">Yes</option>
           </select>
         </div>
-        <div id="ticketsList" style="display:flex;flex-direction:column;gap:12px;"></div>
-      </div>
-      <div id="panel-reviews" class="panel" style="display:none">
-        <div class="admin-header">
-          <div>
-            <div class="admin-title">Reviews</div>
-            <div class="admin-subtitle">Product ratings and feedback</div>
-          </div>
-          <select id="reviewFilter" class="admin-select">
-            <option value="">All Ratings</option>
-            <option value="5">⭐⭐⭐⭐⭐ 5 Star</option>
-            <option value="4">⭐⭐⭐⭐ 4 Star</option>
-            <option value="3">⭐⭐⭐ 3 Star</option>
-            <option value="1">⭐ 1-2 Star</option>
-          </select>
+        <div class="form-group span-full">
+          <label class="form-label" for="pmDescription">Description</label>
+          <textarea id="pmDescription" class="admin-input" rows="3" placeholder="Describe this product..." maxlength="1000"></textarea>
         </div>
-        <div class="glass-card" style="padding:0;overflow:hidden;">
-          <table class="orders-table">
-            <thead>
-              <tr>
-                <th>Product</th>
-                <th>Customer</th>
-                <th>Rating</th>
-                <th>Comment</th>
-                <th>Date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="reviewsTbody"></tbody>
-          </table>
+        <div class="form-group span-full">
+          <label class="form-label" for="pmTags">Tags (comma separated)</label>
+          <input type="text" id="pmTags" class="admin-input" placeholder="romantic, anniversary, red roses">
+        </div>
+        <div class="form-group span-full">
+          <label class="form-label" for="pmImages">Images (up to 5)</label>
+          <input type="file" id="pmImages" class="admin-input file-input" accept="image/png,image/jpeg,image/webp,image/avif" multiple>
+          <div id="pmImagePreview" class="image-preview-row"></div>
         </div>
       </div>
-      <div id="panel-promos" class="panel" style="display:none">
-        <div class="admin-header">
-          <div>
-            <div class="admin-title">Promo Codes</div>
-            <div class="admin-subtitle">Discount and promotion management</div>
-          </div>
-          <button class="btn btn-primary" id="openAddPromo">+ Add Promo</button>
-        </div>
-        <div class="glass-card" style="padding:0;overflow:hidden;">
-          <table class="orders-table">
-            <thead>
-              <tr>
-                <th>Code</th>
-                <th>Type</th>
-                <th>Value</th>
-                <th>Min Order</th>
-                <th>Used / Max</th>
-                <th>Expires</th>
-                <th>Active</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="promosTbody"></tbody>
-          </table>
-        </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="cancelProductModal" type="button">Cancel</button>
+        <button class="btn btn-primary" id="saveProduct" type="submit">💾 Save Product</button>
       </div>
-      <div id="panel-analytics" class="panel" style="display:none">
-        <div class="admin-header">
-          <div>
-            <div class="admin-title">Analytics</div>
-            <div class="admin-subtitle">Performance metrics and insights</div>
-          </div>
-          <button class="btn btn-ghost btn-sm" id="refreshAnalytics">↻ Refresh</button>
-        </div>
-        <div class="kpi-grid" id="analyticsKpi"></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:28px;">
-          <div class="glass-card" style="padding:32px;">
-            <div class="card-title" style="margin-bottom:16px;">Revenue by Category</div>
-            <div class="chart-area">
-              <div class="bar-chart" id="analyticsChart"></div>
-            </div>
-          </div>
-          <div class="glass-card" style="padding:32px;">
-            <div class="card-title" style="margin-bottom:16px;">Event Activity</div>
-            <div id="eventList"></div>
-          </div>
-        </div>
-      </div>
-      <div id="panel-broadcast" class="panel" style="display:none">
-        <div class="admin-header">
-          <div>
-            <div class="admin-title">Broadcast Notification</div>
-            <div class="admin-subtitle">Send messages to all customers</div>
-          </div>
-        </div>
-        <div class="glass-card" style="padding:40px;max-width:640px;">
-          <div class="form-group">
-            <label class="form-label" for="broadcastTitle">Title</label>
-            <input type="text" id="broadcastTitle" class="admin-input" placeholder="Notification title">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="broadcastMessage">Message</label>
-            <textarea id="broadcastMessage" class="admin-input" rows="5"
-              placeholder="Message to all customers..."></textarea>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="broadcastType">Type</label>
-            <select id="broadcastType" class="admin-select">
-              <option value="info">ℹ️ Info</option>
-              <option value="promo">🎟 Promo</option>
-              <option value="alert">🚨 Alert</option>
-            </select>
-          </div>
-          <button class="btn btn-primary" id="sendBroadcast" style="margin-top:16px;">📣 Send to All Customers</button>
-          <div id="broadcastResult" class="broadcast-result"></div>
-        </div>
-      </div>
-    </main>
+    </form>
   </div>
-  <div id="orderDetailModal" class="modal-overlay">
-    <div class="modal-box">
-      <div class="modal-head">
-        <div class="modal-title" id="orderDetailTitle">Order Detail</div>
-        <button id="closeOrderDetail" class="modal-close">✕</button>
-      </div>
-      <div id="orderDetailBody"></div>
+</div>
+
+<div id="faqModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="faqModalTitle" hidden>
+  <div class="modal-box modal-sm">
+    <div class="modal-head">
+      <h3 class="modal-title" id="faqModalTitle">Add FAQ</h3>
+      <button id="closeFaqModal" class="modal-close" aria-label="Close" type="button">✕</button>
     </div>
-  </div>
-  <div id="productModal" class="modal-overlay">
-    <div class="modal-box" style="max-width:680px;">
-      <div class="modal-head">
-        <div class="modal-title" id="productModalTitle">Add Product</div>
-        <button id="closeProductModal" class="modal-close">✕</button>
-      </div>
-      <div id="productModalBody">
-        <input type="hidden" id="pmId">
-        <div class="modal-form-grid">
-          <div class="form-group" style="grid-column:1/-1">
-            <label class="form-label" for="pmName">Product Name</label>
-            <input type="text" id="pmName" class="admin-input" placeholder="e.g. Crimson Horizon Bouquet">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="pmCategory">Category</label>
-            <select id="pmCategory" class="admin-select">
-              <option value="fresh">🌷 Fresh</option>
-              <option value="dried">🌿 Dried</option>
-              <option value="branded">🏷 Branded</option>
-              <option value="bundled">🎁 Bundled</option>
-              <option value="merchandise">🛍 Merchandise</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="pmSubcategory">Subcategory</label>
-            <input type="text" id="pmSubcategory" class="admin-input" placeholder="roses, pampas, tulips...">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="pmPrice">Price (₱)</label>
-            <input type="number" id="pmPrice" class="admin-input" placeholder="0.00" step="0.01" min="0">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="pmInventory">Stock Quantity</label>
-            <input type="number" id="pmInventory" class="admin-input" placeholder="0" min="0">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="pmLeadTime">Lead Time (days)</label>
-            <input type="number" id="pmLeadTime" class="admin-input" placeholder="1" min="1">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="pmCustomizable">Customizable</label>
-            <select id="pmCustomizable" class="admin-select">
-              <option value="0">No</option>
-              <option value="1">Yes</option>
-            </select>
-          </div>
-          <div class="form-group" style="grid-column:1/-1">
-            <label class="form-label" for="pmDescription">Description</label>
-            <textarea id="pmDescription" class="admin-input" rows="3" placeholder="Describe this product..."></textarea>
-          </div>
-          <div class="form-group" style="grid-column:1/-1">
-            <label class="form-label" for="pmTags">Tags (comma separated)</label>
-            <input type="text" id="pmTags" class="admin-input" placeholder="romantic, anniversary, red roses">
-          </div>
-          <div class="form-group" style="grid-column:1/-1">
-            <label class="form-label" for="pmImages">Images (up to 5)</label>
-            <input type="file" id="pmImages" class="admin-input file-input" accept="image/*" multiple>
-            <div id="pmImagePreview" class="image-preview-row"></div>
-          </div>
-        </div>
-        <div class="modal-actions">
-          <button class="btn btn-ghost" id="cancelProductModal">Cancel</button>
-          <button class="btn btn-primary" id="saveProduct">💾 Save Product</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div id="faqModal" class="modal-overlay">
-    <div class="modal-box" style="max-width:560px;">
-      <div class="modal-head">
-        <div class="modal-title" id="faqModalTitle">Add FAQ</div>
-        <button id="closeFaqModal" class="modal-close">✕</button>
-      </div>
+    <form id="faqForm" novalidate>
       <input type="hidden" id="faqId">
       <div class="form-group">
         <label class="form-label" for="faqQuestion">Question</label>
-        <input type="text" id="faqQuestion" class="admin-input" placeholder="What is your return policy?">
+        <input type="text" id="faqQuestion" class="admin-input" placeholder="What is your return policy?" required maxlength="200">
       </div>
       <div class="form-group">
         <label class="form-label" for="faqAnswer">Answer</label>
-        <textarea id="faqAnswer" class="admin-input" rows="5" placeholder="We offer a full refund within..."></textarea>
+        <textarea id="faqAnswer" class="admin-input" rows="5" placeholder="We offer a full refund within..." required maxlength="2000"></textarea>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="grid-2">
         <div class="form-group">
           <label class="form-label" for="faqCategory">Category</label>
           <select id="faqCategory" class="admin-select">
@@ -662,28 +651,30 @@
         </div>
         <div class="form-group">
           <label class="form-label" for="faqOrder">Sort Order</label>
-          <input type="number" id="faqOrder" class="admin-input" placeholder="0" min="0">
+          <input type="number" id="faqOrder" class="admin-input" placeholder="0" min="0" value="0">
         </div>
       </div>
       <div class="modal-actions">
-        <button class="btn btn-ghost" id="cancelFaqModal">Cancel</button>
-        <button class="btn btn-primary" id="saveFaq">💾 Save FAQ</button>
+        <button class="btn btn-ghost" id="cancelFaqModal" type="button">Cancel</button>
+        <button class="btn btn-primary" id="saveFaq" type="submit">💾 Save FAQ</button>
       </div>
-    </div>
+    </form>
   </div>
-  <div id="promoModal" class="modal-overlay">
-    <div class="modal-box" style="max-width:500px;">
-      <div class="modal-head">
-        <div class="modal-title">Add Promo Code</div>
-        <button id="closePromoModal" class="modal-close">✕</button>
-      </div>
+</div>
+
+<div id="promoModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="promoModalTitle" hidden>
+  <div class="modal-box modal-xs">
+    <div class="modal-head">
+      <h3 class="modal-title" id="promoModalTitle">Add Promo Code</h3>
+      <button id="closePromoModal" class="modal-close" aria-label="Close" type="button">✕</button>
+    </div>
+    <form id="promoForm" novalidate>
       <input type="hidden" id="promoId">
       <div class="form-group">
         <label class="form-label" for="promoCode">Promo Code</label>
-        <input type="text" id="promoCode" class="admin-input" placeholder="BLOOM10"
-          style="text-transform:uppercase;font-weight:700;letter-spacing:2px;">
+        <input type="text" id="promoCode" class="admin-input promo-code-input" placeholder="BLOOM10" required maxlength="32" pattern="[A-Z0-9_-]+">
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="grid-2">
         <div class="form-group">
           <label class="form-label" for="promoType">Type</label>
           <select id="promoType" class="admin-select">
@@ -694,15 +685,15 @@
         </div>
         <div class="form-group">
           <label class="form-label" for="promoValue">Value</label>
-          <input type="number" id="promoValue" class="admin-input" placeholder="10" min="0">
+          <input type="number" id="promoValue" class="admin-input" placeholder="10" min="0" required>
         </div>
         <div class="form-group">
           <label class="form-label" for="promoMinOrder">Min Order (₱)</label>
-          <input type="number" id="promoMinOrder" class="admin-input" placeholder="0" min="0">
+          <input type="number" id="promoMinOrder" class="admin-input" placeholder="0" min="0" value="0">
         </div>
         <div class="form-group">
           <label class="form-label" for="promoMaxUses">Max Uses</label>
-          <input type="number" id="promoMaxUses" class="admin-input" placeholder="100" min="1">
+          <input type="number" id="promoMaxUses" class="admin-input" placeholder="100" min="1" value="100">
         </div>
       </div>
       <div class="form-group">
@@ -710,25 +701,28 @@
         <input type="date" id="promoExpires" class="admin-input">
       </div>
       <div class="modal-actions">
-        <button class="btn btn-ghost" id="cancelPromoModal">Cancel</button>
-        <button class="btn btn-primary" id="savePromo">💾 Save Promo</button>
+        <button class="btn btn-ghost" id="cancelPromoModal" type="button">Cancel</button>
+        <button class="btn btn-primary" id="savePromo" type="submit">💾 Save Promo</button>
       </div>
-    </div>
+    </form>
   </div>
-  <div id="bannerModal" class="modal-overlay">
-    <div class="modal-box" style="max-width:540px;">
-      <div class="modal-head">
-        <div class="modal-title" id="bannerModalTitle">Add Banner</div>
-        <button id="closeBannerModal" class="modal-close">✕</button>
-      </div>
+</div>
+
+<div id="bannerModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="bannerModalTitle" hidden>
+  <div class="modal-box modal-sm">
+    <div class="modal-head">
+      <h3 class="modal-title" id="bannerModalTitle">Add Banner</h3>
+      <button id="closeBannerModal" class="modal-close" aria-label="Close" type="button">✕</button>
+    </div>
+    <form id="bannerForm" novalidate>
       <input type="hidden" id="bannerId">
       <div class="form-group">
         <label class="form-label" for="bannerTitle">Title</label>
-        <input type="text" id="bannerTitle" class="admin-input" placeholder="Banner headline">
+        <input type="text" id="bannerTitle" class="admin-input" placeholder="Banner headline" required maxlength="120">
       </div>
       <div class="form-group">
         <label class="form-label" for="bannerSubtitle">Subtitle</label>
-        <input type="text" id="bannerSubtitle" class="admin-input" placeholder="Supporting text">
+        <input type="text" id="bannerSubtitle" class="admin-input" placeholder="Supporting text" maxlength="200">
       </div>
       <div class="form-group">
         <label class="form-label" for="bannerLink">Link URL</label>
@@ -736,33 +730,52 @@
       </div>
       <div class="form-group">
         <label class="form-label" for="bannerOrder">Sort Order</label>
-        <input type="number" id="bannerOrder" class="admin-input" placeholder="0" min="0">
+        <input type="number" id="bannerOrder" class="admin-input" placeholder="0" min="0" value="0">
       </div>
       <div class="form-group">
         <label class="form-label" for="bannerImage">Banner Image</label>
-        <input type="file" id="bannerImage" class="admin-input file-input" accept="image/*">
-        <img id="bannerImagePreview" class="banner-preview" style="display:none;">
+        <input type="file" id="bannerImage" class="admin-input file-input" accept="image/png,image/jpeg,image/webp,image/avif">
+        <img id="bannerImagePreview" class="banner-preview" alt="" hidden>
       </div>
       <div class="modal-actions">
-        <button class="btn btn-ghost" id="cancelBannerModal">Cancel</button>
-        <button class="btn btn-primary" id="saveBanner">💾 Save Banner</button>
+        <button class="btn btn-ghost" id="cancelBannerModal" type="button">Cancel</button>
+        <button class="btn btn-primary" id="saveBanner" type="submit">💾 Save Banner</button>
       </div>
-    </div>
+    </form>
   </div>
-  <div id="userDetailModal" class="modal-overlay">
-    <div class="modal-box" style="max-width:500px;">
-      <div class="modal-head">
-        <div class="modal-title">User Detail</div>
-        <button id="closeUserDetail" class="modal-close">✕</button>
-      </div>
-      <div id="userDetailBody"></div>
-    </div>
-  </div>
-  <div id="toastContainer" class="toast-container"></div>
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="/js/core/Store.js"></script>
-  <script src="/js/core/Api.js"></script>
-  <script src="/js/admin.js"></script>
-</body>
+</div>
 
+<div id="userDetailModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="userDetailTitle" hidden>
+  <div class="modal-box modal-xs">
+    <div class="modal-head">
+      <h3 class="modal-title" id="userDetailTitle">User Detail</h3>
+      <button id="closeUserDetail" class="modal-close" aria-label="Close" type="button">✕</button>
+    </div>
+    <div id="userDetailBody"></div>
+  </div>
+</div>
+
+<div id="confirmModal" class="modal-overlay" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" hidden>
+  <div class="modal-box modal-xs">
+    <div class="modal-head">
+      <h3 class="modal-title" id="confirmTitle">Confirm Action</h3>
+      <button id="closeConfirm" class="modal-close" aria-label="Close" type="button">✕</button>
+    </div>
+    <p id="confirmMessage" class="confirm-message">Are you sure?</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="confirmCancel" type="button">Cancel</button>
+      <button class="btn btn-primary" id="confirmOk" type="button">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastContainer" class="toast-container" role="region" aria-label="Notifications" aria-live="polite"></div>
+
+<div id="globalLoader" class="global-loader" hidden aria-hidden="true"><div class="loader-spinner"></div></div>
+
+<script src="/socket.io/socket.io.js" defer></script>
+<script src="/js/core/Store.js" defer></script>
+<script src="/js/core/Api.js" defer></script>
+<script src="/js/admin.js" defer></script>
+</body>
 </html>
