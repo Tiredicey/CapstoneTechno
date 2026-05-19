@@ -574,22 +574,32 @@
   z-index: 0;
   background-color: var(--ethereal-obsidian, #05020a);
   background-image: 
-    radial-gradient(circle at 20% 30%, var(--ethereal-glow-pink, rgba(255,0,255,.25)), transparent 45%),
-    radial-gradient(circle at 80% 70%, var(--ethereal-glow-red, rgba(230,26,26,.2)), transparent 45%),
-    radial-gradient(circle at 50% 50%, hsla(272,100%,10%,.4), transparent 55%),
-    radial-gradient(circle at 10% 80%, hsla(45,100%,50%,.08), transparent 35%),
-    radial-gradient(circle at 90% 20%, hsla(172,80%,45%,.08), transparent 30%);
-  filter: blur(45px);
-  opacity: 0.88;
+    radial-gradient(circle at 20% 30%, var(--ethereal-glow-pink, rgba(255,0,255,.28)), transparent 45%),
+    radial-gradient(circle at 80% 70%, var(--ethereal-glow-red, rgba(230,26,26,.22)), transparent 45%),
+    radial-gradient(circle at 50% 50%, hsla(272,100%,10%,.42), transparent 55%),
+    radial-gradient(circle at 10% 80%, hsla(45,100%,50%,.09), transparent 35%),
+    radial-gradient(circle at 90% 20%, hsla(172,80%,45%,.09), transparent 30%);
+  opacity: 0.92;
   animation: chEtherealPulse 22s ease-in-out infinite alternate;
-  will-change: transform;
+  will-change: transform, filter;
   overflow: hidden;
-  perspective: 1200px;
+  perspective: 1400px;
+  transform-style: preserve-3d;
+}
+.ch-ethereal-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 120% 90% at 50% 50%, transparent 40%, rgba(5,2,10,.4) 80%, rgba(5,2,10,.85) 100%);
+  mix-blend-mode: multiply;
 }
 
 .ch-bg-frame {
   position: absolute;
-  inset: -10%;
+  inset: -12%;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -598,9 +608,31 @@
   will-change: opacity, transform, filter;
   mix-blend-mode: lighten;
   pointer-events: none;
-  filter: brightness(1) saturate(1.1);
+  filter: brightness(1) saturate(1.15) contrast(1.04);
+  backface-visibility: hidden;
+  isolation: isolate;
 }
-.ch-bg-frame.frame-1 { opacity: 0.78; transform: scale(1.12); z-index: 1; }
+.ch-bg-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 100% 80% at 50% 45%, transparent 35%, rgba(5,2,10,.55) 85%, rgba(5,2,10,.92) 100%),
+    linear-gradient(180deg, rgba(5,2,10,.18) 0%, transparent 25%, transparent 70%, rgba(5,2,10,.42) 100%);
+  pointer-events: none;
+  mix-blend-mode: multiply;
+}
+.ch-bg-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 25%, rgba(255,0,140,.08), transparent 50%),
+    radial-gradient(circle at 80% 75%, rgba(230,26,26,.07), transparent 50%);
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+.ch-bg-frame.frame-1 { opacity: 0.82; transform: scale(1.14); z-index: 1; }
 .ch-bg-frame.frame-2 { z-index: 2; }
 .ch-bg-frame.frame-3 { z-index: 3; }
 .ch-bg-frame.frame-4 { z-index: 4; }
