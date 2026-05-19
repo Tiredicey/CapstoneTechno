@@ -56,8 +56,9 @@
     gsap.set(q('.ch-main-card'), { y: window.innerHeight + 250, autoAlpha: 1 });
     gsap.set(q('.ch-card-left-text, .ch-card-right-text, .ch-mockup-wrapper, .ch-floating-badge, .ch-phone-widget'), { autoAlpha: 0 });
     gsap.set(q('.ch-cta-wrapper'), { autoAlpha: 0, scale: 0.7, filter: 'blur(40px)' });
-    gsap.set(q('.ch-bg-frame'), { force3D: true, transformOrigin: '50% 50%' });
-    gsap.set(q('.ch-bg-frame:not(.frame-1)'), { opacity: 0 });
+    gsap.set(q('.ch-bg-frame'), { force3D: true, transformOrigin: '50% 50%', willChange: 'opacity, transform, filter' });
+    gsap.set(q('.ch-bg-frame:not(.frame-1)'), { opacity: 0, scale: 1.06, filter: 'brightness(0.45) saturate(0.7) blur(8px)' });
+    gsap.set(q('.ch-bg-frame.frame-1'), { filter: 'brightness(1) saturate(1.15) blur(0px)' });
 
     var introTl = gsap.timeline({ delay: 0.2 });
     introTl
@@ -81,7 +82,7 @@
       }, '-=0.8');
     }
 
-    var scrollEnd = isMobile ? '+=5000' : '+=7000';
+    var scrollEnd = isMobile ? '+=5400' : '+=7600';
     var scrollTl = gsap.timeline({
       scrollTrigger: {
         trigger: container,
@@ -97,23 +98,23 @@
       .to('.ch-hero-text-wrapper', { y: -140, scale: 1.1, ease: 'none', duration: 5 }, 0)
       .to('.ch-bg-grid', { scale: 1.3, opacity: 0.12, y: -80, ease: 'none', duration: 5 }, 0)
 
-      .to('.ch-bg-frame.frame-1', { scale: 1.2, y: -50, rotation: 2, duration: 1.5, ease: 'power1.out' }, 0)
-      .to('.ch-bg-frame.frame-1', { opacity: 0, ease: 'power1.inOut', duration: 1 }, 0.6)
+      .to('.ch-bg-frame.frame-1', { scale: 1.26, y: -70, rotation: 1.8, filter: 'brightness(1.05) saturate(1.2) blur(0.5px)', ease: 'power2.out', duration: 1.6 }, 0)
+      .to('.ch-bg-frame.frame-1', { opacity: 0, scale: 1.34, filter: 'brightness(1.2) saturate(1.4) blur(6px)', ease: 'power2.inOut', duration: 1.1 }, 0.7)
       .fromTo('.ch-bg-frame.frame-2',
-        { opacity: 0, scale: 1.03, y: 30, filter: 'brightness(0.5)' },
-        { opacity: 0.9, scale: 1.18, y: -40, rotation: -1.5, filter: 'brightness(1)', ease: 'power2.inOut', duration: 1.6 }, 0.6)
-      .to('.ch-bg-frame.frame-2', { opacity: 0, ease: 'power1.inOut', duration: 0.9 }, 1.8)
+        { opacity: 0, scale: 1.05, y: 40, rotation: 1.2, filter: 'brightness(0.4) saturate(0.6) blur(10px)' },
+        { opacity: 0.94, scale: 1.2, y: -50, rotation: -1.8, filter: 'brightness(1.02) saturate(1.18) blur(0px)', ease: 'expo.out', duration: 1.7 }, 0.7)
+      .to('.ch-bg-frame.frame-2', { opacity: 0, scale: 1.3, filter: 'brightness(1.18) saturate(1.35) blur(7px)', ease: 'power2.inOut', duration: 1 }, 1.95)
       .fromTo('.ch-bg-frame.frame-3',
-        { opacity: 0, scale: 1.03, y: 30, filter: 'brightness(0.5)' },
-        { opacity: 0.92, scale: 1.22, y: -70, rotation: 2.5, filter: 'brightness(1)', ease: 'power2.inOut', duration: 1.6 }, 1.8)
-      .to('.ch-bg-frame.frame-3', { opacity: 0, ease: 'power1.inOut', duration: 0.9 }, 3)
+        { opacity: 0, scale: 1.05, y: 40, rotation: -1.5, filter: 'brightness(0.4) saturate(0.6) blur(10px)' },
+        { opacity: 0.95, scale: 1.24, y: -82, rotation: 2.8, filter: 'brightness(1.04) saturate(1.22) blur(0px)', ease: 'expo.out', duration: 1.7 }, 1.95)
+      .to('.ch-bg-frame.frame-3', { opacity: 0, scale: 1.34, filter: 'brightness(1.2) saturate(1.4) blur(8px)', ease: 'power2.inOut', duration: 1 }, 3.2)
       .fromTo('.ch-bg-frame.frame-4',
-        { opacity: 0, scale: 1.03, y: 30, filter: 'brightness(0.5)' },
-        { opacity: 0.88, scale: 1.24, y: -100, rotation: -2.5, filter: 'brightness(1)', ease: 'power2.inOut', duration: 1.6 }, 3)
-      .to('.ch-bg-frame.frame-4', { opacity: 0, ease: 'power1.inOut', duration: 0.9 }, 4.2)
+        { opacity: 0, scale: 1.05, y: 40, rotation: 1.8, filter: 'brightness(0.4) saturate(0.6) blur(10px)' },
+        { opacity: 0.92, scale: 1.27, y: -116, rotation: -2.8, filter: 'brightness(1.03) saturate(1.2) blur(0px)', ease: 'expo.out', duration: 1.7 }, 3.2)
+      .to('.ch-bg-frame.frame-4', { opacity: 0, scale: 1.38, filter: 'brightness(1.22) saturate(1.45) blur(9px)', ease: 'power2.inOut', duration: 1 }, 4.45)
       .fromTo('.ch-bg-frame.frame-5',
-        { opacity: 0, scale: 1.03, y: 30, filter: 'brightness(0.5) saturate(0.6)' },
-        { opacity: 0.85, scale: 1.28, y: -130, rotation: 1, filter: 'brightness(1) saturate(1)', ease: 'power2.inOut', duration: 2 }, 4.2)
+        { opacity: 0, scale: 1.05, y: 40, rotation: -1, filter: 'brightness(0.35) saturate(0.55) blur(12px)' },
+        { opacity: 0.9, scale: 1.32, y: -150, rotation: 1.2, filter: 'brightness(1.06) saturate(1.25) blur(0px)', ease: 'expo.out', duration: 2.1 }, 4.45)
 
       .to('.ch-hero-text-wrapper', {
         autoAlpha: 0, filter: 'blur(18px)', scale: 1.15,
@@ -180,7 +181,7 @@
         y: -window.innerHeight - 350, ease: 'power3.in', duration: 2
       }, 'exit')
       .to('.ch-bg-frame', {
-        yPercent: -40, scale: 1.4, ease: 'power2.in', duration: 2
+        yPercent: -55, scale: 1.5, filter: 'brightness(1.3) saturate(1.5) blur(12px)', ease: 'power3.in', duration: 2
       }, 'exit')
       .to('.ch-ethereal-bg', {
         yPercent: -18, ease: 'power1.in', duration: 2
